@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Start free — ProjexaR</title>
+<meta name="description" content="Create your ProjexaR workspace. Two projects, free forever, with unlimited people. No card and no time limit.">
+<link rel="canonical" href="https://projexar.com/start/">
+<link rel="icon" href="/assets/logo-mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/styles/tokens.css">
+<link rel="stylesheet" href="/styles/site.css">
+<noscript><style>[data-step]{display:block!important}</style></noscript>
+</head>
+<body>
+
+<header class="site-header" data-site-header>
+  <div class="site-header__bar">
+    <a class="site-header__logo" href="/"><img src="/assets/logo-wordmark.png" alt="ProjexaR" width="146" height="26"></a>
+    <button class="site-header__toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
+      <svg class="icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+    </button>
+    <nav class="site-header__nav" id="site-nav">
+      <a href="/product/">Product</a>
+      <a href="/solutions/">Solutions</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/capacity-check/">Capacity Check</a>
+    </nav>
+    <div class="site-header__actions">
+      <a class="btn btn--sm btn--secondary" href="/capacity-check/">Run the Capacity Check</a>
+      <a class="btn btn--sm btn--primary" href="/start/">Start free</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="start" data-start>
+
+    <div class="start__form-col">
+      <div class="start__form">
+        <div class="start__badge">
+          <span class="badge badge--brand"><span class="badge__dot"></span><span data-step-label>Step 1 of 2</span></span>
+        </div>
+        <h1 class="start__title" data-step-title>Create your workspace</h1>
+        <p class="start__sub" data-step-sub>Two projects, free forever. No card, no time limit.</p>
+
+        <!-- Step 1 -->
+        <div class="start__step" data-step="1">
+          <div class="field">
+            <label class="field__label" for="email">Work email</label>
+            <div class="input"><input id="email" type="email" placeholder="you@company.com" autocomplete="email"></div>
+            <span class="field__hint">Use your company address so we can find your team.</span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="org">Organisation</label>
+            <div class="input"><input id="org" type="text" placeholder="Your organisation" autocomplete="organization"></div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="kind">What describes you best?</label>
+            <div class="select">
+              <select id="kind">
+                <option value="it">Internal IT team</option>
+                <option value="svc">IT services provider</option>
+                <option value="con">Consulting or delivery</option>
+                <option value="other">Something else</option>
+              </select>
+              <span class="select__chevron"></span>
+            </div>
+          </div>
+          <button class="btn btn--lg btn--primary btn--full" type="button" data-start-next>Continue<svg class="icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button>
+          <span class="start__terms">By continuing you agree to the terms and privacy notice.</span>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="start__step" data-step="2" hidden>
+          <div class="field">
+            <label class="field__label" for="mr">People you're planning</label>
+            <div class="input"><input id="mr" type="number" value="24" min="1"><span class="input__suffix">people</span></div>
+            <span class="field__hint">Nobody is counted on the free plan — this just sizes your first import.</span>
+          </div>
+          <div class="field">
+            <label class="field__label" for="hrs">Standard working week</label>
+            <div class="input"><input id="hrs" type="number" value="37.5" step="0.5" min="1"><span class="input__suffix">hours</span></div>
+            <span class="field__hint">Your line managers can set this per person later.</span>
+          </div>
+          <label class="checkbox">
+            <input type="checkbox" checked>
+            <span class="checkbox__box"></span>
+            <span>
+              <span class="checkbox__label">Import from MS Project, Excel or Planner</span>
+              <span class="checkbox__description">Point ProjexaR at your files and it builds projects, people and assignments for you.</span>
+            </span>
+          </label>
+          <button class="btn btn--lg btn--primary btn--full" type="button" data-start-next>Create your workspace</button>
+          <button class="btn btn--lg btn--ghost btn--full" type="button" data-start-back>Back</button>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="start__step" data-step="3" hidden>
+          <div class="toast toast--success" role="status">
+            <div style="flex:1;min-width:0">
+              <div class="toast__title">Workspace created</div>
+              <div class="toast__message" data-created-message>Your workspace is ready. Next: declare BAU.</div>
+            </div>
+          </div>
+          <a class="btn btn--lg btn--primary btn--full" href="/">Declare BAU and go live</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="start__panel">
+      <div class="start__panel-logo">
+        <img src="/assets/logo-full-on-dark.png" alt="ProjexaR" width="229" height="54">
+      </div>
+      <p class="start__panel-quote">Two projects, free forever. Declare BAU — business as usual — on day one and the plan starts telling you the truth.</p>
+      <div class="card card--p22 card--glass">
+        <div class="stack" style="gap:16px">
+          <span class="start__panel-label">Project capacity after BAU</span>
+          <div class="capacity-bar capacity-bar--on-dark" style="--bar-height:8px">
+            <div class="capacity-bar__head"><span class="capacity-bar__label">Priya Raman</span><span class="capacity-bar__value">35%</span></div>
+            <div class="capacity-bar__track"><span class="capacity-bar__fill" style="--bar-value:35%;--bar-color:var(--teal-300)"></span></div>
+          </div>
+          <div class="capacity-bar capacity-bar--on-dark" style="--bar-height:8px">
+            <div class="capacity-bar__head"><span class="capacity-bar__label">Tom Byrne</span><span class="capacity-bar__value">60%</span></div>
+            <div class="capacity-bar__track"><span class="capacity-bar__fill" style="--bar-value:60%;--bar-color:var(--teal-300)"></span></div>
+          </div>
+          <div class="capacity-bar capacity-bar--on-dark" style="--bar-height:8px">
+            <div class="capacity-bar__head"><span class="capacity-bar__label">Ravi Menon</span><span class="capacity-bar__value">20%</span></div>
+            <div class="capacity-bar__track"><span class="capacity-bar__fill" style="--bar-value:20%;--bar-color:var(--teal-300)"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__top">
+    <div class="site-footer__brand">
+      <img src="/assets/logo-wordmark-on-dark.png" alt="ProjexaR" width="168" height="30">
+      <p class="site-footer__tagline">Capacity planning for IT teams.</p>
+    </div>
+    <div class="site-footer__col">
+      <span class="site-footer__col-title">Product</span>
+      <a href="/">Home</a>
+      <a href="/product/">Product</a>
+      <a href="/solutions/">Solutions</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/capacity-check/">Capacity Check</a>
+      <a href="/solutions/project-online-migration/">Project Online migration</a>
+    </div>
+    <div class="site-footer__col">
+      <span class="site-footer__col-title">Company</span>
+      <a href="/trust/">Trust centre</a>
+      <a href="/contact/">Contact</a>
+      <a href="/privacy/">Privacy</a>
+    </div>
+  </div>
+  <div class="site-footer__bottom">
+    <div class="site-footer__bottom-inner">
+      <span>© 2026 ProjexaR. All rights reserved.</span>
+      <span class="site-footer__strapline">Resource-focused integrated project management</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/site.js" defer></script>
+</body>
+</html>
