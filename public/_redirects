@@ -1,0 +1,7 @@
+# Cloudflare Workers static-asset redirects.
+#
+# /trial is the route the Capacity Check tool was originally hard-coded
+# against (content brief A1). Delta v1.1 renamed it /start; the tool's own
+# link has been rewired, but anything else pointing at /trial keeps working.
+/trial   /start/   301
+/signup  /start/   301
