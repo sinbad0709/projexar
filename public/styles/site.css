@@ -1195,6 +1195,125 @@ html { scroll-behavior: smooth; }
 }
 
 /* ---------------------------------------------------------------------------
+   Page: Privacy (ADDED)
+   Long-form legal copy. The prototype had no policy page, so there was no
+   styling for running prose, content lists or tables — the base reset zeroes
+   ul/li margins and strips nothing else. These rules are built from the same
+   tokens as the rest of the site so the policy reads as part of it: body copy
+   matches .prose, sub-labels match --text-h4, the table matches .card borders.
+   --------------------------------------------------------------------------- */
+
+.policy { display: flex; flex-direction: column; gap: 44px; }
+
+/* Anchor targets clear the 72px sticky header. */
+.policy__section { scroll-margin-top: 96px; }
+.policy__section > * + * { margin-top: 14px; }
+
+.policy__number {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--blue-600);
+  display: block;
+  margin-bottom: 8px;
+}
+.policy__section h2 {
+  font-size: var(--text-h2-size);
+  font-weight: var(--weight-bold);
+  letter-spacing: -.017em;
+  color: var(--text-heading);
+  text-wrap: balance;
+}
+.policy__section h3 {
+  font-size: var(--text-h4-size);
+  font-weight: var(--weight-bold);
+  letter-spacing: -.008em;
+  color: var(--text-heading);
+  margin-top: 24px;
+}
+.policy__section p,
+.policy__section li { font-size: 16px; line-height: 1.62; color: var(--text-muted); text-wrap: pretty; }
+.policy__section strong { color: var(--ink-800); font-weight: var(--weight-bold); }
+
+/* Content lists — dot markers, matching .pricing-card__features.
+   The marker is absolutely positioned rather than a flex item: these list
+   items contain inline <strong> and <a>, and a flex li would promote each of
+   those to its own flex column. */
+.policy__list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.policy__list li { position: relative; padding-left: 17px; }
+.policy__list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--teal-300);
+}
+
+/* Control block — version, dates, review cycle. */
+.policy-meta {
+  display: grid;
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+  gap: 12px 24px;
+  margin: 0;
+}
+.policy-meta dt {
+  font-size: 13px;
+  font-weight: var(--weight-extrabold);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-brand);
+}
+.policy-meta dd { margin: 0; font-size: 15.5px; line-height: 1.5; color: var(--ink-700); font-weight: var(--weight-semibold); }
+
+/* Contents list. */
+.policy-toc { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 24px; }
+.policy-toc a { font-size: 15px; font-weight: var(--weight-semibold); }
+.policy-toc__n { font-family: var(--font-mono); font-size: 13px; color: var(--text-subtle); margin-right: 8px; }
+
+/* Lawful-basis table. */
+.policy-table-wrap { overflow-x: auto; margin-top: 16px; }
+/* border-collapse:separate, not collapse: the rounded corners are applied to
+   the header cells individually. Using overflow:hidden to clip them instead
+   would also clip the <caption>, which renders inside the table's box. */
+.policy-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  font-size: 15px;
+}
+.policy-table caption {
+  caption-side: top;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text-subtle);
+  padding-bottom: 10px;
+}
+.policy-table th, .policy-table td {
+  text-align: left;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: top;
+  line-height: 1.5;
+}
+.policy-table thead th {
+  background: var(--surface-subtle);
+  font-size: 12px;
+  font-weight: var(--weight-extrabold);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-brand);
+  white-space: nowrap;
+}
+.policy-table thead th:first-child { border-top-left-radius: var(--radius-card); }
+.policy-table thead th:last-child { border-top-right-radius: var(--radius-card); }
+.policy-table tbody th { font-weight: var(--weight-semibold); color: var(--ink-700); }
+.policy-table td { color: var(--text-muted); }
+.policy-table tbody tr:last-child th, .policy-table tbody tr:last-child td { border-bottom: 0; }
+
+/* ---------------------------------------------------------------------------
    ADDED — responsive behaviour.
    The prototype was fixed-width: display-1 stayed at 76px and the 4-column
    grids never collapsed. Rescaling the type tokens at each breakpoint carries
@@ -1264,6 +1383,8 @@ html { scroll-behavior: smooth; }
   .licensing__row { grid-template-columns: minmax(0, 1fr); gap: 8px; }
   .product-visual__body { grid-template-columns: minmax(0, 1fr); }
   .product-visual__side { border-right: 0; border-bottom: 1px solid var(--border-subtle); }
+  .policy-meta { grid-template-columns: minmax(0, 1fr); gap: 4px 0; }
+  .policy-meta dd { margin-bottom: 10px; }
 }
 
 @media (max-width: 720px) {
@@ -1294,4 +1415,6 @@ html { scroll-behavior: smooth; }
   .start__panel-quote { font-size: 21px; }
   .testimonial__quote { font-size: 18px; }
   .pricing-card__price { font-size: 38px; }
+  .policy { gap: 36px; }
+  .policy-toc { grid-template-columns: minmax(0, 1fr); }
 }
