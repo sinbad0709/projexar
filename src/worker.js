@@ -14,12 +14,13 @@
 
 import { EmailMessage } from "cloudflare:email";
 
-const TO = "info@projexar.com";
+/** Must match destination_address in wrangler.jsonc — the binding allows no other. */
+const TO = "mark@douc.tech";
 
 /**
  * Envelope sender. Must be on a domain in this Cloudflare account, and is
  * never a mailbox anyone reads — Reply-To carries the enquirer's address so a
- * reply from info@ goes straight back to them.
+ * reply from the receiving inbox goes straight back to them.
  */
 const FROM = "noreply@projexar.com";
 

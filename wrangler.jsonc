@@ -21,7 +21,7 @@
   "send_email": [
     {
       "name": "SEND_EMAIL",
-      "destination_address": "info@projexar.com"
+      "destination_address": "mark@douc.tech"
     }
   ]
 }
