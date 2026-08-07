@@ -1,0 +1,10 @@
+# Wrangler's local state and build output.
+.wrangler/
+
+# Local secrets for `wrangler dev`. TURNSTILE_SECRET lives here in local
+# development and in `wrangler secret put` for deploys — never in the repo.
+.dev.vars
+.dev.vars.*
+
+node_modules/
+.DS_Store

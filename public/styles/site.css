@@ -1314,6 +1314,89 @@ html { scroll-behavior: smooth; }
 .policy-table tbody tr:last-child th, .policy-table tbody tr:last-child td { border-bottom: 0; }
 
 /* ---------------------------------------------------------------------------
+   Page: Contact (ADDED)
+   The prototype had inputs and selects but no textarea and no form-level
+   result banner, because the /start form was a client-side mock that never
+   submitted. .textarea is .input with the fixed control height dropped; the
+   banners borrow the .toast accent-bar idea at page width. Everything reads
+   from the same tokens, so the form matches /start and the cards match /privacy.
+   --------------------------------------------------------------------------- */
+
+.contact-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 330px);
+  gap: 26px;
+  align-items: start;
+}
+
+.contact-form { display: flex; flex-direction: column; gap: 20px; }
+.contact-form__terms { font-size: 12.5px; line-height: 1.5; color: var(--text-subtle); text-align: center; }
+
+.field__optional {
+  margin-left: 6px;
+  font-weight: var(--weight-semibold);
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+/* Matches .input, minus the single-line height and centring. */
+.textarea {
+  display: flex;
+  padding: 11px 14px;
+  background: var(--surface-card);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-xs);
+  transition: var(--transition-control);
+}
+.textarea:focus-within { border-color: var(--blue-500); box-shadow: var(--shadow-focus); }
+.textarea textarea {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  resize: vertical;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: var(--weight-medium);
+  line-height: 1.55;
+  color: var(--ink-900);
+}
+
+/* Result banner for ?sent=1 / ?error=1. [hidden] is forced off in the reset. */
+.form-notice {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  margin-bottom: 24px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+}
+.form-notice__icon { margin-top: 1px; }
+.form-notice__title { display: block; font-size: 14.5px; font-weight: var(--weight-bold); color: var(--text-heading); letter-spacing: -.008em; }
+.form-notice__message { display: block; font-size: 13.5px; line-height: 1.55; color: var(--ink-700); margin-top: 3px; }
+
+.form-notice--success { background: var(--teal-50); border-color: var(--teal-100); }
+.form-notice--success .form-notice__icon { color: var(--teal-500); }
+.form-notice--error { background: var(--red-50); border-color: var(--red-100); }
+.form-notice--error .form-notice__icon { color: var(--red-500); }
+
+/* Turnstile renders a fixed-width iframe; keep it from forcing the card wide. */
+.contact-form .cf-turnstile { max-width: 100%; overflow: hidden; }
+
+.contact-list { display: flex; flex-direction: column; gap: 3px; }
+.contact-list dt { font-size: 12.5px; font-weight: var(--weight-bold); color: var(--text-muted); }
+.contact-list dt + dd { margin-bottom: 12px; }
+.contact-list dd:last-child { margin-bottom: 0; }
+.contact-list dd { font-size: 14.5px; font-weight: var(--weight-semibold); }
+
+.contact-aside__text { font-size: 14px; line-height: 1.6; color: var(--text-muted); }
+
+/* ---------------------------------------------------------------------------
    ADDED — responsive behaviour.
    The prototype was fixed-width: display-1 stayed at 76px and the 4-column
    grids never collapsed. Rescaling the type tokens at each breakpoint carries
@@ -1385,6 +1468,7 @@ html { scroll-behavior: smooth; }
   .product-visual__side { border-right: 0; border-bottom: 1px solid var(--border-subtle); }
   .policy-meta { grid-template-columns: minmax(0, 1fr); gap: 4px 0; }
   .policy-meta dd { margin-bottom: 10px; }
+  .contact-layout { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 720px) {
