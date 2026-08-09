@@ -931,6 +931,21 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 </script>
 
 <script>
+/* Sender hook. The tool's script calls this fire-and-forget when the gate is
+   satisfied, so nothing here may throw or block — a failure must still leave
+   the report opening. Defined ahead of that script, which follows. */
+window.submitToSender = function(payload){
+  payload.ack = document.getElementById('ack').checked;
+  payload.submitted_at = new Date().toISOString();
+  fetch('/api/capacity-report', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(function(){});
+};
+</script>
+
+<script>
 (function(){
   "use strict";
 

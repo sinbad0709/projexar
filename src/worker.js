@@ -1,9 +1,10 @@
 /**
  * ProjexaR site Worker.
  *
- * Two jobs:
- *   POST /api/contact — spam-check the contact form and email it to the inbox.
- *   everything else   — hand the request back to the static assets in ./public.
+ * Three jobs:
+ *   POST /api/contact         — spam-check the contact form and email it to the inbox.
+ *   POST /api/capacity-report — push a Capacity Check report request into Sender.
+ *   everything else           — hand the request back to the static assets in ./public.
  *
  * The assets layer answers first for any path that matches a file, so in
  * practice this Worker only sees /api/* (pinned ahead of assets by
@@ -27,6 +28,22 @@ const FROM = "noreply@projexar.com";
 const TURNSTILE_VERIFY =
   "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 
+const SENDER_SUBSCRIBERS = "https://api.sender.net/v2/subscribers";
+
+/**
+ * The only origin a Capacity Check permalink may point at. Matched with a
+ * trailing slash appended — "https://projexar.com" alone is also the start of
+ * https://projexar.com.evil.com/ and https://projexar.com@evil.com/, neither of
+ * which is us.
+ */
+const ORIGIN = "https://projexar.com";
+
+/**
+ * Matches the client-side check in public/capacity-check/index.html, so the
+ * Worker never rejects an address the gate has already accepted.
+ */
+const GATE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
 /** Mirrors the maxlength attributes on the form; see public/contact.html. */
 const LIMITS = { name: 200, email: 254, company: 200, message: 5000 };
 
@@ -42,6 +59,16 @@ export default {
         });
       }
       return handleContact(request, env);
+    }
+
+    if (url.pathname === "/api/capacity-report") {
+      if (request.method !== "POST") {
+        return new Response("Method not allowed", {
+          status: 405,
+          headers: { Allow: "POST" },
+        });
+      }
+      return handleCapacityReport(request, env);
     }
 
     return env.ASSETS.fetch(request);
@@ -97,6 +124,90 @@ async function handleContact(request, env) {
   }
 
   return seeOther("/contact?sent=1");
+}
+
+/**
+ * Takes the JSON the Capacity Check gate posts and puts it in Sender, where the
+ * report email is templated from the custom fields. The browser fires this and
+ * forgets it — the report opens regardless — so the response body is only ever
+ * read by anything watching the network tab.
+ */
+async function handleCapacityReport(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body || !GATE_EMAIL.test(body.email || "")) {
+    return json({ ok: false }, 400);
+  }
+
+  // The permalink is built in the browser, so a crafted request can put any URL
+  // in it and the template would render our own domain's link to it. Blank
+  // anything that is not ours rather than rejecting: the subscriber record and
+  // the consent still matter, only the link is lost.
+  if (
+    typeof body.permalink !== "string" ||
+    !body.permalink.startsWith(`${ORIGIN}/`)
+  ) {
+    console.warn("capacity report permalink rejected:", body.permalink);
+    body.permalink = "";
+  }
+
+  // Sender's template placeholders, filled from the figures the tool computed.
+  const fields = {
+    "{{company}}": body.company || "",
+    "{{it_staff}}": body.it_staff,
+    "{{project_people}}": body.project_people,
+    "{{commitments}}": body.commitments,
+    "{{load_per_person}}": body.load_per_person,
+    "{{bau_band}}": body.bau_band,
+    "{{bau_people_low}}": body.bau_people_low,
+    "{{bau_people_high}}": body.bau_people_high,
+    "{{exposure}}": body.exposure,
+    "{{rag}}": body.rag,
+    "{{toolset}}": body.toolset,
+    "{{bau_cost}}": body.bau_cost,
+    "{{report_permalink}}": body.permalink,
+    "{{report_consent}}": body.ack ? "yes" : "no",
+    "{{report_requested_at}}": body.submitted_at,
+  };
+
+  const senderBody = {
+    email: body.email,
+    firstname: body.name || "",
+    groups: [env.SENDER_GROUP_ID],
+    fields,
+  };
+
+  const headers = {
+    Authorization: `Bearer ${env.SENDER_API_TOKEN}`,
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+
+  let res;
+  try {
+    res = await fetch(SENDER_SUBSCRIBERS, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(senderBody),
+    });
+
+    // A create that fails is nearly always someone already on the list —
+    // running the check a second time, or already subscribed. Update instead,
+    // so the newest report's figures are the ones the email templates from.
+    if (!res.ok) {
+      res = await fetch(
+        `${SENDER_SUBSCRIBERS}/${encodeURIComponent(body.email)}`,
+        { method: "PATCH", headers, body: JSON.stringify(senderBody) },
+      );
+    }
+  } catch (err) {
+    console.error("capacity report subscribe failed:", err);
+    return json({ ok: false }, 502);
+  }
+
+  if (!res.ok) {
+    console.error("capacity report subscribe rejected:", res.status);
+  }
+  return json({ ok: res.ok }, res.ok ? 200 : 502);
 }
 
 async function verifyTurnstile(token, secret, ip) {
@@ -182,6 +293,13 @@ function rfc5322Date() {
 
 function isEmail(value) {
   return /^[^\s@<>,;]+@[^\s@<>,;]+\.[^\s@<>,;]+$/.test(value);
+}
+
+function json(payload, status) {
+  return new Response(JSON.stringify(payload), {
+    status,
+    headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
+  });
 }
 
 /**
