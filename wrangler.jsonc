@@ -12,9 +12,14 @@
     "not_found_handling": "404-page",
     // Assets are matched before the Worker runs, and not_found_handling would
     // otherwise be free to answer an unmatched path itself. Pinning /api/*
-    // ahead of the asset layer keeps the contact endpoint reachable whatever
-    // the asset router decides.
+    // ahead of the asset layer keeps the API endpoints reachable whatever the
+    // asset router decides.
     "run_worker_first": ["/api/*"]
+  },
+  "vars": {
+    // The Sender list the Capacity Check subscribes report requests to. The
+    // matching SENDER_API_TOKEN is a secret (wrangler secret put), not a var.
+    "SENDER_GROUP_ID": "av5xEM"
   },
   // Restricted to the one address, so a bug in the Worker cannot turn the
   // binding into an open relay.
