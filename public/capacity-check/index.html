@@ -762,9 +762,9 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
             <div class="under"><span class="error"></span></div>
           </div>
           <div class="field" id="f-fname">
-            <label for="fname">Name <span class="opt">(optional)</span></label>
+            <label for="fname">Name</label>
             <div class="control"><input type="text" id="fname" autocomplete="name"></div>
-            <div class="under"></div>
+            <div class="under"><span class="error"></span></div>
           </div>
           <div class="field" id="f-company">
             <label for="company">Company <span class="opt">(optional)</span></label>
@@ -971,6 +971,15 @@ window.submitToSender = function(payload){
   var n2 = function(v){ return (Math.round(v*100)/100).toLocaleString('en-GB'); };
   var gbp = function(v){ return '\u00A3' + n0(v); };
   var plural = function(n,a,b){ return n === 1 ? a : b; };
+
+  /* Display text of a <select>, i.e. what the respondent actually read. Anything
+     leaving this page — printed report or Sender payload — uses this, never the
+     option value, which is an internal code. */
+  var selText = function(id, fallback){
+    var e = $(id);
+    if(!e || !e.value || e.selectedIndex < 0) return fallback === undefined ? 'not_given' : fallback;
+    return e.options[e.selectedIndex].text;
+  };
 
   function track(name, props){
     try{
@@ -1558,7 +1567,6 @@ window.submitToSender = function(payload){
       return '<tr><th style="width:36%">' + esc(m.label) + '</th><td style="width:18%"><strong>' + esc(m.value)
            + '</strong></td><td>' + esc(m.note) + '</td></tr>'; }).join('');
 
-    var sel = function(id){ var e = $(id); return e.options[e.selectedIndex].text; };
     var rows = [
       ['Total staff in the company', n0(v.totalStaff)],
       ['People in the IT department', v.itStaff],
@@ -1568,12 +1576,12 @@ window.submitToSender = function(payload){
       ['Annual IT project spend', v.spend ? CURRENCY[v.currency] + n0(v.spend) : 'Not given'],
       ['People involved in live projects', n0(v.projectPeople)],
       ['People named on a typical project', v.perProjectNamed],
-      ['Share who are BAU or support staff', sel('bauShare')]
+      ['Share who are BAU or support staff', selText('bauShare')]
     ];
-    if(v.toolset)     rows.push(['What projects are planned in', sel('toolset')]);
-    if(v.integration) rows.push(['Live view of demand and availability', sel('integration')]);
-    if(v.bauCost)     rows.push(['Internal BAU time in project budgets', sel('bauCost')]);
-    if(v.portfolio)   rows.push(['Can see who is on what', sel('portfolio')]);
+    if(v.toolset)     rows.push(['What projects are planned in', selText('toolset')]);
+    if(v.integration) rows.push(['Live view of demand and availability', selText('integration')]);
+    if(v.bauCost)     rows.push(['Internal BAU time in project budgets', selText('bauCost')]);
+    if(v.portfolio)   rows.push(['Can see who is on what', selText('portfolio')]);
     $('pr-inputs').innerHTML = rows.map(function(x){
       return '<tr><th style="width:52%">' + esc(x[0]) + '</th><td>' + esc(x[1]) + '</td></tr>'; }).join('');
 
@@ -1716,24 +1724,40 @@ window.submitToSender = function(payload){
   function validEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s); }
 
   $('gateBtn').addEventListener('click', function(){
-    var email = $('email').value.trim(), ok = true;
+    var email = $('email').value.trim(), rawName = $('fname').value.trim(), ok = true;
     if(!validEmail(email)){ setError('email','Enter a work email address so we can send your report.'); ok = false; }
     else setError('email','');
+    if(!rawName){ setError('fname','Enter your name so we can address your report.'); ok = false; }
+    else setError('fname','');
     var ackErr = $('ackError');
     if(!$('ack').checked){ ackErr.style.display='block'; ackErr.textContent='Please tick the box so we can send your report.'; ok = false; }
     else ackErr.style.display='none';
     if(!ok || !lastV) return;
 
+    /* Sender takes firstname and lastname separately, so split on whitespace:
+       first word is the firstname, whatever follows is the lastname. A
+       single-word name leaves lastname empty. `name` stays as the full string
+       for anything reading the payload as a whole. */
+    var nameParts = rawName.split(/\s+/);
+    var firstname = nameParts.shift() || '';
+    var lastname = nameParts.join(' ');
+
+    /* Sender writes these straight into the email, so every field carries the
+       same wording the report shows the respondent — never an internal code.
+       Bands come from BANDS, grades from EXPOSURE/STATUS_WORD, dropdowns from
+       the selected option's text. 'unsure' has no band, so fall back to the
+       option text ("Not sure"). */
     var payload = {
-      email:email, name:$('fname').value.trim(), company:$('company').value.trim(),
+      email:email, name:rawName, firstname:firstname, lastname:lastname,
+      company:$('company').value.trim(),
       it_staff:lastV.itStaff, project_people:lastV.projectPeople,
       commitments:lastC.commitments, load_per_person:Math.round(lastC.loadPerPerson*10)/10,
-      bau_band:lastV.bauShare,
+      bau_band:lastC.band ? lastC.band.label : selText('bauShare'),
       bau_people_low:lastC.bauLo, bau_people_high:lastC.bauHi,
-      exposure:lastC.exposure.grade,
-      rag:lastC.exposure.rag,
-      toolset:lastV.toolset || 'not_given',
-      bau_cost:lastV.bauCost || 'not_given',
+      exposure:EXPOSURE[lastC.exposure.grade],
+      rag:STATUS_WORD[lastC.exposure.rag],
+      toolset:selText('toolset'),
+      bau_cost:selText('bauCost'),
       permalink:permalink(lastV)
     };
 
@@ -1742,7 +1766,10 @@ window.submitToSender = function(payload){
     if(typeof window.submitToSender === 'function'){ try{ window.submitToSender(payload); }catch(e){} }
     else console.info('[ProjexaR] Sender endpoint not wired. Payload:', payload);
 
-    track('report_downloaded', { rag:payload.rag, exposure:payload.exposure, toolset:payload.toolset });
+    /* Analytics keeps the raw codes so these props stay groupable and match the
+       other events — the labels are for the email, not the funnel. */
+    track('report_downloaded', { rag:lastC.exposure.rag, exposure:lastC.exposure.grade,
+                                 toolset:lastV.toolset || 'not_given' });
 
     $('gate').innerHTML =
       '<div class="gate-success"><div class="tick" aria-hidden="true">\u2713</div>'
@@ -1770,7 +1797,8 @@ window.submitToSender = function(payload){
   }
 
   window.__ProjexaR = { compute:compute, ragOf:ragOf, exposure:exposure, headline:headline, verdict:verdict,
-                        roles:roles, hats:hats, metrics:metrics, cards:cards, countPhrase:countPhrase, BANDS:BANDS };
+                        roles:roles, hats:hats, metrics:metrics, cards:cards, countPhrase:countPhrase,
+                        selText:selText, BANDS:BANDS, EXPOSURE:EXPOSURE, STATUS_WORD:STATUS_WORD };
 })();
 </script>
 </body>
