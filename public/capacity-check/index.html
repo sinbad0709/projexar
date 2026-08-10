@@ -420,8 +420,12 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   max-width:1200px; margin:0 auto; padding:0 40px;
   height:72px; display:flex; align-items:center; gap:40px;
 }
-.pxr-header__logo{ display:inline-flex; flex:0 0 auto; }
+.pxr-header__logo{ display:inline-flex; flex-direction:column; gap:3px; flex:0 0 auto; text-decoration:none; }
 .pxr-header__logo img{ height:26px; width:auto; display:block; }
+.pxr-header__tagline{
+  font-size:9px; font-weight:var(--weight-bold); letter-spacing:.09em;
+  text-transform:uppercase; line-height:1; color:var(--ink-400); white-space:nowrap;
+}
 .pxr-header__nav{ display:flex; align-items:center; gap:28px; flex:1; }
 .pxr-header__nav a{
   font-size:14.5px; font-weight:var(--weight-bold); letter-spacing:-.005em;
@@ -494,6 +498,8 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   .pxr-footer__top{ grid-template-columns:1fr; gap:32px; padding:48px 20px 32px; }
   .pxr-footer__bottom-inner{ padding:20px; }
 }
+/* The lockup tagline is wider than the wordmark; drop it once the bar tightens. */
+@media (max-width:720px){ .pxr-header__tagline{ display:none; } }
 @media print{ .pxr-header,.pxr-footer{ display:none; } }
 
 /* --------------------------------------------------------------------------
@@ -519,7 +525,10 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 
 <header class="pxr-header" id="pxrHeader">
   <div class="pxr-header__bar">
-    <a class="pxr-header__logo" href="/"><img src="/assets/logo-wordmark.png" alt="ProjexaR" width="146" height="26"></a>
+    <a class="pxr-header__logo" href="/">
+      <img src="/assets/logo-wordmark.png" alt="ProjexaR" width="146" height="26">
+      <span class="pxr-header__tagline">Capacity-aware project management</span>
+    </a>
     <button class="pxr-header__toggle" type="button" id="pxrNavToggle" aria-expanded="false" aria-controls="pxrNav" aria-label="Menu">
       <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
     </button>
@@ -888,7 +897,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   <div class="pxr-footer__top">
     <div class="pxr-footer__brand">
       <img src="/assets/logo-wordmark-on-dark.png" alt="ProjexaR" width="168" height="30">
-      <p class="pxr-footer__tagline">Capacity planning for IT teams.</p>
+      <p class="pxr-footer__tagline">Capacity-aware project management.</p>
     </div>
     <div class="pxr-footer__col">
       <span class="pxr-footer__col-title">Product</span>
