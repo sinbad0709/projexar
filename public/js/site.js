@@ -61,7 +61,7 @@
       free: cur.sym + "0",
       period: annual ? "per managed resource, per year" : "per managed resource, per month",
       "billing-note": annual
-        ? "Two months free · room for two more resources"
+        ? "Two months free · 10% buffer"
         : "Change your licence count any time",
       "annual-badge": annual ? "Two months free + headroom" : "Two months free"
     };

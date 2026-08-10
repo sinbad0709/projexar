@@ -16,7 +16,10 @@
 
 <header class="site-header" data-site-header>
   <div class="site-header__bar">
-    <a class="site-header__logo" href="/"><img src="/assets/logo-wordmark.png" alt="ProjexaR" width="146" height="26"></a>
+    <a class="site-header__logo" href="/">
+      <img src="/assets/logo-wordmark.png" alt="ProjexaR" width="146" height="26">
+      <span class="site-header__tagline">Capacity-aware project management</span>
+    </a>
     <button class="site-header__toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
       <svg class="icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
     </button>
@@ -102,7 +105,7 @@
           <li>Capacity outlook heatmap by role type</li>
           <li>Forecast baselines</li>
           <li>One-line invoice: licence count × price. The same figure every cycle.</li>
-          <li>Annual plans: room for two more resources, and 30 days to right-size</li>
+          <li>Annual plans: a 10% buffer, and 90 days to right-size</li>
           <li>Email support</li>
         </ul>
         <p class="pricing-card__note">90-day money-back guarantee.</p>
@@ -124,7 +127,7 @@
       <div class="card card--p30">
         <div class="stack stack--12">
           <h2 class="h2">You licence a number. That number is your bill.</h2>
-          <p class="prose">Licence the highest number of resources you expect to run. No daily counting, no usage statement, no reconciliation at the end of the month — the figure is set when you buy it, and it's the same every cycle.</p>
+          <p class="prose">Monthly plans flex at renewal — no buffer, hard block at your licensed count. Annual plans give a 10% buffer with 90 days to settle before an upsize bills, pro-rated to the plan.</p>
           <div class="licensing">
             <div class="licensing__row">
               <span class="licensing__label">What counts</span>
@@ -136,7 +139,7 @@
             </div>
             <div class="licensing__row">
               <span class="licensing__label">Annual — fixed, with room to move</span>
-              <p class="licensing__body">Your count is set for the year, and it comes with room for two more resources at no charge. Go beyond that and nothing is blocked — you have 30 days to come back down. If you're still above your licensed count on day 30, we adjust your licence to match the number in use <b>that day. Not the highest number we saw.</b></p>
+              <p class="licensing__body">Your count is set for the year, and it comes with a 10% buffer at no charge. Go beyond that and nothing is blocked — you have 90 days to come back down. If you're still above your licensed count on day 90, we upsize your licence to match the number in use <b>that day, pro-rated to the rest of the plan. Not the highest number we saw.</b></p>
             </div>
           </div>
         </div>
@@ -182,7 +185,7 @@
       </div>
       <div class="card card--faq">
         <div class="faq__q">Can we change the number of resources?</div>
-        <div class="faq__a">On monthly, at any time — add licences yourself and they're available immediately. On annual, your count is fixed for the year, with room for two more resources included and a 30-day window if you go beyond it.</div>
+        <div class="faq__a">On monthly, at any time — add licences yourself and they're available immediately, with the change flowing through at renewal. On annual, your count is fixed for the year, with a 10% buffer included and a 90-day window if you go beyond it.</div>
       </div>
       <div class="card card--faq">
         <div class="faq__q">Can we go back to the free plan?</div>
@@ -190,11 +193,11 @@
       </div>
       <div class="card card--faq">
         <div class="faq__q">Do you count our resources every day?</div>
-        <div class="faq__a">No. Your licence is set when you buy it and that's what you're billed. There's no daily snapshot, no usage statement and nothing to reconcile. On annual plans there's a single check: if you've been above your licensed count for 30 days, we adjust it to match.</div>
+        <div class="faq__a">No. Your licence is set when you buy it and that's what you're billed. There's no daily snapshot, no usage statement and nothing to reconcile. On annual plans there's a single check: if you've been above your licensed count for 90 days, we adjust it to match.</div>
       </div>
       <div class="card card--faq">
         <div class="faq__q">What if we need more people part-way through an annual term?</div>
-        <div class="faq__a">Two extra resources run at no charge and nothing is blocked. Beyond that, a 30-day window opens. Come back down inside it and nothing changes. Still above on day 30, and your licence moves to the count in use that day — never the peak. Short-term spikes for a migration or a cutover cost you nothing.</div>
+        <div class="faq__a">A 10% buffer runs at no charge and nothing is blocked. Beyond that, a 90-day window opens. Come back down inside it and nothing changes. Still above on day 90, and your licence upsizes to the count in use that day, pro-rated to the rest of the plan — never the peak. Short-term spikes for a migration or a cutover cost you nothing.</div>
       </div>
 
     </div>
@@ -222,7 +225,7 @@
   <div class="site-footer__top">
     <div class="site-footer__brand">
       <img src="/assets/logo-wordmark-on-dark.png" alt="ProjexaR" width="168" height="30">
-      <p class="site-footer__tagline">Capacity planning for IT teams.</p>
+      <p class="site-footer__tagline">Capacity-aware project management.</p>
     </div>
     <div class="site-footer__col">
       <span class="site-footer__col-title">Product</span>

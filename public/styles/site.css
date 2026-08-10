@@ -47,6 +47,8 @@ html { scroll-behavior: smooth; }
 
 .section { padding: var(--section-y) var(--gutter-lg); }
 .section--flush-top { padding-top: 0; }
+/* Half the usual lead-in, for a section that sits close under the one above. */
+.section--tight-top { padding-top: calc(var(--section-y) * .4); }
 .section--subtle { background: var(--surface-subtle); }
 .section--wash { background: var(--gradient-hero-wash); }
 .section--hero { padding: 84px var(--gutter-lg) 76px; background: var(--gradient-hero-wash); }
@@ -275,6 +277,12 @@ html { scroll-behavior: smooth; }
 }
 .tabs__tab[aria-selected="true"] { color: var(--ink-900); border-bottom-color: var(--blue-500); }
 
+/* The tab strips inside the ProductVisual mockups are decorative — there are no
+   panels behind them, so they are static spans and the highlighted tab is
+   authored to match the view drawn beneath it. */
+.tabs__tab[data-selected] { cursor: default; }
+.tabs__tab[data-selected="true"] { color: var(--ink-900); border-bottom-color: var(--blue-500); }
+
 .tabs--pill {
   display: inline-flex;
   gap: 4px;
@@ -289,7 +297,8 @@ html { scroll-behavior: smooth; }
   border-radius: var(--radius-sm);
   padding: 7px 14px;
 }
-.tabs--pill .tabs__tab[aria-selected="true"] {
+.tabs--pill .tabs__tab[aria-selected="true"],
+.tabs--pill .tabs__tab[data-selected="true"] {
   background: var(--surface-card);
   box-shadow: var(--shadow-xs);
 }
@@ -792,8 +801,20 @@ html { scroll-behavior: smooth; }
   align-items: center;
   gap: 40px;
 }
-.site-header__logo { display: inline-flex; flex: 0 0 auto; }
+/* Delta — the lockup now carries the tagline beneath the wordmark, the way the
+   app shell sets it. */
+.site-header__logo { display: inline-flex; flex-direction: column; gap: 3px; flex: 0 0 auto; }
+.site-header__logo:hover { text-decoration: none; }
 .site-header__logo img { height: 26px; width: auto; display: block; }
+.site-header__tagline {
+  font-size: 9px;
+  font-weight: var(--weight-bold);
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: var(--ink-400);
+  white-space: nowrap;
+}
 .site-header__nav { display: flex; align-items: center; gap: 28px; flex: 1; }
 .site-header__nav a {
   font-size: 14.5px;
@@ -897,6 +918,25 @@ html { scroll-behavior: smooth; }
 .product-visual__main { padding: 20px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
 .product-visual__toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .product-visual__tags { display: flex; gap: 8px; }
+
+/* ADDED — a real screenshot of the app, framed like the ProductVisual mocks so
+   the two read as the same family. */
+.screenshot { margin: 0; }
+.screenshot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-lg);
+  background: var(--surface-card);
+}
+.screenshot__caption {
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-500);
+}
 
 /* ---------------------------------------------------------------------------
    Callouts — the inline notice strips used across the product mocks
@@ -1485,6 +1525,8 @@ html { scroll-behavior: smooth; }
     --card-pad: 22px;
   }
   .grid-4, .grid-3, .steps { grid-template-columns: minmax(0, 1fr); }
+  /* The lockup tagline is wider than the wordmark; drop it once the bar tightens. */
+  .site-header__tagline { display: none; }
   .section--hero { padding: 52px var(--gutter-lg) 48px; }
   .section--page-head, .section--page-head-lg, .section--pricing-head { padding: 48px var(--gutter-lg) 36px; }
   .cta-banner { padding: 40px 26px; }
