@@ -169,9 +169,12 @@ async function handleCapacityReport(request, env) {
     "{{report_requested_at}}": body.submitted_at,
   };
 
+  // The gate splits the one name field it collects, so both halves land in the
+  // matching Sender params rather than the whole name going into firstname.
   const senderBody = {
     email: body.email,
-    firstname: body.name || "",
+    firstname: body.firstname || "",
+    lastname: body.lastname || "",
     groups: [env.SENDER_GROUP_ID],
     fields,
   };
