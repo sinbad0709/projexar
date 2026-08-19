@@ -151,22 +151,58 @@ async function handleCapacityReport(request, env) {
   }
 
   // Sender's template placeholders, filled from the figures the tool computed.
+  //
+  // These track the Capacity Check's v5 BAU capacity model. The v4 set
+  // (project_people, commitments, load_per_person, bau_band, bau_people_low,
+  // bau_people_high, exposure, rag) no longer exists and any Sender template
+  // still referencing it needs updating alongside this.
+  //
+  // HOW THESE ARE CONSUMED DOWNSTREAM
+  //
+  // Nurture segmentation runs on rag_pm and rag_bau only:
+  //   red    — rag_pm is 'red'   OR rag_bau is 'red'
+  //   amber  — neither is red    AND either is 'amber'
+  //   green  — both are 'green'
+  //
+  // headroom is used in email copy only and must NEVER be used as a
+  // segment filter. It reads 0 both when a tile is already past its red
+  // threshold and when the portfolio sits exactly at the limit, and blank
+  // when nothing is live. Those are materially different prospects.
+  //
+  // budget_tracking drives a 'cost-blind' tag applied Sender-side for any
+  // value other than 'tracked'. It cuts across all three segments rather
+  // than forming a fourth.
+  //
+  // Note the tool sends rag_pm and rag_bau as the words the report shows the
+  // respondent — "At risk", "Watch", "Healthy" — not red/amber/green. The
+  // segment rules above are stated in RAG terms; map them on that basis.
   const fields = {
     "{{company}}": body.company || "",
     "{{it_staff}}": body.it_staff,
-    "{{project_people}}": body.project_people,
-    "{{commitments}}": body.commitments,
-    "{{load_per_person}}": body.load_per_person,
-    "{{bau_band}}": body.bau_band,
-    "{{bau_people_low}}": body.bau_people_low,
-    "{{bau_people_high}}": body.bau_people_high,
-    "{{exposure}}": body.exposure,
-    "{{rag}}": body.rag,
+    "{{bau_staff}}": body.bau_staff,
+    "{{licence_count}}": body.licence_count,
+    "{{effective_fte}}": body.effective_fte,
+    "{{pm_load}}": body.pm_load,
+    "{{projects_per_fte}}": body.projects_per_fte,
+    "{{rag_pm}}": body.rag_pm,
+    "{{rag_bau}}": body.rag_bau,
+    "{{headroom}}": body.headroom,
     "{{toolset}}": body.toolset,
-    "{{bau_cost}}": body.bau_cost,
+    "{{budget_tracking}}": body.budget_tracking,
     "{{report_permalink}}": body.permalink,
     "{{report_consent}}": body.ack ? "yes" : "no",
-    "{{report_requested_at}}": body.submitted_at,
+    // Stamped here rather than taken from body.submitted_at. The browser's
+    // value came off the visitor's own clock, which can be arbitrarily wrong
+    // and is trivially forged in a crafted request. Sender's date fields take
+    // "YYYY-MM-DD hh:mm:ss" or "YYYY-MM-DD", so toISOString() is not usable
+    // directly — its "T" separator, milliseconds and trailing "Z" are outside
+    // that format. This is the same instant in UTC, written the way Sender
+    // documents. Sender does not auto-populate custom fields, so if we do not
+    // send this the field stays empty.
+    "{{report_requested_at}}": new Date()
+      .toISOString()
+      .replace("T", " ")
+      .slice(0, 19),
   };
 
   // The gate splits the one name field it collects, so both halves land in the
