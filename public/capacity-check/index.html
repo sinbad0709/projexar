@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Capacity Check &mdash; ProjexaR</title>
-<meta name="description" content="A free check of how much of your IT project delivery depends on BAU staff balancing it against a day job. Your results in a few minutes.">
+<meta name="description" content="A free check of how much of your IT project delivery rests on BAU staff who are also keeping the lights on. Your results in a few minutes.">
 <link rel="canonical" href="https://projexar.com/capacity-check/">
 <link rel="icon" href="/assets/logo-mark.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,9 +12,14 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 /* ==========================================================================
-   ProjexaR Capacity Check — v4 (merged, Norm Thomas review applied)
-   Token names taken from the ProjexaR design system export. Tokens marked ✚
-   are additions and should be confirmed or replaced by Claude Design.
+   ProjexaR Capacity Check — v5 (BAU capacity model)
+
+   Supersedes v4's commitment-count model. The calculation core and every
+   output are new; the token block, page structure, gate, permalink and
+   print-first stylesheet carry over.
+
+   Token names are taken from the ProjexaR design system export. Tokens marked
+   ✚ are additions and should be confirmed or replaced by Claude Design.
    No literal colour, size, radius or duration values outside :root.
    ========================================================================== */
 :root{
@@ -31,6 +36,7 @@
   --surface-page:#ffffff; --surface-subtle:var(--ink-25); --surface-card:#ffffff;
   --surface-muted:var(--ink-50); --surface-inverse:var(--ink-900);
   --surface-brand:var(--blue-500); --surface-brand-subtle:var(--blue-50);
+  --surface-accent:var(--blue-900);     /* ✚ navy accent — portfolio headroom */
 
   --text-body:var(--ink-700); --text-brand:var(--blue-600); --text-danger:var(--red-500);
   --text-strong:var(--ink-900);        /* ✚ */
@@ -38,18 +44,29 @@
   --text-subtle:var(--ink-400);        /* ✚ */
   --text-inverse:#ffffff;              /* ✚ */
   --text-inverse-muted:var(--ink-200); /* ✚ */
+  --text-accent-figure:var(--blue-300);/* ✚ headroom figure on navy */
 
   --border-subtle:var(--ink-100); --border-default:var(--ink-200);
   --border-strong:var(--ink-300); --border-brand:var(--blue-500);
   --border-inverse:rgba(255,255,255,.16);
+  --border-accent:rgba(255,255,255,.14); /* ✚ */
   --border-width:1px; --border-width-strong:1.5px; --focus-ring:rgba(47,107,255,.38);
 
   --status-over-bg:var(--red-50);      --status-over-dot:var(--red-300);    --status-over-fg:var(--red-500);
   --status-atrisk-bg:var(--amber-50);  --status-atrisk-dot:var(--amber-300);--status-atrisk-fg:var(--amber-500);
   --status-healthy-bg:var(--teal-50);  --status-healthy-dot:var(--teal-300);--status-healthy-fg:var(--teal-500);
 
-  /* Resolved from the design system export (tokens/typography.css). These were
-     Inter placeholders in the standalone tool; Manrope is the brand typeface. */
+  /* Solid RAG pill fills. Text colours are contrast-checked against each fill:
+     white on --red-500 and dark ink on the amber and teal fills all clear
+     WCAG AA at the pill's size and weight. */
+  --pill-over-bg:var(--red-500);       --pill-over-fg:#ffffff;              /* ✚ */
+  --pill-atrisk-bg:var(--amber-300);   --pill-atrisk-fg:var(--ink-900);     /* ✚ */
+  --pill-healthy-bg:var(--teal-300);   --pill-healthy-fg:var(--ink-900);    /* ✚ */
+
+  /* Font stacks resolved from the design system export (tokens/typography.css).
+     PENDING: Claude Design to confirm these are the launch stacks — the export
+     was unreadable for --font-sans and --font-display at the time of writing
+     and Manrope is the brand typeface as far as we can establish. */
   --font-sans:"Manrope","Helvetica Neue",Arial,sans-serif;
   --font-display:var(--font-sans);
   --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -85,6 +102,9 @@
   --shadow-focus:0 0 0 3px var(--focus-ring);
 
   --container-narrow:760px; --container-mid:920px; --gutter:24px;
+  --tile-min:260px;   /* ✚ smallest a RAG tile gets before the grid rewraps; the
+                         min() at the use site keeps the track from overflowing a
+                         viewport narrower than the track itself */
   --control-height-md:44px; --control-height-lg:52px;
   --control-pad-x-sm:14px; --control-pad-x-lg:28px;
   --duration-fast:140ms; --ease-standard:cubic-bezier(.2,.6,.2,1);
@@ -103,25 +123,17 @@ a{ color:var(--text-brand); }
 :focus-visible{ outline:none; box-shadow:var(--shadow-focus); border-radius:var(--radius-sm); }
 .wrap{ max-width:var(--container-mid); margin:0 auto; padding-inline:var(--gutter); }
 
-.site-header{ background:var(--surface-card); border-bottom:var(--border-width) solid var(--border-subtle); }
-.site-header .bar{ display:flex; align-items:center; justify-content:space-between;
-  max-width:var(--container-mid); margin:0 auto; padding:var(--space-4) var(--gutter); }
-.logo{ display:inline-flex; align-items:baseline; font-size:var(--text-h3-size); font-weight:var(--weight-extrabold);
-  letter-spacing:var(--text-h3-track); text-decoration:none; color:var(--text-strong); }
-.logo .r{ color:var(--text-brand); }
-.tool-name{ font-size:var(--text-eyebrow-size); font-weight:var(--text-eyebrow-weight);
-  letter-spacing:var(--text-eyebrow-track); text-transform:uppercase; color:var(--text-subtle); }
-
 .hero{ padding-block:var(--space-11) var(--space-6); text-align:center; }
 .eyebrow{ display:inline-block; font-size:var(--text-eyebrow-size); font-weight:var(--text-eyebrow-weight);
   letter-spacing:var(--text-eyebrow-track); text-transform:uppercase; color:var(--text-brand);
   background:var(--surface-brand-subtle); padding:var(--space-2) var(--space-4); border-radius:var(--radius-pill); }
 .hero h1{ font-size:var(--text-display-3-size); line-height:var(--text-display-3-line);
   letter-spacing:var(--text-display-3-track); font-weight:var(--weight-extrabold);
-  max-width:17ch; margin:var(--space-6) auto var(--space-5); }
+  max-width:19ch; margin:var(--space-6) auto var(--space-5); }
 .hero .lead{ font-size:var(--text-body-lg-size); line-height:var(--text-body-lg-line);
   color:var(--text-muted); max-width:58ch; margin-inline:auto; }
 
+/* ---------------------------------------------------------------- the form */
 .panel{ background:var(--surface-card); border:var(--border-width) solid var(--border-subtle);
   border-radius:var(--radius-surface); box-shadow:var(--shadow-lg); padding:var(--space-8);
   max-width:var(--container-narrow); margin:var(--space-9) auto var(--space-12); text-align:left; }
@@ -135,6 +147,10 @@ a{ color:var(--text-brand); }
 .legend-note{ display:block; margin-bottom:var(--space-5); max-width:62ch;
   font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line); color:var(--text-muted); }
 
+/* Two columns of label / control / footnote, aligned row by row. Subgrid keeps
+   a long label in one column from pushing its own control out of step with the
+   control beside it; the @supports fallback reserves two lines of label height
+   instead, which is close enough on the browsers that need it. */
 .grid{ display:grid; grid-template-columns:1fr 1fr; column-gap:var(--space-6); row-gap:var(--space-5); align-items:start; }
 .field{ display:grid; grid-template-rows:subgrid; grid-row:span 3; row-gap:var(--space-2); min-width:0; }
 .field.full{ grid-column:1 / -1; }
@@ -190,14 +206,11 @@ select{ appearance:none; padding-right:var(--space-9); cursor:pointer;
   background-repeat:no-repeat; background-position:right var(--space-3) center; background-size:16px; }
 input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-shadow:var(--shadow-focus); }
 [aria-invalid="true"]{ border-color:var(--status-over-fg) !important; }
-.dontknow{ display:flex; align-items:center; gap:var(--space-2); margin-top:var(--space-1);
-  font-size:var(--text-caption-size); color:var(--text-muted); cursor:pointer; }
-.dontknow input{ width:15px; height:15px; flex:none; accent-color:var(--surface-brand); }
 .spend-row{ display:grid; grid-template-columns:110px 1fr; gap:var(--space-3); }
 
 .btn{ display:inline-flex; align-items:center; justify-content:center; gap:var(--space-2);
   height:var(--control-height-lg); padding-inline:var(--control-pad-x-lg); font:inherit;
-  font-size:var(--text-body-size); font-weight:var(--weight-bold);
+  font-size:var(--text-body-size); font-weight:var(--weight-bold); text-decoration:none;
   border:var(--border-width-strong) solid transparent; border-radius:var(--radius-control); cursor:pointer;
   transition:transform var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard); }
 .btn-primary{ background:var(--surface-brand); color:var(--text-inverse); box-shadow:var(--shadow-brand); }
@@ -205,123 +218,87 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 .btn-primary:active{ transform:scale(var(--press-scale)); }
 .btn-block{ width:100%; margin-top:var(--space-9); }
 
+/* -------------------------------------------------------------- the report */
 #report[hidden]{ display:none; }
 #report{ padding-bottom:var(--space-12); }
-.headline{ background:var(--surface-card); border:var(--border-width) solid var(--border-subtle);
-  border-top:var(--rag-bar) solid var(--border-strong); border-radius:var(--radius-surface);
-  box-shadow:var(--shadow-xl); padding:var(--space-10) var(--space-8); text-align:center;
-  max-width:var(--container-narrow); margin-inline:auto; }
-.headline.over{ border-top-color:var(--status-over-fg); }
-.headline.atrisk{ border-top-color:var(--status-atrisk-dot); }
-.headline.healthy{ border-top-color:var(--status-healthy-fg); }
-.headline .kicker{ font-size:var(--text-body-size); color:var(--text-muted); }
-.figure{ font-family:var(--font-display); font-size:var(--text-figure-size); font-weight:var(--weight-extrabold);
-  line-height:var(--text-display-3-line); letter-spacing:var(--text-display-3-track);
-  margin-block:var(--space-2) var(--space-1); }
-.headline.over .figure{ color:var(--status-over-fg); }
-.headline.atrisk .figure{ color:var(--status-atrisk-fg); }
-.headline.healthy .figure{ color:var(--status-healthy-fg); }
-.headline .unit{ display:block; font-size:var(--text-h3-size); font-weight:var(--weight-bold);
-  letter-spacing:normal; color:var(--text-strong); margin-bottom:var(--space-5); }
-.headline .explain{ font-size:var(--text-body-lg-size); line-height:var(--text-body-lg-line);
-  color:var(--text-muted); max-width:48ch; margin-inline:auto; }
-.headline .explain strong{ color:var(--text-strong); font-weight:var(--weight-bold); }
-.sensitivity{ font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line); color:var(--text-subtle);
-  max-width:54ch; margin:var(--space-5) auto 0; padding-top:var(--space-5);
-  border-top:var(--border-width) solid var(--border-subtle); }
-.badge-row{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:var(--space-3); margin-top:var(--space-7); }
-.badge{ display:inline-flex; align-items:center; gap:var(--space-2); font-size:var(--text-body-sm-size);
-  font-weight:var(--weight-bold); padding:var(--space-2) var(--space-4);
-  border-radius:var(--radius-pill); border:var(--border-width) solid transparent; }
-.badge .dot{ width:8px; height:8px; border-radius:var(--radius-pill); background:currentColor; }
-.badge.over{ background:var(--status-over-bg); color:var(--status-over-fg); border-color:var(--red-100); }
-.badge.atrisk{ background:var(--status-atrisk-bg); color:var(--amber-600); border-color:var(--amber-300); }
-.badge.healthy{ background:var(--status-healthy-bg); color:var(--status-healthy-fg); border-color:var(--teal-100); }
-.jump{ font-size:var(--text-body-sm-size); font-weight:var(--weight-bold); color:var(--text-brand); text-decoration:none; }
-.jump:hover{ text-decoration:underline; }
-
 .section{ max-width:var(--container-narrow); margin:var(--space-10) auto 0; }
+.section:first-child{ margin-top:var(--space-9); }
 .section-title{ font-size:var(--text-h3-size); line-height:var(--text-h3-line);
   letter-spacing:var(--text-h3-track); font-weight:var(--weight-bold); margin-bottom:var(--space-2); }
-.section-sub{ font-size:var(--text-body-sm-size); color:var(--text-muted); margin-bottom:var(--space-5); }
-.section-note{ font-size:var(--text-body-sm-size); color:var(--text-muted); margin-top:var(--space-5); }
+.section-sub{ font-size:var(--text-body-lg-size); line-height:var(--text-body-lg-line);
+  color:var(--text-muted); margin-bottom:var(--space-6); max-width:60ch; }
+.section-sub strong{ color:var(--text-strong); font-weight:var(--weight-bold); }
 
-/* Metrics strip */
-.metric-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:var(--space-4); }
-.metric{ background:var(--surface-card); border:var(--border-width) solid var(--border-subtle);
+/* Category one — RAG tiles. Rated against a threshold, so they carry both a
+   coloured top bar and a solid-fill pill; the pill is what a print-out or a
+   colour-blind reader goes by, since it says the verdict in words. */
+.tile-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(var(--tile-min),100%),1fr)); gap:var(--space-4); }
+.tile{ background:var(--surface-card); border:var(--border-width) solid var(--border-subtle);
   border-top:var(--rag-bar) solid var(--border-strong); border-radius:var(--radius-card);
-  box-shadow:var(--shadow-sm); padding:var(--space-5); }
-.metric.over{ border-top-color:var(--status-over-dot); }
-.metric.atrisk{ border-top-color:var(--status-atrisk-dot); }
-.metric.healthy{ border-top-color:var(--status-healthy-dot); }
-.metric.neutral{ border-top-color:var(--border-default); }
-.metric .m-label{ font-size:var(--text-caption-size); color:var(--text-muted); }
-.metric .m-value{ font-family:var(--font-display); font-size:var(--text-metric-size);
+  box-shadow:var(--shadow-sm); padding:var(--space-5) var(--space-6) var(--space-6); }
+.tile.over{ border-top-color:var(--status-over-fg); }
+.tile.atrisk{ border-top-color:var(--status-atrisk-dot); }
+.tile.healthy{ border-top-color:var(--status-healthy-fg); }
+.tile .t-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:var(--space-4); }
+.tile .t-label{ font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line);
+  font-weight:var(--weight-semibold); color:var(--text-strong); }
+.tile .t-value{ font-family:var(--font-display); font-size:var(--text-metric-size);
   font-weight:var(--weight-extrabold); letter-spacing:var(--text-h2-track);
-  color:var(--text-strong); margin-block:var(--space-2) var(--space-1); }
-.metric .m-note{ font-size:var(--text-caption-size); line-height:var(--text-caption-line); color:var(--text-subtle); }
+  color:var(--text-strong); margin-block:var(--space-3) var(--space-2); }
+.tile.over .t-value{ color:var(--status-over-fg); }
+.tile.atrisk .t-value{ color:var(--amber-600); }
+.tile.healthy .t-value{ color:var(--status-healthy-fg); }
+.tile .t-note{ font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line); color:var(--text-muted); }
 
-.tabhint{ font-size:var(--text-caption-size); color:var(--text-subtle); margin-bottom:var(--space-3); }
-.tablist{ display:flex; gap:var(--space-2); padding:var(--space-2); background:var(--surface-muted);
-  border:var(--border-width) solid var(--border-subtle); border-radius:var(--radius-control) var(--radius-control) 0 0;
-  border-bottom:0; flex-wrap:wrap; }
-.tab{ appearance:none; flex:1 1 auto; background:var(--surface-card);
-  border:var(--border-width) solid var(--border-default); border-radius:var(--radius-sm); font:inherit;
-  font-size:var(--text-body-sm-size); font-weight:var(--weight-bold); color:var(--text-muted);
-  padding:var(--space-3) var(--space-4); cursor:pointer; white-space:nowrap;
-  transition:color var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard); }
-.tab:hover{ color:var(--text-brand); border-color:var(--border-brand); }
-.tab[aria-selected="true"]{ background:var(--surface-brand); color:var(--text-inverse);
-  border-color:var(--surface-brand); box-shadow:var(--shadow-brand-sm); }
-.tabpanel{ background:var(--surface-card); border:var(--border-width) solid var(--border-subtle); border-top:0;
-  border-radius:0 0 var(--radius-card) var(--radius-card); padding:var(--space-7); }
-.tabpanel[hidden]{ display:none; }
-.role-who{ font-size:var(--text-caption-size); letter-spacing:var(--text-eyebrow-track);
-  text-transform:uppercase; font-weight:var(--weight-bold); color:var(--text-subtle); }
-.role-q{ display:block; margin-top:var(--space-2); font-size:var(--text-h4-size); line-height:var(--text-h4-line);
-  letter-spacing:normal; text-transform:none; font-weight:var(--weight-bold); color:var(--text-brand); }
-.role-figure{ font-family:var(--font-display); font-size:var(--text-h2-size); font-weight:var(--weight-extrabold);
-  letter-spacing:var(--text-h2-track); color:var(--text-strong); margin-top:var(--space-3); }
-.role-line{ margin-top:var(--space-3); color:var(--text-muted); }
+/* Solid fills, never a tint — the pill has to survive being photocopied. */
+.pill{ flex:none; display:inline-flex; align-items:center; font-size:var(--text-eyebrow-size);
+  font-weight:var(--weight-bold); text-transform:uppercase; letter-spacing:var(--text-eyebrow-track);
+  padding:var(--space-1) var(--space-3); border-radius:var(--radius-pill); }
+.pill.over{ background:var(--pill-over-bg); color:var(--pill-over-fg); }
+.pill.atrisk{ background:var(--pill-atrisk-bg); color:var(--pill-atrisk-fg); }
+.pill.healthy{ background:var(--pill-healthy-bg); color:var(--pill-healthy-fg); }
 
-/* The closing observation under the role tabs carries real weight — it should
-   not read as a footnote. */
-.insight{ margin-top:var(--space-6); padding:var(--space-6) var(--space-7);
+/* Category two — the portfolio headroom callout. Deliberately neither a RAG
+   tile nor a plain bullet: it is a projection rather than a measurement, and
+   the navy fill is what keeps it from being read as either. */
+.headroom{ max-width:var(--container-narrow); margin:var(--space-6) auto 0;
+  background:var(--surface-accent); border-radius:var(--radius-card);
+  box-shadow:var(--shadow-lg); padding:var(--space-8) var(--space-7); }
+.headroom .h-eyebrow{ font-size:var(--text-eyebrow-size); font-weight:var(--text-eyebrow-weight);
+  letter-spacing:var(--text-eyebrow-track); text-transform:uppercase; color:var(--text-inverse-muted); }
+.headroom .h-figure{ font-family:var(--font-display); font-size:var(--text-h2-size);
+  font-weight:var(--weight-extrabold); letter-spacing:var(--text-h2-track);
+  line-height:var(--text-h2-line); color:var(--text-accent-figure); margin-block:var(--space-3) var(--space-3); }
+.headroom.is-blocked .h-figure{ color:var(--text-inverse); }
+.headroom .h-note{ font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line);
+  color:var(--text-inverse-muted); max-width:64ch; }
+.headroom .h-note strong{ color:var(--text-inverse); font-weight:var(--weight-semibold); }
+
+/* Category three — informational bullets. No threshold exists for any of
+   these, so nothing here is rated and nothing here is coloured. */
+.facts{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--space-3); }
+.fact{ display:flex; align-items:baseline; gap:var(--space-5);
   background:var(--surface-card); border:var(--border-width) solid var(--border-subtle);
-  border-left:var(--rag-bar) solid var(--surface-brand); border-radius:var(--radius-md);
-  box-shadow:var(--shadow-sm); }
-.insight p{ font-size:var(--text-body-lg-size); line-height:var(--text-body-lg-line); color:var(--text-strong); }
-.compare{ border:var(--border-width) solid var(--border-subtle); border-radius:var(--radius-card);
-  overflow:hidden; box-shadow:var(--shadow-sm); background:var(--surface-card); }
-.compare-head{ display:grid; grid-template-columns:1fr 1fr; }
-.compare-head > div{ padding:var(--space-4) var(--space-5); font-size:var(--text-eyebrow-size);
-  font-weight:var(--text-eyebrow-weight); letter-spacing:var(--text-eyebrow-track); text-transform:uppercase; }
-.compare-head .c-now{ background:var(--surface-muted); color:var(--text-subtle); }
-.compare-head .c-next{ background:var(--surface-brand); color:var(--text-inverse); }
-.compare-row{ display:grid; grid-template-columns:1fr 1fr; border-top:var(--border-width) solid var(--border-subtle); }
-.compare-row > div{ padding:var(--space-5); font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line); }
-.compare-row .c-now{ color:var(--text-muted); border-right:var(--border-width) solid var(--border-subtle); }
-.compare-row .c-next{ color:var(--text-strong); font-weight:var(--weight-semibold); background:var(--blue-25); }
-@media (max-width:600px){
-  .compare-head{ grid-template-columns:1fr; }
-  .compare-head .c-now{ display:none; }
-  .compare-row{ grid-template-columns:1fr; }
-  .compare-row .c-now{ border-right:0; border-bottom:var(--border-width) solid var(--border-subtle); }
-}
-/* Mid-page CTA — deliberately lighter than the closing block so it offers a
-   route without competing with the primary gate. */
-.midcta{ margin-top:var(--space-6); padding:var(--space-8) var(--space-7);
-  background:var(--surface-brand-subtle); border:var(--border-width-strong) solid var(--blue-200);
-  border-radius:var(--radius-card); text-align:center; }
-.midcta h3{ font-size:var(--text-h3-size); line-height:var(--text-h3-line);
-  letter-spacing:var(--text-h3-track); font-weight:var(--weight-bold); color:var(--text-strong); }
-.midcta p{ margin:var(--space-3) auto 0; max-width:52ch;
-  font-size:var(--text-body-size); line-height:var(--text-body-line); color:var(--text-muted); }
-.midcta .btn{ margin-top:var(--space-6); }
-.midcta .midcta-sub{ margin-top:var(--space-3); font-size:var(--text-caption-size); color:var(--text-subtle); }
-.midcta .midcta-alt{ margin-top:var(--space-5); font-size:var(--text-body-sm-size); }
-.midcta .midcta-alt a{ font-weight:var(--weight-bold); color:var(--text-brand); text-decoration:none; }
-.midcta .midcta-alt a:hover{ text-decoration:underline; }
+  border-radius:var(--radius-md); box-shadow:var(--shadow-xs); padding:var(--space-5) var(--space-6); }
+.fact .f-figure{ flex:none; min-width:5.5ch; font-family:var(--font-display);
+  font-size:var(--text-h3-size); line-height:var(--text-h3-line); font-weight:var(--weight-extrabold);
+  letter-spacing:var(--text-h3-track); color:var(--text-strong); }
+.fact .f-label{ font-size:var(--text-body-size); line-height:var(--text-body-line);
+  font-weight:var(--weight-semibold); color:var(--text-strong); }
+.fact .f-note{ font-size:var(--text-body-sm-size); font-weight:var(--weight-regular);
+  color:var(--text-muted); }
+@media (max-width:600px){ .fact{ flex-direction:column; gap:var(--space-2); } }
+
+/* The ticket-volume consistency check. Sits under the bullet it questions, and
+   is not RAG-rated — it queries an input rather than judging an output. */
+.checknote{ list-style:none; margin-top:calc(-1 * var(--space-1)); padding:var(--space-5) var(--space-6);
+  background:var(--surface-brand-subtle); border:var(--border-width) solid var(--blue-100);
+  border-left:var(--rag-bar) solid var(--blue-300); border-radius:var(--radius-md);
+  font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line); color:var(--text-body); }
+.checknote strong{ color:var(--text-strong); }
+
+/* Cards. Native details/summary, so they are keyboard-operable and printable
+   without any script deciding whether they are open. */
 .rag-list{ display:flex; flex-direction:column; gap:var(--space-3); }
 .rag{ background:var(--surface-card); border:var(--border-width) solid var(--border-subtle);
   border-left:var(--rag-bar) solid var(--border-strong); border-radius:var(--radius-md); box-shadow:var(--shadow-sm); }
@@ -335,13 +312,52 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   border-right:2px solid var(--text-subtle); border-bottom:2px solid var(--text-subtle);
   transform:rotate(45deg) translate(-2px,-2px); transition:transform var(--duration-fast) var(--ease-standard); }
 .rag[open] > summary::after{ transform:rotate(-135deg) translate(-2px,-2px); }
-.rag .status{ flex:none; font-size:var(--text-eyebrow-size); font-weight:var(--weight-bold);
-  text-transform:uppercase; letter-spacing:var(--text-eyebrow-track);
-  padding:var(--space-1) var(--space-3); border-radius:var(--radius-pill); }
-.rag.over .status{ background:var(--red-500); color:var(--text-inverse); }
-.rag.atrisk .status{ background:var(--amber-300); color:var(--ink-900); }
-.rag.healthy .status{ background:var(--teal-300); color:var(--ink-900); }
 .rag .detail{ padding:0 var(--space-5) var(--space-5); color:var(--text-muted); }
+
+/* The comparison table. Reinstated after the diagnostic cards: it turns the
+   aggregate the report has just built into the question the aggregate cannot
+   answer, so the CTA below follows from something rather than arriving cold.
+   Nothing in the right column claims a feature — each row states what is
+   knowable from a project file. */
+.compare{ border:var(--border-width) solid var(--border-subtle); border-radius:var(--radius-card);
+  overflow:hidden; box-shadow:var(--shadow-sm); background:var(--surface-card); }
+.compare-head{ display:grid; grid-template-columns:1fr 1fr; }
+.compare-head > div{ padding:var(--space-4) var(--space-5); font-size:var(--text-eyebrow-size);
+  font-weight:var(--text-eyebrow-weight); letter-spacing:var(--text-eyebrow-track); text-transform:uppercase; }
+.compare-head .c-now{ background:var(--surface-muted); color:var(--text-subtle); }
+.compare-head .c-next{ background:var(--surface-brand); color:var(--text-inverse); }
+.compare-row{ display:grid; grid-template-columns:1fr 1fr; border-top:var(--border-width) solid var(--border-subtle); }
+.compare-row > div{ padding:var(--space-5); font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line); }
+.compare-row .c-now{ color:var(--text-muted); border-right:var(--border-width) solid var(--border-subtle); }
+.compare-row .c-next{ color:var(--text-strong); font-weight:var(--weight-semibold); background:var(--blue-25); }
+@media (max-width:600px){
+  /* Stacked, the column headings stop being headings — so the "from what you
+     told us" one goes, and each pair reads as statement then answer. */
+  .compare-head{ grid-template-columns:1fr; }
+  .compare-head .c-now{ display:none; }
+  .compare-row{ grid-template-columns:1fr; }
+  .compare-row .c-now{ border-right:0; border-bottom:var(--border-width) solid var(--border-subtle); }
+}
+
+/* Mid-page CTA — deliberately lighter than the closing block so it offers a
+   route without competing with the primary gate. */
+.midcta{ max-width:var(--container-narrow); margin:var(--space-7) auto 0;
+  padding:var(--space-8) var(--space-7);
+  background:var(--surface-brand-subtle); border:var(--border-width-strong) solid var(--blue-200);
+  border-radius:var(--radius-card); text-align:center; }
+.midcta h3{ font-size:var(--text-h3-size); line-height:var(--text-h3-line);
+  letter-spacing:var(--text-h3-track); font-weight:var(--weight-bold); color:var(--text-strong); }
+.midcta p{ margin:var(--space-3) auto 0; max-width:52ch;
+  font-size:var(--text-body-size); line-height:var(--text-body-line); color:var(--text-muted); }
+.midcta .price-note{ margin-top:var(--space-5); padding-top:var(--space-5);
+  border-top:var(--border-width) solid var(--blue-200); font-size:var(--text-body-sm-size);
+  text-align:left; max-width:46ch; }
+.midcta .price-note strong{ color:var(--text-strong); font-weight:var(--weight-bold); }
+.midcta .btn{ margin-top:var(--space-6); }
+.midcta .midcta-sub{ margin-top:var(--space-3); font-size:var(--text-caption-size); color:var(--text-subtle); }
+.midcta .midcta-alt{ margin-top:var(--space-5); font-size:var(--text-body-sm-size); }
+.midcta .midcta-alt a{ font-weight:var(--weight-bold); color:var(--text-brand); text-decoration:none; }
+.midcta .midcta-alt a:hover{ text-decoration:underline; }
 
 .closing{ background:var(--surface-inverse); border-radius:var(--radius-surface);
   padding:var(--space-10) var(--space-8); max-width:var(--container-narrow); margin:var(--space-10) auto 0; }
@@ -349,10 +365,6 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   letter-spacing:var(--text-h2-track); color:var(--text-inverse); margin-bottom:var(--space-5); }
 .closing .verdict{ font-size:var(--text-body-lg-size); line-height:var(--text-body-lg-line); color:var(--text-inverse-muted); }
 .closing .verdict strong{ color:var(--text-inverse); font-weight:var(--weight-bold); }
-.price-line{ margin-top:var(--space-6); padding-top:var(--space-5);
-  border-top:var(--border-width) solid var(--border-inverse);
-  font-size:var(--text-body-sm-size); color:var(--text-inverse-muted); }
-.price-line strong{ color:var(--text-inverse); }
 
 .gate{ background:var(--surface-card); border-radius:var(--radius-card); padding:var(--space-8);
   margin-top:var(--space-7); color:var(--text-body); }
@@ -371,13 +383,12 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   word-break:break-all; background:var(--surface-muted); padding:var(--space-3); border-radius:var(--radius-sm); text-align:left; }
 .disclaimer{ max-width:var(--container-narrow); margin:var(--space-7) auto 0; text-align:center;
   font-size:var(--text-caption-size); line-height:var(--text-caption-line); color:var(--text-subtle); }
-.site-footer{ border-top:var(--border-width) solid var(--border-subtle); padding-block:var(--space-6);
-  text-align:center; font-size:var(--text-caption-size); color:var(--text-subtle); }
 
+/* ------------------------------------------------------- the printed report */
 #printReport{ display:none; }
 @media print{
   @page{ size:A4; margin:16mm 14mm; }
-  .site-header,.hero,#tool,#report,.site-footer{ display:none !important; }
+  .hero,#tool,#report{ display:none !important; }
   body{ background:#fff; color:#000; font-size:10.5pt; line-height:1.45; }
   #printReport{ display:block; }
   .page{ break-after:page; } .page:last-child{ break-after:auto; }
@@ -387,27 +398,26 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
     padding-bottom:4pt; margin-bottom:12pt; font-size:8.5pt;
     letter-spacing:var(--text-eyebrow-track); text-transform:uppercase; color:var(--ink-500); }
   .p-block{ margin-bottom:12pt; }
-  .p-figure{ font-size:28pt; font-weight:var(--weight-extrabold); letter-spacing:-.02em; }
+  .p-figure{ font-size:26pt; font-weight:var(--weight-extrabold); letter-spacing:-.02em; }
   .p-table{ width:100%; border-collapse:collapse; font-size:9pt; margin-top:5pt; }
   .p-table th,.p-table td{ text-align:left; padding:4pt 6pt; border-bottom:.5pt solid var(--ink-200); vertical-align:top; }
   .p-table thead th{ background:var(--ink-50); }
+  .p-rag{ font-weight:var(--weight-bold); text-transform:uppercase; font-size:8pt; letter-spacing:.06em; }
   .p-note{ font-size:8.5pt; color:var(--ink-500); margin-top:4pt; }
   .p-callout{ border-left:2pt solid var(--ink-300); padding-left:8pt; margin-block:8pt; }
   ol.p-steps{ padding-left:14pt; margin-top:5pt; } ol.p-steps li{ margin-bottom:6pt; }
   a{ color:inherit; text-decoration:none; }
 }
 </style>
-
 <style>
 /* ==========================================================================
    Site chrome for the Capacity Check.
 
-   The tool above is self-contained and untouched apart from its typeface. It
-   is now a page of the site rather than a standalone file, so it carries the
-   real header and footer. Everything here is prefixed `pxr-` so nothing can
-   collide with the tool's own class names (it has its own .site-header,
-   .site-footer, .logo and .btn), and it uses only variables the tool's :root
-   already defines, plus literals for the few it doesn't. Kept in step with
+   The tool above is self-contained. It is a page of the site rather than a
+   standalone file, so it carries the real header and footer. Everything here
+   is prefixed `pxr-` so nothing can collide with the tool's own class names
+   (it has its own .btn), and it uses only variables the tool's :root already
+   defines, plus literals for the few it doesn't. Kept in step with
    /styles/site.css by hand — deliberately, so the tool never depends on it.
    ========================================================================== */
 .pxr-header{
@@ -548,30 +558,30 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 <main>
   <section class="hero wrap">
     <span class="eyebrow">Free &middot; 3 minutes &middot; No sign-up</span>
-    <h1>Which of your people are double-booked right now?</h1>
-    <p class="lead">Keeping the lights on is one of the primary functions of every IT department. Managing that against the volatile demand of IT projects is one of the hardest things an IT leader does. Answer a few questions and see how you fare &mdash; including the risks and issues you are most likely carrying right now.</p>
+    <h1>How much of your delivery is resting on people who are also keeping the lights on?</h1>
+    <p class="lead">Keeping the lights on is one of the primary functions of every IT department. Managing that against the volatile demand of IT projects is one of the hardest things an IT leader does. Answer a few questions and see how much project capacity you actually have, how much headroom is left in it, and what your own answers say about the risks you are carrying.</p>
   </section>
 
   <section id="tool" class="wrap">
     <form class="panel" id="calcForm" novalidate>
 
       <fieldset class="fieldset">
-        <legend class="legend">Your organisation</legend>
+        <legend class="legend">Your company</legend>
         <div class="grid">
-          <div class="field" id="f-totalStaff">
-            <label for="totalStaff">Total staff in the company</label>
-            <div class="control"><input type="number" id="totalStaff" min="1" max="200000" step="1" inputmode="numeric" placeholder="e.g. 850"></div>
-            <div class="under"><span class="hint">Your best figure.</span><span class="error"></span></div>
+          <div class="field" id="f-companyHeadcount">
+            <label for="companyHeadcount">Total company headcount</label>
+            <div class="control"><input type="number" id="companyHeadcount" min="1" max="200000" step="1" inputmode="numeric" placeholder="e.g. 1200"></div>
+            <div class="under"><span class="hint">Everyone, not just IT.</span><span class="error"></span></div>
           </div>
-          <div class="field" id="f-itStaff">
-            <label for="itStaff">People in the IT department</label>
-            <div class="control"><input type="number" id="itStaff" min="1" max="20000" step="1" inputmode="numeric" placeholder="e.g. 28"></div>
+          <div class="field" id="f-staff">
+            <label for="staff">Estimated total IT staff</label>
+            <div class="control"><input type="number" id="staff" min="1" max="20000" step="1" inputmode="numeric" placeholder="e.g. 45"></div>
             <div class="under"><span class="hint">Including support, infrastructure and delivery.</span><span class="error"></span></div>
           </div>
           <div class="field full" id="f-pms">
-            <label for="pms">How many IT project managers?<span class="tip" data-tip="People who actively run projects, whatever their job title. Used against your live project count to work out how many each is carrying at once."><i class="info" tabindex="0" role="note" aria-label="People who actively run projects, whatever their job title.">i</i></span></label>
-            <div class="control"><input type="number" id="pms" min="0" max="2000" step="1" inputmode="numeric" placeholder="e.g. 3"></div>
-            <div class="under"><span class="hint">Whoever holds a plan together.</span><span class="error"></span></div>
+            <label for="pms">Indicative number of IT project managers at any one time<span class="tip" data-tip="People who actively run projects, whatever their job title. Used against your live project count to work out how many each is carrying at once."><i class="info" tabindex="0" role="note" aria-label="People who actively run projects, whatever their job title.">i</i></span></label>
+            <div class="control"><input type="number" id="pms" min="0" max="2000" step="1" inputmode="numeric" placeholder="e.g. 5"></div>
+            <div class="under"><span class="hint">Whoever holds a plan together. Enter 0 if nobody does formally.</span><span class="error"></span></div>
           </div>
         </div>
       </fieldset>
@@ -580,17 +590,17 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
         <legend class="legend">Your projects</legend>
         <div class="grid">
           <div class="field" id="f-live">
-            <label for="live">Live IT projects right now</label>
-            <div class="control"><input type="number" id="live" min="0" max="2000" step="1" inputmode="numeric" placeholder="e.g. 11"></div>
-            <div class="under"><span class="error"></span></div>
+            <label for="live">Live projects right now</label>
+            <div class="control"><input type="number" id="live" min="0" max="2000" step="1" inputmode="numeric" placeholder="e.g. 45"></div>
+            <div class="under"><span class="hint">Anything currently running.</span><span class="error"></span></div>
           </div>
           <div class="field" id="f-annual">
-            <label for="annual">IT projects in a typical year <span class="opt">(optional)</span></label>
-            <div class="control"><input type="number" id="annual" min="0" max="5000" step="1" inputmode="numeric" placeholder="e.g. 30"></div>
-            <div class="under"><span class="error"></span></div>
+            <label for="annual">Typical number of IT projects run annually</label>
+            <div class="control"><input type="number" id="annual" min="0" max="5000" step="1" inputmode="numeric" placeholder="e.g. 75"></div>
+            <div class="under"><span class="hint">Start to finish, in a normal year.</span><span class="error"></span></div>
           </div>
           <div class="field full" id="f-spend">
-            <label for="spend">Annual IT project spend <span class="opt">(optional)</span><span class="tip" data-tip="What your organisation budgets for IT projects in a year, as you would normally report it. For most teams this is out-the-door cost: licences, contractors, hardware."><i class="info" tabindex="0" role="note" aria-label="What your organisation budgets for IT projects in a year, as you would normally report it.">i</i></span></label>
+            <label for="spend">Total annual spend on your IT projects (contractors, licences, tooling) &mdash; excluding internal staff time <span class="opt">(optional)</span><span class="tip" data-tip="Out-the-door cost only: the things that arrive as an invoice. Leave your own people's time out of it — this check works out what that time is worth separately."><i class="info" tabindex="0" role="note" aria-label="Out-the-door cost only, excluding internal staff time.">i</i></span></label>
             <div class="spend-row">
               <select id="currency" aria-label="Currency">
                 <option value="GBP" selected>&pound; GBP</option>
@@ -600,9 +610,9 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
                 <option value="NZD">$ NZD</option>
                 <option value="CAD">$ CAD</option>
               </select>
-              <div class="control with-prefix"><span class="prefix" id="curPrefix">&pound;</span><input type="number" id="spend" min="0" max="1000000000" step="1000" inputmode="numeric" placeholder="e.g. 1200000"></div>
+              <div class="control with-prefix"><span class="prefix" id="curPrefix">&pound;</span><input type="number" id="spend" min="0" max="1000000000" step="1000" inputmode="numeric" placeholder="e.g. 375000"></div>
             </div>
-            <div class="under"><span class="hint">As you would normally report it.</span><span class="error"></span></div>
+            <div class="under"><span class="hint">Used only to express cost as a share of budget.</span><span class="error"></span></div>
           </div>
         </div>
       </fieldset>
@@ -611,35 +621,32 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
         <legend class="legend">Time available for projects</legend>
         <p class="legend-note">Rarely do we get the luxury of appointing BAU resources full time to projects. BAU resources are hired with the primary focus of supporting and maintaining existing systems and services. The following questions help us tease out how dependent your project portfolio is on BAU resourcing.</p>
         <div class="grid">
-          <div class="field full" id="f-projectPeople">
-            <label for="projectPeople">Across your live projects, how many of your IT people are involved?<span class="tip" data-tip="Count the people currently named on a live project plan, however small their involvement. This is an observation about what is running now, not a judgement about who could be used."><i class="info" tabindex="0" role="note" aria-label="Count the people currently named on a live project plan, however small their involvement.">i</i></span></label>
-            <div class="control"><input type="number" id="projectPeople" min="0" max="20000" step="1" inputmode="numeric" placeholder="e.g. 22"></div>
-            <div class="under"><span class="hint">People currently named on a live project.</span><span class="error"></span></div>
+          <div class="field full" id="f-bauStaff">
+            <label for="bauStaff">Estimated number of BAU staff currently working on IT projects<span class="tip" data-tip="People whose main job is supporting or maintaining existing systems, who are also named on project work. Count them however small their project involvement."><i class="info" tabindex="0" role="note" aria-label="Support and maintenance staff who are also named on project work.">i</i></span></label>
+            <div class="control"><input type="number" id="bauStaff" min="0" max="20000" step="1" inputmode="numeric" placeholder="e.g. 20"></div>
+            <div class="under"><span class="hint">Excluding your project managers.</span><span class="error"></span></div>
           </div>
-          <div class="field full" id="f-perProjectNamed">
-            <label for="perProjectNamed">On a typical live project, how many of your IT people are named on the plan?<span class="tip" data-tip="Take a project that is running now and count the IT people on its plan. Not the whole delivery team — just your own people. If your projects vary a lot, use one that feels representative."><i class="info" tabindex="0" role="note" aria-label="Take a project that is running now and count the IT people on its plan.">i</i></span></label>
-            <div class="control"><input type="number" id="perProjectNamed" min="1" max="500" step="1" inputmode="numeric" placeholder="e.g. 4"></div>
-            <div class="under"><span class="hint">Your own IT people, not suppliers.</span><span class="error"></span></div>
+          <div class="field full" id="f-bauPercent2">
+            <label for="bauPercent2">Your best estimate of the blended average percentage of their time spent on that project work<span class="tip" data-tip="Averaged across all of them. One person giving half their week and one giving a day a month average out to somewhere in the middle — a rough figure is genuinely useful here."><i class="info" tabindex="0" role="note" aria-label="Averaged across all of them; a rough figure is useful.">i</i></span></label>
+            <div class="control" data-suffix="%"><input type="number" id="bauPercent2" min="1" max="100" step="1" inputmode="numeric" placeholder="e.g. 37"></div>
+            <div class="under"><span class="hint">A whole-number percentage, at least 1.</span><span class="error"></span></div>
           </div>
-          <div class="field full" id="f-bauShare">
-            <label for="bauShare">Of the people who work on your IT projects, what percentage are BAU or support staff balancing this alongside their day job, rather than dedicated project resources?<span class="tip" data-tip="A dedicated project resource does project work and nothing else. Everyone else is holding a support or operational role at the same time — their project time is negotiated against a day job that does not stop."><i class="info" tabindex="0" role="note" aria-label="A dedicated project resource does project work and nothing else.">i</i></span></label>
-            <div class="control"><select id="bauShare">
-              <option value="" selected>Select one</option>
-              <option value="lt25">Under 25%</option>
-              <option value="25-50">25% to 50%</option>
-              <option value="50-75">50% to 75%</option>
-              <option value="75-100">75% to 100%</option>
-              <option value="all">All of them &mdash; every project person also holds a BAU role</option>
-              <option value="unsure">Not sure</option>
-            </select></div>
-            <div class="under"><span class="error"></span></div>
+          <div class="field" id="f-ticketsPerMonth">
+            <label for="ticketsPerMonth">Estimated number of IT service desk tickets handled each month <span class="opt">(optional)</span></label>
+            <div class="control"><input type="number" id="ticketsPerMonth" min="0" max="1000000" step="1" inputmode="numeric" placeholder="e.g. 960"></div>
+            <div class="under"><span class="hint">A monthly figure, however it is logged.</span><span class="error"></span></div>
+          </div>
+          <div class="field" id="f-bauSplitEstimate">
+            <label for="bauSplitEstimate">Your estimate of the percentage of your total IT department's effort spent on BAU or run work <span class="opt">(optional)</span></label>
+            <div class="control" data-suffix="%"><input type="number" id="bauSplitEstimate" min="0" max="100" step="1" inputmode="numeric" placeholder="e.g. 72"></div>
+            <div class="under"><span class="hint">The rest being change or transformation.</span><span class="error"></span></div>
           </div>
         </div>
       </fieldset>
 
       <fieldset class="fieldset">
         <legend class="legend">Tools and processes</legend>
-        <p class="legend-note">How that dependency is seen, recorded and costed. All four shape your report, so we ask you to answer each one.</p>
+        <p class="legend-note">How that dependency is planned, seen and costed. All four shape your report, so we ask you to answer each one.</p>
         <div class="grid">
           <div class="field full" id="f-toolset">
             <label for="toolset">What do you plan projects in today?</label>
@@ -655,9 +662,9 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
             </select></div>
             <div class="under"><span class="error"></span></div>
           </div>
-          <div class="field full" id="f-integration">
-            <label for="integration">Is there one place that shows a live and current view of what resources your projects need and who is actually available?</label>
-            <div class="control"><select id="integration">
+          <div class="field full" id="f-resourceVisibility">
+            <label for="resourceVisibility">Is there one place that shows a live and current view of what resources your projects need and who is actually available?</label>
+            <div class="control"><select id="resourceVisibility">
               <option value="" selected>Select one</option>
               <option value="dedicated">Yes, a tool built for it</option>
               <option value="manual">Partly &mdash; we cross-reference spreadsheets by hand</option>
@@ -665,9 +672,9 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
             </select></div>
             <div class="under"><span class="error"></span></div>
           </div>
-          <div class="field full" id="f-bauCost">
-            <label for="bauCost">Do your project budgets include the cost of BAU staff time, or only out-the-door spend?<span class="tip" data-tip="Most project managers are asked to forecast and track external cost — licences, contractors, hardware. Internal BAU staff time is often not budgeted or tracked at all, which means the reported cost of a project is not its real cost."><i class="info" tabindex="0" role="note" aria-label="Most project managers are asked to forecast and track external cost only.">i</i></span></label>
-            <div class="control"><select id="bauCost">
+          <div class="field full" id="f-budgetTracking">
+            <label for="budgetTracking">Do your project budgets include the cost of BAU staff time, or only out-the-door spend?<span class="tip" data-tip="Most project managers are asked to forecast and track external cost — licences, contractors, hardware. Internal BAU staff time is often not budgeted or tracked at all, which means the reported cost of a project is not its real cost."><i class="info" tabindex="0" role="note" aria-label="Most project managers are asked to forecast and track external cost only.">i</i></span></label>
+            <div class="control"><select id="budgetTracking">
               <option value="" selected>Select one</option>
               <option value="tracked">Internal BAU time is budgeted and tracked</option>
               <option value="partial">Sometimes, or for some projects</option>
@@ -676,9 +683,9 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
             </select></div>
             <div class="under"><span class="error"></span></div>
           </div>
-          <div class="field full" id="f-portfolio">
-            <label for="portfolio">Right now, could you say who is working on which project without asking anyone?</label>
-            <div class="control"><select id="portfolio">
+          <div class="field full" id="f-assignmentKnowledge">
+            <label for="assignmentKnowledge">Right now, could you say who is working on which project without asking anyone?</label>
+            <div class="control"><select id="assignmentKnowledge">
               <option value="" selected>Select one</option>
               <option value="live">Yes &mdash; I could pull it up</option>
               <option value="stale">Roughly, but I would want to check it</option>
@@ -694,47 +701,29 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   </section>
 
   <section id="report" class="wrap" hidden aria-live="polite">
-    <div class="headline" id="headline">
-      <p class="kicker" id="headKicker"></p>
-      <div class="figure" id="headFigure"></div>
-      <span class="unit" id="headUnit"></span>
-      <p class="explain" id="headExplain"></p>
-      <p class="sensitivity" id="headSensitivity"></p>
-      <div class="badge-row">
-        <span class="badge" id="confBadge"><span class="dot"></span><span id="confText"></span></span>
-        <a class="jump" href="#getReport">Get the full report &darr;</a>
-      </div>
+
+    <div class="section">
+      <h2 class="section-title">Your capacity position</h2>
+      <p class="section-sub" id="positionLead"></p>
+      <div class="tile-grid" id="tileGrid"></div>
+    </div>
+
+    <!-- Portfolio headroom. Sits below the tiles and above the informational
+         panel, as a third visual category: a projection, not a measurement. -->
+    <div class="headroom" id="headroom">
+      <p class="h-eyebrow" id="headroomEyebrow">Portfolio headroom</p>
+      <p class="h-figure" id="headroomFigure"></p>
+      <p class="h-note" id="headroomNote"></p>
     </div>
 
     <div class="section">
       <h2 class="section-title">Your numbers</h2>
-      <p class="section-sub">Counted from what you told us. Nothing here is modelled or estimated on your behalf.</p>
-      <div class="metric-grid" id="metricGrid"></div>
+      <p class="section-sub">Counted from what you told us. Nothing on this list is rated against a threshold &mdash; these are the figures your position is built from.</p>
+      <ul class="facts" id="factList"></ul>
     </div>
 
     <div class="section">
-      <h2 class="section-title">What each role sees</h2>
-      <p class="section-sub">The same dependency looks like three different problems depending on who is looking at it.</p>
-      <p class="tabhint">Select a role to see it from that seat.</p>
-      <div class="tablist" role="tablist" aria-label="Role views">
-        <button class="tab" role="tab" id="tab-lm" aria-controls="panel-lm" aria-selected="true" type="button">Line Manager</button>
-        <button class="tab" role="tab" id="tab-pm" aria-controls="panel-pm" aria-selected="false" type="button" tabindex="-1">Project Manager</button>
-        <button class="tab" role="tab" id="tab-pf" aria-controls="panel-pf" aria-selected="false" type="button" tabindex="-1">Whoever owns the portfolio</button>
-      </div>
-      <div class="tabpanel" role="tabpanel" id="panel-lm" aria-labelledby="tab-lm">
-        <p class="role-who" id="lmWho"></p><div class="role-figure" id="lmFigure"></div><p class="role-line" id="lmLine"></p>
-      </div>
-      <div class="tabpanel" role="tabpanel" id="panel-pm" aria-labelledby="tab-pm" hidden>
-        <p class="role-who" id="pmWho"></p><div class="role-figure" id="pmFigure"></div><p class="role-line" id="pmLine"></p>
-      </div>
-      <div class="tabpanel" role="tabpanel" id="panel-pf" aria-labelledby="tab-pf" hidden>
-        <p class="role-who" id="pfWho"></p><div class="role-figure" id="pfFigure"></div><p class="role-line" id="pfLine"></p>
-      </div>
-      <div class="insight"><p id="hatsNote"></p></div>
-    </div>
-
-    <div class="section">
-      <h2 class="section-title">What your numbers show</h2>
+      <h2 class="section-title">What your answers show</h2>
       <div class="rag-list" id="ragList"></div>
     </div>
 
@@ -748,22 +737,23 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
         </div>
         <div id="compareRows"></div>
       </div>
-      <div class="midcta">
-        <h3 id="ctaHead"></h3>
-        <p id="ctaBody"></p>
-        <a class="btn btn-primary" href="/start/" id="trialCta">Start free</a>
-        <p class="midcta-sub">Two projects free, forever. No card, no time limit.</p>
-        <p class="midcta-alt"><a href="#getReport">Or take the full report first &darr;</a></p>
-      </div>
+    </div>
+
+    <div class="midcta">
+      <h3 id="ctaHead"></h3>
+      <p id="ctaBody"></p>
+      <p class="price-note" id="priceLine"></p>
+      <a class="btn btn-primary" href="/start/" id="trialCta">Start free</a>
+      <p class="midcta-sub">Two projects free, forever. No time limit.</p>
+      <p class="midcta-alt"><a href="#getReport">Or take the full report first &darr;</a></p>
     </div>
 
     <div class="closing" id="getReport">
       <h2>What you told us</h2>
       <p class="verdict" id="closingVerdict"></p>
-      <p class="price-line" id="priceLine"></p>
       <div class="gate" id="gate">
         <h3>Get the full report</h3>
-        <p class="gate-sub">Five pages: every number worked through, the same picture from all three seats, what your actual project plans would add to it, and four things you can do about it that involve buying nothing.</p>
+        <p class="gate-sub">Six pages: every number worked through, the arithmetic behind each one, what your answers say about how visible and costed this is, what the same questions asked of your actual project plans would add, the sources any claim rests on, and four things you can do about it that involve buying nothing.</p>
         <div class="grid">
           <div class="field full" id="f-email">
             <label for="email">Work email</label>
@@ -771,11 +761,16 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
             <div class="under"><span class="error"></span></div>
           </div>
           <div class="field" id="f-fname">
-            <label for="fname">Name</label>
-            <div class="control"><input type="text" id="fname" autocomplete="name"></div>
-            <div class="under"><span class="error"></span></div>
+            <label for="fname">First name <span class="opt">(optional)</span></label>
+            <div class="control"><input type="text" id="fname" autocomplete="given-name"></div>
+            <div class="under"></div>
           </div>
-          <div class="field" id="f-company">
+          <div class="field" id="f-lname">
+            <label for="lname">Last name <span class="opt">(optional)</span></label>
+            <div class="control"><input type="text" id="lname" autocomplete="family-name"></div>
+            <div class="under"></div>
+          </div>
+          <div class="field full" id="f-company">
             <label for="company">Company <span class="opt">(optional)</span></label>
             <div class="control"><input type="text" id="company" autocomplete="organization"></div>
             <div class="under"></div>
@@ -796,67 +791,81 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   <div id="printReport">
     <section class="page">
       <div class="p-head"><span>ProjexaR Capacity Check</span><span id="pr-date"></span></div>
-      <h1 id="pr-title"></h1>
-      <div class="p-block"><div class="p-figure" id="pr-figure"></div><p id="pr-explain"></p></div>
-      <div class="p-block"><h2>What you told us</h2><p id="pr-verdict"></p></div>
-      <div class="p-block"><h2>Your numbers</h2><table class="p-table"><tbody id="pr-metrics"></tbody></table></div>
+      <h1>Your project capacity, and what is left of it</h1>
       <div class="p-block">
-        <h2>Your figures</h2>
-        <table class="p-table"><tbody id="pr-inputs"></tbody></table>
+        <h2>Portfolio headroom</h2>
+        <div class="p-figure" id="pr-figure"></div>
+        <p id="pr-headroom"></p>
+      </div>
+      <div class="p-block"><h2>What you told us</h2><p id="pr-verdict"></p></div>
+      <div class="p-block">
+        <h2>Your capacity position</h2>
+        <table class="p-table">
+          <thead><tr><th style="width:44%">Measure</th><th style="width:14%">Yours</th><th>Rating</th></tr></thead>
+          <tbody id="pr-tiles"></tbody>
+        </table>
+        <p class="p-note" id="pr-bandnote"></p>
       </div>
     </section>
 
     <section class="page">
-      <div class="p-head"><span>How the numbers were worked out</span><span>Page 2</span></div>
-      <h2>Everything here is counted, not modelled</h2>
-      <p>This report contains no industry averages, no benchmarks applied to your situation, and no assumptions about
-        how your team works. Every figure is arithmetic on numbers you supplied.</p>
-      <table class="p-table"><tbody id="pr-formulas"></tbody></table>
-      <p class="p-note" id="pr-bandnote"></p>
+      <div class="p-head"><span>Your numbers</span><span>Page 2</span></div>
+      <h2>The figures your position is built from</h2>
+      <p>None of these is rated against a threshold. They are the quantities the two rated measures above are
+        calculated from, plus context on the department they sit in.</p>
+      <table class="p-table"><tbody id="pr-facts"></tbody></table>
+      <div id="pr-checkblock"></div>
+      <h2 style="margin-top:12pt">Your figures, as you entered them</h2>
+      <table class="p-table"><tbody id="pr-inputs"></tbody></table>
+    </section>
+
+    <section class="page">
+      <div class="p-head"><span>How the numbers were worked out</span><span>Page 3</span></div>
+      <h2>Every figure is arithmetic on something you supplied</h2>
+      <p>Two external benchmarks appear in this report and both are named where they are used: a tickets-per-agent
+        figure, and a cross-industry split between run and change work. Everything else below is your own arithmetic.</p>
+      <table class="p-table">
+        <thead><tr><th style="width:38%">Figure</th><th style="width:32%">How</th><th>Result</th></tr></thead>
+        <tbody id="pr-formulas"></tbody>
+      </table>
 
       <h2 style="margin-top:12pt">What this does not account for</h2>
       <div class="p-callout">
-        <p><strong>It does not measure how much time anyone spends.</strong> This check counts people, not hours or
-          days. A person who gives a project one day a month and one who gives four days a week both count as one. The
-          finding is about dependency and visibility, not about capacity in hours.</p>
+        <p><strong>Effective FTE is a blended average, not a roster.</strong> Twenty people at 37% and seven people
+          at full time both come to a similar number of full-time equivalents, and they behave nothing alike. A blend
+          tells you how much capacity exists; it does not tell you whether it is available in the weeks a plan needs
+          it.</p>
         <p style="margin-top:6pt"><strong>Project shape varies and this does not capture it.</strong> Projects have a
           cadence: a subject-matter expert may be needed full time in discovery, part time in build, and not at all
-          until go-live. A headcount taken today is a snapshot of a moving picture.</p>
-        <p style="margin-top:6pt"><strong>Everyone counts as one whole person.</strong> Part-timers, shared staff and
-          contractors all count as one.</p>
+          until go-live. A figure taken today is a snapshot of a moving picture.</p>
+        <p style="margin-top:6pt"><strong>Both rated thresholds are ProjexaR positioning judgements.</strong> The
+          8&ndash;12 range for concurrent projects per coordinator is an informal industry convention rather than a
+          sourced finding, and the 5 and 10 project-per-FTE bands are our own. They measure different things
+          deliberately &mdash; oversight capacity against delivery capacity &mdash; and we will revisit both as we
+          gather real data.</p>
+        <p style="margin-top:6pt"><strong>Headroom assumes nothing else changes.</strong> It projects your current
+          pace forward at your current staffing. Adding people, reallocating time or changing how fast projects run
+          would all move it.</p>
+        <p style="margin-top:6pt" id="pr-flexeranote"></p>
         <p style="margin-top:6pt" id="pr-fxnote"></p>
       </div>
     </section>
 
     <section class="page">
-      <div class="p-head"><span>The same picture, three jobs</span><span>Page 3</span></div>
-      <h2>Three views of one dependency</h2>
+      <div class="p-head"><span>What your answers show</span><span>Page 4</span></div>
+      <h2>Read against what you told us about tools and process</h2>
       <table class="p-table">
-        <thead><tr><th>Role</th><th>The question they are actually asking</th><th>Their answer</th></tr></thead>
-        <tbody id="pr-roles"></tbody>
+        <thead><tr><th style="width:14%">Rating</th><th>Finding</th></tr></thead>
+        <tbody id="pr-cards"></tbody>
       </table>
-      <h2 style="margin-top:12pt">Why this stays invisible</h2>
-      <p id="pr-hats"></p>
-      <p style="margin-top:6pt">A project manager identifies what they need and negotiates a workable model with the
-        line manager who owns the person. That negotiation is usually sound. What breaks is what happens next: the
-        agreement is made once, at the start, and lives in a conversation. When something changes &mdash; and on a live
-        portfolio something always changes &mdash; there is often nowhere for the revised position to be recorded where
-        both sides can see it.</p>
-      <h2 style="margin-top:12pt">What we found in the market</h2>
-      <p>In July 2026 we examined nineteen resource and project management products aimed at teams like yours. None of
-        them holds non-project commitment as a property a line manager owns, sets per person, and can be held to. Every
-        one represents it either as an absence &mdash; booked leave, time off &mdash; or as an allocation against a pretend
-        project. Two come close, both through allocation rather than ownership.</p>
-      <p class="p-note">ProjexaR competitive analysis, July 2026. One vendor's exact mechanic is still unconfirmed and we
-        are checking it &mdash; we would rather say so than round the finding up.</p>
     </section>
 
     <section class="page">
-      <div class="p-head"><span>What your answers can show you</span><span>Page 4</span></div>
+      <div class="p-head"><span>What your answers can show you</span><span>Page 5</span></div>
       <h2>The limit of an aggregate</h2>
-      <p>Every figure in this report was calculated from your data. Aggregates are useful for sizing a
-        problem and useless for acting on one: an average tells you the portfolio is stretched but never which person
-        is carrying it. The same questions asked of your actual project plans return a different class of answer.</p>
+      <p>Every figure in this report was calculated from your data. Aggregates are useful for sizing a problem and
+        useless for acting on one: an average tells you the portfolio is stretched but never which person is carrying
+        it. The same questions asked of your actual project plans return a different class of answer.</p>
       <table class="p-table">
         <thead><tr><th style="width:50%">From what you told us</th><th>From your project plans</th></tr></thead>
         <tbody id="pr-compare"></tbody>
@@ -866,13 +875,14 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
     </section>
 
     <section class="page">
-      <div class="p-head"><span>What to do next</span><span>Page 5</span></div>
+      <div class="p-head"><span>What to do next</span><span>Page 6</span></div>
       <h2>Four steps, no software required</h2>
       <ol class="p-steps">
-        <li><strong>List the people on live projects who also hold a BAU role.</strong> Names, not a percentage. This is
-          the population every one of your project plans quietly depends on.</li>
-        <li><strong>For each one, write down what was actually agreed with their line manager.</strong> How much, for
-          which phase, until when. Most of these agreements exist only as a conversation.</li>
+        <li><strong>List the BAU people currently named on project work.</strong> Names, not a percentage. This is the
+          population every one of your project plans quietly depends on.</li>
+        <li><strong>For each one, write down what was actually agreed with their line manager.</strong> How much of
+          their week, for which phase, until when. Most of these agreements exist only as a conversation, which is why
+          the blended average you gave us is an estimate rather than a record.</li>
         <li><strong>Put it somewhere both the project manager and the line manager can see.</strong> A shared sheet is
           enough to start. The point is that neither side can change it without the other knowing.</li>
         <li><strong>Agree what triggers a renegotiation.</strong> A major incident, a phase gate, a leaver. The failure
@@ -880,14 +890,16 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       </ol>
       <p class="p-note">If you do these four things in a spreadsheet and they hold, you do not need us. Most teams find
         the problem is not the arithmetic &mdash; it is keeping it current once the portfolio starts moving.</p>
+
       <h2 style="margin-top:12pt">Sources</h2>
       <table class="p-table"><tbody id="pr-sources"></tbody></table>
-      <p class="p-note">Sources are listed only where a claim in your report draws on one. Everything else is arithmetic
-        on your own figures.</p>
+      <p class="p-note">Sources are listed only where a claim in your report draws on one. Everything else is
+        arithmetic on your own figures.</p>
+
       <h2 style="margin-top:12pt">See this on your own plans</h2>
-      <p>This report works from a headcount. ProjexaR works from your actual projects and your actual people, with each
-        person's operational commitment set and owned by their line manager &mdash; so when it changes, every plan that
-        depends on it changes with it.</p>
+      <p>This report works from a blended average. ProjexaR works from your actual projects and your actual people,
+        with each person's operational commitment set and owned by their line manager &mdash; so when it changes, every
+        plan that depends on it changes with it.</p>
       <p class="p-note" id="pr-price"></p>
     </section>
   </div>
@@ -926,7 +938,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 
 <script>
 /* Mobile navigation for the site chrome. Standalone so the tool's own script,
-   which follows, stays exactly as it was. */
+   which follows, stays independent of it. */
 (function () {
   var header = document.getElementById("pxrHeader");
   var toggle = document.getElementById("pxrNavToggle");
@@ -945,7 +957,9 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
    the report opening. Defined ahead of that script, which follows. */
 window.submitToSender = function(payload){
   payload.ack = document.getElementById('ack').checked;
-  payload.submitted_at = new Date().toISOString();
+  /* No timestamp is sent. The Worker stamps report_requested_at from its own
+     clock, because a browser's is not trustworthy and a client-supplied one is
+     trivially forged. */
   fetch('/api/capacity-report', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -958,28 +972,67 @@ window.submitToSender = function(payload){
 (function(){
   "use strict";
 
-  var PRICE_MONTH = 10, PRICE_YEAR = 100;
-  var CURRENCY = { GBP:'\u00A3', USD:'$', EUR:'\u20AC', AUD:'A$', NZD:'NZ$', CAD:'C$' };
+  /* ================= Constants ================= */
 
-  /* Band → proportion range. Ranges are carried through to the output; a
-     midpoint is never substituted, so the report never states a precision
-     the respondent did not give us. */
-  var BANDS = {
-    'lt25'   : { lo:0.00, hi:0.25, label:'under 25%' },
-    '25-50'  : { lo:0.25, hi:0.50, label:'25% to 50%' },
-    '50-75'  : { lo:0.50, hi:0.75, label:'50% to 75%' },
-    '75-100' : { lo:0.75, hi:1.00, label:'75% to 100%' },
-    'all'    : { lo:1.00, hi:1.00, label:'all of them' }
-  };
+  var PRICE_MONTH = 10, PRICE_YEAR = 100;
+  var CURRENCY = { GBP:'£', USD:'$', EUR:'€', AUD:'A$', NZD:'NZ$', CAD:'C$' };
+
+  /* Tickets one service desk agent handles in a month. Jitbit put the range at
+     440–525 from an analysis of 7 million support tickets across roughly 1,000
+     companies; 480 is its mid-point and the only figure we apply.
+     Source: Jitbit, analysis of 7 million support tickets across ~1,000 companies.
+
+     Jitbit publishes a higher secondary benchmark of 500–875 a month for desks
+     using AI-assisted tooling. We do not ask whether the respondent has any, so
+     we do not use it — see the deferred follow-up question. */
+  var TICKETS_PER_AGENT_MONTH = 480;
+
+  /* Tickets per employee per month observed across sectors. Used only to tell a
+     respondent that their own figure looks unusual, never to correct it.
+     Sources: HDI (Rumburg, 2012); MetricNet (2019, rev. 2023). */
+  var TICKET_RATE_LO = 0.41, TICKET_RATE_HI = 1.38;
+
+  /* Cross-industry split between run and growth spend. Flexera 2023 Tech Spend
+     Pulse, Figure 17 (N=506), published under CC BY 4.0. Two caveats travel with
+     it into the report's methodology section: it measures spend rather than
+     effort, and the survey targets organisations above 2,000 employees, which is
+     larger than this tool's typical respondent. */
+  var BENCH_BAU = 67, BENCH_CHANGE = 33;
+
+  /* RAG bands. Both sets are ProjexaR positioning judgements rather than sourced
+     thresholds, and they differ from each other deliberately: PM load measures
+     oversight capacity, BAU FTE measures delivery capacity. Five projects per
+     FTE is 0.2 FTE — one day a week — on each project. Revisit both against real
+     visitor data once there is any.
+
+     PM load     : green ≤8,  amber 9–12, red >12
+     BAU FTE load: green ≤5,  amber 6–10, red >10 */
+  var BAND_PM = { amber:8, red:12 };
+  var BAND_FTE = { amber:5, red:10 };
 
   var $ = function(id){ return document.getElementById(id); };
   var esc = function(s){ return String(s).replace(/[&<>"]/g,function(c){
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
   var n0 = function(v){ return Math.round(v).toLocaleString('en-GB'); };
   var n1 = function(v){ return (Math.round(v*10)/10).toLocaleString('en-GB'); };
+  /* Always one decimal place, thousands still grouped. Ratios that share a
+     column have to share a precision — "9" beside "6.1" reads as a different
+     kind of number, and toFixed on its own drops the grouping. */
+  var d1 = function(v){
+    var r = Math.round(v*10)/10, i = Math.floor(Math.abs(r));
+    return (r < 0 ? '-' : '') + i.toLocaleString('en-GB') + '.' + Math.round((Math.abs(r) - i) * 10);
+  };
   var n2 = function(v){ return (Math.round(v*100)/100).toLocaleString('en-GB'); };
-  var gbp = function(v){ return '\u00A3' + n0(v); };
+  var pct2 = function(v){ return v < 0.01 ? 'under 0.01%' : v.toFixed(2) + '%'; };
+  var gbp = function(v){ return '£' + n0(v); };
   var plural = function(n,a,b){ return n === 1 ? a : b; };
+
+  /* floor() on a product of a division reintroduces the division's floating
+     point error — 12 × 5 × (75/45) evaluates to 100.00000000000001, and a bare
+     floor would read that as 100 in one direction and 99 in the other. The
+     epsilon is far smaller than any threshold this tool can produce and far
+     larger than the error it absorbs. */
+  function ifloor(x){ return Math.floor(x + 1e-9); }
 
   /* Display text of a <select>, i.e. what the respondent actually read. Anything
      leaving this page — printed report or Sender payload — uses this, never the
@@ -1000,86 +1053,124 @@ window.submitToSender = function(payload){
 
   /* ================= Calculation core ================= */
 
-  /* Exposure = how much of the BAU dependency is visible, recorded and costed.
-     Driven by the dependency itself plus the three process answers. */
-  function exposure(v, c){
-    var score = 0, counted = 0;
-    function add(rag){ counted++; score += (rag === 'over' ? 2 : rag === 'atrisk' ? 1 : 0); }
-    if(c.bauKnown) add(ragOf('bau', c.bauHiPct));
-    if(v.integration) add(ragOf('choice3', v.integration));
-    if(v.bauCost)     add(ragOf('cost', v.bauCost));
-    if(v.portfolio)   add(ragOf('choice3', v.portfolio));
-    if(!counted) return { grade:'unsighted', rag:'over', score:0 };
-    var avg = score / counted;
-    if(avg >= 1.34) return { grade:'unsighted',  rag:'over',    score:avg };
-    if(avg >= 0.5)  return { grade:'partly',     rag:'atrisk',  score:avg };
-    return              { grade:'sighted',    rag:'healthy', score:avg };
-  }
+  function ragPM(load){  return load > BAND_PM.red  ? 'over' : (load > BAND_PM.amber  ? 'atrisk' : 'healthy'); }
+  function ragFTE(load){ return load > BAND_FTE.red ? 'over' : (load > BAND_FTE.amber ? 'atrisk' : 'healthy'); }
 
-  function ragOf(kind, value){
-    switch(kind){
-      case 'bau':     return value > 0.75 ? 'over' : (value > 0.25 ? 'atrisk' : 'healthy');
-      case 'pmload':  return value > 12 ? 'over' : (value >= 8 ? 'atrisk' : 'healthy');
-      case 'spread':  return value > 3 ? 'over' : (value > 1.5 ? 'atrisk' : 'healthy');
-      case 'load':    return value > 3 ? 'over' : (value > 1.5 ? 'atrisk' : 'healthy');
-      case 'choice3': return value === 'none' ? 'over'
-                           : (value === 'dedicated' || value === 'live') ? 'healthy' : 'atrisk';
-      case 'cost':    return value === 'outthedoor' ? 'over'
-                           : value === 'tracked' ? 'healthy' : 'atrisk';
+  var METRIC_PM  = 'Concurrent projects per PM';
+  var METRIC_FTE = 'Live projects per effective BAU FTE';
+
+  /* Portfolio headroom — how many more projects this year before a rated metric
+     turns red.
+
+     Already-red takes priority over the projection. The live-based thresholds
+     are checked first, and if the portfolio has already passed one of them there
+     is no headroom to project and the annual conversion is not run: a figure
+     saying "12 more projects" underneath a red tile would be nonsense. */
+  function headroomOf(v, c){
+    var pmLive  = v.pms > 0 ? ifloor(v.pms * BAND_PM.red) + 1 : null;
+    var bauLive = ifloor(c.effectiveFTE * BAND_FTE.red) + 1;
+
+    var h = {
+      pmLive:pmLive, bauLive:bauLive,
+      pmAnnual:null, bauAnnual:null,
+      value:null, binding:null, blocked:false, noPace:false
+    };
+
+    /* Whichever live threshold is lower is the one that binds; both are named
+       against the metric they came from so the note can say which tipped. */
+    var liveMin = bauLive, liveBind = METRIC_FTE;
+    if(pmLive !== null && pmLive < liveMin){ liveMin = pmLive; liveBind = METRIC_PM; }
+
+    if(v.live >= liveMin){
+      h.blocked = true; h.value = 0; h.binding = liveBind;
+      return h;
     }
-    return 'atrisk';
+
+    /* Converting a live threshold into an annual one needs a rate at which the
+       portfolio turns over, and turnover is undefined with nothing live. */
+    if(c.turnover === null){ h.noPace = true; return h; }
+
+    h.pmAnnual  = v.pms > 0 ? ifloor(BAND_PM.red * v.pms * c.turnover) + 1 : null;
+    h.bauAnnual = ifloor(BAND_FTE.red * c.effectiveFTE * c.turnover) + 1;
+
+    var annualMin = h.bauAnnual, annualBind = METRIC_FTE;
+    if(h.pmAnnual !== null && h.pmAnnual < annualMin){ annualMin = h.pmAnnual; annualBind = METRIC_PM; }
+
+    h.value = Math.max(0, annualMin - v.annual);
+    h.binding = annualBind;
+    return h;
   }
 
   function compute(v){
-    var band = BANDS[v.bauShare] || null;
-    var bauKnown = band !== null;
-    var bauLo = bauKnown ? Math.round(v.projectPeople * band.lo) : null;
-    var bauHi = bauKnown ? Math.round(v.projectPeople * band.hi) : null;
-    var c = {
-      bauKnown:bauKnown, band:band,
-      bauLo:bauLo, bauHi:bauHi,
-      bauLoPct: bauKnown ? band.lo : null,
-      bauHiPct: bauKnown ? band.hi : null,
-      dedicatedLo: bauKnown ? v.projectPeople - bauHi : null,
-      dedicatedHi: bauKnown ? v.projectPeople - bauLo : null,
-      exact: bauKnown && bauLo === bauHi,
-      itPercent: v.totalStaff > 0 ? (v.itStaff / v.totalStaff) * 100 : null,
-      projectShareOfIt: v.itStaff > 0 ? (v.projectPeople / v.itStaff) * 100 : null,
-      pmLoad: v.pms  > 0 ? v.live / v.pms  : null,
-      spread: v.projectPeople > 0 && v.live > 0 ? v.live / v.projectPeople : null,
-      perProject: v.live > 0 ? v.projectPeople / v.live : null,
-      commitments: v.live * v.perProjectNamed,
-      /* Commitments made per year = current stack × how often the portfolio turns over.
-         Divided by 52 calendar weeks, not working weeks — the conservative reading. */
-      commitmentsPerYear: (v.annual && v.live > 0) ? (v.live * v.perProjectNamed) * (v.annual / v.live) : null,
-      loadPerPerson: v.projectPeople > 0 ? (v.live * v.perProjectNamed) / v.projectPeople : null,
-      renegPerWeek: (v.annual && v.live > 0) ? ((v.live * v.perProjectNamed) * (v.annual / v.live)) / 52 : null,
-      churn: (v.annual && v.live > 0) ? v.annual / v.live : null,
-      monthly: v.projectPeople * PRICE_MONTH,
-      yearly:  v.projectPeople * PRICE_YEAR,
-      annualCost: v.projectPeople * PRICE_MONTH * 12
-    };
-    c.spendPct = (v.spend && v.spend > 0) ? (c.annualCost / v.spend) * 100 : null;
-    c.exposure = exposure(v, c);
+    var c = {};
+
+    c.effectiveFTE = v.bauStaff * (v.bauPercent2 / 100);
+    c.pmLoad = v.pms > 0 ? v.live / v.pms : null;
+
+    /* No BAU staff on projects means there is no delivery capacity to divide by.
+       Validation makes bauPercent2 at least 1, so effectiveFTE can only be zero
+       when bauStaff is zero — the tile goes red at maximum severity and states
+       that, rather than showing a ratio of nothing. */
+    c.noBauCapacity = c.effectiveFTE === 0;
+    c.projectsPerFTE = (!c.noBauCapacity) ? v.live / c.effectiveFTE : null;
+    c.ftePerProject  = (v.live > 0 && !c.noBauCapacity) ? c.effectiveFTE / v.live : null;
+
+    c.turnover = v.live > 0 ? v.annual / v.live : null;
+
+    c.ticketFTE   = v.ticketsPerMonth === null ? null : v.ticketsPerMonth / TICKETS_PER_AGENT_MONTH;
+    c.impliedRate = v.ticketsPerMonth === null ? null : v.ticketsPerMonth / v.companyHeadcount;
+    c.rateOutside = c.impliedRate === null ? false
+                  : (c.impliedRate < TICKET_RATE_LO || c.impliedRate > TICKET_RATE_HI);
+
+    c.itPercent = v.staff / v.companyHeadcount * 100;
+
+    /* Licence basis is the people who appear on project plans: the BAU staff
+       working on projects plus the project managers coordinating them. It
+       assumes non-PM project staff also hold a BAU role, which holds for the
+       segment this tool is aimed at. */
+    c.licenceCount = v.bauStaff + v.pms;
+    c.monthly = c.licenceCount * PRICE_MONTH;
+    c.yearly  = c.licenceCount * PRICE_YEAR;
+    c.annualCost = c.licenceCount * PRICE_MONTH * 12;
+    c.spendPct = (v.spend !== null && v.spend > 0) ? (c.annualCost / v.spend) * 100 : null;
+
+    c.ragPM  = c.pmLoad === null ? null : ragPM(c.pmLoad);
+    c.ragFTE = c.noBauCapacity ? 'over' : ragFTE(c.projectsPerFTE);
+
+    if(v.bauSplitEstimate === null){
+      c.splitDiff = null; c.splitLean = null;
+    }else{
+      c.splitDiff = Math.abs(v.bauSplitEstimate - BENCH_BAU);
+      c.splitLean = v.bauSplitEstimate > BENCH_BAU ? 'BAU-heavy'
+                  : (v.bauSplitEstimate < BENCH_BAU ? 'transformation-heavy' : 'level');
+    }
+
+    c.headroom = headroomOf(v, c);
     return c;
   }
 
   /* ================= Validation ================= */
   var RULES = [
-    { id:'totalStaff',    req:true,  min:1, max:200000,     what:'the size of your company' },
-    { id:'itStaff',       req:true,  min:1, max:20000,      what:'the size of your IT department' },
-    { id:'pms',           req:true,  min:0, max:2000,       what:'how many project managers' },
-    { id:'live',          req:true,  min:0, max:2000,       what:'how many projects are live' },
-    { id:'annual',        req:false, min:0, max:5000,       what:'projects in a typical year' },
-    { id:'spend',         req:false, min:0, max:1000000000, what:'annual project spend' },
-    { id:'projectPeople', req:true,  min:0, max:20000,      what:'how many people are on live projects' },
-    { id:'perProjectNamed', req:true, min:1, max:500,        what:'how many people a typical project names' },
-    { id:'bauShare',      req:true,  select:true },
-    { id:'toolset',       req:true,  select:true },
-    { id:'integration',   req:true,  select:true },
-    { id:'bauCost',       req:true,  select:true },
-    { id:'portfolio',     req:true,  select:true }
+    { id:'companyHeadcount',   req:true,  min:1, max:200000,     what:'your total company headcount' },
+    { id:'staff',              req:true,  min:1, max:20000,      what:'your total IT staff' },
+    { id:'pms',                req:true,  min:0, max:2000,       what:'how many project managers' },
+    { id:'live',               req:true,  min:0, max:2000,       what:'how many projects are live' },
+    { id:'annual',             req:true,  min:0, max:5000,       what:'projects in a typical year' },
+    { id:'spend',              req:false, min:0, max:1000000000, what:'annual project spend' },
+    { id:'bauStaff',           req:true,  min:0, max:20000,      what:'how many BAU staff work on projects' },
+    { id:'bauPercent2',        req:true,  min:1, max:100,        what:'the average share of their time' },
+    { id:'ticketsPerMonth',    req:false, min:0, max:1000000,    what:'monthly ticket volume' },
+    { id:'bauSplitEstimate',   req:false, min:0, max:100,        what:'your BAU effort split' },
+    { id:'toolset',            req:true,  select:true },
+    { id:'resourceVisibility', req:true,  select:true },
+    { id:'budgetTracking',     req:true,  select:true },
+    { id:'assignmentKnowledge',req:true,  select:true }
   ];
+
+  /* Left blank, these three stay null so the report can tell "not answered"
+     apart from a genuine zero — 0% BAU effort and 0 tickets are both real
+     answers with real output. */
+  var OPTIONAL_NUMERIC = { spend:1, ticketsPerMonth:1, bauSplitEstimate:1 };
 
   function setError(id, msg){
     var wrap = $('f-'+id), input = $(id);
@@ -1094,563 +1185,670 @@ window.submitToSender = function(payload){
     RULES.forEach(function(r){
       var raw = $(r.id).value.trim(), msg = '';
       if(r.select){
-        if(!raw) msg = 'Pick an option so we can work out your dependency.';
+        if(!raw) msg = 'Pick an option so we can work out your position.';
         v[r.id] = raw;
       }else if(raw === ''){
         if(r.req) msg = 'We need ' + r.what + ' to work this out.';
-        v[r.id] = (r.id === 'annual' || r.id === 'spend') ? null : 0;
+        v[r.id] = OPTIONAL_NUMERIC[r.id] ? null : 0;
       }else{
         var num = Number(raw);
         if(!isFinite(num))   msg = 'Numbers only, please.';
-        else if(num < r.min) msg = 'That should be at least ' + r.min + '.';
-        else if(num > r.max) msg = 'That looks too high \u2014 the most we handle is ' + r.max.toLocaleString('en-GB') + '.';
+        else if(num < r.min) msg = r.id === 'bauPercent2'
+          ? 'This needs to be at least 1% — at zero there would be no project capacity to measure.'
+          : 'That should be at least ' + r.min + '.';
+        else if(num > r.max) msg = 'That looks too high — the most we handle is ' + r.max.toLocaleString('en-GB') + '.';
         v[r.id] = num;
       }
       setError(r.id, msg);
       if(msg){ ok = false; firstBad = firstBad || r.id; }
     });
+
     if(ok){
-      if(v.itStaff > v.totalStaff){ setError('itStaff','That is more than your whole company \u2014 it should be ' + v.totalStaff + ' or fewer.'); ok=false; firstBad=firstBad||'itStaff'; }
-      if(v.projectPeople > v.itStaff){ setError('projectPeople','That is more than your IT department \u2014 it should be ' + v.itStaff + ' or fewer.'); ok=false; firstBad=firstBad||'projectPeople'; }
-      if(v.pms > v.itStaff){ setError('pms','That is more than your IT department \u2014 it should be ' + v.itStaff + ' or fewer.'); ok=false; firstBad=firstBad||'pms'; }
-      if(v.annual !== null && v.live > 0 && v.annual < v.live){ setError('annual','You have ' + v.live + ' live now, so the yearly figure cannot be lower.'); ok=false; firstBad=firstBad||'annual'; }
-      if(v.perProjectNamed > v.projectPeople){ setError('perProjectNamed','That is more than the ' + v.projectPeople + ' people you have on projects altogether.'); ok=false; firstBad=firstBad||'perProjectNamed'; }
-      if(v.live > 0 && v.live * v.perProjectNamed < v.projectPeople){ setError('perProjectNamed','That would give fewer places on plans than you have people on projects. Check this figure or the number of live projects.'); ok=false; firstBad=firstBad||'perProjectNamed'; }
-      if(v.live > 0 && v.projectPeople === 0){ setError('projectPeople','You told us ' + v.live + ' projects are live, so somebody must be on them.'); ok=false; firstBad=firstBad||'projectPeople'; }
+      if(v.staff > v.companyHeadcount){
+        setError('staff','That is more than your whole company — it should be ' + n0(v.companyHeadcount) + ' or fewer.');
+        ok = false; firstBad = firstBad || 'staff';
+      }
+      if(v.pms > v.staff){
+        setError('pms','That is more than your IT department — it should be ' + n0(v.staff) + ' or fewer.');
+        ok = false; firstBad = firstBad || 'pms';
+      }
+      /* The BAU field is asked excluding project managers, so the ceiling is the
+         non-PM part of the department, not the whole of it. */
+      if(v.pms <= v.staff && v.bauStaff > (v.staff - v.pms)){
+        setError('bauStaff','That is more than your non-PM IT staff — it should be ' + n0(v.staff - v.pms) + ' or fewer.');
+        ok = false; firstBad = firstBad || 'bauStaff';
+      }
+      if(v.annual < v.live){
+        setError('annual','You have ' + n0(v.live) + ' live now, so the yearly figure cannot be lower.');
+        ok = false; firstBad = firstBad || 'annual';
+      }
     }
+
     v.currency = $('currency').value;
     return { ok:ok, values:v, firstBad:firstBad };
   }
 
   /* ================= Copy ================= */
-  var EXPOSURE = {
-    unsighted: 'Dependency not visible',
-    partly:    'Dependency partly visible',
-    sighted:   'Dependency visible and costed'
-  };
+  var STATUS_WORD = { over:'At risk', atrisk:'Watch', healthy:'Healthy' };
 
-  /* "14" when the band is exact, "11 to 16" when it is not. Never a midpoint. */
-  function countPhrase(c){
-    if(!c.bauKnown) return null;
-    if(c.exact) return n0(c.bauHi);
-    if(c.bauLo === 0) return 'up to ' + n0(c.bauHi);
-    return n0(c.bauLo) + ' to ' + n0(c.bauHi);
+  /* The share of one person each live project is getting. Expressed as a
+     percentage of one person rather than as an FTE decimal, because "16% of one
+     person's time" lands and "0.16 FTE" does not. */
+  function ftePhrase(c){ return n0(c.ftePerProject * 100) + '%'; }
+
+  function positionLead(v, c){
+    if(c.noBauCapacity){
+      return 'You reported no BAU staff working on IT projects, so on your own figures there is no BAU delivery '
+           + 'capacity behind your ' + n0(v.live) + ' live ' + plural(v.live,'project','projects') + ' at all.';
+    }
+    if(v.live === 0){
+      return 'Nothing is live right now. Your ' + n0(v.bauStaff) + ' BAU ' + plural(v.bauStaff,'person','people')
+           + ' at an average of ' + v.bauPercent2 + '% of their time come to <strong>' + n1(c.effectiveFTE)
+           + ' effective FTE</strong> of project capacity, none of it currently committed.';
+    }
+    var fte = 'your <strong>' + n1(c.effectiveFTE) + ' effective BAU FTE</strong> — ' + n0(v.bauStaff) + ' '
+            + plural(v.bauStaff,'person','people') + ' at an average of ' + v.bauPercent2 + '% of their time — is '
+            + 'spread across all ' + n0(v.live) + ' of them';
+    if(v.pms === 0){
+      return 'With nobody formally running projects, ' + fte + '.';
+    }
+    return 'Each of your ' + n0(v.pms) + ' project ' + plural(v.pms,'manager','managers') + ' is carrying <strong>'
+         + n1(c.pmLoad) + ' concurrent projects</strong>, and ' + fte + '.';
   }
 
-  function headline(v, c){
-    var o = {};
-    var shared = c.bauKnown
-      ? (c.bauHiPct === 1 ? 'every one of them is' : countPhrase(c) + ' of them are')
-      : 'an unknown number of them are';
+  /* ---- RAG tiles ---- */
+  function tiles(v, c){
+    var out = [];
 
-    if(v.live === 0 || c.commitments === 0){
-      o.rag     = 'atrisk';
-      o.kicker  = 'You have';
-      o.figure  = n0(v.projectPeople);
-      o.unit    = 'IT people who work on projects, and nothing live right now';
-      o.explain = 'This is the quietest your portfolio will ever be, and the best possible moment to record who is '
-                + 'dedicated to delivery and who is holding an operational role at the same time \u2014 before plans '
-                + 'start depending on the answer.';
-      o.sensitivity = 'Once projects start, every person named on a plan becomes a separate agreement with a line '
-                + 'manager. Those agreements are easy to make and very hard to keep track of.';
-      return o;
-    }
-
-    o.rag = ragOf('load', c.loadPerPerson);
-    o.kicker = 'Across ' + v.live + ' live ' + plural(v.live,'project','projects') + ', your ' + n0(v.projectPeople)
-             + ' IT people are holding';
-    o.figure = n0(c.commitments);
-    o.unit   = 'separate project commitments at the same time';
-    o.explain = 'Each live project names ' + v.perProjectNamed + ' of your people, so ' + v.live + ' \u00D7 '
-              + v.perProjectNamed + ' gives <strong>' + n0(c.commitments) + ' commitments across '
-              + n0(v.projectPeople) + ' people</strong> \u2014 an average of <strong>' + n1(c.loadPerPerson)
-              + ' concurrent projects each</strong>, and ' + shared + ' doing it alongside an operational role '
-              + 'that does not stop.';
-    o.sensitivity = 'Every one of those ' + n0(c.commitments) + ' commitments was agreed separately between a project '
-              + 'manager and a line manager. When production reclaims one person, '
-              + (c.loadPerPerson >= 1.5
-                  ? 'an average of ' + n1(c.loadPerPerson) + ' plans are affected at once \u2014 and none of them find '
-                    + 'out until a date slips.'
-                  : 'the plan that person is on is affected \u2014 and it usually finds out when a date slips.');
-    return o;
-  }
-
-  function verdict(v, c){
-    var s1 = 'You told us ' + v.itStaff + ' people work in IT, ' + n0(v.projectPeople) + ' of them currently on '
-           + v.live + ' ' + plural(v.live,'live project','live projects') + ', with each project naming '
-           + v.perProjectNamed + ' of your people.';
-    var s2 = c.commitments > 0
-      ? ' That is <strong>' + n0(c.commitments) + ' concurrent project commitments held by ' + n0(v.projectPeople)
-        + ' people</strong> \u2014 ' + n1(c.loadPerPerson) + ' each.'
-      : ' Nothing is live at the moment.';
-    var s3 = '';
-    if(c.bauKnown){
-      s3 = c.bauHiPct === 1
-        ? ' <strong>Every one of those people</strong> also holds a BAU or support role.'
-        : ' <strong>' + countPhrase(c) + '</strong> of those people also hold a BAU or support role.';
-    }else{
-      s3 = ' You are not sure how many of them are BAU staff rather than dedicated project resources.';
-    }
-    var s4 = '';
-    if(v.bauCost === 'outthedoor'){
-      s4 = ' Your project budgets carry out-the-door spend only, so none of that internal time appears in what your '
-         + 'projects are reported to cost.';
-    }else if(v.portfolio === 'none'){
-      s4 = ' And you could not currently say who is on which project without asking.';
-    }
-    return s1 + s2 + s3 + s4;
-  }
-
-  function roles(v, c){
-    var phrase = c.bauKnown ? (c.bauHiPct === 1 ? 'all ' + n0(v.projectPeople) : countPhrase(c)) : null;
-    var r = {};
-    r.lm = {
-      who:'The manager who owns the people',
-      q:'"Who on my team is committed elsewhere, and until when?"',
-      fig: c.commitments > 0 ? n0(c.commitments) + ' commitments across ' + n0(v.projectPeople) + ' of my people'
-                             : n0(v.projectPeople) + ' people, nothing live',
-      line: c.commitments > 0
-        ? 'Your people have been promised to projects ' + n0(c.commitments) + ' separate times, an average of '
-          + n1(c.loadPerPerson) + ' each. Every one of those was a separate conversation with a different project '
-          + 'manager. There is no single place showing what any individual is now collectively committed to, which is '
-          + 'why agreeing to one more always feels reasonable.'
-        : 'Nothing is live, so nobody is committed anywhere. The next agreement made is the moment to start recording it.'
-    };
-    r.pm = {
-      who:'The person holding the plan together',
-      q:'"Have I actually got the people my plan says I have?"',
-      fig: c.loadPerPerson !== null ? 'Each of my ' + v.perProjectNamed + ' people is on ' + n1(c.loadPerPerson) + ' projects'
-                                    : 'No live plans',
-      line: c.commitments > 0
-        ? 'Your plan names ' + v.perProjectNamed + ' people. Each of them is carrying ' + n1(c.loadPerPerson)
-          + ' concurrent projects'
-          + (phrase ? ' and ' + (c.bauHiPct === 1 ? 'all of them hold' : phrase + ' of the pool hold') + ' an operational role as well. ' : '. ')
-          + 'Your plan is sound in isolation. So is everyone else\u2019s. The conflict only exists in the total, and '
-          + 'nobody is looking at the total.'
-        : 'Nothing is running, so there is nothing competing for your people yet.'
-    };
-    r.pf = c.commitments > 0 ? {
-      who:'Whoever answers for all of it',
-      q:'"Can we take on one more?"',
-      fig:'One more adds ' + v.perProjectNamed + ' commitments to ' + n0(c.commitments),
-      line:'One more project would take you from ' + n0(c.commitments) + ' commitments to '
-          + n0(c.commitments + v.perProjectNamed) + ', and from ' + n1(c.loadPerPerson) + ' concurrent projects per '
-          + 'person to ' + n1((c.commitments + v.perProjectNamed) / v.projectPeople) + '. Whether that is safe depends '
-          + 'on what each person is already carrying operationally, which is not recorded anywhere.'
-          + (c.churn ? ' At around ' + v.annual + ' projects a year, this position resets ' + n1(c.churn) + ' times over.' : '')
-    } : {
-      who:'Whoever answers for all of it',
-      q:'"What can we actually take on?"',
-      fig:'Nothing live',
-      line:'Nothing is running right now, which makes this the best possible moment to record who is dedicated and who '
-          + 'is shared, before plans start depending on the answer.'
-    };
-    return r;
-  }
-
-  function hats(v, c){
-    if(v.pms <= 1){
-      return (v.pms === 0 ? 'With nobody formally running projects, ' : 'With one project manager, ')
-           + 'these three roles are very likely held by the same person. That is efficient \u2014 and it is why the '
-           + 'negotiation between project need and operational duty never has to be written down. Nobody negotiates '
-           + 'with themselves.';
-    }
-    if(v.pms <= 3){
-      return 'In a department this size these roles are often held by two or three people who talk constantly. That '
-           + 'works, and it is also why so little of it gets recorded \u2014 until somebody is away, or the portfolio '
-           + 'grows past what a conversation can hold.';
-    }
-    return 'With this many project managers, each is negotiating separately with the same line managers for the same '
-         + 'people. Every individual agreement can be reasonable while the total is impossible.';
-  }
-
-  /* ================= Metrics ================= */
-  function metrics(v, c){
-    var m = [];
-    if(c.commitments > 0){
-      m.push({ rag:ragOf('load', c.loadPerPerson), label:'Projects per person, at once',
-               value:n1(c.loadPerPerson),
-               note:c.loadPerPerson > 1.5 ? 'Reclaim one person and this many plans move at once'
-                                          : 'Most people are focused on a single project' });
-    }
-    m.push({ rag: c.bauKnown ? ragOf('bau', c.bauHiPct) : 'over',
-             label:'Also holding a BAU role',
-             value: c.bauKnown ? countPhrase(c) + ' of ' + n0(v.projectPeople) : n0(v.projectPeople) + ' of ' + n0(v.projectPeople) + '?',
-             note: c.bauKnown ? c.band.label + ' of your project people' : 'Split not known' });
+    /* Suppressed entirely when there are no project managers: there is no load
+       to divide and no threshold to fail. */
     if(c.pmLoad !== null){
-      m.push({ rag:ragOf('pmload', c.pmLoad), label:'Live projects per project manager', value:n1(c.pmLoad),
-               note:c.pmLoad >= 8 ? 'Above the range one person can actively plan rather than react to'
-                                  : 'Within the range one person can hold and still plan ahead' });
+      out.push({
+        key:'pm', rag:c.ragPM, label:METRIC_PM, value:d1(c.pmLoad),
+        note: v.live === 0
+          ? 'Nothing is live, so no project is currently sitting with anyone.'
+          : c.ragPM === 'healthy'
+            ? 'Within the range one person can plan ahead in rather than react to — the informal ceiling for one '
+              + 'coordinator sits at 8 to 12'
+            : c.ragPM === 'atrisk'
+              ? 'At the edge of sustainable oversight load — approaching the informal 8–12 ceiling for one coordinator'
+              : 'Past the informal 8–12 ceiling for one coordinator — at this load the work becomes reacting to '
+                + 'projects rather than planning them'
+      });
     }
-    m.push({ rag:'neutral', label:'IT as a share of the company', value:n1(c.itPercent) + '%',
-             note:v.itStaff + ' of ' + n0(v.totalStaff) + ' people' });
-    return m;
+
+    out.push({
+      key:'fte', rag:c.ragFTE, label:METRIC_FTE,
+      value: c.noBauCapacity ? '—' : d1(c.projectsPerFTE),
+      note: c.noBauCapacity
+        ? 'No dedicated BAU capacity was reported against your projects, so there is no ratio to state.'
+        : v.live === 0
+          ? 'Nothing is live, so none of your BAU capacity is committed to project work right now.'
+          : c.ragFTE === 'healthy'
+            ? 'Within sustainable BAU coverage — each project is receiving roughly ' + ftePhrase(c)
+              + ' of one person’s time'
+            : c.ragFTE === 'atrisk'
+              ? 'At the edge of sustainable BAU coverage — each project is receiving roughly ' + ftePhrase(c)
+                + ' of one person’s time'
+              : 'Past sustainable BAU coverage — each project is receiving roughly ' + ftePhrase(c)
+                + ' of one person’s time'
+    });
+
+    return out;
   }
 
-  /* ================= What aggregates cannot show ================= */
-  function compare(v, c){
-    var rows = [];
-    if(c.commitments > 0){
-      rows.push({
-        now:'Your ' + n0(v.projectPeople) + ' people hold ' + n0(c.commitments) + ' commitments between them.',
-        next:'Which of them hold the most \u2014 and whether three people are carrying half of it.' });
-      rows.push({
-        now:'That averages ' + n1(c.loadPerPerson) + ' concurrent projects each.',
-        next:'The actual spread. Averages hide the person on six projects and the person on one.' });
+  /* ---- Portfolio headroom ---- */
+  function headroomCopy(v, c){
+    var h = c.headroom;
+
+    if(h.noPace){
+      return { blocked:true, eyebrow:'Portfolio headroom',
+        figure:'No live projects to work from',
+        note:'Portfolio headroom projects your current plan forward to the point where a key metric would turn red. '
+           + 'That projection needs a current pace to work from — with nothing live right now, there is none. This '
+           + 'figure will appear once you have projects running.' };
     }
-    if(c.bauKnown && c.bauHiPct > 0){
-      rows.push({
-        now:(c.bauHiPct === 1 ? 'Every one of your project people' : countPhrase(c) + ' of your project people')
-            + ' also holds a BAU role.',
-        next:'Which weeks their operational duties collide with a project milestone \u2014 before it happens.' });
-    }else if(!c.bauKnown){
-      rows.push({
-        now:'You are not sure how many of your project people also hold a BAU role.',
-        next:'Exactly who is shared, who is dedicated, and what each has been promised to.' });
+
+    if(h.blocked){
+      return { blocked:true, eyebrow:'Portfolio headroom',
+        figure:'No headroom left this year',
+        note:'<strong>' + esc(h.binding) + '</strong> is already past its red threshold at ' + n0(v.live)
+           + ' live ' + plural(v.live,'project','projects') + ', so there is no headroom to project forward. Bringing '
+           + 'that measure back inside its band — by adding capacity or by reducing what is running — comes before '
+           + 'taking anything else on.' };
     }
-    if(c.renegPerWeek !== null){
-      rows.push({
-        now:'Around ' + n0(c.commitmentsPerYear) + ' commitments are made or remade each year.',
-        next:'Which agreements are already out of date, and which plan is relying on one.' });
-    }
-    if(v.live > 0){
-      rows.push({
-        now:'Adding a project would take you to ' + n0(c.commitments + v.perProjectNamed) + ' commitments.',
-        next:'Whether the specific people that project needs are free in the weeks it needs them.' });
-    }
-    return rows;
+
+    return { blocked:false, eyebrow:'Portfolio headroom',
+      figure:n0(h.value) + ' more ' + plural(h.value,'project','projects') + ' this year',
+      note:'until a key metric turns red — <strong>' + esc(h.binding) + '</strong> would be the first to tip, assuming '
+         + 'this year’s typical project pace holds. Assumes staff, PMs and BAU capacity stay as reported, and that new '
+         + 'projects run at a similar pace to today’s — adding people, reallocating time, or changing project pace '
+         + 'would all change this.' };
   }
 
-  /* ================= Cards ================= */
-  function cards(v, c){
-    var out = [], rag, phrase = c.bauKnown ? countPhrase(c) : null;
+  /* ---- Informational bullets. Nothing here is rated. ---- */
+  function facts(v, c){
+    var out = [];
 
-    /* 0 — the commitment stack: the finding nobody has worked out */
-    if(c.commitments > 0){
-      rag = ragOf('load', c.loadPerPerson);
-      out.push({ rag:rag,
-        title:'Your ' + n0(v.projectPeople) + ' project people are holding ' + n0(c.commitments) + ' commitments at once',
-        body:'Nobody sat down and agreed to ' + n0(c.commitments) + ' concurrent commitments. It is the arithmetic of '
-           + v.live + ' projects each naming ' + v.perProjectNamed + ' people, and it accumulated one reasonable '
-           + 'conversation at a time. '
-           + (rag === 'healthy'
-              ? 'At ' + n1(c.loadPerPerson) + ' projects per person you are close to genuine focus, which is rare. The '
-                + 'thing to protect is that ratio as the portfolio grows.'
-              : 'At ' + n1(c.loadPerPerson) + ' projects per person, no individual plan looks unreasonable and the total '
-                + 'is invisible. That is the specific failure: the conflict does not exist in any one plan, so no plan '
-                + 'owner can see it, and the person who could see it is not in any of the conversations.') });
+    out.push({ figure:d1(c.effectiveFTE) + ' FTE',
+      label:'Effective BAU capacity currently on projects',
+      note:'combining the BAU headcount and average time split you gave us' });
+
+    out.push({ figure: c.turnover === null ? '—' : d1(c.turnover) + '×',
+      label:'Annual portfolio turnover',
+      note: c.turnover === null
+        ? 'turnover needs a live project count to work from, and with nothing live there is no pace to measure'
+        : 'how many full project cycles your portfolio runs through each year' });
+
+    out.push({ figure:d1(c.itPercent) + '%',
+      label:'IT staff as a share of the company',
+      note:n0(v.staff) + ' of ' + n0(v.companyHeadcount) + ' people' });
+
+    if(c.ticketFTE !== null){
+      out.push({ figure:d1(c.ticketFTE) + ' FTE',
+        label:'Of ongoing capacity would be needed, dedicated solely to handling tickets',
+        note:'to keep pace with your reported monthly ticket volume, at the 480 tickets per agent per month '
+           + 'mid-point Jitbit derived from 7 million support tickets across around 1,000 companies' });
+
+      /* Consistency check. Queries the input rather than rating the output, and
+         sits directly beneath the bullet it questions. */
+      if(c.rateOutside){
+        var low = c.impliedRate < TICKET_RATE_LO;
+        out.push({ check:true, text:
+            'Your reported ticket volume works out to approximately ' + n2(c.impliedRate) + ' tickets per employee '
+          + 'per month, ' + (low ? 'lower' : 'higher') + ' than the 0.41–1.38 range found across sectors in published '
+          + 'research. This may reflect a ' + (low ? 'smaller' : 'broader') + ' support scope, tickets logged outside '
+          + 'this count, or simply a ' + (low ? 'lighter' : 'heavier') + '-than-typical load — worth a second look if '
+          + 'the figure was estimated rather than pulled from your service desk tooling.' });
+      }
     }
 
-    /* 1 — the dependency itself */
-    if(!c.bauKnown){
-      out.push({ rag:'over', title:'The split between shared and dedicated people is not known',
-        body:'Every project plan you are running assumes a level of availability from the people on it. Whether those '
-           + 'people can be reclaimed by an incident, a release or a support backlog depends entirely on whether they '
-           + 'hold an operational role as well. That is not recorded anywhere you could check, which means neither can '
-           + 'anyone else check it.' });
-    }else if(c.bauHiPct === 1){
-      out.push({ rag:'over', title:'Every person on your live projects also holds a BAU role',
-        body:'There is no dedicated delivery capacity in your portfolio at all. Every hour of project progress is being '
-           + 'made by somebody whose first responsibility is keeping something running. This is an extremely common '
-           + 'position and it is not a failure of planning \u2014 but it means production incidents and project deadlines '
-           + 'draw on exactly the same people, and production always wins.' });
-    }else{
-      rag = ragOf('bau', c.bauHiPct);
-      out.push({ rag:rag, title: phrase + ' of your ' + n0(v.projectPeople) + ' project people are shared with BAU',
-        body:'Their project time was negotiated against a day job that does not stop. When production demands attention, '
-           + 'the negotiation is effectively reopened \u2014 usually without anyone reopening the plan. '
-           + (rag === 'healthy'
-              ? 'At your level of dependency there is real dedicated capacity to absorb some of that, which puts you in '
-                + 'a stronger position than most IT departments this size.'
-              : 'At this level of dependency, most of your delivery capacity is contingent on nothing going wrong '
-                + 'elsewhere.') });
-    }
-
-    /* 2 — PM load */
-    if(c.pmLoad !== null){
-      rag = ragOf('pmload', c.pmLoad);
-      out.push({ rag:rag, title:'Each project manager is carrying ' + n1(c.pmLoad) + ' concurrent projects',
-        body: rag === 'healthy'
-          ? 'That is within what one person can actively plan rather than simply react to. The risk at this level is not '
-            + 'overload \u2014 it is that a comfortable ratio hides a resourcing dependency underneath it.'
-          : 'Past roughly eight concurrent projects a coordinator stops planning and starts reacting. Renegotiating a '
-            + 'shared resource with a line manager is exactly the kind of work that gets deferred at that point, and '
-            + 'deferring it is how a plan quietly stops matching reality.' });
-    }
-
-    /* (spread card retired — people-per-project is now a direct input, and the
-       commitment card above says more with the same data) */
-
-    /* 4 — toolset */
-    var TOOLSET = {
-      excel:{ rag:'atrisk', title:'You plan projects in a spreadsheet',
-        body:'Spreadsheets are flexible and everyone can read them, which is exactly why they spread. The evidence on '
-           + 'accuracy is less kind: Raymond Panko at the University of Hawaii reviewed thirteen studies of operational '
-           + 'spreadsheets and found errors in the large majority \u2014 one review of 88 audited spreadsheets found 94% '
-           + 'contained at least one. The specific risk here is that a resourcing agreement recorded in a sheet is a '
-           + 'snapshot: it does not tell anyone when it stopped being true.' },
-      msproject:{ rag:'atrisk', title:'You plan projects in Microsoft Project',
-        body:'Two things worth knowing. Desktop Project plans one project at a time \u2014 seeing resource commitment '
-           + 'across several projects at once needs the enterprise service, not the desktop app. And that service, '
-           + 'Project Online, retires on 30 September 2026, with no automatic migration path published. If your '
-           + 'cross-project resource view lives there, that is a larger problem than this quarter.' },
-      planner:{ rag:'atrisk', title:'You plan projects in Microsoft Planner',
-        body:'Planner is good at tasks and boards. Dependencies, Gantt views and resource capacity planning sit behind '
-           + 'Planner Premium at an added per-user cost \u2014 so on the base tier there is nowhere for a resourcing '
-           + 'agreement to live at all. It stays in the conversation where it was struck.' },
-      ppm:{ rag:'healthy', title:'You already have a dedicated tool for this',
-        body:'That is a real foundation and most IT departments this size do not have one. One question worth asking of '
-           + 'it: can a line manager record how much of a person is committed to operational duty, with every project '
-           + 'plan obeying that figure? Most tools model availability as bookings against projects, which makes '
-           + 'operational commitment invisible until somebody books it as if it were a project.' },
-      mixed:{ rag:'over', title:'Your planning is spread across several tools',
-        body:'Each tool is probably fine at its own job. Mixing tools means mixing sources of truth, with no single '
-           + 'place showing the full picture. Somebody reconciles them by hand, and a resourcing agreement made in a '
-           + 'conversation is exactly the kind of thing that never makes it into any of them.' },
-      none:{ rag:'over', title:'There is no system holding this together',
-        body:'Every plan and resourcing agreement currently lives in email, meetings or somebody\u2019s memory. That '
-           + 'works until the person holding it is away \u2014 and it makes the figures you entered here estimates rather '
-           + 'than records.' }
-    };
-    if(v.toolset && TOOLSET[v.toolset]) out.push(TOOLSET[v.toolset]);
-
-    /* 5 — single live view */
-    if(v.integration){
-      out.push({ rag:ragOf('choice3', v.integration),
-        title: v.integration === 'none'   ? 'No single live view of what projects need against who is available'
-             : v.integration === 'manual' ? 'Demand and availability are joined up by hand'
-             : 'You have a live view of both sides',
-        body: v.integration === 'none'
-          ? 'Every resourcing conflict in your portfolio already exists. Without one view holding both sides, none of it '
-            + 'surfaces until it has already caused a delay \u2014 and by then it looks like a project problem rather than '
-            + 'a portfolio one.'
-          : v.integration === 'manual'
-            ? 'A cross-referenced spreadsheet is accurate for exactly as long as it takes somebody to make the next '
-              + 'change and forget to update it everywhere else. Shared resources are the first thing to drift, because '
-              + 'they change for reasons that have nothing to do with the project.'
-            : 'Worth checking whether it holds operational commitment as well as project demand. Most dedicated PM tools '
-              + 'track one side thoroughly and the other not at all.' });
-    }
-
-    /* 6 — cost of BAU time in project budgets (Norm's corrected question) */
-    if(v.bauCost){
-      var spendTxt = v.spend ? 'The ' + CURRENCY[v.currency] + n0(v.spend) + ' you told us you spend on IT projects each year'
-                             : 'What your projects are reported to cost';
-      var COST = {
-        outthedoor:{ rag:'over', title:'Your project budgets carry out-the-door spend only',
-          body: spendTxt + ' covers licences, contractors and hardware \u2014 the things that arrive as an invoice. '
-             + (phrase ? 'The ' + phrase + ' BAU ' + plural(c.bauHi,'person','people') + ' working on your projects '
-                       : 'The internal staff time on your projects ')
-             + 'cost the organisation real money and appear in none of it. The true cost of running your portfolio is '
-             + 'therefore higher than any figure currently reported, and nobody is in a position to say by how much.' },
-        partial:{ rag:'atrisk', title:'Internal BAU time reaches your project budgets some of the time',
-          body:'Partial costing is often harder to work with than none, because the numbers that do exist look '
-             + 'authoritative. Comparing two projects is unsafe when one carries internal time and the other does not, '
-             + 'and that comparison is exactly what portfolio decisions rest on.' },
-        varies:{ rag:'atrisk', title:'Whether internal time is costed depends on who is running the project',
-          body:'Some project managers forecast internal effort and some are only ever asked for out-the-door cost. The '
-             + 'result is a portfolio where reported cost reflects the project manager as much as the project. The ones '
-             + 'least likely to be capturing it are usually the ones carrying the most projects.' },
-        tracked:{ rag:'healthy', title:'Internal BAU time is budgeted and tracked against projects',
-          body:'That is genuinely uncommon and it puts you ahead of most IT departments. Worth confirming the figure is '
-             + 'visible to the line managers who supply the people, not only to finance \u2014 the number is most useful '
-             + 'at the point where the commitment is agreed.' }
-      };
-      if(COST[v.bauCost]) out.push(COST[v.bauCost]);
-    }
-
-    /* 7 — portfolio visibility */
-    if(v.portfolio){
-      out.push({ rag:ragOf('choice3', v.portfolio),
-        title: v.portfolio === 'none'  ? 'You would have to ask around to find out who is on what'
-             : v.portfolio === 'stale' ? 'You would want to check before trusting who is on what'
-             : 'You can see who is on what without asking',
-        body: v.portfolio === 'none'
-          ? 'Which means the figures you entered here are estimates too. That is not a criticism \u2014 it is where most '
-            + 'IT departments are. It also means that when a line manager reclaims somebody, there is no mechanism by '
-            + 'which the portfolio finds out.'
-          : v.portfolio === 'stale'
-            ? 'Decisions end up made against a picture that was already out of date when it was looked at. Shared '
-              + 'resources are the oldest part of that picture, because their commitment changes quietly.'
-            : 'Then the remaining question is whether it shows what each person is committed to outside projects. That '
-              + 'is the half most portfolio views leave out, and it is the half that decides whether a plan holds.' });
-    }
-
-    /* 7b — the renegotiation rate: the one figure nobody has worked out */
-    if(c.renegPerWeek !== null && c.renegPerWeek >= 0.5){
-      out.push({ rag: c.renegPerWeek >= 2 ? 'over' : 'atrisk',
-        title:'Around ' + n0(c.commitmentsPerYear) + ' resourcing agreements are made or remade every year',
-        body:'You run ' + v.annual + ' projects a year against ' + v.live + ' live at any moment, so your portfolio '
-           + 'turns over ' + n1(c.churn) + ' times. Applied to ' + n0(c.commitments) + ' concurrent commitments, that '
-           + 'is roughly ' + n0(c.commitmentsPerYear) + ' agreements a year between a project manager and a line '
-           + 'manager \u2014 more than ' + n1(c.renegPerWeek) + ' every week, every week. Each one is a negotiation '
-           + 'that was sound when it was made. '
-           + (v.portfolio === 'live'
-              ? 'You can see who is on what, which is the first half. The second half is whether the terms of each '
-                + 'agreement are visible too.'
-              : 'By your own answers, none of them is recorded anywhere both sides can see afterwards.') });
-    }
-
-    /* 8 — coordination overhead */
-    if(v.annual && v.annual > 0 && v.pms > 0){
-      out.push({ rag: v.integration === 'dedicated' ? 'atrisk' : 'over',
-        title:'Somebody is reconciling all of this by hand',
-        body:'Across ' + v.annual + ' projects a year, your ' + v.pms + ' project ' + plural(v.pms,'manager is','managers are')
-           + ' working out who is free, who is needed and who has already been promised elsewhere \u2014 and that '
-           + 'reconciliation is itself a recurring task nobody has costed. '
-           + (v.integration === 'dedicated'
-              ? 'Worth checking whether your tool reduces that overhead or just moves where it happens. Manual '
-                + 'reconciliation between systems often survives the arrival of a tool.'
-              : 'The more projects the department runs, the more that coordination time compounds.') });
+    if(v.bauSplitEstimate !== null){
+      var change = 100 - v.bauSplitEstimate;
+      out.push({ figure:n0(v.bauSplitEstimate) + '/' + n0(change),
+        label:'Your reported BAU/transformation split compared to the cross-industry average',
+        note: c.splitLean === 'level'
+          ? 'your reported split — approximately ' + v.bauSplitEstimate + '% BAU, ' + change + '% transformation — '
+            + 'matches the 67%/33% cross-industry average (Flexera 2023 Tech Spend Pulse)'
+          : 'your reported split — approximately ' + v.bauSplitEstimate + '% BAU, ' + change + '% transformation — '
+            + 'compares to a 67%/33% cross-industry average (Flexera 2023 Tech Spend Pulse), running about '
+            + n0(c.splitDiff) + ' percentage points more ' + c.splitLean + ' than the cross-industry average' });
     }
 
     return out;
   }
 
-  /* ================= Render ================= */
-  var STATUS_WORD = { over:'At risk', atrisk:'Watch', healthy:'Healthy' };
+  /* ---- Cards ----
+     Card D is specified in the brief. Items 12, 13 and 14 carry the Answer
+     Option Mapping copy verbatim. Item 11 is composed from the Project Tools
+     outputs tab, which holds Issue/Risk/Watch rows rather than finished prose.
+     Severities throughout are as the matrix has them — they are not derivable
+     from the answer, so do not adjust one without the tab in front of you. */
+  function cards(v, c){
+    var out = [];
 
-  function render(v, c){
-    var h = headline(v, c);
-    $('headline').className = 'headline ' + h.rag;
-    $('headKicker').textContent = h.kicker;
-    $('headFigure').textContent = h.figure;
-    $('headUnit').textContent = h.unit;
-    $('headExplain').innerHTML = h.explain;
-    $('headSensitivity').textContent = h.sensitivity;
-
-    $('confBadge').className = 'badge ' + c.exposure.rag;
-    $('confText').textContent = EXPOSURE[c.exposure.grade];
-
-    $('metricGrid').innerHTML = metrics(v, c).map(function(m){
-      return '<div class="metric ' + m.rag + '"><p class="m-label">' + esc(m.label) + '</p>'
-           + '<p class="m-value">' + esc(m.value) + '</p><p class="m-note">' + esc(m.note) + '</p></div>'; }).join('');
-
-    var r = roles(v, c);
-    ['lm','pm','pf'].forEach(function(k){
-      $(k+'Who').innerHTML = esc(r[k].who) + '<span class="role-q">' + esc(r[k].q) + '</span>';
-      $(k+'Figure').textContent = r[k].fig;
-      $(k+'Line').textContent = r[k].line;
-    });
-    $('hatsNote').textContent = hats(v, c);
-
-    $('ragList').innerHTML = cards(v, c).map(function(card){
-      return '<details class="rag ' + card.rag + '"><summary><span class="status">' + STATUS_WORD[card.rag]
-           + '</span><span>' + card.title + '</span></summary><div class="detail">' + card.body + '</div></details>'; }).join('');
-
-    var cmp = compare(v, c);
-    $('compareRows').innerHTML = cmp.map(function(row){
-      return '<div class="compare-row"><div class="c-now">' + esc(row.now) + '</div>'
-           + '<div class="c-next">' + esc(row.next) + '</div></div>'; }).join('');
-    $('ctaHead').textContent = c.commitments > 0
-      ? 'Every answer on the right is already in your ' + v.live + ' live ' + plural(v.live,'plan','plans') + '. ProjexaR draws it out.'
-      : 'Every answer on the right is already in the plans you write. ProjexaR draws it out.';
-    $('ctaBody').textContent = 'Nothing needs to be built and nothing needs to be migrated. ProjexaR reads your plans '
-      + 'together instead of one at a time, so you can see exactly who is committed where, catch the clashes while '
-      + 'they are still fixable, and answer "can we take this on?" with something better than instinct.';
-
-    $('closingVerdict').innerHTML = verdict(v, c);
-
-    var price = 'Beyond two projects, ProjexaR is charged per managed resource \u2014 the ' + n0(v.projectPeople) + ' '
-      + plural(v.projectPeople,'person','people') + ' on your live projects, not your whole IT department of '
-      + v.itStaff + '. That is <strong>' + gbp(c.monthly) + ' a month</strong>, or ' + gbp(c.yearly) + ' a year.';
-    if(c.spendPct !== null){
-      price += ' Against the ' + CURRENCY[v.currency] + n0(v.spend) + ' a year you spend on IT projects, that is <strong>'
-             + (c.spendPct < 0.1 ? 'under 0.1%' : n2(c.spendPct) + '%') + '</strong> of your project budget.';
-      if(v.currency !== 'GBP') price += ' (Approximate \u2014 ProjexaR is priced in sterling.)';
+    /* Card D — BAU coverage. Triggers above 5 live projects per effective FTE:
+       amber to 10, red beyond. */
+    if(c.noBauCapacity && v.live > 0){
+      out.push({ rag:'over', title:'No BAU capacity is recorded against your live projects',
+        body:'You told us no BAU staff are currently working on IT projects, while ' + n0(v.live) + ' '
+           + plural(v.live,'project is','projects are') + ' live. Either they are being delivered by people this check '
+           + 'has not counted — dedicated project staff, contractors or a supplier — or the BAU contribution is real '
+           + 'and has never been written down. Both are worth settling before the next plan is built, because a plan '
+           + 'assuming capacity nobody has committed is the most common way a date slips.' });
+    }else if(c.projectsPerFTE !== null && c.projectsPerFTE > BAND_FTE.amber){
+      out.push({ rag:c.ragFTE,
+        title:'Your ' + n0(v.live) + ' live projects are sharing approximately ' + n1(c.effectiveFTE)
+            + ' effective BAU FTE',
+        body:'With just approximately ' + n1(c.effectiveFTE) + ' effective BAU FTE — ' + n0(v.bauStaff) + ' people '
+           + 'spending an average of ' + v.bauPercent2 + '% of their time on project work — spread across '
+           + n0(v.live) + ' live projects, that works out to approximately ' + n1(c.projectsPerFTE) + ' live projects '
+           + 'for every unit of BAU capacity. The same people are almost certainly booked across multiple plans with '
+           + 'no single view showing the overlap. A project plan that doesn’t explicitly allow for someone’s recurring '
+           + 'BAU duties is exactly where delays start.' });
     }
-    $('priceLine').innerHTML = price;
 
-    renderPrint(v, c, r, h);
+    /* Item 11 — what projects are planned in. Composed from the Project Tools
+       outputs tab, which holds Issue/Risk/Watch rows rather than finished
+       prose; severities are as that tab has them. "Something else" gets no
+       card, so there is no `other` key here. */
+    var TOOLSET = {
+      excel:{ rag:'atrisk', title:'Your project plans live in a spreadsheet',
+        body:'The plan sits in one file — a laptop, an inbox, a shared drive — rather than a shared system of record, '
+           + 'so files fork, get emailed around and go stale until nobody is certain which version is current. '
+           + 'Nothing technically connects that file to resource data or other systems, so consistency depends on '
+           + 'manual re-entry and nothing flags it when figures drift apart. Spreadsheets also carry a materially '
+           + 'higher error rate than purpose-built systems, and those errors can feed into decisions unnoticed '
+           + '(Panko, University of Hawaii). There is no audit trail: overwrites are silent and unrecoverable.' },
+      msproject:{ rag:'atrisk', title:'You plan projects in Microsoft Project',
+        body:'Desktop Project is built around one file and one owner. Multi-user editing and shared resource pooling '
+           + 'are not native without added infrastructure, and while it forecasts resource demand within a single '
+           + 'project, it cannot project demand across several concurrent projects without the enterprise-tier '
+           + 'service (Microsoft Learn). Without a deliberately configured shared resource pool, each project '
+           + 'manager’s file holds its own resource data and a company-wide capacity view has to be assembled by '
+           + 'hand. If your setup already includes Project Online, note that the service retires on 30 September '
+           + '2026 with no automatic migration path published — worth confirming where your cross-project resource '
+           + 'view will live after that date.' },
+      planner:{ rag:'atrisk', title:'You plan projects in Microsoft Planner',
+        body:'Planner is built for tasks and boards rather than portfolio-level resource capacity planning; the '
+           + 'advanced capacity and reporting features sit behind a premium tier (Microsoft Support). Boards are not '
+           + 'natively linked to a resourcing system, so capacity conclusions drawn from one board can miss what is '
+           + 'happening across other boards and projects. Which tier you are on determines how much of this '
+           + 'applies.' },
+      ppm:{ rag:'healthy', title:'You already have a dedicated tool for this',
+        body:'That is a stronger foundation than most IT departments this size have. One thing worth confirming: PPM '
+           + 'products vary widely in whether resource management and capacity forecasting are built in, or sit in a '
+           + 'separate module or add-on. Without knowing the specific product this cannot be assumed solved — '
+           + 'particularly whether it holds BAU commitment as well as project demand.' },
+      mixed:{ rag:'over', title:'Your planning is spread across several tools',
+        body:'Planning and resourcing data sits across multiple tools that do not share data natively, which means '
+           + 'multiple sources of truth and no single place showing the full picture. Every cross-reference between '
+           + 'them is manual, so inconsistencies compound as more tools are added.' },
+      none:{ rag:'over', title:'There is no system holding this together',
+        body:'There is no record of the plan, the resourcing or the capacity anywhere. Basic capacity questions can '
+           + 'only be answered by asking around, and nothing prevents decisions being made on stale or incomplete '
+           + 'information — including the figures you entered here.' }
+    };
+    if(v.toolset && TOOLSET[v.toolset]) out.push(TOOLSET[v.toolset]);
+
+    /* Item 12 — one live view of demand against availability.
+       Copy and severities per the Answer Option Mapping tab. */
+    var VISIBILITY = {
+      none:{ rag:'over', title:'There’s no shared view of resource demand and availability',
+        body:'You’ve told us there isn’t one place to see demand and availability together — every resourcing '
+           + 'conflict on this page is currently invisible until it already causes a delay.' },
+      manual:{ rag:'atrisk', title:'Demand and availability are joined up by hand',
+        body:'You’ve told us you rely on manually cross-referenced spreadsheets — someone has to actively reconcile '
+           + 'demand against availability, and that process runs on a lag, not in real time.' },
+      dedicated:{ rag:'healthy', title:'Demand and availability are visible in one place',
+        body:'Worth checking whether it’s BAU-aware as well as project-aware, since a tool that only tracks project '
+           + 'demand can still miss the same conflicts if BAU commitments sit outside it.' }
+    };
+    if(v.resourceVisibility && VISIBILITY[v.resourceVisibility]) out.push(VISIBILITY[v.resourceVisibility]);
+
+    /* Item 13 — whether internal BAU time reaches a project budget.
+       Copy and severities per the Answer Option Mapping tab. Note there is no
+       healthy branch here: tracking internal time still leaves out whatever is
+       logged outside the process, so the best available answer is a watch. */
+    var COST = {
+      outthedoor:{ rag:'over', title:'Your project budgets carry out-the-door spend only',
+        body:'Your recorded project spend excludes internal staff time entirely, and that time isn’t being reliably '
+           + 'tracked either — so the true cost of running your IT projects is very likely significantly higher than '
+           + 'what’s being reported.' },
+      varies:{ rag:'over',
+        title:'Whether BAU staff time is budgeted depends on who’s running the project — there’s no consistent '
+            + 'picture of true cost',
+        body:'Whether BAU time is included depends on who’s running the project, so your recorded spend figures '
+           + 'aren’t consistent across the portfolio — and like the rest of your projects, they very likely '
+           + 'understate the true cost of running them.' },
+      partial:{ rag:'over',
+        title:'Only some of your project budgets include BAU staff time — the true cost is inconsistent across your '
+            + 'portfolio',
+        body:'Only some of your project budgets include BAU staff time, so your recorded spend is inconsistent across '
+           + 'the portfolio — and where it’s excluded, the true cost of running those projects is very likely '
+           + 'understated.' },
+      tracked:{ rag:'atrisk',
+        title:'Internal BAU time is budgeted and tracked — though project spend figures still exclude time logged '
+            + 'outside this process by definition',
+        body:'Your project budgets already fold in the internal BAU time you’re tracking — worth confirming that '
+           + 'applies consistently across every project, since folding in time only where it’s tracked would give a '
+           + 'fuller picture.' }
+    };
+    if(v.budgetTracking && COST[v.budgetTracking]) out.push(COST[v.budgetTracking]);
+
+    /* Item 14 — whether current assignments can be stated without asking.
+       Copy and severities per the Answer Option Mapping tab. */
+    var ASSIGNMENT = {
+      none:{ rag:'over', title:'You would have to ask around to find out who is on what',
+        body:'You’d have to ask around to find out who’s working on what, which means even the figures you’ve entered '
+           + 'here are estimates, not confirmed numbers.' },
+      stale:{ rag:'atrisk',
+        title:'Who’s working on what is roughly tracked — but the picture may already be out of date by the time you '
+            + 'check it',
+        body:'Your view of who’s working on what is roughly right but not something you’d rely on without checking — '
+           + 'decisions end up made against a picture that’s already wrong by the time anyone looks at it.' },
+      live:{ rag:'healthy', title:'You can see who’s working on what right now',
+        body:'Worth checking whether it updates automatically, or relies on someone remembering to refresh it — a '
+           + 'live view that’s only live when someone maintains it manually carries the same risk as not having '
+           + 'one.' }
+    };
+    if(v.assignmentKnowledge && ASSIGNMENT[v.assignmentKnowledge]) out.push(ASSIGNMENT[v.assignmentKnowledge]);
+
+    return out;
   }
 
-  function renderPrint(v, c, r, h){
+  /* ---- What your answers can show you ----
+     Three rows always, five when both optional questions are answered. The
+     left column restates what this report worked out; the right states what the
+     same question asked of an actual project file would return. Nothing on the
+     right claims a feature.
+
+     The left column has variants because the three standing rows all name a
+     figure that can be absent: with nothing live there is no spread and no
+     pace, and with no BAU staff there is no capacity to divide. The right
+     column never changes — the question it poses is the same either way. */
+  function compare(v, c){
+    var rows = [];
+
+    rows.push({
+      now: c.noBauCapacity
+        ? (v.live > 0 ? 'No BAU capacity reported, against ' + n0(v.live) + ' live '
+                        + plural(v.live,'project','projects') + '.'
+                      : 'No BAU capacity reported, and nothing live.')
+        : (v.live > 0 ? d1(c.effectiveFTE) + ' effective BAU FTE spread across ' + n0(v.live) + ' live '
+                        + plural(v.live,'project','projects') + '.'
+                      : d1(c.effectiveFTE) + ' effective BAU FTE, with nothing live to spread it across.'),
+      next:'Which named people are carrying it — and which weeks they are committed twice over.' });
+
+    rows.push({
+      now: c.noBauCapacity ? 'No capacity to average those projects against.'
+         : v.live === 0    ? 'No projects currently drawing on that capacity.'
+         : 'An average of ' + d1(c.projectsPerFTE) + ' projects for every unit of capacity.',
+      next:'The actual spread. An average hides the person on six projects and the person on one.' });
+
+    var h = c.headroom;
+    rows.push({
+      now: h.noPace  ? 'No live projects to project a pace from, so headroom cannot be worked out yet.'
+         : h.blocked ? h.binding + ' is already past its red threshold, so there is no room to project.'
+         : h.value === 0 ? 'No room for more projects this year before a metric turns red.'
+         : 'Room for ' + n0(h.value) + ' more ' + plural(h.value,'project','projects')
+           + ' this year before a metric turns red.',
+      next:'Which specific projects you could take on, and when the people they need are free.' });
+
+    if(c.ticketFTE !== null){
+      rows.push({
+        now:d1(c.ticketFTE) + ' FTE of ticket demand on the same pool of people.',
+        next:'Whether the people absorbing that demand are the ones on your critical path.' });
+    }
+
+    if(v.bauSplitEstimate !== null){
+      rows.push({
+        now:'You estimate ' + v.bauSplitEstimate + '% of department effort goes to BAU.',
+        next:'Where it actually goes — by person, by project, by week.' });
+    }
+
+    return rows;
+  }
+
+  /* ---- Closing verdict ---- */
+  function verdict(v, c){
+    var s = 'You told us ' + n0(v.staff) + ' people work in IT out of ' + n0(v.companyHeadcount) + ' in the company, '
+          + (v.pms === 0 ? 'with nobody formally running projects, ' : 'with ' + n0(v.pms) + ' project '
+             + plural(v.pms,'manager','managers') + ', ')
+          + 'against ' + n0(v.live) + ' live ' + plural(v.live,'project','projects') + ' and around ' + n0(v.annual)
+          + ' in a typical year.';
+
+    s += c.noBauCapacity
+      ? ' <strong>No BAU staff are working on those projects</strong>, so this check finds no internal delivery '
+        + 'capacity behind them at all.'
+      : ' Of your IT staff, <strong>' + n0(v.bauStaff) + '</strong> BAU ' + plural(v.bauStaff,'person is','people are')
+        + ' working on projects at an average of ' + v.bauPercent2 + '% of their time — <strong>' + n1(c.effectiveFTE)
+        + ' effective full-time equivalents</strong> of project capacity, from people whose first responsibility is '
+        + 'keeping something running.';
+
+    if(!c.noBauCapacity && v.live > 0){
+      s += ' That is <strong>' + n1(c.projectsPerFTE) + ' live projects for every unit of BAU capacity</strong>'
+         + (c.pmLoad !== null ? ', and ' + n1(c.pmLoad) + ' concurrent projects for each project manager' : '') + '.';
+    }
+
+    if(v.budgetTracking === 'outthedoor'){
+      s += ' Your project budgets carry out-the-door spend only, so none of that internal time appears in what your '
+         + 'projects are reported to cost.';
+    }else if(v.assignmentKnowledge === 'none'){
+      s += ' And you could not currently say who is on which project without asking.';
+    }
+    return s;
+  }
+
+  /* ================= Pricing ================= */
+  /* Licence basis is bauStaff + pms — the people who appear on project plans.
+     Stated with the count visible so the basis is never implied. */
+  function priceCopy(v, c){
+    var s = 'ProjexaR is charged per managed resource — the ' + n0(c.licenceCount) + ' '
+          + plural(c.licenceCount,'person','people') + ' on your project work, not your whole IT department of '
+          + n0(v.staff) + '. That is <strong>' + gbp(c.monthly) + ' a month</strong>, or ' + gbp(c.yearly) + ' a year.';
+    if(c.spendPct !== null){
+      s += ' Against the ' + CURRENCY[v.currency] + n0(v.spend) + ' a year you spend on IT projects, that is '
+         + '<strong>' + pct2(c.spendPct) + '</strong> of your project budget.';
+      if(v.currency !== 'GBP') s += ' (Approximate — ProjexaR is priced in sterling.)';
+    }
+    return s;
+  }
+
+  /* ================= Sources =================
+     Listed only where a claim in this visitor's report draws on one. */
+  function sources(v, c){
+    var src = [];
+    if(c.ticketFTE !== null){
+      src.push(['Tickets per agent per month',
+        'Jitbit, analysis of 7 million support tickets across around 1,000 companies — 440 to 525 a month, '
+        + '480 mid-point']);
+    }
+    if(c.rateOutside){
+      src.push(['Tickets per employee per month by sector',
+        'HDI (Rumburg, 2012) and MetricNet (2019, rev. 2023) — 0.41 to 1.38']);
+    }
+    if(v.bauSplitEstimate !== null){
+      src.push(['Run against growth spend',
+        '<em>Flexera 2023 Tech Spend Pulse</em>, Figure 17 (N=506) — 67% run, 33% growth. Published under CC BY 4.0']);
+    }
+    if(v.toolset === 'excel'){
+      src.push(['Spreadsheet error rates',
+        'R. Panko, University of Hawaii, <em>What We Know About Spreadsheet Errors</em>, Journal of End-User Computing '
+        + '10(2), 1998, rev. 2008 — 94% of 88 audited spreadsheets contained at least one error']);
+    }
+    if(v.toolset === 'msproject'){
+      src.push(['Microsoft Project capabilities',
+        'Microsoft Learn, Project Online and Project Server capabilities and software boundaries — cross-project '
+        + 'resource demand requires the enterprise-tier service']);
+      src.push(['Project Online retirement',
+        'Microsoft product notices — Project Online retires 30 September 2026, with no automatic migration path '
+        + 'published']);
+    }
+    if(v.toolset === 'planner'){
+      src.push(['Microsoft Planner', 'Microsoft Support, advanced capabilities with premium plans in Planner']);
+    }
+    return src;
+  }
+
+  /* ================= Render ================= */
+  function render(v, c){
+    $('positionLead').innerHTML = positionLead(v, c);
+
+    $('tileGrid').innerHTML = tiles(v, c).map(function(t){
+      return '<div class="tile ' + t.rag + '">'
+           + '<div class="t-top"><p class="t-label">' + esc(t.label) + '</p>'
+           + '<span class="pill ' + t.rag + '">' + STATUS_WORD[t.rag] + '</span></div>'
+           + '<p class="t-value">' + esc(t.value) + '</p>'
+           + '<p class="t-note">' + esc(t.note) + '</p></div>';
+    }).join('');
+
+    var hc = headroomCopy(v, c);
+    $('headroom').className = 'headroom' + (hc.blocked ? ' is-blocked' : '');
+    $('headroomEyebrow').textContent = hc.eyebrow;
+    $('headroomFigure').textContent = hc.figure;
+    $('headroomNote').innerHTML = hc.note;
+
+    $('factList').innerHTML = facts(v, c).map(function(f){
+      if(f.check) return '<li class="checknote">' + esc(f.text) + '</li>';
+      return '<li class="fact"><p class="f-figure">' + esc(f.figure) + '</p>'
+           + '<p class="f-label">' + esc(f.label)
+           + ' <span class="f-note">— ' + esc(f.note) + '</span></p></li>';
+    }).join('');
+
+    $('ragList').innerHTML = cards(v, c).map(function(card){
+      return '<details class="rag ' + card.rag + '"><summary><span class="pill ' + card.rag + '">'
+           + STATUS_WORD[card.rag] + '</span><span>' + esc(card.title) + '</span></summary>'
+           + '<div class="detail">' + esc(card.body) + '</div></details>';
+    }).join('');
+
+    $('compareRows').innerHTML = compare(v, c).map(function(row){
+      return '<div class="compare-row"><div class="c-now">' + esc(row.now) + '</div>'
+           + '<div class="c-next">' + esc(row.next) + '</div></div>'; }).join('');
+
+    $('ctaHead').textContent = c.noBauCapacity || v.live === 0
+      ? 'Every figure above came from an estimate. ProjexaR works from the plans themselves.'
+      : 'The blended average above is an estimate. ProjexaR works from the actual commitments.';
+    $('ctaBody').textContent = 'Nothing needs to be built and nothing needs to be migrated. Each person’s '
+      + 'operational commitment is set and owned by their line manager, and every project plan obeys it — so you can '
+      + 'see who is genuinely available, catch the clashes while they are still fixable, and answer "can we take this '
+      + 'on?" with something better than instinct.';
+    $('priceLine').innerHTML = priceCopy(v, c);
+    $('closingVerdict').innerHTML = verdict(v, c);
+
+    renderPrint(v, c, hc);
+  }
+
+  function renderPrint(v, c, hc){
     $('pr-date').textContent = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
-    $('pr-title').textContent = c.commitments > 0 ? 'What your people are collectively committed to'
-                                                  : 'Your project resourcing position';
-    $('pr-figure').textContent = h.figure + (c.commitments > 0 ? ' concurrent commitments' : '');
-    $('pr-explain').innerHTML = h.explain + ' <em>' + esc(h.sensitivity) + '</em>';
+    $('pr-figure').textContent = hc.figure;
+    /* The note is written to follow straight on from the figure, so it takes no
+       prefix here — page 1 carries the heading instead. */
+    $('pr-headroom').innerHTML = hc.note;
     $('pr-verdict').innerHTML = verdict(v, c);
 
-    $('pr-metrics').innerHTML = metrics(v, c).map(function(m){
-      return '<tr><th style="width:36%">' + esc(m.label) + '</th><td style="width:18%"><strong>' + esc(m.value)
-           + '</strong></td><td>' + esc(m.note) + '</td></tr>'; }).join('');
+    $('pr-tiles').innerHTML = tiles(v, c).map(function(t){
+      return '<tr><th>' + esc(t.label) + '</th><td><strong>' + esc(t.value) + '</strong></td>'
+           + '<td><span class="p-rag">' + STATUS_WORD[t.rag] + '</span><br>' + esc(t.note) + '</td></tr>';
+    }).join('');
 
-    var rows = [
-      ['Total staff in the company', n0(v.totalStaff)],
-      ['People in the IT department', v.itStaff],
-      ['IT project managers', v.pms],
-      ['Live IT projects', v.live],
-      ['IT projects in a typical year', v.annual === null ? 'Not given' : v.annual],
-      ['Annual IT project spend', v.spend ? CURRENCY[v.currency] + n0(v.spend) : 'Not given'],
-      ['People involved in live projects', n0(v.projectPeople)],
-      ['People named on a typical project', v.perProjectNamed],
-      ['Share who are BAU or support staff', selText('bauShare')]
-    ];
-    if(v.toolset)     rows.push(['What projects are planned in', selText('toolset')]);
-    if(v.integration) rows.push(['Live view of demand and availability', selText('integration')]);
-    if(v.bauCost)     rows.push(['Internal BAU time in project budgets', selText('bauCost')]);
-    if(v.portfolio)   rows.push(['Can see who is on what', selText('portfolio')]);
-    $('pr-inputs').innerHTML = rows.map(function(x){
-      return '<tr><th style="width:52%">' + esc(x[0]) + '</th><td>' + esc(x[1]) + '</td></tr>'; }).join('');
-
-    var f = [];
-    if(c.commitments > 0){
-      f.push(['Concurrent project commitments', v.live + ' \u00D7 ' + v.perProjectNamed, n0(c.commitments)]);
-      f.push(['Projects per person, at once', n0(c.commitments) + ' \u00F7 ' + n0(v.projectPeople), n1(c.loadPerPerson)]);
-    }
-    if(c.bauKnown){
-      f.push(['People on live projects','You told us', n0(v.projectPeople) + ' people']);
-      f.push(['Share who are BAU or support', 'You told us', c.band.label]);
-      f.push(['BAU people on projects', n0(v.projectPeople) + ' \u00D7 ' + c.band.label,
-              (c.exact ? n0(c.bauHi) : n0(c.bauLo) + ' to ' + n0(c.bauHi)) + ' people']);
-      f.push(['Dedicated project people', n0(v.projectPeople) + ' \u2212 the above',
-        (c.dedicatedLo === c.dedicatedHi ? n0(c.dedicatedHi) : n0(c.dedicatedLo) + ' to ' + n0(c.dedicatedHi)) + ' people']);
-    }
-    if(c.pmLoad !== null) f.push(['Live projects per project manager', v.live + ' \u00F7 ' + v.pms, n1(c.pmLoad)]);
-
-    f.push(['IT as a share of the company', v.itStaff + ' \u00F7 ' + n0(v.totalStaff), n1(c.itPercent) + '%']);
-    if(c.spendPct !== null) f.push(['ProjexaR as a share of project spend',
-      '(' + n0(v.projectPeople) + ' \u00D7 \u00A310 \u00D7 12) \u00F7 ' + n0(v.spend),
-      (c.spendPct < 0.1 ? 'under 0.1%' : n2(c.spendPct) + '%')]);
-    $('pr-formulas').innerHTML = f.map(function(x){
-      return '<tr><th style="width:38%">' + x[0] + '</th><td style="width:32%">' + x[1] + '</td><td><strong>' + x[2] + '</strong></td></tr>'; }).join('');
-
-    $('pr-bandnote').innerHTML = c.bauKnown && !c.exact
-      ? '<strong>Why a range rather than a single number.</strong> You gave the BAU share as a band, so we carry that band '
-        + 'through to the result rather than substituting its midpoint. A midpoint would state a precision you did not '
-        + 'give us. The real figure lies somewhere between the two, and the finding holds across the whole range.'
+    $('pr-bandnote').innerHTML = v.pms === 0
+      ? '<strong>No project managers were reported</strong>, so concurrent projects per PM is not shown and portfolio '
+        + 'headroom is projected from BAU capacity alone.'
       : '';
 
-    $('pr-roles').innerHTML = ['lm','pm','pf'].map(function(k){
-      return '<tr><th style="width:24%">' + esc(r[k].who) + '</th><td>' + esc(r[k].q) + '</td><td><strong>'
-           + esc(r[k].fig) + '</strong></td></tr>'; }).join('');
-    $('pr-hats').textContent = hats(v, c);
-    $('pr-compare').innerHTML = compare(v, c).map(function(row){
-      return '<tr><td>' + esc(row.now) + '</td><td><strong>' + esc(row.next) + '</strong></td></tr>'; }).join('');
+    /* The consistency check is a bullet on screen and a callout in print, so it
+       does not get lost inside a table of figures. */
+    var f = facts(v, c), check = null;
+    $('pr-facts').innerHTML = f.filter(function(x){ if(x.check){ check = x; return false; } return true; })
+      .map(function(x){
+        return '<tr><th style="width:52%">' + esc(x.label) + '</th><td style="width:14%"><strong>' + esc(x.figure)
+             + '</strong></td><td>' + esc(x.note) + '</td></tr>';
+      }).join('');
+    $('pr-checkblock').innerHTML = check
+      ? '<div class="p-callout"><p><strong>Worth a second look at your ticket figure.</strong> ' + esc(check.text)
+        + '</p></div>' : '';
 
-    $('pr-fxnote').innerHTML = (v.spend && v.currency !== 'GBP')
+    var rows = [
+      ['Total company headcount', n0(v.companyHeadcount)],
+      ['Estimated total IT staff', n0(v.staff)],
+      ['IT project managers at any one time', n0(v.pms)],
+      ['Live projects right now', n0(v.live)],
+      ['IT projects in a typical year', n0(v.annual)],
+      ['Annual spend on IT projects, excluding internal staff time',
+        v.spend === null ? 'Not given' : CURRENCY[v.currency] + n0(v.spend)],
+      ['BAU staff currently working on IT projects', n0(v.bauStaff)],
+      ['Blended average share of their time on project work', v.bauPercent2 + '%'],
+      ['Service desk tickets each month', v.ticketsPerMonth === null ? 'Not given' : n0(v.ticketsPerMonth)],
+      ['Share of IT effort spent on BAU or run work',
+        v.bauSplitEstimate === null ? 'Not given' : v.bauSplitEstimate + '%'],
+      ['What projects are planned in', selText('toolset')],
+      ['Live view of demand and availability', selText('resourceVisibility')],
+      ['Internal BAU time in project budgets', selText('budgetTracking')],
+      ['Can say who is on what without asking', selText('assignmentKnowledge')]
+    ];
+    $('pr-inputs').innerHTML = rows.map(function(x){
+      return '<tr><th style="width:58%">' + esc(x[0]) + '</th><td>' + esc(x[1]) + '</td></tr>'; }).join('');
+
+    var fx = [];
+    fx.push(['Effective BAU capacity on projects',
+      n0(v.bauStaff) + ' × ' + v.bauPercent2 + '%', d1(c.effectiveFTE) + ' FTE']);
+    if(c.pmLoad !== null){
+      fx.push([METRIC_PM, n0(v.live) + ' ÷ ' + n0(v.pms), d1(c.pmLoad)]);
+    }
+    if(!c.noBauCapacity){
+      fx.push([METRIC_FTE, n0(v.live) + ' ÷ ' + d1(c.effectiveFTE), d1(c.projectsPerFTE)]);
+    }
+    if(c.turnover !== null){
+      fx.push(['Annual portfolio turnover', n0(v.annual) + ' ÷ ' + n0(v.live), d1(c.turnover) + '×']);
+    }
+    if(c.ticketFTE !== null){
+      fx.push(['Capacity needed for tickets alone', n0(v.ticketsPerMonth) + ' ÷ 480 a month', d1(c.ticketFTE) + ' FTE']);
+      fx.push(['Tickets per employee per month', n0(v.ticketsPerMonth) + ' ÷ ' + n0(v.companyHeadcount),
+               n2(c.impliedRate)]);
+    }
+    fx.push(['IT staff as a share of the company', n0(v.staff) + ' ÷ ' + n0(v.companyHeadcount),
+             d1(c.itPercent) + '%']);
+
+    /* The headroom arithmetic, shown in full — it is the one figure on the
+       report that projects rather than counts, so it should be checkable. */
+    /* Written out of the raw inputs, not out of the rounded figures above. A
+       reader checking "10 × 7.4 × 1.7" cannot arrive at 124, because neither
+       7.4 nor 1.7 is the number the threshold was calculated from — and the
+       floor that turns 123.33 into 123 has to be visible or the "+ 1" looks
+       like an error. */
+    var h = c.headroom;
+    var fteExpr = '(' + n0(v.bauStaff) + ' × ' + v.bauPercent2 + '%)';
+    var turnExpr = '(' + n0(v.annual) + ' ÷ ' + n0(v.live) + ')';
+    var pmLiveExpr  = '12 × ' + n0(v.pms) + ', rounded down, + 1';
+    var bauLiveExpr = '10 × ' + fteExpr + ', rounded down, + 1';
+
+    if(h.noPace){
+      fx.push(['Portfolio headroom', 'needs a live project count to project a pace from', 'Not available']);
+    }else{
+      if(h.pmLive !== null) fx.push(['Red threshold, projects per PM', pmLiveExpr, n0(h.pmLive) + ' live']);
+      fx.push(['Red threshold, projects per BAU FTE', bauLiveExpr, n0(h.bauLive) + ' live']);
+      if(h.blocked){
+        fx.push(['Portfolio headroom',
+          'your ' + n0(v.live) + ' live is already at or past the lower of those', 'None']);
+      }else{
+        if(h.pmAnnual !== null) fx.push(['The same threshold across a year, per PM',
+          '12 × ' + n0(v.pms) + ' × ' + turnExpr + ', rounded down, + 1', n0(h.pmAnnual) + ' a year']);
+        fx.push(['The same threshold across a year, per BAU FTE',
+          '10 × ' + fteExpr + ' × ' + turnExpr + ', rounded down, + 1', n0(h.bauAnnual) + ' a year']);
+        fx.push(['Portfolio headroom', 'the lower of those, minus your ' + n0(v.annual) + ' a year',
+          n0(h.value) + ' ' + plural(h.value,'project','projects')]);
+      }
+    }
+
+    if(c.spendPct !== null){
+      fx.push(['ProjexaR as a share of project spend',
+        '(' + n0(c.licenceCount) + ' × £10 × 12) ÷ ' + n0(v.spend), pct2(c.spendPct)]);
+    }
+    $('pr-formulas').innerHTML = fx.map(function(x){
+      return '<tr><th>' + esc(x[0]) + '</th><td>' + esc(x[1]) + '</td><td><strong>' + esc(x[2])
+           + '</strong></td></tr>'; }).join('');
+
+    /* Both Flexera caveats travel with the figure wherever it is used. */
+    $('pr-flexeranote').innerHTML = v.bauSplitEstimate === null ? ''
+      : '<strong>The 67%/33% comparison has two limits.</strong> Flexera’s figure measures <em>spend</em> rather '
+      + 'than effort, and the question you answered was about effort — the two are related but not the same. Its '
+      + 'survey also targets organisations above 2,000 employees, which sits above this tool’s typical '
+      + 'respondent. Treat it as orientation, not a target.';
+
+    $('pr-fxnote').innerHTML = (v.spend !== null && v.currency !== 'GBP')
       ? '<strong>Currency.</strong> ProjexaR is priced in sterling. The percentage-of-spend figure compares the two '
         + 'directly without conversion, so treat it as approximate.' : '';
 
-    /* Sources appear only where a claim in this report draws on one. */
-    var src = [];
-    if(v.toolset === 'excel') src.push(['Spreadsheet accuracy','R. Panko, University of Hawaii, <em>What We Know About Spreadsheet Errors</em>, Journal of End-User Computing 10(2), 1998, rev. 2008']);
-    if(v.toolset === 'msproject') src.push(['Microsoft Project','Microsoft Learn, Project Online software boundaries and limits; Microsoft, Project Online retirement 30 September 2026']);
-    if(v.toolset === 'planner') src.push(['Microsoft Planner','Microsoft Support, Advanced capabilities with premium plans in Planner']);
-    src.push(['Market review','ProjexaR competitive analysis, July 2026 \u2014 nineteen products']);
-    $('pr-sources').innerHTML = src.map(function(x){
-      return '<tr><th style="width:30%">' + x[0] + '</th><td>' + x[1] + '</td></tr>'; }).join('');
+    $('pr-cards').innerHTML = cards(v, c).map(function(card){
+      return '<tr><td><span class="p-rag">' + STATUS_WORD[card.rag] + '</span></td><td><strong>' + esc(card.title)
+           + '</strong><br>' + esc(card.body) + '</td></tr>'; }).join('');
 
-    var pp = 'Beyond two projects, ProjexaR is charged per managed resource \u2014 on your figures, ' + n0(v.projectPeople) + ' '
-      + plural(v.projectPeople,'person','people') + ' at ' + gbp(c.monthly) + ' a month or ' + gbp(c.yearly) + ' a year.';
-    if(c.spendPct !== null) pp += ' That is ' + (c.spendPct < 0.1 ? 'under 0.1%' : n2(c.spendPct) + '%') + ' of the annual IT project spend you gave us.';
+    $('pr-compare').innerHTML = compare(v, c).map(function(row){
+      return '<tr><td>' + esc(row.now) + '</td><td><strong>' + esc(row.next) + '</strong></td></tr>'; }).join('');
+
+    var src = sources(v, c);
+    $('pr-sources').innerHTML = src.length
+      ? src.map(function(x){ return '<tr><th style="width:30%">' + esc(x[0]) + '</th><td>' + x[1] + '</td></tr>'; }).join('')
+      : '<tr><td>No external source is used anywhere in your report — every figure is arithmetic on your own '
+        + 'numbers.</td></tr>';
+
+    var pp = 'ProjexaR is charged per managed resource — on your figures, ' + n0(c.licenceCount) + ' '
+      + plural(c.licenceCount,'person','people') + ' at ' + gbp(c.monthly) + ' a month or ' + gbp(c.yearly) + ' a year.';
+    if(c.spendPct !== null){
+      pp += ' That is ' + pct2(c.spendPct) + ' of the annual IT project spend you gave us.';
+    }
     $('pr-price').textContent = pp;
   }
 
-  /* ================= Permalink ================= */
-  var PARAMS = { totalStaff:'ts', itStaff:'it', pms:'m', live:'l', annual:'a', spend:'sp', currency:'cu',
-                 projectPeople:'pp', perProjectNamed:'pn', bauShare:'bs', toolset:'tl', integration:'i', bauCost:'bc', portfolio:'pf' };
+  /* ================= Permalink =================
+     Carries the fourteen answers and the currency. No name, email or company
+     ever goes into a URL, and nothing here identifies a person or an
+     organisation — the four tool-and-process codes are needed because the
+     report cannot be rebuilt without them, which is what a permalink is for. */
+  var PARAMS = { companyHeadcount:'ch', staff:'st', pms:'m', live:'l', annual:'a', spend:'sp', currency:'cu',
+                 bauStaff:'bs', bauPercent2:'bp', ticketsPerMonth:'tk', bauSplitEstimate:'sx',
+                 toolset:'tl', resourceVisibility:'rv', budgetTracking:'bt', assignmentKnowledge:'ak' };
 
   function permalink(v){
     var q = [];
@@ -1670,6 +1868,20 @@ window.submitToSender = function(payload){
       if(val !== null && $(k)){ $(k).value = val; any = true; }
     });
     return any;
+  }
+
+  /* ================= Analytics =================
+     Banded properties only. Nothing that could identify a visitor or their
+     organisation leaves the page through an event. */
+  function staffBand(n){ return n < 25 ? 'under_25' : n <= 100 ? '25_to_100' : n <= 500 ? '100_to_500' : 'over_500'; }
+  function headroomBand(c){
+    var h = c.headroom;
+    if(h.noPace) return 'no_pace';
+    if(h.blocked || h.value === 0) return 'none';
+    return h.value <= 10 ? '1_to_10' : h.value <= 50 ? '11_to_50' : 'over_50';
+  }
+  function ragProps(c){
+    return { rag_pm: c.ragPM || 'none', rag_bau: c.ragFTE, headroom_band: headroomBand(c) };
   }
 
   /* ================= Wiring ================= */
@@ -1693,97 +1905,81 @@ window.submitToSender = function(payload){
     render(lastV, lastC);
     $('report').hidden = false;
     $('report').scrollIntoView({behavior:'smooth',block:'start'});
-    track('capacity_check_generated', {
-      bau_band: lastV.bauShare,
-      load_band: lastC.loadPerPerson === null ? 'none' : ragOf('load', lastC.loadPerPerson),
-      exposure: lastC.exposure.grade,
-      pool_band: lastV.projectPeople < 10 ? 'under_10' : (lastV.projectPeople <= 50 ? '10_to_50' : 'over_50'),
-      toolset: lastV.toolset || 'not_given',
-      spend_given: lastV.spend ? 1 : 0
-    });
-  });
-
-  var TABS = [['tab-lm','panel-lm'],['tab-pm','panel-pm'],['tab-pf','panel-pf']];
-  function selectTab(i, focus){
-    TABS.forEach(function(t, j){
-      var on = i === j;
-      $(t[0]).setAttribute('aria-selected', on ? 'true' : 'false');
-      $(t[0]).tabIndex = on ? 0 : -1;
-      $(t[1]).hidden = !on;
-    });
-    if(focus) $(TABS[i][0]).focus();
-  }
-  TABS.forEach(function(t, i){
-    $(t[0]).addEventListener('click', function(){ selectTab(i,false); });
-    $(t[0]).addEventListener('keydown', function(e){
-      if(e.key === 'ArrowRight'){ e.preventDefault(); selectTab((i+1)%TABS.length,true); }
-      if(e.key === 'ArrowLeft'){  e.preventDefault(); selectTab((i-1+TABS.length)%TABS.length,true); }
-    });
+    track('capacity_check_generated', Object.assign(ragProps(lastC), {
+      staff_band: staffBand(lastV.staff),
+      toolset: lastV.toolset,
+      tickets_given: lastV.ticketsPerMonth === null ? 0 : 1,
+      split_given: lastV.bauSplitEstimate === null ? 0 : 1,
+      spend_given: lastV.spend === null ? 0 : 1
+    }));
   });
 
   $('trialCta').addEventListener('click', function(){
-    track('trial_cta_clicked', {
-      position:'comparison',
-      bau_band: lastV ? lastV.bauShare : 'none',
-      load_band: (lastC && lastC.loadPerPerson !== null) ? ragOf('load', lastC.loadPerPerson) : 'none',
-      commitments: lastC ? lastC.commitments : 0
-    });
+    track('trial_cta_clicked', Object.assign({ position:'report' }, lastC ? ragProps(lastC) : {}));
   });
 
   function validEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s); }
 
   $('gateBtn').addEventListener('click', function(){
-    var email = $('email').value.trim(), rawName = $('fname').value.trim(), ok = true;
+    var email = $('email').value.trim(), ok = true;
+    /* Both name fields are optional. Where neither is given, both Sender
+       parameters go out empty and the greeting template handles the fallback —
+       that is a Sender-side concern, not this page's. */
+    var firstname = $('fname').value.trim(), lastname = $('lname').value.trim();
     if(!validEmail(email)){ setError('email','Enter a work email address so we can send your report.'); ok = false; }
     else setError('email','');
-    if(!rawName){ setError('fname','Enter your name so we can address your report.'); ok = false; }
-    else setError('fname','');
     var ackErr = $('ackError');
     if(!$('ack').checked){ ackErr.style.display='block'; ackErr.textContent='Please tick the box so we can send your report.'; ok = false; }
     else ackErr.style.display='none';
     if(!ok || !lastV) return;
 
-    /* Sender takes firstname and lastname separately, so split on whitespace:
-       first word is the firstname, whatever follows is the lastname. A
-       single-word name leaves lastname empty. `name` stays as the full string
-       for anything reading the payload as a whole. */
-    var nameParts = rawName.split(/\s+/);
-    var firstname = nameParts.shift() || '';
-    var lastname = nameParts.join(' ');
+    /* Sender takes firstname and lastname separately and the form now collects
+       them separately, so they map one to one with no inference. Splitting a
+       single name field on whitespace was wrong: "van der Berg" and
+       "Ó Braonáin" break it silently, and the failure only shows up in an email
+       already sent to the wrong name. `name` is the two joined, for anything
+       reading the payload as a whole. */
+    var rawName = [firstname, lastname].filter(Boolean).join(' ');
 
-    /* Sender writes these straight into the email, so every field carries the
-       same wording the report shows the respondent — never an internal code.
-       Bands come from BANDS, grades from EXPOSURE/STATUS_WORD, dropdowns from
-       the selected option's text. 'unsure' has no band, so fall back to the
-       option text ("Not sure"). */
+    /* Sender writes these straight into the email, so anything a respondent
+       will read carries the same wording the report shows them — never an
+       internal code. Ratings come from STATUS_WORD, dropdowns from the selected
+       option's text.
+
+       headroom is the plain number so a template can put it in a sentence. It
+       is 0 both when a metric is already red and when the portfolio is exactly
+       at its limit, and blank when there is nothing live to project from — so
+       a template presenting it should read rag_pm and rag_bau alongside it
+       rather than on its own. */
     var payload = {
       email:email, name:rawName, firstname:firstname, lastname:lastname,
       company:$('company').value.trim(),
-      it_staff:lastV.itStaff, project_people:lastV.projectPeople,
-      commitments:lastC.commitments, load_per_person:Math.round(lastC.loadPerPerson*10)/10,
-      bau_band:lastC.band ? lastC.band.label : selText('bauShare'),
-      bau_people_low:lastC.bauLo, bau_people_high:lastC.bauHi,
-      exposure:EXPOSURE[lastC.exposure.grade],
-      rag:STATUS_WORD[lastC.exposure.rag],
+      it_staff:lastV.staff,
+      bau_staff:lastV.bauStaff,
+      licence_count:lastC.licenceCount,
+      effective_fte:Math.round(lastC.effectiveFTE*10)/10,
+      pm_load:lastC.pmLoad === null ? '' : Math.round(lastC.pmLoad*10)/10,
+      projects_per_fte:lastC.projectsPerFTE === null ? '' : Math.round(lastC.projectsPerFTE*10)/10,
+      rag_pm:lastC.ragPM === null ? '' : STATUS_WORD[lastC.ragPM],
+      rag_bau:STATUS_WORD[lastC.ragFTE],
+      headroom:lastC.headroom.value === null ? '' : lastC.headroom.value,
       toolset:selText('toolset'),
-      bau_cost:selText('bauCost'),
+      budget_tracking:selText('budgetTracking'),
       permalink:permalink(lastV)
     };
 
-    /* ENGINEERING: replace with a POST to Sender. Fire-and-forget — the report
-       must never fail to open because this call failed. */
+    /* Fire-and-forget. The report must never fail to open because this failed. */
     if(typeof window.submitToSender === 'function'){ try{ window.submitToSender(payload); }catch(e){} }
     else console.info('[ProjexaR] Sender endpoint not wired. Payload:', payload);
 
     /* Analytics keeps the raw codes so these props stay groupable and match the
        other events — the labels are for the email, not the funnel. */
-    track('report_downloaded', { rag:lastC.exposure.rag, exposure:lastC.exposure.grade,
-                                 toolset:lastV.toolset || 'not_given' });
+    track('report_downloaded', Object.assign(ragProps(lastC), { toolset:lastV.toolset }));
 
     $('gate').innerHTML =
-      '<div class="gate-success"><div class="tick" aria-hidden="true">\u2713</div>'
+      '<div class="gate-success"><div class="tick" aria-hidden="true">✓</div>'
       + '<h3>Your report is ready</h3>'
-      + '<p class="gate-sub">It opens in your browser\u2019s print view \u2014 choose <strong>Save as PDF</strong> as the '
+      + '<p class="gate-sub">It opens in your browser’s print view — choose <strong>Save as PDF</strong> as the '
       + 'destination. If nothing happened, use the button below.</p>'
       + '<button type="button" class="btn btn-primary" id="openReport">Open the report</button>'
       + '<div class="permalink"><strong>Your link, saved:</strong><br>' + esc(payload.permalink) + '</div></div>';
@@ -1801,13 +1997,18 @@ window.submitToSender = function(payload){
       lastV = pre.values; lastC = compute(lastV);
       render(lastV, lastC);
       $('report').hidden = false;
-      track('capacity_check_reopened', { exposure:lastC.exposure.grade });
+      track('capacity_check_reopened', ragProps(lastC));
     }
   }
 
-  window.__ProjexaR = { compute:compute, ragOf:ragOf, exposure:exposure, headline:headline, verdict:verdict,
-                        roles:roles, hats:hats, metrics:metrics, cards:cards, countPhrase:countPhrase,
-                        selText:selText, BANDS:BANDS, EXPOSURE:EXPOSURE, STATUS_WORD:STATUS_WORD };
+  /* Exposed for the console and for checking the worked example in the brief. */
+  window.__ProjexaR = { compute:compute, headroomOf:headroomOf, ragPM:ragPM, ragFTE:ragFTE,
+                        tiles:tiles, facts:facts, cards:cards, headroomCopy:headroomCopy,
+                        verdict:verdict, priceCopy:priceCopy, sources:sources, positionLead:positionLead,
+                        compare:compare,
+                        selText:selText, readAndValidate:readAndValidate, permalink:permalink,
+                        STATUS_WORD:STATUS_WORD, TICKETS_PER_AGENT_MONTH:TICKETS_PER_AGENT_MONTH,
+                        BAND_PM:BAND_PM, BAND_FTE:BAND_FTE };
 })();
 </script>
 </body>
