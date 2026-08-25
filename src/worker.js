@@ -138,6 +138,25 @@ async function handleCapacityReport(request, env) {
     return json({ ok: false }, 400);
   }
 
+  // Turnstile, before anything reaches Sender. This endpoint writes to the
+  // subscriber list, so an unprotected POST pollutes it and burns free-tier
+  // allowance. Same check, same secret binding and same helper as
+  // /api/contact — there is one verification path in this Worker, not two.
+  //
+  // verifyTurnstile returns false on an absent token, which is what arrives
+  // when the widget's script is blocked in the visitor's browser. That is the
+  // intended outcome: Sender is not written, and the page still gives them
+  // their report and their permalink. The gate never waits on this response.
+  const verified = await verifyTurnstile(
+    body.turnstile_token,
+    env.TURNSTILE_SECRET,
+    request.headers.get("CF-Connecting-IP"),
+  );
+  if (!verified) {
+    console.warn("capacity report turnstile failed for:", body.email);
+    return json({ ok: false }, 403);
+  }
+
   // The permalink is built in the browser, so a crafted request can put any URL
   // in it and the template would render our own domain's link to it. Blank
   // anything that is not ours rather than rejecting: the subscriber record and
@@ -168,6 +187,19 @@ async function handleCapacityReport(request, env) {
   // segment filter. It reads 0 both when a tile is already past its red
   // threshold and when the portfolio sits exactly at the limit, and blank
   // when nothing is live. Those are materially different prospects.
+  //
+  // The tool calls this figure the "portfolio growth ceiling" on screen and in
+  // the printed report from v5.1. The field keeps the name `headroom` because
+  // it already exists in Sender and renaming it would break the account. Same
+  // number, same arithmetic — only the label the visitor reads has changed.
+  //
+  // rag_pm carries the UNESCALATED capacity RAG state and must keep doing so.
+  // From v5.1 the tool escalates an amber PM tile to red where the toolset
+  // offers no cross-project resourcing view, but that escalated value is not
+  // sent: the escalation is a tooling signal, and Sender already receives
+  // `toolset`. Keeping the capacity metric clean means segments stay
+  // comparable, and a segment wanting the compound condition can express it as
+  // rag_pm + toolset rather than needing a new field.
   //
   // budget_tracking drives a 'cost-blind' tag applied Sender-side for any
   // value other than 'tracked'. It cuts across all three segments rather
