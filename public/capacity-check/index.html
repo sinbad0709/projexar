@@ -39,11 +39,15 @@
   --surface-accent:var(--blue-900);     /* ✚ navy accent — portfolio growth ceiling */
 
   --text-body:var(--ink-700); --text-brand:var(--blue-600); --text-danger:var(--red-500);
-  --text-strong:var(--ink-900);        /* ✚ */
-  --text-muted:var(--ink-500);         /* ✚ */
-  --text-subtle:var(--ink-400);        /* ✚ */
-  --text-inverse:#ffffff;              /* ✚ */
-  --text-inverse-muted:var(--ink-200); /* ✚ */
+  --text-heading:var(--ink-900);
+  /* --text-strong was carried as an addition. The system's name for the darker
+     heading colour is --text-heading, at the same value; kept as an alias so
+     the use sites below still read as "strong". */
+  --text-strong:var(--text-heading);
+  --text-muted:var(--ink-400);
+  --text-subtle:var(--ink-300);
+  --text-inverse:#ffffff;
+  --text-inverse-muted:rgba(255,255,255,.68);
   --text-accent-figure:var(--blue-300);/* ✚ growth ceiling figure on navy */
 
   --border-subtle:var(--ink-100); --border-default:var(--ink-200);
@@ -63,12 +67,13 @@
   --pill-atrisk-bg:var(--amber-300);   --pill-atrisk-fg:var(--ink-900);     /* ✚ */
   --pill-healthy-bg:var(--teal-300);   --pill-healthy-fg:var(--ink-900);    /* ✚ */
 
-  /* Font stacks resolved from the design system export (tokens/typography.css).
-     PENDING: Claude Design to confirm these are the launch stacks — the export
-     was unreadable for --font-sans and --font-display at the time of writing
-     and Manrope is the brand typeface as far as we can establish. */
+  /* Font stacks, confirmed against the design system export (tokens/fonts.css).
+     The faces come from the same Google Fonts stylesheet the rest of the site
+     uses, linked in the head above rather than @import-ed, so this page stays
+     self-contained and does not depend on /styles/tokens.css.
+     --font-mono is unused here and declared for consistency with the system. */
   --font-sans:"Manrope","Helvetica Neue",Arial,sans-serif;
-  --font-display:var(--font-sans);
+  --font-display:"Manrope","Helvetica Neue",Arial,sans-serif;
   --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
 
   --text-display-3-size:clamp(30px,4.6vw,42px); --text-display-3-line:1.12; --text-display-3-track:-.025em;
@@ -80,9 +85,14 @@
   --text-body-sm-size:14px; --text-body-sm-line:1.55;
   --text-caption-size:12.5px; --text-caption-line:1.45;
   --text-eyebrow-size:12px; --text-eyebrow-weight:700; --text-eyebrow-track:.14em; --text-eyebrow-line:1.2;
+  /* ✚ The four fieldset headings. Same value as --text-body-sm-size, which is
+     very likely the system's answer; kept separate pending that decision. */
   --text-legend-size:14px;                       /* ✚ */
+  /* ✚ The single headline figure. The clamp tops out at --text-display-1-size;
+     the system has no fluid step, so this stays local for now. */
   --text-figure-size:clamp(46px,8.5vw,76px);     /* ✚ */
-  --text-metric-size:30px;                       /* ✚ */
+  --text-metric-size:38px; --text-metric-line:1.05;
+  --text-metric-track:-.02em; --text-metric-weight:800;
   --weight-regular:400; --weight-medium:500; --weight-semibold:600; --weight-bold:700; --weight-extrabold:800;
 
   --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px;
@@ -91,7 +101,9 @@
 
   --radius-xs:4px; --radius-sm:6px; --radius-md:10px; --radius-lg:14px; --radius-xl:20px;
   --radius-control:10px; --radius-card:16px; --radius-surface:24px; --radius-pill:999px;
-  --rag-bar:4px;   /* ✚ */
+  --rag-bar:4px;   /* ✚ no system equivalent — --radius-xs shares the value but
+                      not the meaning, and the system has no border-width step
+                      between --border-width-strong and this. */
 
   --shadow-xs:0 1px 2px rgba(20,33,61,.06);
   --shadow-sm:0 1px 3px rgba(20,33,61,.07),0 1px 2px rgba(20,33,61,.04);
@@ -178,6 +190,12 @@ a{ color:var(--text-brand); }
   font-size:11px; font-weight:var(--weight-bold); font-style:normal; cursor:help;
   border:var(--border-width) solid var(--border-default); }
 .info:hover,.info:focus-visible{ background:var(--surface-brand-subtle); color:var(--text-brand); border-color:var(--border-brand); }
+/* The icon is an atomic inline, so UAX #14 allows a line break either side of
+   it whether or not there is whitespace there — a label long enough to wrap can
+   drop it onto a line of its own, away from the word it annotates. Asking for a
+   considered last line pulls the preceding word down with it instead. Browsers
+   without text-wrap:pretty simply keep today's behaviour. */
+.tile .t-label,.field label{ text-wrap:pretty; }
 .tip{ position:relative; display:inline-block; }
 .tip::after{ content:attr(data-tip); position:absolute; left:0; top:calc(100% + var(--space-2));
   width:min(320px,72vw); z-index:20; opacity:0; visibility:hidden;
@@ -243,7 +261,8 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 .tile .t-label{ font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line);
   font-weight:var(--weight-semibold); color:var(--text-strong); }
 .tile .t-value{ font-family:var(--font-display); font-size:var(--text-metric-size);
-  font-weight:var(--weight-extrabold); letter-spacing:var(--text-h2-track);
+  font-weight:var(--text-metric-weight); letter-spacing:var(--text-metric-track);
+  line-height:var(--text-metric-line);
   color:var(--text-strong); margin-block:var(--space-3) var(--space-2); }
 .tile.over .t-value{ color:var(--status-over-fg); }
 .tile.atrisk .t-value{ color:var(--amber-600); }
