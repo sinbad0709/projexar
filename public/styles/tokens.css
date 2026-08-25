@@ -9,9 +9,40 @@
 /* ---------- tokens/fonts.css ---------- */
 /* Manrope — display + UI + body; the brand typeface, confirmed by the client and used in the
    logo lockups. JetBrains Mono — figures, percentages, dates, code.
-   Both are served from Google Fonts, which supplies the @font-face rules and the per-subset
-   binaries. Do not hand-pin gstatic URLs here — they are versioned and rot. */
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap");
+
+   Self-hosted, and deliberately so. These were previously pulled from Google Fonts,
+   which handed fonts.gstatic.com the visitor's IP on every page load, before the
+   visitor had consented to anything. Nothing third-party is fetched now. Keep it
+   that way: re-adding an @import here reinstates the transfer for the whole site.
+
+   Both families are variable, and one file per subset covers the whole weight range.
+   Google serves the identical binary whichever discrete weight you ask it for — all
+   five Manrope weights returned the same md5 — so per-weight static files would have
+   been the same bytes five times over. The ranges below are clamped to the weights
+   the site actually uses: Manrope 400–800, JetBrains Mono 400–700.
+
+   latin and latin-ext are split on the unicode-range Google published for each, so an
+   English page still fetches only the latin file and the accented set stays lazy. */
+@font-face{
+  font-family:"Manrope"; font-style:normal; font-weight:400 800; font-display:swap;
+  src:url("/assets/fonts/manrope-latin.woff2") format("woff2");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face{
+  font-family:"Manrope"; font-style:normal; font-weight:400 800; font-display:swap;
+  src:url("/assets/fonts/manrope-latin-ext.woff2") format("woff2");
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+@font-face{
+  font-family:"JetBrains Mono"; font-style:normal; font-weight:400 700; font-display:swap;
+  src:url("/assets/fonts/jetbrains-mono-latin.woff2") format("woff2");
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face{
+  font-family:"JetBrains Mono"; font-style:normal; font-weight:400 700; font-display:swap;
+  src:url("/assets/fonts/jetbrains-mono-latin-ext.woff2") format("woff2");
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
 
 /* ---------- tokens/colors.css ---------- */
 :root{
@@ -51,8 +82,16 @@
 /* ---- Semantic text ---- */
 --text-heading:var(--ink-900);
 --text-body:var(--ink-700);
---text-muted:var(--ink-400);
---text-subtle:var(--ink-300);
+/* Both on --ink-500, and both duplicated in public/capacity-check/index.html,
+   which carries its own token block and deliberately does not load this file.
+   Change them in both places or that page drifts from the rest of the site.
+   They previously failed WCAG AA on white: --ink-400 at 4.36:1 for muted,
+   --ink-300 at 2.68:1 for subtle. --ink-400 was rejected for --text-subtle
+   too, being the same value already rejected for --text-muted. The two now
+   differ in intended usage rather than appearance; if that becomes a problem
+   the answer is adjusting the ink ramp, not reinstating a failing token. */
+--text-muted:var(--ink-500);
+--text-subtle:var(--ink-500);
 --text-inverse:#ffffff;
 --text-inverse-muted:rgba(255,255,255,.68);
 --text-brand:var(--blue-600);
