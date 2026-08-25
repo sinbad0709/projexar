@@ -36,7 +36,7 @@
   --surface-page:#ffffff; --surface-subtle:var(--ink-25); --surface-card:#ffffff;
   --surface-muted:var(--ink-50); --surface-inverse:var(--ink-900);
   --surface-brand:var(--blue-500); --surface-brand-subtle:var(--blue-50);
-  --surface-accent:var(--blue-900);     /* ✚ navy accent — portfolio headroom */
+  --surface-accent:var(--blue-900);     /* ✚ navy accent — portfolio growth ceiling */
 
   --text-body:var(--ink-700); --text-brand:var(--blue-600); --text-danger:var(--red-500);
   --text-strong:var(--ink-900);        /* ✚ */
@@ -44,7 +44,7 @@
   --text-subtle:var(--ink-400);        /* ✚ */
   --text-inverse:#ffffff;              /* ✚ */
   --text-inverse-muted:var(--ink-200); /* ✚ */
-  --text-accent-figure:var(--blue-300);/* ✚ headroom figure on navy */
+  --text-accent-figure:var(--blue-300);/* ✚ growth ceiling figure on navy */
 
   --border-subtle:var(--ink-100); --border-default:var(--ink-200);
   --border-strong:var(--ink-300); --border-brand:var(--blue-500);
@@ -258,21 +258,21 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 .pill.atrisk{ background:var(--pill-atrisk-bg); color:var(--pill-atrisk-fg); }
 .pill.healthy{ background:var(--pill-healthy-bg); color:var(--pill-healthy-fg); }
 
-/* Category two — the portfolio headroom callout. Deliberately neither a RAG
+/* Category two — the portfolio growth ceiling callout. Deliberately neither a RAG
    tile nor a plain bullet: it is a projection rather than a measurement, and
    the navy fill is what keeps it from being read as either. */
-.headroom{ max-width:var(--container-narrow); margin:var(--space-6) auto 0;
+.ceiling{ max-width:var(--container-narrow); margin:var(--space-6) auto 0;
   background:var(--surface-accent); border-radius:var(--radius-card);
   box-shadow:var(--shadow-lg); padding:var(--space-8) var(--space-7); }
-.headroom .h-eyebrow{ font-size:var(--text-eyebrow-size); font-weight:var(--text-eyebrow-weight);
+.ceiling .h-eyebrow{ font-size:var(--text-eyebrow-size); font-weight:var(--text-eyebrow-weight);
   letter-spacing:var(--text-eyebrow-track); text-transform:uppercase; color:var(--text-inverse-muted); }
-.headroom .h-figure{ font-family:var(--font-display); font-size:var(--text-h2-size);
+.ceiling .h-figure{ font-family:var(--font-display); font-size:var(--text-h2-size);
   font-weight:var(--weight-extrabold); letter-spacing:var(--text-h2-track);
   line-height:var(--text-h2-line); color:var(--text-accent-figure); margin-block:var(--space-3) var(--space-3); }
-.headroom.is-blocked .h-figure{ color:var(--text-inverse); }
-.headroom .h-note{ font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line);
+.ceiling.is-blocked .h-figure{ color:var(--text-inverse); }
+.ceiling .h-note{ font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line);
   color:var(--text-inverse-muted); max-width:64ch; }
-.headroom .h-note strong{ color:var(--text-inverse); font-weight:var(--weight-semibold); }
+.ceiling .h-note strong{ color:var(--text-inverse); font-weight:var(--weight-semibold); }
 
 /* Category three — informational bullets. No threshold exists for any of
    these, so nothing here is rated and nothing here is coloured. */
@@ -559,7 +559,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   <section class="hero wrap">
     <span class="eyebrow">Free &middot; 3 minutes &middot; No sign-up</span>
     <h1>How much of your delivery is resting on people who are also keeping the lights on?</h1>
-    <p class="lead">Keeping the lights on is one of the primary functions of every IT department. Managing that against the volatile demand of IT projects is one of the hardest things an IT leader does. Answer a few questions and see how much project capacity you actually have, how much headroom is left in it, and what your own answers say about the risks you are carrying.</p>
+    <p class="lead">Keeping the lights on is one of the primary functions of every IT department. Managing that against the volatile demand of IT projects is one of the hardest things an IT leader does. Answer a few questions and see how much project capacity you actually have, how much room it has to grow, and what your own answers say about the risks you are carrying.</p>
   </section>
 
   <section id="tool" class="wrap">
@@ -708,12 +708,14 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <div class="tile-grid" id="tileGrid"></div>
     </div>
 
-    <!-- Portfolio headroom. Sits below the tiles and above the informational
-         panel, as a third visual category: a projection, not a measurement. -->
-    <div class="headroom" id="headroom">
-      <p class="h-eyebrow" id="headroomEyebrow">Portfolio headroom</p>
-      <p class="h-figure" id="headroomFigure"></p>
-      <p class="h-note" id="headroomNote"></p>
+    <!-- Portfolio growth ceiling. Sits below the tiles and above the
+         informational panel, as a third visual category: a projection, not a
+         measurement. Called "portfolio headroom" until v5.1 — the Sender field
+         still carries that name, nothing else does. -->
+    <div class="ceiling" id="growthCeiling">
+      <p class="h-eyebrow" id="ceilingEyebrow">Portfolio growth ceiling</p>
+      <p class="h-figure" id="ceilingFigure"></p>
+      <p class="h-note" id="ceilingNote"></p>
     </div>
 
     <div class="section">
@@ -753,7 +755,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <p class="verdict" id="closingVerdict"></p>
       <div class="gate" id="gate">
         <h3>Get the full report</h3>
-        <p class="gate-sub">Six pages: every number worked through, the arithmetic behind each one, what your answers say about how visible and costed this is, what the same questions asked of your actual project plans would add, the sources any claim rests on, and four things you can do about it that involve buying nothing.</p>
+        <p class="gate-sub">Your full report: every number worked through, the arithmetic behind each one, what your answers say about how visible and costed this is, what the same questions asked of your actual project plans would add, the sources any claim rests on, and four things you can do about it that involve buying nothing.</p>
         <div class="grid">
           <div class="field full" id="f-email">
             <label for="email">Work email</label>
@@ -781,6 +783,21 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
           <span>Email me my report. ProjexaR will also send occasional related emails &mdash; you can stop these at any time. <a href="/privacy/">Privacy Notice</a></span>
         </label>
         <p id="ackError"></p>
+
+        <!--
+          Turnstile protects /api/capacity-report, which writes to Sender. Same
+          site key, same script include and same server-side check as the
+          contact form, so there is one pattern rather than two.
+
+          The button is deliberately NOT gated on the widget being ready. If
+          this script is blocked — a corporate proxy, an extension — the token
+          goes up empty, the Worker declines to write to Sender, and the visitor
+          still gets the report they came for. Turnstile protects the endpoint,
+          not the visitor.
+        -->
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAAEJVj86UjxZRt7cP" style="margin-top:var(--space-6)"></div>
+        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
         <button type="button" class="btn btn-primary btn-block" id="gateBtn" style="margin-top:var(--space-6)">Download the full report</button>
       </div>
     </div>
@@ -793,9 +810,9 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <div class="p-head"><span>ProjexaR Capacity Check</span><span id="pr-date"></span></div>
       <h1>Your project capacity, and what is left of it</h1>
       <div class="p-block">
-        <h2>Portfolio headroom</h2>
+        <h2>Portfolio growth ceiling</h2>
         <div class="p-figure" id="pr-figure"></div>
-        <p id="pr-headroom"></p>
+        <p id="pr-ceiling"></p>
       </div>
       <div class="p-block"><h2>What you told us</h2><p id="pr-verdict"></p></div>
       <div class="p-block">
@@ -809,7 +826,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
     </section>
 
     <section class="page">
-      <div class="p-head"><span>Your numbers</span><span>Page 2</span></div>
+      <div class="p-head"><span>Your numbers</span><span>ProjexaR Capacity Check</span></div>
       <h2>The figures your position is built from</h2>
       <p>None of these is rated against a threshold. They are the quantities the two rated measures above are
         calculated from, plus context on the department they sit in.</p>
@@ -820,7 +837,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
     </section>
 
     <section class="page">
-      <div class="p-head"><span>How the numbers were worked out</span><span>Page 3</span></div>
+      <div class="p-head"><span>How the numbers were worked out</span><span>ProjexaR Capacity Check</span></div>
       <h2>Every figure is arithmetic on something you supplied</h2>
       <p>Two external benchmarks appear in this report and both are named where they are used: a tickets-per-agent
         figure, and a cross-industry split between run and change work. Everything else below is your own arithmetic.</p>
@@ -843,16 +860,16 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
           sourced finding, and the 5 and 10 project-per-FTE bands are our own. They measure different things
           deliberately &mdash; oversight capacity against delivery capacity &mdash; and we will revisit both as we
           gather real data.</p>
-        <p style="margin-top:6pt"><strong>Headroom assumes nothing else changes.</strong> It projects your current
-          pace forward at your current staffing. Adding people, reallocating time or changing how fast projects run
-          would all move it.</p>
+        <p style="margin-top:6pt"><strong>The growth ceiling assumes nothing else changes.</strong> It projects your
+          current pace forward at your current staffing. Adding people, reallocating time or changing how fast
+          projects run would all move it.</p>
         <p style="margin-top:6pt" id="pr-flexeranote"></p>
         <p style="margin-top:6pt" id="pr-fxnote"></p>
       </div>
     </section>
 
     <section class="page">
-      <div class="p-head"><span>What your answers show</span><span>Page 4</span></div>
+      <div class="p-head"><span>What your answers show</span><span>ProjexaR Capacity Check</span></div>
       <h2>Read against what you told us about tools and process</h2>
       <table class="p-table">
         <thead><tr><th style="width:14%">Rating</th><th>Finding</th></tr></thead>
@@ -861,7 +878,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
     </section>
 
     <section class="page">
-      <div class="p-head"><span>What your answers can show you</span><span>Page 5</span></div>
+      <div class="p-head"><span>What your answers can show you</span><span>ProjexaR Capacity Check</span></div>
       <h2>The limit of an aggregate</h2>
       <p>Every figure in this report was calculated from your data. Aggregates are useful for sizing a problem and
         useless for acting on one: an average tells you the portfolio is stretched but never which person is carrying
@@ -875,7 +892,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
     </section>
 
     <section class="page">
-      <div class="p-head"><span>What to do next</span><span>Page 6</span></div>
+      <div class="p-head"><span>What to do next</span><span>ProjexaR Capacity Check</span></div>
       <h2>Four steps, no software required</h2>
       <ol class="p-steps">
         <li><strong>List the BAU people currently named on project work.</strong> Names, not a percentage. This is the
@@ -956,10 +973,15 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
    satisfied, so nothing here may throw or block — a failure must still leave
    the report opening. Defined ahead of that script, which follows. */
 window.submitToSender = function(payload){
-  payload.ack = document.getElementById('ack').checked;
-  /* No timestamp is sent. The Worker stamps report_requested_at from its own
-     clock, because a browser's is not trustworthy and a client-supplied one is
-     trivially forged. */
+  /* Reads nothing from the DOM. It used to take `ack` from the checkbox here,
+     which broke the moment the call moved after the gate swaps in its success
+     state — the checkbox is gone by then and the read threw into the caller's
+     catch, silently losing every submission. The gate now supplies the whole
+     payload, which is where that knowledge belongs anyway.
+
+     No timestamp is sent either. The Worker stamps report_requested_at from
+     its own clock, because a browser's is not trustworthy and a client-supplied
+     one is trivially forged. */
   fetch('/api/capacity-report', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1059,21 +1081,29 @@ window.submitToSender = function(payload){
   var METRIC_PM  = 'Concurrent projects per PM';
   var METRIC_FTE = 'Live projects per effective BAU FTE';
 
-  /* Portfolio headroom — how many more projects this year before a rated metric
-     turns red.
+  /* Portfolio growth ceiling — how far the typical annual pace could rise before
+     a rated capacity metric turns red. Named "headroom" until v5.1; the figure
+     and the arithmetic are unchanged, but the copy no longer implies a calendar
+     budget the tool has no way to calculate. The Sender payload key stays
+     `headroom` — see the field map in src/worker.js.
 
      Already-red takes priority over the projection. The live-based thresholds
      are checked first, and if the portfolio has already passed one of them there
-     is no headroom to project and the annual conversion is not run: a figure
-     saying "12 more projects" underneath a red tile would be nonsense. */
-  function headroomOf(v, c){
+     is no ceiling to project and the annual conversion is not run: a figure
+     saying "12 more projects" underneath a red tile would be nonsense.
+
+     Escalation of the PM tile (v5.1 §7) is deliberately not read here. The
+     thresholds below are raw capacity bands; a toolset-driven escalation is a
+     tooling risk, not a capacity one, and folding it in would make the report
+     contradict itself. */
+  function growthCeilingOf(v, c){
     var pmLive  = v.pms > 0 ? ifloor(v.pms * BAND_PM.red) + 1 : null;
     var bauLive = ifloor(c.effectiveFTE * BAND_FTE.red) + 1;
 
     var h = {
       pmLive:pmLive, bauLive:bauLive,
       pmAnnual:null, bauAnnual:null,
-      value:null, binding:null, blocked:false, noPace:false
+      value:null, bindingThreshold:null, binding:null, blocked:false, noPace:false
     };
 
     /* Whichever live threshold is lower is the one that binds; both are named
@@ -1096,6 +1126,10 @@ window.submitToSender = function(payload){
     var annualMin = h.bauAnnual, annualBind = METRIC_FTE;
     if(h.pmAnnual !== null && h.pmAnnual < annualMin){ annualMin = h.pmAnnual; annualBind = METRIC_PM; }
 
+    /* The ceiling itself — the annual rate the portfolio could grow to — as
+       well as the difference. The copy states both: the rate is what the figure
+       actually means, the difference is what it is worth to the reader. */
+    h.bindingThreshold = annualMin;
     h.value = Math.max(0, annualMin - v.annual);
     h.binding = annualBind;
     return h;
@@ -1118,6 +1152,17 @@ window.submitToSender = function(payload){
     c.turnover = v.live > 0 ? v.annual / v.live : null;
 
     c.ticketFTE   = v.ticketsPerMonth === null ? null : v.ticketsPerMonth / TICKETS_PER_AGENT_MONTH;
+
+    /* The service desk draws on the whole non-PM department, not just the BAU
+       staff who happen to be named on project work. Expressing the ticket load
+       against bauStaff would roughly double it on a typical set of answers, so
+       the denominator is staff − pms. It can be zero — every IT person a PM is
+       a valid set of answers — in which case the proportion is suppressed and
+       the FTE figure stands on its own. */
+    c.nonPmStaff = v.staff - v.pms;
+    c.ticketFtePercent = (c.ticketFTE === null || c.nonPmStaff <= 0)
+                       ? null : c.ticketFTE / c.nonPmStaff * 100;
+
     c.impliedRate = v.ticketsPerMonth === null ? null : v.ticketsPerMonth / v.companyHeadcount;
     c.rateOutside = c.impliedRate === null ? false
                   : (c.impliedRate < TICKET_RATE_LO || c.impliedRate > TICKET_RATE_HI);
@@ -1137,6 +1182,24 @@ window.submitToSender = function(payload){
     c.ragPM  = c.pmLoad === null ? null : ragPM(c.pmLoad);
     c.ragFTE = c.noBauCapacity ? 'over' : ragFTE(c.projectsPerFTE);
 
+    /* PM tile escalation (v5.1 §7). Nine concurrent projects held in an
+       integrated resource tool is a manageable caseload; the same nine held in
+       spreadsheets is a materially different risk, and the two should not
+       present identically. So amber escalates to red where the toolset offers
+       no cross-project resourcing view.
+
+       `ppm` is excluded because the tool is adequate by the definition of the
+       answer, and `other` because an unknown tool is not a known-inadequate one
+       — flagging it red would be an assertion we cannot support. Green does not
+       escalate and red is already red.
+
+       c.ragPM stays the unescalated capacity state throughout. Only
+       c.ragPMDisplay carries the escalation, and only the tile reads it: the
+       growth ceiling is computed from raw thresholds (§7.3) and the Sender
+       payload sends the capacity state (§7.4). */
+    c.pmEscalated = c.ragPM === 'atrisk' && v.toolset !== 'ppm' && v.toolset !== 'other';
+    c.ragPMDisplay = c.pmEscalated ? 'over' : c.ragPM;
+
     if(v.bauSplitEstimate === null){
       c.splitDiff = null; c.splitLean = null;
     }else{
@@ -1145,7 +1208,7 @@ window.submitToSender = function(payload){
                   : (v.bauSplitEstimate < BENCH_BAU ? 'transformation-heavy' : 'level');
     }
 
-    c.headroom = headroomOf(v, c);
+    c.ceiling = growthCeilingOf(v, c);
     return c;
   }
 
@@ -1263,23 +1326,44 @@ window.submitToSender = function(payload){
     /* Suppressed entirely when there are no project managers: there is no load
        to divide and no threshold to fail. */
     if(c.pmLoad !== null){
-      out.push({
-        key:'pm', rag:c.ragPM, label:METRIC_PM, value:d1(c.pmLoad),
-        note: v.live === 0
-          ? 'Nothing is live, so no project is currently sitting with anyone.'
+      /* The escalated tile carries its own note rather than the amber one. A
+         reader seeing 9.0 against a stated red threshold of 12 would otherwise
+         read the tile as a bug, so the compound nature has to be legible on the
+         tile itself — the caseload is inside the band, the toolset is what
+         moves it. */
+      var pmNote = v.live === 0
+        ? 'Nothing is live, so no project is currently sitting with anyone.'
+        : c.pmEscalated
+          ? 'Escalated. The caseload itself sits inside the informal 8–12 ceiling for one coordinator, but your '
+            + 'current toolset offers no cross-project resourcing view — so nothing catches a clash between two of '
+            + 'a single PM’s own projects until it has already caused a delay'
           : c.ragPM === 'healthy'
             ? 'Within the range one person can plan ahead in rather than react to — the informal ceiling for one '
               + 'coordinator sits at 8 to 12'
             : c.ragPM === 'atrisk'
               ? 'At the edge of sustainable oversight load — approaching the informal 8–12 ceiling for one coordinator'
               : 'Past the informal 8–12 ceiling for one coordinator — at this load the work becomes reacting to '
-                + 'projects rather than planning them'
+                + 'projects rather than planning them';
+
+      out.push({
+        key:'pm', rag:c.ragPMDisplay, escalated:c.pmEscalated, label:METRIC_PM, value:d1(c.pmLoad),
+        note:pmNote
       });
     }
 
+    /* The metric name is opaque on first read, so the tile carries the same
+       tooltip pattern the input labels use, saying the ratio back in plain
+       language. It needs a ratio to describe, so it is absent on the one branch
+       where there is none. */
     out.push({
       key:'fte', rag:c.ragFTE, label:METRIC_FTE,
       value: c.noBauCapacity ? '—' : d1(c.projectsPerFTE),
+      tip: c.noBauCapacity ? null
+        : 'You’ve got roughly ' + n1(c.effectiveFTE) + ' full-time-equivalent people’s worth of support-team time '
+          + 'going into projects, and right now that’s covering ' + n0(v.live) + ' live '
+          + plural(v.live,'project','projects') + ' — about ' + n1(c.projectsPerFTE) + ' '
+          + plural(c.projectsPerFTE,'project','projects') + ' for each of those full-time-equivalents.',
+      tipShort:'What this ratio means in plain language.',
       note: c.noBauCapacity
         ? 'No dedicated BAU capacity was reported against your projects, so there is no ratio to state.'
         : v.live === 0
@@ -1297,33 +1381,48 @@ window.submitToSender = function(payload){
     return out;
   }
 
-  /* ---- Portfolio headroom ---- */
-  function headroomCopy(v, c){
-    var h = c.headroom;
+  /* ---- Portfolio growth ceiling ----
+     The arithmetic produces a sustainable annual rate, not a calendar budget.
+     The tool never asks how far into the year the visitor is or how many
+     projects have already run, so it cannot answer "how many are left before
+     December" and the copy must not imply that it does. "Year" appears here
+     only ever attached to an annual pace.
+
+     "a capacity metric turns red" rather than plainly "turns red": the PM tile
+     can be escalated to red on a toolset basis (§7) while capacity thresholds
+     still have room in them, and both statements have to be true at once. */
+  var CEILING_EYEBROW = 'Portfolio growth ceiling';
+
+  function growthCeilingCopy(v, c){
+    var h = c.ceiling;
 
     if(h.noPace){
-      return { blocked:true, eyebrow:'Portfolio headroom',
+      return { blocked:true, eyebrow:CEILING_EYEBROW,
         figure:'No live projects to work from',
-        note:'Portfolio headroom projects your current plan forward to the point where a key metric would turn red. '
-           + 'That projection needs a current pace to work from — with nothing live right now, there is none. This '
-           + 'figure will appear once you have projects running.' };
+        note:'Your portfolio growth ceiling projects your current pace forward to the point where a capacity metric '
+           + 'would turn red. That projection needs a current pace to work from — with nothing live right now, there '
+           + 'is none. This figure will appear once you have projects running.' };
     }
 
     if(h.blocked){
-      return { blocked:true, eyebrow:'Portfolio headroom',
-        figure:'No headroom left this year',
+      return { blocked:true, eyebrow:CEILING_EYEBROW,
+        figure:'No room to grow at today’s pace',
         note:'<strong>' + esc(h.binding) + '</strong> is already past its red threshold at ' + n0(v.live)
-           + ' live ' + plural(v.live,'project','projects') + ', so there is no headroom to project forward. Bringing '
-           + 'that measure back inside its band — by adding capacity or by reducing what is running — comes before '
-           + 'taking anything else on.' };
+           + ' live ' + plural(v.live,'project','projects') + ', so there is no ceiling to project forward to. '
+           + 'Bringing that measure back inside its band — by adding capacity or by reducing what is running — comes '
+           + 'before taking anything else on.' };
     }
 
-    return { blocked:false, eyebrow:'Portfolio headroom',
-      figure:n0(h.value) + ' more ' + plural(h.value,'project','projects') + ' this year',
-      note:'until a key metric turns red — <strong>' + esc(h.binding) + '</strong> would be the first to tip, assuming '
-         + 'this year’s typical project pace holds. Assumes staff, PMs and BAU capacity stay as reported, and that new '
-         + 'projects run at a similar pace to today’s — adding people, reallocating time, or changing project pace '
-         + 'would all change this.' };
+    return { blocked:false, eyebrow:CEILING_EYEBROW,
+      figure:'Room to grow: ~' + n0(h.value) + ' more ' + plural(h.value,'project','projects')
+           + ' a year at today’s pace',
+      note:'Your typical annual throughput (' + n0(v.annual) + ' projects/year) has room to grow to roughly '
+         + n0(h.bindingThreshold) + '/year before <strong>' + esc(h.binding) + '</strong> — the capacity metric that '
+         + 'would tip first — turns red. This is a pace ceiling, not a countdown of the year: it says how much your '
+         + 'typical annual volume could rise while projects keep taking about as long as they do today, not how many '
+         + 'project starts are left before December. Assumes staff, PMs, and BAU capacity stay as reported, and that '
+         + 'new projects run at a similar pace to today’s — adding people, reallocating time, or changing project '
+         + 'pace would all change this.' };
   }
 
   /* ---- Informational bullets. Nothing here is rated. ---- */
@@ -1345,10 +1444,19 @@ window.submitToSender = function(payload){
       note:n0(v.staff) + ' of ' + n0(v.companyHeadcount) + ' people' });
 
     if(c.ticketFTE !== null){
+      /* The proportion is stated against non-PM IT staff, not against bauStaff.
+         bauStaff counts only those currently named on project work, while the
+         service desk draws on the wider pool — measuring against it would
+         overstate the share roughly twofold. Where every IT person is a PM
+         there is no denominator, and the clause is dropped rather than
+         guessed at. */
       out.push({ figure:d1(c.ticketFTE) + ' FTE',
-        label:'Of ongoing capacity would be needed, dedicated solely to handling tickets',
-        note:'to keep pace with your reported monthly ticket volume, at the 480 tickets per agent per month '
-           + 'mid-point Jitbit derived from 7 million support tickets across around 1,000 companies' });
+        label: c.ticketFtePercent === null
+          ? 'Of ongoing capacity is absorbed by ticket volume before any project work is considered'
+          : 'Of ongoing capacity — around ' + n1(c.ticketFtePercent) + '% of your ' + n0(c.nonPmStaff)
+            + ' non-PM IT staff — is absorbed by ticket volume before any project work is considered',
+        note:'at the 480 tickets per agent per month mid-point Jitbit derived from 7 million support tickets '
+           + 'across around 1,000 companies, against your reported monthly ticket volume' });
 
       /* Consistency check. Queries the input rather than rating the output, and
          sits directly beneath the bullet it questions. */
@@ -1385,19 +1493,27 @@ window.submitToSender = function(payload){
      Severities throughout are as the matrix has them — they are not derivable
      from the answer, so do not adjust one without the tab in front of you. */
   function cards(v, c){
+    /* Order is part of the design (v5.1 §8). Both new cards read off an answer
+       that already drives an existing card, so each pair is sequenced
+       adjacently — the second then reads as escalation rather than repetition:
+
+         bau → toolset → pmcoord → visibility → linemanager → cost → assignment
+
+       Every card carries a `key` naming its family, so that sequence stays
+       checkable. */
     var out = [];
 
     /* Card D — BAU coverage. Triggers above 5 live projects per effective FTE:
        amber to 10, red beyond. */
     if(c.noBauCapacity && v.live > 0){
-      out.push({ rag:'over', title:'No BAU capacity is recorded against your live projects',
+      out.push({ key:'bau', rag:'over', title:'No BAU capacity is recorded against your live projects',
         body:'You told us no BAU staff are currently working on IT projects, while ' + n0(v.live) + ' '
            + plural(v.live,'project is','projects are') + ' live. Either they are being delivered by people this check '
            + 'has not counted — dedicated project staff, contractors or a supplier — or the BAU contribution is real '
            + 'and has never been written down. Both are worth settling before the next plan is built, because a plan '
            + 'assuming capacity nobody has committed is the most common way a date slips.' });
     }else if(c.projectsPerFTE !== null && c.projectsPerFTE > BAND_FTE.amber){
-      out.push({ rag:c.ragFTE,
+      out.push({ key:'bau', rag:c.ragFTE,
         title:'Your ' + n0(v.live) + ' live projects are sharing approximately ' + n1(c.effectiveFTE)
             + ' effective BAU FTE',
         body:'With just approximately ' + n1(c.effectiveFTE) + ' effective BAU FTE — ' + n0(v.bauStaff) + ' people '
@@ -1449,7 +1565,56 @@ window.submitToSender = function(payload){
            + 'only be answered by asking around, and nothing prevents decisions being made on stale or incomplete '
            + 'information — including the figures you entered here.' }
     };
-    if(v.toolset && TOOLSET[v.toolset]) out.push(TOOLSET[v.toolset]);
+    if(v.toolset && TOOLSET[v.toolset]) out.push(Object.assign({key:'toolset'}, TOOLSET[v.toolset]));
+
+    /* PM coordination overload. Sits immediately after the toolset card because
+       it reads off the same answer — the pair is meant to read as escalation
+       rather than repetition. It adds no new fact: it attaches the pmLoad figure
+       this report already calculates to a tool risk the visitor has already told
+       us applies, turning an abstract statement about a tool into a statement
+       about their own caseload.
+
+       Unlike the toolset card above, this one does render for `other` — the
+       finding there is that we cannot say, which is worth stating. Suppressed
+       entirely where there are no project managers, since pmLoad is undefined.
+       Sources are the ones the toolset card already cites; the rest is ProjexaR
+       positioning. */
+    if(c.pmLoad !== null){
+      var load = n1(c.pmLoad);
+      var PM_COORD = {
+        excel:{ rag:'atrisk', title:'Each PM’s ' + load + ' projects sit in separate spreadsheet files',
+          body:'You told us your PM caseload works out to roughly ' + load + ' concurrent projects each. On '
+             + 'spreadsheets, each of those likely lives in its own file — so spotting a resourcing conflict between '
+             + 'two of a PM’s own ' + load + ' projects means manually comparing files, and there’s no shared system '
+             + 'that would catch it automatically.' },
+        msproject:{ rag:'atrisk', title:'Each PM’s ' + load + ' projects sit in separate Project files',
+          body:'At roughly ' + load + ' concurrent projects per PM, each file is likely tracking resourcing for one '
+             + 'project at a time — Project’s per-project view doesn’t natively roll up a PM’s own ' + load + ' files '
+             + 'into one picture unless Project Online or Project Server is already in place, which we haven’t '
+             + 'confirmed.' },
+        planner:{ rag:'atrisk', title:'Each PM’s ' + load + ' projects sit on separate Planner boards',
+          body:'With roughly ' + load + ' concurrent projects per PM, a PM juggling that many boards has no native '
+             + 'way to see resourcing conflicts across boards — Planner’s capacity view works within a board, not '
+             + 'across a PM’s full caseload.' },
+        ppm:{ rag:'healthy', title:'A caseload of ' + load + ' projects per PM is what a resource-planning tool is for',
+          body:'At roughly ' + load + ' concurrent projects per PM, this is exactly the caseload a resource-planning '
+             + 'tool is meant to handle — worth confirming the tool’s resource management module is actually switched '
+             + 'on and being used for this, since PPM products vary in whether that’s built in or a separate '
+             + 'add-on.' },
+        mixed:{ rag:'over', title:'Each PM reconciles ' + load + ' projects across tools that don’t share data',
+          body:'At roughly ' + load + ' concurrent projects per PM, split across tools that don’t share data, a PM '
+             + 'would have to manually reconcile resourcing across every one of those ' + load + ' projects — and '
+             + 'every reconciliation is a chance for two projects to quietly double-book the same person.' },
+        none:{ rag:'over', title:'Nothing holds a PM’s ' + load + ' projects together',
+          body:'At roughly ' + load + ' concurrent projects per PM with no system in place at all, resourcing '
+             + 'conflicts across that caseload can only be caught by asking around — and only after they’ve already '
+             + 'caused a delay.' },
+        other:{ rag:'atrisk', title:'We can’t say how your tool handles a caseload of ' + load + ' projects per PM',
+          body:'At roughly ' + load + ' concurrent projects per PM, we can’t say how well an unnamed tool handles '
+             + 'cross-project resourcing — flagged for follow-up rather than a generic claim.' }
+      };
+      if(v.toolset && PM_COORD[v.toolset]) out.push(Object.assign({key:'pmcoord'}, PM_COORD[v.toolset]));
+    }
 
     /* Item 12 — one live view of demand against availability.
        Copy and severities per the Answer Option Mapping tab. */
@@ -1464,7 +1629,44 @@ window.submitToSender = function(payload){
         body:'Worth checking whether it’s BAU-aware as well as project-aware, since a tool that only tracks project '
            + 'demand can still miss the same conflicts if BAU commitments sit outside it.' }
     };
-    if(v.resourceVisibility && VISIBILITY[v.resourceVisibility]) out.push(VISIBILITY[v.resourceVisibility]);
+    if(v.resourceVisibility && VISIBILITY[v.resourceVisibility]) out.push(Object.assign({key:'visibility'}, VISIBILITY[v.resourceVisibility]));
+
+    /* Line manager blind commitment. A corollary of item 12 rather than a new
+       question, and paired with it for the same reason the PM card is paired
+       with item 11. Whoever signs off releasing a BAU person onto a project
+       depends on exactly the view item 12 describes; this card names the
+       quantity riding on that gap.
+
+       No external source on any branch. The `manual` branch in particular
+       carries no citation: that a hand-reconciled picture of demand and
+       availability runs on a lag needs none.
+
+       Suppressed where no BAU staff were reported. The specification does not
+       call for that, but every branch names a headcount as the thing at stake,
+       and at zero the card would assert that nobody was signed off by anybody.
+       Card D already covers the no-BAU-capacity case. */
+    if(v.bauStaff > 0){
+      var bau = n0(v.bauStaff);
+      var LINE_MANAGER = {
+        none:{ rag:'over', title:'All ' + bau + ' BAU staff on projects were released without a shared view',
+          body:'You’ve told us there’s no shared view of resource demand and availability. That means every one of '
+             + 'the ' + bau + ' BAU staff currently drawn into project work was signed off by a line manager working '
+             + 'from whatever they personally knew at the time — not from a live picture of what else that person had '
+             + 'already been committed to.' },
+        manual:{ rag:'atrisk', title:'Line managers release those ' + bau + ' BAU staff from a lagging picture',
+          body:'You’ve told us demand and availability are joined up by hand, on a lag. A line manager releasing '
+             + 'someone from the ' + bau + ' BAU staff currently on projects is working from that same lagging, '
+             + 'manually-reconciled picture — so a commitment that looked fine when it was agreed can go stale before '
+             + 'anyone notices.' },
+        dedicated:{ rag:'healthy',
+          title:'Worth confirming line managers approve BAU releases in that same tool',
+          body:'Worth confirming the tool line managers actually use to approve releasing BAU time is the same one '
+             + 'shown here as covering demand and availability — a tool that’s project-aware but not BAU-aware would '
+             + 'still leave this gap for the ' + bau + ' BAU staff currently on projects, even though the headline '
+             + 'answer reads Healthy.' }
+      };
+      if(v.resourceVisibility && LINE_MANAGER[v.resourceVisibility]) out.push(Object.assign({key:'linemanager'}, LINE_MANAGER[v.resourceVisibility]));
+    }
 
     /* Item 13 — whether internal BAU time reaches a project budget.
        Copy and severities per the Answer Option Mapping tab. Note there is no
@@ -1494,7 +1696,7 @@ window.submitToSender = function(payload){
            + 'applies consistently across every project, since folding in time only where it’s tracked would give a '
            + 'fuller picture.' }
     };
-    if(v.budgetTracking && COST[v.budgetTracking]) out.push(COST[v.budgetTracking]);
+    if(v.budgetTracking && COST[v.budgetTracking]) out.push(Object.assign({key:'cost'}, COST[v.budgetTracking]));
 
     /* Item 14 — whether current assignments can be stated without asking.
        Copy and severities per the Answer Option Mapping tab. */
@@ -1512,7 +1714,7 @@ window.submitToSender = function(payload){
            + 'live view that’s only live when someone maintains it manually carries the same risk as not having '
            + 'one.' }
     };
-    if(v.assignmentKnowledge && ASSIGNMENT[v.assignmentKnowledge]) out.push(ASSIGNMENT[v.assignmentKnowledge]);
+    if(v.assignmentKnowledge && ASSIGNMENT[v.assignmentKnowledge]) out.push(Object.assign({key:'assignment'}, ASSIGNMENT[v.assignmentKnowledge]));
 
     return out;
   }
@@ -1546,13 +1748,13 @@ window.submitToSender = function(payload){
          : 'An average of ' + d1(c.projectsPerFTE) + ' projects for every unit of capacity.',
       next:'The actual spread. An average hides the person on six projects and the person on one.' });
 
-    var h = c.headroom;
+    var h = c.ceiling;
     rows.push({
-      now: h.noPace  ? 'No live projects to project a pace from, so headroom cannot be worked out yet.'
-         : h.blocked ? h.binding + ' is already past its red threshold, so there is no room to project.'
-         : h.value === 0 ? 'No room for more projects this year before a metric turns red.'
-         : 'Room for ' + n0(h.value) + ' more ' + plural(h.value,'project','projects')
-           + ' this year before a metric turns red.',
+      now: h.noPace  ? 'No live projects to project a pace from, so the growth ceiling cannot be worked out yet.'
+         : h.blocked ? h.binding + ' is already past its red threshold, so there is no room to grow at today’s pace.'
+         : h.value === 0 ? 'No room to raise your annual project pace before a capacity metric turns red.'
+         : 'Room to raise your annual pace by ' + n0(h.value) + ' more '
+           + plural(h.value,'project','projects') + ' a year before a capacity metric turns red.',
       next:'Which specific projects you could take on, and when the people they need are free.' });
 
     if(c.ticketFTE !== null){
@@ -1656,18 +1858,24 @@ window.submitToSender = function(payload){
     $('positionLead').innerHTML = positionLead(v, c);
 
     $('tileGrid').innerHTML = tiles(v, c).map(function(t){
+      /* Same tooltip markup the input labels use, so there is one pattern on
+         the page rather than two. Absent on tiles that declare no tip. */
+      var tip = t.tip
+        ? ' <span class="tip" data-tip="' + esc(t.tip) + '">'
+          + '<i class="info" tabindex="0" role="note" aria-label="' + esc(t.tipShort) + '">i</i></span>'
+        : '';
       return '<div class="tile ' + t.rag + '">'
-           + '<div class="t-top"><p class="t-label">' + esc(t.label) + '</p>'
+           + '<div class="t-top"><p class="t-label">' + esc(t.label) + tip + '</p>'
            + '<span class="pill ' + t.rag + '">' + STATUS_WORD[t.rag] + '</span></div>'
            + '<p class="t-value">' + esc(t.value) + '</p>'
            + '<p class="t-note">' + esc(t.note) + '</p></div>';
     }).join('');
 
-    var hc = headroomCopy(v, c);
-    $('headroom').className = 'headroom' + (hc.blocked ? ' is-blocked' : '');
-    $('headroomEyebrow').textContent = hc.eyebrow;
-    $('headroomFigure').textContent = hc.figure;
-    $('headroomNote').innerHTML = hc.note;
+    var hc = growthCeilingCopy(v, c);
+    $('growthCeiling').className = 'ceiling' + (hc.blocked ? ' is-blocked' : '');
+    $('ceilingEyebrow').textContent = hc.eyebrow;
+    $('ceilingFigure').textContent = hc.figure;
+    $('ceilingNote').innerHTML = hc.note;
 
     $('factList').innerHTML = facts(v, c).map(function(f){
       if(f.check) return '<li class="checknote">' + esc(f.text) + '</li>';
@@ -1704,7 +1912,7 @@ window.submitToSender = function(payload){
     $('pr-figure').textContent = hc.figure;
     /* The note is written to follow straight on from the figure, so it takes no
        prefix here — page 1 carries the heading instead. */
-    $('pr-headroom').innerHTML = hc.note;
+    $('pr-ceiling').innerHTML = hc.note;
     $('pr-verdict').innerHTML = verdict(v, c);
 
     $('pr-tiles').innerHTML = tiles(v, c).map(function(t){
@@ -1713,8 +1921,8 @@ window.submitToSender = function(payload){
     }).join('');
 
     $('pr-bandnote').innerHTML = v.pms === 0
-      ? '<strong>No project managers were reported</strong>, so concurrent projects per PM is not shown and portfolio '
-        + 'headroom is projected from BAU capacity alone.'
+      ? '<strong>No project managers were reported</strong>, so concurrent projects per PM is not shown and your '
+        + 'portfolio growth ceiling is projected from BAU capacity alone.'
       : '';
 
     /* The consistency check is a bullet on screen and a callout in print, so it
@@ -1770,34 +1978,34 @@ window.submitToSender = function(payload){
     fx.push(['IT staff as a share of the company', n0(v.staff) + ' ÷ ' + n0(v.companyHeadcount),
              d1(c.itPercent) + '%']);
 
-    /* The headroom arithmetic, shown in full — it is the one figure on the
+    /* The growth ceiling arithmetic, shown in full — it is the one figure on the
        report that projects rather than counts, so it should be checkable. */
     /* Written out of the raw inputs, not out of the rounded figures above. A
        reader checking "10 × 7.4 × 1.7" cannot arrive at 124, because neither
        7.4 nor 1.7 is the number the threshold was calculated from — and the
        floor that turns 123.33 into 123 has to be visible or the "+ 1" looks
        like an error. */
-    var h = c.headroom;
+    var h = c.ceiling;
     var fteExpr = '(' + n0(v.bauStaff) + ' × ' + v.bauPercent2 + '%)';
     var turnExpr = '(' + n0(v.annual) + ' ÷ ' + n0(v.live) + ')';
     var pmLiveExpr  = '12 × ' + n0(v.pms) + ', rounded down, + 1';
     var bauLiveExpr = '10 × ' + fteExpr + ', rounded down, + 1';
 
     if(h.noPace){
-      fx.push(['Portfolio headroom', 'needs a live project count to project a pace from', 'Not available']);
+      fx.push(['Portfolio growth ceiling', 'needs a live project count to project a pace from', 'Not available']);
     }else{
       if(h.pmLive !== null) fx.push(['Red threshold, projects per PM', pmLiveExpr, n0(h.pmLive) + ' live']);
       fx.push(['Red threshold, projects per BAU FTE', bauLiveExpr, n0(h.bauLive) + ' live']);
       if(h.blocked){
-        fx.push(['Portfolio headroom',
+        fx.push(['Portfolio growth ceiling',
           'your ' + n0(v.live) + ' live is already at or past the lower of those', 'None']);
       }else{
         if(h.pmAnnual !== null) fx.push(['The same threshold across a year, per PM',
           '12 × ' + n0(v.pms) + ' × ' + turnExpr + ', rounded down, + 1', n0(h.pmAnnual) + ' a year']);
         fx.push(['The same threshold across a year, per BAU FTE',
           '10 × ' + fteExpr + ' × ' + turnExpr + ', rounded down, + 1', n0(h.bauAnnual) + ' a year']);
-        fx.push(['Portfolio headroom', 'the lower of those, minus your ' + n0(v.annual) + ' a year',
-          n0(h.value) + ' ' + plural(h.value,'project','projects')]);
+        fx.push(['Portfolio growth ceiling', 'the lower of those, minus your ' + n0(v.annual) + ' a year',
+          n0(h.value) + ' ' + plural(h.value,'project','projects') + ' a year']);
       }
     }
 
@@ -1874,14 +2082,22 @@ window.submitToSender = function(payload){
      Banded properties only. Nothing that could identify a visitor or their
      organisation leaves the page through an event. */
   function staffBand(n){ return n < 25 ? 'under_25' : n <= 100 ? '25_to_100' : n <= 500 ? '100_to_500' : 'over_500'; }
-  function headroomBand(c){
-    var h = c.headroom;
+  function ceilingBand(c){
+    var h = c.ceiling;
     if(h.noPace) return 'no_pace';
     if(h.blocked || h.value === 0) return 'none';
     return h.value <= 10 ? '1_to_10' : h.value <= 50 ? '11_to_50' : 'over_50';
   }
+  /* rag_pm is the unescalated capacity state, matching the Sender payload and
+     for the same reason (§7.4): the escalation is a tooling signal, and toolset
+     is already a property on the events that carry this. Keeping the capacity
+     metric clean means the two stay comparable and separable.
+
+     headroom_band keeps its name through the v5.1 rename. It is an established
+     analytics series, and renaming the property would split it in two for no
+     gain — the same reason the Sender field keeps its name. */
   function ragProps(c){
-    return { rag_pm: c.ragPM || 'none', rag_bau: c.ragFTE, headroom_band: headroomBand(c) };
+    return { rag_pm: c.ragPM || 'none', rag_bau: c.ragFTE, headroom_band: ceilingBand(c) };
   }
 
   /* ================= Wiring ================= */
@@ -1950,7 +2166,18 @@ window.submitToSender = function(payload){
        is 0 both when a metric is already red and when the portfolio is exactly
        at its limit, and blank when there is nothing live to project from — so
        a template presenting it should read rag_pm and rag_bau alongside it
-       rather than on its own. */
+       rather than on its own. The figure is called the portfolio growth ceiling
+       on screen and in the report from v5.1; the field keeps the name
+       `headroom` because it already exists in Sender and renaming it would
+       break the account.
+
+       rag_pm carries the unescalated capacity RAG state, deliberately. The PM
+       tile can escalate to red on a toolset basis (§7), and that escalated
+       value is NOT written here: rag_pm drives email segmentation, and the
+       escalation is a tooling signal Sender already has in `toolset`. Keeping
+       the capacity metric clean means segments stay comparable, and any future
+       segment wanting the compound condition can express it as rag_pm +
+       toolset without needing a new field. */
     var payload = {
       email:email, name:rawName, firstname:firstname, lastname:lastname,
       company:$('company').value.trim(),
@@ -1960,17 +2187,19 @@ window.submitToSender = function(payload){
       effective_fte:Math.round(lastC.effectiveFTE*10)/10,
       pm_load:lastC.pmLoad === null ? '' : Math.round(lastC.pmLoad*10)/10,
       projects_per_fte:lastC.projectsPerFTE === null ? '' : Math.round(lastC.projectsPerFTE*10)/10,
-      rag_pm:lastC.ragPM === null ? '' : STATUS_WORD[lastC.ragPM],
+      rag_pm:lastC.ragPM === null ? '' : STATUS_WORD[lastC.ragPM],   /* capacity state only — never ragPMDisplay */
       rag_bau:STATUS_WORD[lastC.ragFTE],
-      headroom:lastC.headroom.value === null ? '' : lastC.headroom.value,
+      headroom:lastC.ceiling.value === null ? '' : lastC.ceiling.value,
       toolset:selText('toolset'),
       budget_tracking:selText('budgetTracking'),
       permalink:permalink(lastV)
     };
 
-    /* Fire-and-forget. The report must never fail to open because this failed. */
-    if(typeof window.submitToSender === 'function'){ try{ window.submitToSender(payload); }catch(e){} }
-    else console.info('[ProjexaR] Sender endpoint not wired. Payload:', payload);
+    /* Both of these read the gate's own markup, so they have to be taken before
+       the success state replaces it — the Turnstile widget and the consent
+       checkbox are both inside #gate and both gone once it is swapped out. */
+    payload.turnstile_token = turnstileToken();
+    payload.ack = $('ack').checked;
 
     /* Analytics keeps the raw codes so these props stay groupable and match the
        other events — the labels are for the email, not the funnel. */
@@ -1985,7 +2214,31 @@ window.submitToSender = function(payload){
       + '<div class="permalink"><strong>Your link, saved:</strong><br>' + esc(payload.permalink) + '</div></div>';
     $('openReport').addEventListener('click', openReport);
     setTimeout(openReport, 300);
+
+    /* Last, and fire-and-forget. The report is the thing the visitor was
+       promised and it is already on screen and already opening by this point;
+       the Sender call can fail for any reason — network, Turnstile, an outage —
+       without any of that being taken back. What a failure costs them is the
+       emailed copy, not the report or the permalink, both of which are in the
+       success state above. */
+    if(typeof window.submitToSender === 'function'){ try{ window.submitToSender(payload); }catch(e){} }
+    else console.info('[ProjexaR] Sender endpoint not wired. Payload:', payload);
   });
+
+  /* The widget writes its token into a hidden input inside its own container.
+     getResponse() is the documented reader but throws when no widget has
+     rendered, so the input is tried first and everything is wrapped: a blank
+     token is a valid outcome here, not an error to surface. */
+  function turnstileToken(){
+    try{
+      var el = document.querySelector('#gate [name="cf-turnstile-response"]');
+      if(el && el.value) return el.value;
+      if(window.turnstile && typeof window.turnstile.getResponse === 'function'){
+        return window.turnstile.getResponse() || '';
+      }
+    }catch(e){}
+    return '';
+  }
 
   function openReport(){
     try{ window.print(); }catch(e){ console.warn('[ProjexaR] print blocked in this context', e); }
@@ -2002,8 +2255,8 @@ window.submitToSender = function(payload){
   }
 
   /* Exposed for the console and for checking the worked example in the brief. */
-  window.__ProjexaR = { compute:compute, headroomOf:headroomOf, ragPM:ragPM, ragFTE:ragFTE,
-                        tiles:tiles, facts:facts, cards:cards, headroomCopy:headroomCopy,
+  window.__ProjexaR = { compute:compute, growthCeilingOf:growthCeilingOf, ragPM:ragPM, ragFTE:ragFTE,
+                        tiles:tiles, facts:facts, cards:cards, growthCeilingCopy:growthCeilingCopy,
                         verdict:verdict, priceCopy:priceCopy, sources:sources, positionLead:positionLead,
                         compare:compare,
                         selText:selText, readAndValidate:readAndValidate, permalink:permalink,
