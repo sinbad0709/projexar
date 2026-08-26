@@ -1,0 +1,22 @@
+{
+  "_readme": [
+    "Verification dates for the Our Commitments tiles on /trust.",
+    "",
+    "This file is the only place a date lives. To re-verify a commitment,",
+    "change its value below and deploy — the tile markup in index.html is not",
+    "touched. Keys match the data-verified attribute on each tile's back face.",
+    "",
+    "Format: YYYY-MM-DD. The page renders it as '26 August 2026'.",
+    "A key with a missing or malformed date renders no line at all, which is",
+    "the intended behaviour for a commitment that has not been verified yet."
+  ],
+  "lastVerified": {
+    "data-export": "2026-08-26",
+    "money-back": "2026-08-26",
+    "absence-reason": "2026-08-26",
+    "change-log": "2026-08-26",
+    "no-data-sale": "2026-08-26",
+    "published-price": "2026-08-26",
+    "iso-27001": "2026-08-26"
+  }
+}

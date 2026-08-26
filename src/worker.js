@@ -47,6 +47,21 @@ const GATE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 /** Mirrors the maxlength attributes on the form; see public/contact.html. */
 const LIMITS = { name: 200, email: 254, company: 200, message: 5000 };
 
+/**
+ * The contact form is on more than one page, and each one wants the visitor
+ * back where they started rather than on /contact. A form declares which page
+ * it is with a hidden `source` field; this maps that to a path and a subject
+ * line.
+ *
+ * A fixed table, and never the submitted value itself: `source` arrives from
+ * the browser, so echoing it into the Location header would turn this endpoint
+ * into an open redirect. Anything not in the table falls back to /contact.
+ */
+const SOURCES = {
+  trust: { path: "/trust/", label: "Trust Centre" },
+};
+const DEFAULT_SOURCE = { path: "/contact", label: "contact form" };
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -80,30 +95,38 @@ async function handleContact(request, env) {
   try {
     form = await request.formData();
   } catch {
-    return seeOther("/contact?error=1");
+    return seeOther(`${DEFAULT_SOURCE.path}?error=1`);
   }
 
   const field = (name) => String(form.get(name) ?? "").trim();
 
+  // Which page posted, and therefore where the result is shown. Resolved once,
+  // before any of the checks below, so every exit lands the visitor back on the
+  // form they filled in. Object.hasOwn, not a plain lookup: `source` is
+  // attacker-controlled, and "__proto__" or "constructor" would otherwise
+  // resolve to something off Object.prototype instead of falling back.
+  const declared = field("source");
+  const source = Object.hasOwn(SOURCES, declared) ? SOURCES[declared] : DEFAULT_SOURCE;
+
   // Honeypot. It is display:none, so a human never fills it in and anything
   // in it is a bot. Answer with the redirect a success gets — a bot told it
   // failed will retry or adapt; one told it succeeded moves on.
-  if (field("hp_field") !== "") return seeOther("/contact?sent=1");
+  if (field("hp_field") !== "") return seeOther(`${source.path}?sent=1`);
 
   const name = field("name");
   const email = field("email");
   const company = field("company");
   const message = field("message");
 
-  if (!name || !email || !message) return seeOther("/contact?error=1");
-  if (!isEmail(email)) return seeOther("/contact?error=1");
+  if (!name || !email || !message) return seeOther(`${source.path}?error=1`);
+  if (!isEmail(email)) return seeOther(`${source.path}?error=1`);
   if (
     name.length > LIMITS.name ||
     email.length > LIMITS.email ||
     company.length > LIMITS.company ||
     message.length > LIMITS.message
   ) {
-    return seeOther("/contact?error=1");
+    return seeOther(`${source.path}?error=1`);
   }
 
   const passed = await verifyTurnstile(
@@ -111,19 +134,23 @@ async function handleContact(request, env) {
     env.TURNSTILE_SECRET,
     request.headers.get("CF-Connecting-IP"),
   );
-  if (!passed) return seeOther("/contact?error=1");
+  if (!passed) return seeOther(`${source.path}?error=1`);
 
   try {
     await env.SEND_EMAIL.send(
-      new EmailMessage(FROM, TO, buildMime({ name, email, company, message })),
+      new EmailMessage(
+        FROM,
+        TO,
+        buildMime({ name, email, company, message, source: source.label }),
+      ),
     );
   } catch (err) {
     // The enquirer only ever sees the generic error; the detail goes to logs.
     console.error("contact form send failed:", err);
-    return seeOther("/contact?error=1");
+    return seeOther(`${source.path}?error=1`);
   }
 
-  return seeOther("/contact?sent=1");
+  return seeOther(`${source.path}?sent=1`);
 }
 
 /**
@@ -301,17 +328,19 @@ async function verifyTurnstile(token, secret, ip) {
 }
 
 /** Builds the RFC 5322 message. Cloudflare rejects anything without a Message-ID. */
-function buildMime({ name, email, company, message }) {
+function buildMime({ name, email, company, message, source }) {
+  const from = source || DEFAULT_SOURCE.label;
   const body = [
     `Name:    ${name}`,
     `Email:   ${email}`,
     `Company: ${company || "(not given)"}`,
+    `Form:    ${from}`,
     "",
     "Message:",
     message.replace(/\r\n|\r|\n/g, "\r\n"),
     "",
     "-- ",
-    "Sent from the contact form at projexar.com",
+    `Sent from the ${from} at projexar.com`,
   ].join("\r\n");
 
   return [
@@ -320,7 +349,11 @@ function buildMime({ name, email, company, message }) {
     `Reply-To: ${encodeHeaderWord(name)} <${headerSafe(email)}>`,
     `Message-ID: <${crypto.randomUUID()}@projexar.com>`,
     `Date: ${rfc5322Date()}`,
-    `Subject: ${encodeHeaderWord(`Contact form enquiry from ${name}`)}`,
+    `Subject: ${encodeHeaderWord(
+      from === DEFAULT_SOURCE.label
+        ? `Contact form enquiry from ${name}`
+        : `${from} enquiry from ${name}`,
+    )}`,
     "MIME-Version: 1.0",
     'Content-Type: text/plain; charset="utf-8"',
     "Content-Transfer-Encoding: base64",

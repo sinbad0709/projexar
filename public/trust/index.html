@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trust Centre — ProjexaR</title>
+<meta name="description" content="How ProjexaR handles and protects your data, and the toolkit your InfoSec or data protection review needs — commitments you can hold us to, in one place.">
+<link rel="canonical" href="https://projexar.com/trust/">
+<link rel="icon" href="/assets/logo-mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/styles/tokens.css">
+<link rel="stylesheet" href="/styles/site.css">
+<noscript><style>
+  /* No script, no flip — so the two faces are unstacked and the tile reads as
+     one card, claim above evidence. Every commitment stays on the page; only
+     the flip and the verification dates are lost. */
+  .commitment { min-height: 0; cursor: default; perspective: none; }
+  .commitment__inner { display: flex; flex-direction: column; transform: none; }
+  .commitment__face { backface-visibility: visible; transform: none; }
+  .commitment__face--front { padding-bottom: 0; border-bottom: 0; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .commitment__face--back { border-top: 0; border-top-left-radius: 0; border-top-right-radius: 0; }
+  .commitment__cue { display: none; }
+</style></noscript>
+</head>
+<body>
+
+<header class="site-header" data-site-header>
+  <div class="site-header__bar">
+    <a class="site-header__logo" href="/">
+      <img src="/assets/logo-wordmark.png" alt="ProjexaR" width="146" height="26">
+      <span class="site-header__tagline">Capacity-aware project management</span>
+    </a>
+    <button class="site-header__toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="site-nav" aria-label="Menu">
+      <svg class="icon" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+    </button>
+    <nav class="site-header__nav" id="site-nav">
+      <a href="/product/">Product</a>
+      <a href="/solutions/">Solutions</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/capacity-check/">Capacity Check</a>
+    </nav>
+    <div class="site-header__actions">
+      <a class="btn btn--sm btn--secondary" href="/capacity-check/">Run the Capacity Check</a>
+      <a class="btn btn--sm btn--primary" href="/start/">Start free</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- =====================================================================
+       Page header + the two-path split.
+
+       The split sits inside the page head rather than in a section of its
+       own, so both routes are on screen without scrolling on a laptop and on
+       a phone. Anything added between the intro line and these two cards
+       pushes them under the fold — which is the one thing the layout is here
+       to prevent.
+       ===================================================================== -->
+  <section class="section--page-head">
+    <div class="container--narrow stack stack--30">
+      <div class="section-heading">
+        <h1 class="section-heading__title">Trust Centre</h1>
+        <p class="section-heading__description">This page sets out our commitment to clear commercial terms and a robust, secure service. It's for every customer, not just the ones who ask.</p>
+      </div>
+
+      <div class="trust-paths">
+        <a class="card card--p26 card--interactive trust-path" href="#our-commitments">
+          <span class="trust-path__label">See how we handle and protect your data</span>
+          <svg class="icon trust-path__arrow" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </a>
+        <a class="card card--p26 card--interactive trust-path" href="#data-protection-assessment-pack">
+          <span class="trust-path__label">A ready-to-use toolkit for InfoSec and data protection assessments</span>
+          <svg class="icon trust-path__arrow" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       Our Commitments.
+
+       No visible section heading by design — the tiles are the content. The
+       heading below is there for the document outline and for anyone
+       navigating by headings; it is not shown.
+
+       Each tile is a <button>, so a tap, a click, Enter and Space all flip it
+       the same way. Nothing inside a face may be a link or a control: that
+       would be interactive content nested inside a button, which is invalid
+       and unreachable by keyboard. Behaviour is in /js/trust.js; the
+       "Last verified" dates come from /trust/commitments.json and are filled
+       in at runtime, so re-verifying a commitment never touches this markup.
+       ===================================================================== -->
+  <section class="section trust-band trust-section" id="our-commitments">
+    <div class="container">
+      <h2 class="visually-hidden">Our commitments</h2>
+
+      <div class="commitments">
+
+        <!-- 1 -->
+        <button class="commitment" type="button" data-commitment aria-expanded="false">
+          <span class="commitment__inner">
+            <span class="commitment__face commitment__face--front">
+              <span class="commitment__claim">Take your data with you, any time.</span>
+              <span class="commitment__cue">See the detail
+                <svg class="icon" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </span>
+            </span>
+            <span class="commitment__face commitment__face--back">
+              <span class="commitment__evidence">Full CSV/Excel export of projects, resources and plans, with no restrictions, no waiting period and no support ticket required.</span>
+              <span class="commitment__verified" data-verified="data-export" hidden>Last verified: <time></time></span>
+            </span>
+          </span>
+        </button>
+
+        <!-- 2 -->
+        <button class="commitment" type="button" data-commitment aria-expanded="false">
+          <span class="commitment__inner">
+            <span class="commitment__face commitment__face--front">
+              <span class="commitment__claim">90-day money-back guarantee.</span>
+              <span class="commitment__cue">See the detail
+                <svg class="icon" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </span>
+            </span>
+            <span class="commitment__face commitment__face--back">
+              <span class="commitment__evidence">No conditions attached. If ProjexaR isn't right for you within 90 days, we refund you — no data export precondition.</span>
+              <span class="commitment__verified" data-verified="money-back" hidden>Last verified: <time></time></span>
+            </span>
+          </span>
+        </button>
+
+        <!-- 3 — PLACEHOLDER. Final wording is still to come; the back copy
+             below is working text and carries its own marker. Replace both
+             faces together when the wording lands. -->
+        <button class="commitment" type="button" data-commitment aria-expanded="false">
+          <span class="commitment__inner">
+            <span class="commitment__face commitment__face--front">
+              <span class="commitment__claim">We record absence, never the reason.</span>
+              <span class="commitment__cue">See the detail
+                <svg class="icon" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </span>
+            </span>
+            <span class="commitment__face commitment__face--back">
+              <span class="commitment__evidence">[Placeholder text — pending final wording.] A team member's unavailability is recorded; the reason is never captured or stored.</span>
+              <span class="commitment__verified" data-verified="absence-reason" hidden>Last verified: <time></time></span>
+            </span>
+          </span>
+        </button>
+
+        <!-- 4 -->
+        <button class="commitment" type="button" data-commitment aria-expanded="false">
+          <span class="commitment__inner">
+            <span class="commitment__face commitment__face--front">
+              <span class="commitment__claim">Every plan change is logged.</span>
+              <span class="commitment__cue">See the detail
+                <svg class="icon" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </span>
+            </span>
+            <span class="commitment__face commitment__face--back">
+              <span class="commitment__evidence">Who changed it, what changed, and when — a permanent audit trail behind every project plan.</span>
+              <span class="commitment__verified" data-verified="change-log" hidden>Last verified: <time></time></span>
+            </span>
+          </span>
+        </button>
+
+        <!-- 5 -->
+        <button class="commitment" type="button" data-commitment aria-expanded="false">
+          <span class="commitment__inner">
+            <span class="commitment__face commitment__face--front">
+              <span class="commitment__claim">We don't sell your data.</span>
+              <span class="commitment__cue">See the detail
+                <svg class="icon" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </span>
+            </span>
+            <span class="commitment__face commitment__face--back">
+              <span class="commitment__evidence">Full stop. Your data is used to run ProjexaR for you — never shared with advertisers or third parties for their own purposes.</span>
+              <span class="commitment__verified" data-verified="no-data-sale" hidden>Last verified: <time></time></span>
+            </span>
+          </span>
+        </button>
+
+        <!-- 6 is deliberately absent. The platform-level DDoS/bot protection
+             claim is held back until the dev team confirms the protection is
+             platform-level and not only site-level. No placeholder slot is
+             reserved: the grid is auto-fit, so adding the tile back in
+             sequence here is all that is needed. -->
+
+        <!-- 7 -->
+        <button class="commitment" type="button" data-commitment aria-expanded="false">
+          <span class="commitment__inner">
+            <span class="commitment__face commitment__face--front">
+              <span class="commitment__claim">One published price.</span>
+              <span class="commitment__cue">See the detail
+                <svg class="icon" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </span>
+            </span>
+            <span class="commitment__face commitment__face--back">
+              <!-- "our pricing page" is not marked up as a link: a link inside
+                   a button is invalid and unreachable by keyboard. The route
+                   to /pricing/ is the header and the footer. -->
+              <span class="commitment__evidence">See exactly what ProjexaR costs on our pricing page — no "contact sales" required to find out.</span>
+              <span class="commitment__verified" data-verified="published-price" hidden>Last verified: <time></time></span>
+            </span>
+          </span>
+        </button>
+
+        <!-- 8 -->
+        <button class="commitment" type="button" data-commitment aria-expanded="false">
+          <span class="commitment__inner">
+            <span class="commitment__face commitment__face--front">
+              <span class="commitment__claim">Built on ISO 27001 principles.</span>
+              <span class="commitment__cue">See the detail
+                <svg class="icon" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+              </span>
+            </span>
+            <span class="commitment__face commitment__face--back">
+              <span class="commitment__evidence">We operate today under ISO 27001 principles and are targeting formal certification in 2027.</span>
+              <span class="commitment__verified" data-verified="iso-27001" hidden>Last verified: <time></time></span>
+            </span>
+          </span>
+        </button>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       Data Protection Assessment Pack — placeholder shell.
+
+       None of the five documents exists yet, so each tile is a <div> and not
+       an <a>: visible, legible and inert, with nothing to click and no link to
+       break. When a document ships, swap its <div class="doc doc--pending">
+       for <a class="doc" href="..." download>, replace the "Coming soon"
+       badge with the file type and size.
+       ===================================================================== -->
+  <section class="section trust-section" id="data-protection-assessment-pack">
+    <div class="container stack stack--28">
+      <div class="section-heading">
+        <span class="eyebrow">Data Protection Assessment Pack</span>
+        <h2 class="section-heading__title">Everything your review needs, in one place</h2>
+        <!-- Working copy — final wording still to be confirmed. -->
+        <p class="section-heading__description">Everything your InfoSec or data protection review needs, in one place — no back-and-forth required.</p>
+      </div>
+
+      <div class="doc-grid">
+
+        <div class="doc doc--pending">
+          <div class="doc__head">
+            <span class="doc__title">Data Protection Impact Assessment</span>
+            <svg class="icon doc__icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg>
+          </div>
+          <p class="doc__body">A pre-filled DPIA template covering how ProjexaR processes your data.</p>
+          <p class="doc__status"><span class="badge badge--sm badge--pending"><span class="badge__dot"></span>Coming soon</span></p>
+        </div>
+
+        <div class="doc doc--pending">
+          <div class="doc__head">
+            <span class="doc__title">Statement of Lawful Basis</span>
+            <svg class="icon doc__icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg>
+          </div>
+          <p class="doc__body">Our lawful basis for processing, by data category.</p>
+          <p class="doc__status"><span class="badge badge--sm badge--pending"><span class="badge__dot"></span>Coming soon</span></p>
+        </div>
+
+        <div class="doc doc--pending">
+          <div class="doc__head">
+            <span class="doc__title">Data Retention Schedule</span>
+            <svg class="icon doc__icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg>
+          </div>
+          <p class="doc__body">How long each type of data is kept.</p>
+          <p class="doc__status"><span class="badge badge--sm badge--pending"><span class="badge__dot"></span>Coming soon</span></p>
+        </div>
+
+        <div class="doc doc--pending">
+          <div class="doc__head">
+            <span class="doc__title">Sub-processor List</span>
+            <svg class="icon doc__icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg>
+          </div>
+          <p class="doc__body">Every third party that touches your data, and why.</p>
+          <p class="doc__status"><span class="badge badge--sm badge--pending"><span class="badge__dot"></span>Coming soon</span></p>
+        </div>
+
+        <div class="doc doc--pending">
+          <div class="doc__head">
+            <span class="doc__title">Data Processing Agreement</span>
+            <svg class="icon doc__icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg>
+          </div>
+          <p class="doc__body">Ready-to-sign DPA template.</p>
+          <p class="doc__status"><span class="badge badge--sm badge--pending"><span class="badge__dot"></span>Coming soon</span></p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       FAQ — structure only.
+
+       The accordion component is built and styled; there are no questions in
+       it yet. To add one, delete the .accordion-empty note and repeat the
+       commented block below inside .accordion. <details>/<summary> does the
+       open and close natively, so nothing here needs JavaScript.
+       ===================================================================== -->
+  <section class="section section--subtle trust-section" id="faq">
+    <div class="container--narrow stack stack--26">
+      <div class="section-heading">
+        <span class="eyebrow">FAQ</span>
+        <h2 class="section-heading__title">Questions reviewers ask</h2>
+      </div>
+
+      <div class="accordion" data-trust-faq>
+        <!--
+        <details class="accordion__item">
+          <summary>
+            The question
+            <svg class="icon accordion__icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+          </summary>
+          <div class="accordion__body">The answer.</div>
+        </details>
+        -->
+      </div>
+
+      <p class="accordion-empty">We are writing this section alongside the Assessment Pack. If you have a question about how ProjexaR handles your data, ask it below and the answer will end up here.</p>
+    </div>
+  </section>
+
+  <!-- =====================================================================
+       Contact.
+
+       The same form, endpoint and anti-spam checks as /contact. The hidden
+       "source" field is what sends the visitor back here after posting rather
+       than to /contact — src/worker.js maps it to a path from a fixed list, so
+       the value can never become an open redirect.
+       ===================================================================== -->
+  <section class="section section--flush-top trust-section" id="contact">
+    <div class="container--narrow contact-layout">
+
+      <div class="card card--p30">
+        <!--
+          Keyed off the ?sent=1 / ?error=1 the Worker redirects back to, the
+          same way /contact does. The page is a static asset, so the switch
+          happens in the browser.
+        -->
+        <div class="form-notice form-notice--success" data-notice="sent" role="status" hidden>
+          <span class="form-notice__icon" aria-hidden="true">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"></path></svg>
+          </span>
+          <span>
+            <span class="form-notice__title">Thanks — that's with us.</span>
+            <span class="form-notice__message">We will always do our best to respond within 24 hours of receiving your request. If it is urgent, email <a href="mailto:privacy@projexar.com">privacy@projexar.com</a> directly.</span>
+          </span>
+        </div>
+
+        <div class="form-notice form-notice--error" data-notice="error" role="alert" hidden>
+          <span class="form-notice__icon" aria-hidden="true">
+            <svg class="icon" width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><line x1="12" x2="12" y1="8" y2="13"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
+          </span>
+          <span>
+            <span class="form-notice__title">That didn't send.</span>
+            <span class="form-notice__message">The anti-spam check did not complete, or a detail was missing. Please try again below — or email <a href="mailto:privacy@projexar.com">privacy@projexar.com</a> and we will pick it up from there.</span>
+          </span>
+        </div>
+
+        <script>
+          /* Unhide whichever banner the query string asks for. Inline and
+             immediately after the markup so it resolves before first paint. */
+          (function () {
+            var flag = new URLSearchParams(location.search).has("sent") ? "sent"
+                     : new URLSearchParams(location.search).has("error") ? "error"
+                     : null;
+            if (flag) document.querySelector('[data-notice="' + flag + '"]').hidden = false;
+          })();
+        </script>
+
+        <form class="contact-form" method="POST" action="/api/contact">
+          <div class="stack stack--12">
+            <h2 class="h4">Ask us anything this page doesn't answer</h2>
+            <p class="contact-aside__text">Security questionnaires, a DPA to review, a question from your data protection officer — send it here and it reaches the people who own the answer.</p>
+          </div>
+
+          <div class="trust-sla">
+            <span class="trust-sla__icon" aria-hidden="true">
+              <svg class="icon" width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </span>
+            <span>We will always do our best to respond within 24 hours of receiving your request.</span>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="name">Your name</label>
+            <div class="input"><input id="name" type="text" name="name" maxlength="200" autocomplete="name" required></div>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="email">Work email</label>
+            <div class="input"><input id="email" type="email" name="email" maxlength="254" autocomplete="email" required></div>
+            <span class="field__hint">We reply here, and nowhere else.</span>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="company">Organisation <span class="field__optional">optional</span></label>
+            <div class="input"><input id="company" type="text" name="company" maxlength="200" autocomplete="organization"></div>
+          </div>
+
+          <div class="field">
+            <label class="field__label" for="message">What do you need?</label>
+            <div class="textarea"><textarea id="message" name="message" rows="6" maxlength="5000" required></textarea></div>
+            <span class="field__hint">If there is a deadline on your review, tell us — we will work to it.</span>
+          </div>
+
+          <!-- Tells the Worker to send the response back to /trust/ rather
+               than /contact, and tags the email so the enquiry is recognisable
+               as a Trust Centre one. -->
+          <input type="hidden" name="source" value="trust">
+
+          <!--
+            Honeypot. Hidden from people and from assistive technology; bots
+            that fill every field give themselves away. src/worker.js drops
+            anything with this populated, and returns the success redirect so
+            the sender is not told which check caught them.
+          -->
+          <input type="text" name="hp_field" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAAEJVj86UjxZRt7cP"></div>
+          <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+          <button class="btn btn--lg btn--primary btn--full" type="submit">Send</button>
+
+          <span class="contact-form__terms">We use what you send to answer you, and keep the correspondence for 6 months. See the <a href="/privacy/">Privacy Policy</a>.</span>
+        </form>
+      </div>
+
+      <aside class="stack stack--18">
+        <div class="card card--p28">
+          <div class="stack stack--12">
+            <h2 class="h4">Straight to an inbox</h2>
+            <dl class="contact-list">
+              <dt>Privacy and data protection</dt>
+              <dd><a href="mailto:privacy@projexar.com">privacy@projexar.com</a></dd>
+              <dt>General and sales</dt>
+              <dd><a href="mailto:info@projexar.com">info@projexar.com</a></dd>
+            </dl>
+          </div>
+        </div>
+
+        <div class="card card--p28">
+          <div class="stack stack--12">
+            <h2 class="h4">Already published</h2>
+            <p class="contact-aside__text">The Privacy Policy sets out what we collect, why, how long we keep it and the rights you have over it. It is the document the pack above builds on.</p>
+            <a class="btn btn--secondary" href="/privacy/">Read the Privacy Policy</a>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__top">
+    <div class="site-footer__brand">
+      <img src="/assets/logo-wordmark-on-dark.png" alt="ProjexaR" width="168" height="30">
+      <p class="site-footer__tagline">Capacity-aware project management.</p>
+    </div>
+    <div class="site-footer__col">
+      <span class="site-footer__col-title">Product</span>
+      <a href="/">Home</a>
+      <a href="/product/">Product</a>
+      <a href="/solutions/">Solutions</a>
+      <a href="/pricing/">Pricing</a>
+      <a href="/capacity-check/">Capacity Check</a>
+      <a href="/solutions/project-online-migration/">Project Online migration</a>
+    </div>
+    <div class="site-footer__col">
+      <span class="site-footer__col-title">Company</span>
+      <a href="/trust/" aria-current="page">Trust centre</a>
+      <a href="/contact/">Contact</a>
+      <a href="/privacy/">Privacy</a>
+    </div>
+  </div>
+  <div class="site-footer__bottom">
+    <div class="site-footer__bottom-inner">
+      <span>© 2026 ProjexaR. All rights reserved.</span>
+      <span class="site-footer__strapline">Resource-focused integrated project management</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/site.js" defer></script>
+<script src="/js/trust.js" defer></script>
+</body>
+</html>

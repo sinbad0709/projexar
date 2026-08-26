@@ -1437,6 +1437,308 @@ html { scroll-behavior: smooth; }
 .contact-aside__text { font-size: 14px; line-height: 1.6; color: var(--text-muted); }
 
 /* ---------------------------------------------------------------------------
+   Page: Trust Centre (ADDED)
+
+   Three components, all built from existing tokens:
+
+   .trust-path        — the two-path split under the intro. Sits immediately
+                        below the page head so both routes are on screen
+                        without scrolling.
+   .commitment        — the click-to-flip tile. Geometry is the Capacity
+                        Check's .tile (auto-fit track, --radius-card, 3px
+                        accent along the top edge); the surface is the
+                        near-black band with a violet accent rather than the
+                        light card, which is what separates this page from the
+                        rest of the site.
+   .doc               — an Assessment Pack document, in a not-yet-available
+                        state: a <div>, never an <a>, so there is no link to
+                        break while the documents are still being drafted.
+
+   The flip is a <button> toggling aria-expanded, not :hover — touch has no
+   hover state and a hover-only build is unusable on a phone. Pointer, tap and
+   keyboard all go through the same click handler in /js/trust.js. With
+   JavaScript off the noscript block in the page head unstacks the two faces
+   so the evidence is still readable.
+   --------------------------------------------------------------------------- */
+
+/* Anchor targets clear the 72px sticky header, as .policy__section does. */
+.trust-section { scroll-margin-top: 96px; }
+
+/* Two-path split ---------------------------------------------------------- */
+
+.trust-paths { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+.trust-path {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  height: 100%;
+  color: var(--text-heading);
+}
+.trust-path:hover { text-decoration: none; color: var(--text-heading); }
+.trust-path__label {
+  font-size: var(--text-h4-size);
+  line-height: 1.4;
+  font-weight: var(--weight-bold);
+  letter-spacing: -.01em;
+  text-wrap: pretty;
+}
+.trust-path__arrow {
+  flex: 0 0 auto;
+  color: var(--blue-500);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+.trust-path:hover .trust-path__arrow { transform: translateX(3px); }
+
+/* The near-black band ------------------------------------------------------ */
+
+.trust-band {
+  position: relative;
+  overflow: hidden;
+  background: var(--ink-950);
+}
+/* The violet wash. Same construction as .cta-banner::before, in the accent
+   this page is built on rather than the blue the CTA uses. */
+.trust-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(55% 110% at 100% 0%, rgba(139,124,240,.30) 0%, rgba(139,124,240,0) 62%),
+    radial-gradient(45% 90% at 0% 100%, rgba(139,124,240,.14) 0%, rgba(139,124,240,0) 65%);
+  pointer-events: none;
+}
+.trust-band > * { position: relative; }
+
+/* Commitment tiles --------------------------------------------------------- */
+
+.commitments {
+  /* The design-system export carries no tile-track token; the Capacity Check
+     holds its own equivalent locally as --tile-min. min() keeps the track from
+     overflowing a viewport narrower than the track itself. */
+  --commitment-min: 268px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--commitment-min), 100%), 1fr));
+  gap: 18px;
+}
+
+.commitment {
+  /* A real button: pointer, touch and keyboard all reach the same handler,
+     and the focus ring comes for free. The UA button skin is reset off. */
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  perspective: 1400px;
+  /* Holds the shorter fronts to a common height before the grid equalises
+     them, so a one-line claim does not sit in a squat tile. */
+  min-height: 200px;
+}
+/* --shadow-focus is the blue ring the rest of the site uses on white; at 38%
+   alpha it barely reads against the near-black band, so the tiles take the
+   band's own accent at an alpha that does. */
+.commitment:focus-visible {
+  outline: none;
+  border-radius: var(--radius-card);
+  box-shadow: 0 0 0 3px rgba(139,124,240,.75);
+}
+
+.commitment__inner {
+  position: relative;
+  height: 100%;
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+.commitment[aria-expanded="true"] .commitment__inner { transform: rotateY(180deg); }
+
+.commitment__face {
+  /* Both faces share one grid cell, so the tile is as tall as the taller of
+     the two and neither face can clip. */
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: var(--card-pad-sm) 22px 22px;
+  border: 1px solid var(--border-inverse);
+  border-top: 3px solid var(--violet-300);
+  border-radius: var(--radius-card);
+  background: rgba(255,255,255,.06);
+  transition: border-color var(--duration-fast) var(--ease-standard),
+              background-color var(--duration-fast) var(--ease-standard);
+}
+.commitment__face--back {
+  transform: rotateY(180deg);
+  background: rgba(139,124,240,.13);
+}
+.commitment:hover .commitment__face {
+  border-color: rgba(255,255,255,.30);
+  border-top-color: var(--violet-200);
+  background: rgba(255,255,255,.09);
+}
+.commitment:hover .commitment__face--back { background: rgba(139,124,240,.18); }
+
+.commitment__claim {
+  font-size: var(--text-h3-size);
+  line-height: 1.28;
+  letter-spacing: -.015em;
+  font-weight: var(--weight-extrabold);
+  color: #fff;
+  text-wrap: pretty;
+}
+.commitment__evidence {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-inverse-muted);
+  text-wrap: pretty;
+}
+/* Pushed to the foot of the back face, under whatever length the evidence
+   runs to. /js/trust.js fills it from /trust/commitments.json and drops the
+   [hidden] once it has a date; if that config cannot be read the line stays
+   hidden rather than showing a "Last verified:" with nothing after it. */
+.commitment__verified {
+  margin-top: auto;
+  padding-top: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--text-mono-size);
+  line-height: var(--text-mono-line);
+  color: var(--violet-200);
+  border-top: 1px solid var(--border-inverse);
+}
+.commitment__cue {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: var(--weight-bold);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--violet-300);
+}
+.commitment__face--front .commitment__cue { padding-top: 12px; }
+
+/* Assessment Pack documents ------------------------------------------------ */
+
+.doc-grid {
+  --doc-min: 300px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--doc-min), 100%), 1fr));
+  gap: 18px;
+}
+
+/* Not an <a> and not a <button>: the documents do not exist yet, so there is
+   nothing to link to and nothing to press. The card is visible, legible and
+   inert. Swap the element for an <a href> and drop .doc--pending when a
+   document ships. */
+.doc {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+}
+/* Nothing to download yet. Recessed rather than greyed out — the titles and
+   descriptions still have to be readable, because knowing what is coming is
+   most of what this section is for at the moment. */
+.doc--pending { background: var(--surface-subtle); box-shadow: none; }
+.doc__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.doc__icon { flex: 0 0 auto; color: var(--ink-300); margin-top: 2px; }
+.doc__title {
+  font-size: var(--text-h4-size);
+  line-height: 1.35;
+  font-weight: var(--weight-bold);
+  letter-spacing: -.01em;
+  color: var(--text-heading);
+  text-wrap: pretty;
+}
+.doc__body { font-size: 14.5px; line-height: 1.55; color: var(--text-muted); text-wrap: pretty; }
+.doc__status { margin-top: auto; padding-top: 6px; }
+.badge--pending { background: var(--violet-50); color: var(--violet-500); }
+.badge--pending .badge__dot { background: var(--violet-300); }
+
+/* Accordion ---------------------------------------------------------------- */
+
+.accordion { display: flex; flex-direction: column; gap: 10px; }
+.accordion__item {
+  background: var(--surface-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-xs);
+}
+.accordion__item > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 15.5px;
+  font-weight: var(--weight-bold);
+  color: var(--text-heading);
+  text-wrap: pretty;
+}
+.accordion__item > summary::-webkit-details-marker { display: none; }
+.accordion__item > summary:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-card); }
+.accordion__icon {
+  flex: 0 0 auto;
+  color: var(--ink-400);
+  transition: transform var(--duration-fast) var(--ease-standard);
+}
+.accordion__item[open] .accordion__icon { transform: rotate(45deg); }
+.accordion__body {
+  padding: 0 22px 20px;
+  font-size: 14.5px;
+  line-height: 1.62;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+/* The note that stands in while the FAQ carries no questions. Delete it
+   with the first one. */
+.accordion-empty {
+  padding: 22px;
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-card);
+  background: var(--surface-subtle);
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* Contact SLA -------------------------------------------------------------- */
+
+.trust-sla {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--blue-50);
+  border: 1px solid var(--blue-100);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink-700);
+}
+.trust-sla__icon { flex: 0 0 auto; margin-top: 1px; color: var(--blue-500); }
+
+/* ---------------------------------------------------------------------------
    ADDED — responsive behaviour.
    The prototype was fixed-width: display-1 stayed at 76px and the 4-column
    grids never collapsed. Rescaling the type tokens at each breakpoint carries
@@ -1509,6 +1811,7 @@ html { scroll-behavior: smooth; }
   .policy-meta { grid-template-columns: minmax(0, 1fr); gap: 4px 0; }
   .policy-meta dd { margin-bottom: 10px; }
   .contact-layout { grid-template-columns: minmax(0, 1fr); }
+  .trust-paths { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 720px) {
@@ -1543,4 +1846,7 @@ html { scroll-behavior: smooth; }
   .pricing-card__price { font-size: 38px; }
   .policy { gap: 36px; }
   .policy-toc { grid-template-columns: minmax(0, 1fr); }
+  /* One tile per row by now, so the equalising floor stops earning its keep. */
+  .commitment { min-height: 180px; }
+  .commitment__face { padding: 18px 20px 20px; }
 }
