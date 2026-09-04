@@ -1356,7 +1356,7 @@ window.submitToSender = function(payload){
   var TICKET_RATE_LO = 0.41, TICKET_RATE_HI = 1.38;
 
   /* Cross-industry split between running the business and growth. Flexera 2023
-     Tech Spend Pulse, Figure 17, published under CC BY 4.0.
+     Tech Spend Pulse, page 25, published under CC BY 4.0.
 
      Read in the report rather than inferred, and both things it is were checked:
 
@@ -1380,10 +1380,16 @@ window.submitToSender = function(payload){
      Methodology and licence, both from page 8: 506 participants worldwide, summer
      2023; reuse under the Creative Commons Attribution 4.0 International License.
 
-     The figure NUMBER is the one thing not readable in the published PDF — its
-     chart captions are images. 17 is derived from six figure-to-page pairs Flexera
-     cites in its own public infographic, every one of them at figure = page − 8,
-     and the run-versus-growth chart is on page 25. */
+     We cite the page and the chart title, not a figure number, and that is
+     deliberate. The published PDF's chart captions are images, so no figure
+     number is readable in it. An earlier draft cited "Figure 17", derived from
+     six figure-to-page pairs in Flexera's own public infographic that all sat at
+     figure = page − 8. The derivation held, and it was still the wrong thing to
+     print: a derived number set in the same type as a read one is the Jitbit 480
+     again in miniature. A search summary also offered "Figure 17 is the IT spend
+     decentralisation chart", which is page 26 — near enough to have been taken.
+     The page number and the chart title are what was read, so they are what is
+     cited. */
   var BENCH_BAU = 67, BENCH_CHANGE = 33;
   var BENCH_N = 506, BENCH_MIN_EMPLOYEES = 2000;
 
@@ -2949,9 +2955,10 @@ window.submitToSender = function(payload){
     }
     if(v.bauSplitEstimate !== null){
       src.push(['Run against growth spend',
-        '<em>Flexera 2023 Tech Spend Pulse</em>, Figure 17 — respondents’ estimate of the percentage of IT '
-        + '<strong>budget</strong> allocated to running the business against growth: <strong>' + BENCH_BAU
-        + '% run, ' + BENCH_CHANGE + '% growth</strong>. N=' + BENCH_N + ', worldwide, summer 2023, '
+        '<em>Flexera 2023 Tech Spend Pulse</em>, page 25, <em>Percentage of budget allocated to running the '
+        + 'business vs. growth</em> — respondents’ own estimate: <strong>' + BENCH_BAU + '% run, '
+        + BENCH_CHANGE + '% growth</strong>. Published as a share of IT <strong>budget</strong>, and used '
+        + 'here only as a budget figure. N=' + BENCH_N + ', worldwide, summer 2023, '
         + 'organisations above ' + n0(BENCH_MIN_EMPLOYEES) + ' employees, nearly half above 10,000. Published '
         + 'under CC BY 4.0']);
     }

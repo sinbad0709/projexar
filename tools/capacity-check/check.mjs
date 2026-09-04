@@ -676,10 +676,15 @@ section('Flexera — both figures published, the difference never');
 {
   /* Provenance is not commensurability. The 67/33 is correctly classified,
      correctly attributed and correctly sourced, and subtracting it from the
-     respondent's answer was still wrong: Figure 17 is a split of IT BUDGET
+     respondent's answer was still wrong: the chart is a split of IT BUDGET
      ("Percentage of budget allocated to running the business vs. growth",
-     contents p25) and the question the tool asks is a split of people's TIME.
-     A caveat stated elsewhere does not repair a subtraction made inline. */
+     page 25) and the question the tool asks is a split of people's TIME.
+     A caveat stated elsewhere does not repair a subtraction made inline.
+
+     The citation names the page and the chart title, which is what was read in
+     the PDF. It does not name a figure number: the captions are images, so any
+     figure number would be derived, and a derived number printed as a read one
+     is what the Jitbit 480 was. */
   for (const [name, split] of [['below', 50], ['level', 67], ['above', 72], ['far above', 90]]) {
     const cap = capture({ id: `flexera-${split}`, ...FIXTURE_A, bauSplitEstimate: split });
     if (!ok(cap.ok, `flexera ${name}: renders`, cap.error)) continue;
@@ -710,8 +715,17 @@ section('Flexera — both figures published, the difference never');
     /* The citation quotes the unit the source publishes. */
     /* Read from the flattened text: the row emphasises "budget", so the raw
        HTML carries a tag in the middle of the sentence. */
-    ok(has(t, 'estimate of the percentage of IT budget allocated to running the business against growth'),
-       `flexera ${name}: the source row names the unit Flexera publishes`);
+    /* Matched tag-free: the row emphasises "budget", so the flattened text
+       carries a space where the tag was. */
+    ok(has(t, 'Published as a share of IT'), `flexera ${name}: the source row names the unit`);
+    ok(has(t, 'and used here only as a budget figure'),
+       `flexera ${name}: and says the tool holds it to that unit`);
+    /* Cite what was read. The page and the chart title are in the PDF's text
+       layer; the figure number is not, so it is not printed. */
+    ok(has(cap.print['pr-sources'], 'page 25'), `flexera ${name}: the source row cites the page`);
+    ok(has(t, 'Percentage of budget allocated to running the business vs. growth'),
+       `flexera ${name}: and the chart title as published`);
+    ok(!/Figure 17|Fig\. 17/i.test(t), `flexera ${name}: no derived figure number is cited`);
     ok(has(cap.print['pr-sources'], 'nearly half above 10,000'),
        `flexera ${name}: and the population it is drawn from`);
     ok(has(cap.print['pr-flexeranote'], 'arithmetic across two different quantities'),
