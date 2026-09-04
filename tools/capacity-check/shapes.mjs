@@ -4,8 +4,8 @@
    is deliberate rather than sampled, so the same 603 shapes come back on every
    run and the count means something:
 
-     Set A  252  every tools-and-process combination, at fixture 4.A's numbers
-     Set B  252  the same combinations, at fixture 4.B's numbers
+     Set A  252  every tools-and-process combination, at fixture 8.A's numbers
+     Set B  252  the same combinations, at fixture 8.B's numbers
      Set C   99  a numeric sweep at one fixed tools-and-process profile
                  (9 PM counts x 11 caseload multipliers)
      ------ ---
@@ -18,26 +18,46 @@
    The assertion shapes below are not part of the 603. They exist to be checked
    against stated values, not diffed. */
 
+import { salaryForLoadedCost } from './oracle.mjs';
+
 export const TOOLSETS = ['excel', 'msproject', 'planner', 'ppm', 'mixed', 'none', 'other'];
 export const VISIBILITY = ['none', 'manual', 'dedicated'];
 export const BUDGETS = ['outthedoor', 'varies', 'partial', 'tracked'];
 export const ASSIGNMENT = ['none', 'stale', 'live'];
+/* The ten-point bands, carried as their low endpoint — the value the select
+   holds. The high endpoint is nine above it, which holds at both ends. */
+export const BANDS = [1, 11, 21, 31, 41, 51, 61, 71, 81, 91];
 
-/* Fixture 4.A — the strained department. */
+/* Every fixture pins the loaded cost at £65,000, whatever the production ASHE
+   default turns out to be — a fixture that moves when ONS republishes is not a
+   fixture. The respondent-editable value is the salary, so the fixtures carry
+   the salary that produces exactly that loaded cost. The suite asserts the
+   round-trip before it asserts anything built on it. */
+export const FIXTURE_LOADED_COST = 65000;
+export const FIXTURE_SALARY = salaryForLoadedCost(FIXTURE_LOADED_COST);
+
+/* Fixture 8.A — the strained department. */
 export const FIXTURE_A = {
   companyHeadcount: 1200, staff: 45, pms: 5, live: 45, annual: 75, spend: 367000,
-  currency: 'GBP', bauStaff: 20, bauPercent2: 37, ticketsPerMonth: 960, bauSplitEstimate: 72,
+  currency: 'GBP', bauStaff: 20, bauPercent2: 31, contractors: 0,
+  ticketsPerMonth: 960, bauSplitEstimate: 72, loadedSalary: FIXTURE_SALARY,
   toolset: 'mixed', resourceVisibility: 'manual', budgetTracking: 'outthedoor',
   assignmentKnowledge: 'stale',
 };
 
-/* Fixture 4.B — the well-run department. Healthy has to be reachable. */
+/* Fixture 8.B — the well-run department. All four findings must return Healthy,
+   and the non-summing path must be taken. */
 export const FIXTURE_B = {
   companyHeadcount: 600, staff: 24, pms: 4, live: 16, annual: 24, spend: 180000,
-  currency: 'GBP', bauStaff: 10, bauPercent2: 65, ticketsPerMonth: 1400, bauSplitEstimate: 56,
+  currency: 'GBP', bauStaff: 10, bauPercent2: 61, contractors: 0,
+  ticketsPerMonth: 1400, bauSplitEstimate: 56, loadedSalary: FIXTURE_SALARY,
   toolset: 'ppm', resourceVisibility: 'dedicated', budgetTracking: 'tracked',
   assignmentKnowledge: 'live',
 };
+
+/* Fixture 8.C — 8.A with six contractors. Every rated figure must be identical
+   to 8.A's; any divergence means a routing rule has leaked. */
+export const FIXTURE_C = { ...FIXTURE_A, contractors: 6 };
 
 function processCombos() {
   const out = [];
@@ -51,7 +71,7 @@ function processCombos() {
 
 const PM_COUNTS = [0, 1, 2, 4, 5, 8, 10, 20, 25];
 /* Chosen so the sweep lands on both band edges and on the two rounding cases
-   the brief calls out, as well as ordinary caseloads. */
+   the specification calls out, as well as ordinary caseloads. */
 const CASELOADS = [0, 2.5, 5.0, 5.04, 6.0, 7.0, 7.05, 9.0, 12.0, 15.0, 25.0];
 
 function numericSweep() {
@@ -67,7 +87,8 @@ function numericSweep() {
         staff, pms, live,
         annual: Math.max(live, Math.round((live * 5) / 3)),
         spend: 367000, currency: 'GBP',
-        bauStaff: 20, bauPercent2: 37, ticketsPerMonth: 960, bauSplitEstimate: 72,
+        bauStaff: 20, bauPercent2: 31, contractors: 0,
+        ticketsPerMonth: 960, bauSplitEstimate: 72, loadedSalary: FIXTURE_SALARY,
         toolset: 'mixed', resourceVisibility: 'manual',
         budgetTracking: 'outthedoor', assignmentKnowledge: 'stale',
       });
@@ -91,10 +112,11 @@ export function corpus() {
 
 const BASE = { ...FIXTURE_A };
 
-/* §5 boundary shapes. Ratios of exactly 5.04, 5.05, 7.04, 7.05, 10.04, 10.05 on
+/* Boundary shapes. Ratios of exactly 5.04, 5.05, 7.04, 7.05, 10.04, 10.05 on
    both tiles. The PM tile takes them via live/pms; the BAU tile via
-   live/(bauStaff x share), with the share picked so the divisor is a whole
-   number of effective FTE and the ratio is exact. */
+   live/(bauStaff x share), with the band picked so the adverse endpoint is a
+   whole number of effective FTE and the ratio is exact. Carried forward from
+   PR1 — the band input changes how the divisor is reached, not what it is. */
 export function boundaryShapes() {
   const out = [];
   const RATIOS = [5.04, 5.05, 7.04, 7.05, 10.04, 10.05];
@@ -108,9 +130,10 @@ export function boundaryShapes() {
       annual: Math.max(live, Math.round(live * 1.5)),
     });
   }
-  /* 25 effective BAU FTE: 50 staff at 50%. Same trick on the other divisor. */
+  /* 25 effective BAU FTE at the adverse endpoint: 50 staff on the 51–60 band,
+     whose low end is 50%. Same trick on the other divisor. */
   for (const r of RATIOS) {
-    const bauStaff = 50, bauPercent2 = 50, fte = bauStaff * (bauPercent2 / 100);
+    const bauStaff = 50, bauPercent2 = 51, fte = bauStaff * 0.5;
     const live = Math.round(r * fte);
     out.push({
       id: `bound-bau-${r}`, tile: 'bau', ratio: r,
@@ -120,7 +143,7 @@ export function boundaryShapes() {
     });
   }
 
-  /* The two worked cases the brief states in full. */
+  /* The two worked cases the specification states in full. */
   out.push({ id: 'bound-worked-176', tile: 'pm', ratio: 7.04, expectDisplay: '7.0',
     expectRating: 'Watch', expectThreshold: 177,
     ...BASE, pms: 25, live: 176, staff: 50, companyHeadcount: 2000, annual: 264 });
@@ -131,45 +154,86 @@ export function boundaryShapes() {
   return out;
 }
 
-/* §5 toolset invariance. Every toolset value, everything else held constant. */
+/* A band straddling a rating boundary. 12 BAU staff on the 41–50% band give
+   4.92 to 6.0 effective FTE; 30 live projects over those is 6.1 down to 5.0 —
+   Watch at the adverse end, Healthy at the other. The tile must show both
+   states, adverse end first, and rate on the adverse one. */
+export function straddleShapes() {
+  return [
+    { id: 'straddle-bau-watch-healthy',
+      expectStatus: 'Watch to Healthy', expectRating: 'Watch',
+      ...BASE, pms: 5, staff: 30, companyHeadcount: 2000,
+      bauStaff: 12, bauPercent2: 41, live: 30, annual: 45 },
+    /* 5 BAU staff on 81–90% give 4.05 to 4.5 effective FTE; 45 live over those
+       is 11.1 down to 10.0 — At risk at the adverse end, Watch at the other. */
+    { id: 'straddle-bau-atrisk-watch',
+      expectStatus: 'At risk to Watch', expectRating: 'At risk',
+      ...BASE, pms: 5, staff: 30, companyHeadcount: 2000,
+      bauStaff: 5, bauPercent2: 81, live: 45, annual: 68 },
+  ];
+}
+
+/* Toolset invariance. Every toolset value, everything else held constant. No
+   toolset input may move a rating, a threshold, the growth ceiling, any
+   published figure or either Sender RAG value — the escalation is gone and
+   §3.8 puts the signal inside a finding, where it is free to vary. */
 export function toolsetInvarianceShapes() {
   return TOOLSETS.map((toolset) => ({ id: `invariance-${toolset}`, ...BASE, toolset }));
 }
 
-/* §3.6 suppression table, one shape per row. */
+/* Contractor invariance (fixture 8.C). Six contractors against 8.A, and every
+   rated figure, threshold, cost figure, the ceiling and the licence count must
+   be identical. */
+export function contractorShapes() {
+  return [
+    { id: 'contractors-0', ...FIXTURE_A },
+    { id: 'contractors-6', ...FIXTURE_C },
+    { id: 'contractors-40', ...FIXTURE_A, contractors: 40 },
+  ];
+}
+
+/* §1.1 suppression table, one shape per row, plus the full-cost row PR2 adds. */
 export function suppressionShapes() {
   return [
     { id: 'suppress-pms-0', row: 'pm_count = 0', ...BASE, pms: 0 },
     { id: 'suppress-bau-0', row: 'bau_staff_on_projects = 0', ...BASE, bauStaff: 0 },
+    /* No band selected is caught at validation — the question is required, so
+       the report never renders on a blank band. The suppression row's own state
+       (bau_effective_fte null, internal_project_fte = pm_count, the BAU tile,
+       the BAU route, the corroboration check and the full cost all suppressed)
+       is asserted directly against compute() in the suite, because the form
+       cannot reach it. */
+    { id: 'suppress-band-none', row: 'no band selected', rejects: 'bauPercent2', ...BASE, bauPercent2: '' },
     { id: 'suppress-live-0', row: 'live_projects = 0', ...BASE, live: 0, annual: 0 },
     { id: 'suppress-annual-0', row: 'annual_projects = 0', ...BASE, live: 0, annual: 0 },
     { id: 'suppress-itstaff', row: 'it_staff = 0 (corroboration off)', ...BASE, bauSplitEstimate: null },
     { id: 'suppress-both-routes', row: 'both routes suppressed', ...BASE, pms: 0, bauStaff: 0 },
+    /* The full-cost row: suppressed with the BAU tile. */
+    { id: 'suppress-fullcost', row: 'full cost suppressed with the BAU tile', ...BASE, bauStaff: 0 },
   ];
 }
 
-/* §3.5 pluralisation. One shape per prose site that renders a computed integer
-   at exactly 1. */
+/* Pluralisation. One shape per prose site that renders a computed integer at
+   exactly 1. */
 export function singularShapes() {
   return [
-    /* headroom of exactly 1 project a year: 1 PM, 5 live, turnover 1.0.
-       pm_red_live = ceil(7.05) = 8, pm_red_annual = floor(7 x 1) + 1 = 8,
-       sustainable = 7, annual = 6 -> headroom +1. */
+    /* Headroom of exactly 1 project a year at both endpoints: 1 PM, 6 live,
+       turnover 1.0. pm_red_live = ceil(7.05) = 8, pm_red_annual = 8,
+       sustainable = 7, annual = 6 -> headroom +1, and the PM route binds at
+       both ends of the band. */
     { id: 'singular-headroom-positive', site: 'headroom (+1)',
-      ...BASE, pms: 1, live: 6, annual: 6, staff: 26, bauStaff: 20, bauPercent2: 37 },
-    /* One project a year over the sustainable pace: 1 PM, 8 live, turnover 1.0.
-       pm_red_live = ceil(7.05) = 8, pm_red_annual = floor(7 x 1) + 1 = 8,
-       sustainable = 7, annual = 8 -> headroom -1. */
+      ...BASE, pms: 1, live: 6, annual: 6, staff: 26, bauStaff: 20, bauPercent2: 31 },
     { id: 'singular-headroom-negative', site: 'headroom (-1)',
-      ...BASE, pms: 1, live: 8, annual: 8, staff: 26, bauStaff: 20, bauPercent2: 37 },
+      ...BASE, pms: 1, live: 8, annual: 8, staff: 26, bauStaff: 20, bauPercent2: 31 },
     { id: 'singular-one-pm', site: 'project manager', ...BASE, pms: 1, staff: 45 },
     { id: 'singular-one-live', site: 'live project', ...BASE, live: 1, annual: 1, pms: 1 },
-    { id: 'singular-one-bau', site: 'BAU person', ...BASE, bauStaff: 1, bauPercent2: 100 },
+    { id: 'singular-one-bau', site: 'BAU person', ...BASE, bauStaff: 1, bauPercent2: 91 },
+    { id: 'singular-one-contractor', site: 'contractor', ...BASE, contractors: 1 },
   ];
 }
 
-/* §3.8 corroboration, all three outcomes. Derived run share for fixture 4.A is
-   72.4%, so the window is 69.4 to 75.4. */
+/* Corroboration, all three outcomes in their new home. The derived run share
+   for 8.A is 71.1% to 75.1%, so the window is 68.1 to 78.1. */
 export function corroborationShapes() {
   return [
     { id: 'corrob-healthy', expect: 'Healthy', ...BASE, bauSplitEstimate: 72 },
@@ -178,8 +242,37 @@ export function corroborationShapes() {
   ];
 }
 
+/* Budgets carrying internal staff time: the non-summing path, the hero swap and
+   finding 4 returning Healthy. Every budgets answer other than out-the-door
+   must take the non-summing path. */
+export function budgetShapes() {
+  return BUDGETS.map((budgetTracking) => ({
+    id: `budgets-${budgetTracking}`, budgetTracking,
+    sums: budgetTracking === 'outthedoor',
+    ...BASE, budgetTracking,
+  }));
+}
+
+/* An edited loaded cost. It must reach the tile, the workings, the printed
+   report and the shared link — a forwarded report showing different numbers
+   from the ones the respondent saw is worse than no edit control. */
+export function loadedCostShapes() {
+  return [
+    { id: 'loaded-default', ...BASE, loadedSalary: null },
+    { id: 'loaded-edited', ...BASE, loadedSalary: 40000 },
+    { id: 'loaded-below-ni-threshold', ...BASE, loadedSalary: 4000 },
+  ];
+}
+
+/* Legacy shared URLs carry a free-text percentage where the band now sits. */
+export const LEGACY_BAND_CASES = [
+  ['37', 31], ['1', 1], ['10', 1], ['11', 11], ['90', 81], ['91', 91], ['100', 91],
+  ['120', 91], ['0', null], ['-5', null], ['', null], ['abc', null],
+];
+
 export const INPUT_KEYS = [
   'companyHeadcount', 'staff', 'pms', 'live', 'annual', 'spend', 'currency',
-  'bauStaff', 'bauPercent2', 'ticketsPerMonth', 'bauSplitEstimate',
+  'bauStaff', 'bauPercent2', 'contractors', 'ticketsPerMonth', 'bauSplitEstimate',
+  'loadedSalary',
   'toolset', 'resourceVisibility', 'budgetTracking', 'assignmentKnowledge',
 ];
