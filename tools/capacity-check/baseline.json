@@ -2,8 +2,8 @@
  "count": 603,
  "shapes": {
   "A000": {
-   "text": "89fa153f7077dcef",
-   "numbers": "b34dabea7e4df20b",
+   "text": "8f772bb4b6c9f37d",
+   "numbers": "729b601103fadca9",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -11,8 +11,8 @@
    "senderRagBau": "Watch"
   },
   "A001": {
-   "text": "215667097f234802",
-   "numbers": "b34dabea7e4df20b",
+   "text": "c3c7dcf6e75ee300",
+   "numbers": "729b601103fadca9",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -20,8 +20,8 @@
    "senderRagBau": "Watch"
   },
   "A002": {
-   "text": "b1a999c34cd6d872",
-   "numbers": "23dd9c4335f300ae",
+   "text": "f15fe586e88c536c",
+   "numbers": "b5817b560f483985",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -29,8 +29,8 @@
    "senderRagBau": "Watch"
   },
   "A003": {
-   "text": "b81c89ea7799a60e",
-   "numbers": "c3f171108abd479f",
+   "text": "dc77ee325009b221",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -38,8 +38,8 @@
    "senderRagBau": "Watch"
   },
   "A004": {
-   "text": "cbc3047c2b2fa1c4",
-   "numbers": "c3f171108abd479f",
+   "text": "5e57302c2adcbc94",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -47,8 +47,8 @@
    "senderRagBau": "Watch"
   },
   "A005": {
-   "text": "96edb6c221360870",
-   "numbers": "1d38f88aa5b88321",
+   "text": "a7086bb1730abf3d",
+   "numbers": "467887bddedcfcf3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -56,8 +56,8 @@
    "senderRagBau": "Watch"
   },
   "A006": {
-   "text": "061759fc73dd898d",
-   "numbers": "c3f171108abd479f",
+   "text": "ffaa5d58447f3290",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -65,8 +65,8 @@
    "senderRagBau": "Watch"
   },
   "A007": {
-   "text": "dbe7792aa14ae207",
-   "numbers": "c3f171108abd479f",
+   "text": "b9bcf73082160cbc",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -74,8 +74,8 @@
    "senderRagBau": "Watch"
   },
   "A008": {
-   "text": "50ec0b3dccb6eda7",
-   "numbers": "1d38f88aa5b88321",
+   "text": "68832d599bc3cc7b",
+   "numbers": "467887bddedcfcf3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -83,8 +83,8 @@
    "senderRagBau": "Watch"
   },
   "A009": {
-   "text": "12bb558be674297f",
-   "numbers": "c3f171108abd479f",
+   "text": "fe895c4f500178e1",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -92,8 +92,8 @@
    "senderRagBau": "Watch"
   },
   "A010": {
-   "text": "3ee485b381ae7857",
-   "numbers": "c3f171108abd479f",
+   "text": "1d0971389f31bc79",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -101,8 +101,8 @@
    "senderRagBau": "Watch"
   },
   "A011": {
-   "text": "cc5deda10086ff33",
-   "numbers": "1d38f88aa5b88321",
+   "text": "b1124689f8587402",
+   "numbers": "467887bddedcfcf3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -110,8 +110,8 @@
    "senderRagBau": "Watch"
   },
   "A012": {
-   "text": "63f3fc2bdd861fd2",
-   "numbers": "b34dabea7e4df20b",
+   "text": "c269f53dfe718705",
+   "numbers": "729b601103fadca9",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -119,8 +119,8 @@
    "senderRagBau": "Watch"
   },
   "A013": {
-   "text": "16ff2dd130094711",
-   "numbers": "b34dabea7e4df20b",
+   "text": "2b780ecd4d067ac4",
+   "numbers": "729b601103fadca9",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -128,8 +128,8 @@
    "senderRagBau": "Watch"
   },
   "A014": {
-   "text": "f20b0f6af807532c",
-   "numbers": "23dd9c4335f300ae",
+   "text": "6e05e64ebf4a5f6f",
+   "numbers": "b5817b560f483985",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -137,8 +137,8 @@
    "senderRagBau": "Watch"
   },
   "A015": {
-   "text": "eefb5fb6305adc08",
-   "numbers": "c3f171108abd479f",
+   "text": "f0065a23e0ebaea2",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -146,8 +146,8 @@
    "senderRagBau": "Watch"
   },
   "A016": {
-   "text": "3a3a424fbe855d38",
-   "numbers": "c3f171108abd479f",
+   "text": "c84846b7e9c50354",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -155,8 +155,8 @@
    "senderRagBau": "Watch"
   },
   "A017": {
-   "text": "af5329f3ceb192e3",
-   "numbers": "1d38f88aa5b88321",
+   "text": "d8d83c1b53354847",
+   "numbers": "467887bddedcfcf3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -164,8 +164,8 @@
    "senderRagBau": "Watch"
   },
   "A018": {
-   "text": "e39e29c35a8fdd0c",
-   "numbers": "c3f171108abd479f",
+   "text": "0532d2a5bf2e609e",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -173,8 +173,8 @@
    "senderRagBau": "Watch"
   },
   "A019": {
-   "text": "20da065be50b4e4a",
-   "numbers": "c3f171108abd479f",
+   "text": "8575a6f5333f6e39",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -182,8 +182,8 @@
    "senderRagBau": "Watch"
   },
   "A020": {
-   "text": "903c323d8e910f22",
-   "numbers": "1d38f88aa5b88321",
+   "text": "d9d34cb158af1451",
+   "numbers": "467887bddedcfcf3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -191,8 +191,8 @@
    "senderRagBau": "Watch"
   },
   "A021": {
-   "text": "c340a64bea030199",
-   "numbers": "c3f171108abd479f",
+   "text": "60a162233e3bfc60",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -200,8 +200,8 @@
    "senderRagBau": "Watch"
   },
   "A022": {
-   "text": "e153b3137ebdb7cf",
-   "numbers": "c3f171108abd479f",
+   "text": "4acdae56f9345e01",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -209,8 +209,8 @@
    "senderRagBau": "Watch"
   },
   "A023": {
-   "text": "2a0240e784f7e68c",
-   "numbers": "1d38f88aa5b88321",
+   "text": "b504bf88dfd540e3",
+   "numbers": "467887bddedcfcf3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -218,8 +218,8 @@
    "senderRagBau": "Watch"
   },
   "A024": {
-   "text": "1fbaf7e5ecc6dcbb",
-   "numbers": "b34dabea7e4df20b",
+   "text": "e660f6b6f0fc6194",
+   "numbers": "729b601103fadca9",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -227,8 +227,8 @@
    "senderRagBau": "Watch"
   },
   "A025": {
-   "text": "3f3c36aa35a570cf",
-   "numbers": "b34dabea7e4df20b",
+   "text": "35ba1162d68bf0f3",
+   "numbers": "729b601103fadca9",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -236,8 +236,8 @@
    "senderRagBau": "Watch"
   },
   "A026": {
-   "text": "afdeb5a2f1214982",
-   "numbers": "23dd9c4335f300ae",
+   "text": "20747ad0929fbe20",
+   "numbers": "b5817b560f483985",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -245,8 +245,8 @@
    "senderRagBau": "Watch"
   },
   "A027": {
-   "text": "9a1499b424f6f575",
-   "numbers": "c3f171108abd479f",
+   "text": "8acab10a93585a74",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -254,8 +254,8 @@
    "senderRagBau": "Watch"
   },
   "A028": {
-   "text": "a1053bc58904bae0",
-   "numbers": "c3f171108abd479f",
+   "text": "2f4805413e70c204",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -263,8 +263,8 @@
    "senderRagBau": "Watch"
   },
   "A029": {
-   "text": "d52a1c19423e3a8c",
-   "numbers": "1d38f88aa5b88321",
+   "text": "5d2cec85387117ad",
+   "numbers": "467887bddedcfcf3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -272,8 +272,8 @@
    "senderRagBau": "Watch"
   },
   "A030": {
-   "text": "3ddc58d020e1b594",
-   "numbers": "c3f171108abd479f",
+   "text": "cd931a8864f39305",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -281,8 +281,8 @@
    "senderRagBau": "Watch"
   },
   "A031": {
-   "text": "b92b937c61547815",
-   "numbers": "c3f171108abd479f",
+   "text": "6ac24005708dc31f",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -290,8 +290,8 @@
    "senderRagBau": "Watch"
   },
   "A032": {
-   "text": "abd9442cffc0796d",
-   "numbers": "1d38f88aa5b88321",
+   "text": "b1db6f2ce6ff1cb0",
+   "numbers": "467887bddedcfcf3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -299,8 +299,8 @@
    "senderRagBau": "Watch"
   },
   "A033": {
-   "text": "00a9a3651bfcbb38",
-   "numbers": "c3f171108abd479f",
+   "text": "36c13345308667e5",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -308,8 +308,8 @@
    "senderRagBau": "Watch"
   },
   "A034": {
-   "text": "a3f99177205fc922",
-   "numbers": "c3f171108abd479f",
+   "text": "4ce8962c74b749fc",
+   "numbers": "f490736a2059edcc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -317,8 +317,8 @@
    "senderRagBau": "Watch"
   },
   "A035": {
-   "text": "69110c94e2d55f96",
-   "numbers": "1d38f88aa5b88321",
+   "text": "091a91977003de2c",
+   "numbers": "467887bddedcfcf3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -326,8 +326,8 @@
    "senderRagBau": "Watch"
   },
   "A036": {
-   "text": "a42865e140bd6902",
-   "numbers": "be8d08bd849a106d",
+   "text": "3798f53163796fbd",
+   "numbers": "e17b4e0c8a01c327",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -335,8 +335,8 @@
    "senderRagBau": "Watch"
   },
   "A037": {
-   "text": "35f5e011f916fdc0",
-   "numbers": "be8d08bd849a106d",
+   "text": "a737227d2b7e131c",
+   "numbers": "e17b4e0c8a01c327",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -344,8 +344,8 @@
    "senderRagBau": "Watch"
   },
   "A038": {
-   "text": "423fb20ed4b3da0e",
-   "numbers": "9b72f270257d0394",
+   "text": "84c1cb1f571e3243",
+   "numbers": "b35539ea79d9d15d",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -353,8 +353,8 @@
    "senderRagBau": "Watch"
   },
   "A039": {
-   "text": "557aba118f347219",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "7fcb9d5e3990fb04",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -362,8 +362,8 @@
    "senderRagBau": "Watch"
   },
   "A040": {
-   "text": "63a32d1019ae8924",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "bdf23b6226e64d00",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -371,8 +371,8 @@
    "senderRagBau": "Watch"
   },
   "A041": {
-   "text": "817e37650cbc87d0",
-   "numbers": "753f56dc67e92df9",
+   "text": "7c691238b6e302b0",
+   "numbers": "b0e5c44102e2e659",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -380,8 +380,8 @@
    "senderRagBau": "Watch"
   },
   "A042": {
-   "text": "dc48639fae15b43f",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "4efd898cd5181135",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -389,8 +389,8 @@
    "senderRagBau": "Watch"
   },
   "A043": {
-   "text": "d410cdb93ee73b24",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "d03c4b7821129f33",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -398,8 +398,8 @@
    "senderRagBau": "Watch"
   },
   "A044": {
-   "text": "795b9c1829c27438",
-   "numbers": "753f56dc67e92df9",
+   "text": "7981b095014fa728",
+   "numbers": "b0e5c44102e2e659",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -407,8 +407,8 @@
    "senderRagBau": "Watch"
   },
   "A045": {
-   "text": "6b6bc884f02fa241",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "aa73109ce7fbcfb1",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -416,8 +416,8 @@
    "senderRagBau": "Watch"
   },
   "A046": {
-   "text": "03b2404c5852a8f3",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "4956fc08c5727512",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -425,8 +425,8 @@
    "senderRagBau": "Watch"
   },
   "A047": {
-   "text": "af8dbd0e3e72feb5",
-   "numbers": "753f56dc67e92df9",
+   "text": "3a4a5064f577df10",
+   "numbers": "b0e5c44102e2e659",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -434,8 +434,8 @@
    "senderRagBau": "Watch"
   },
   "A048": {
-   "text": "23e680205b048c25",
-   "numbers": "be8d08bd849a106d",
+   "text": "6c6e22fd5f8035d5",
+   "numbers": "e17b4e0c8a01c327",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -443,8 +443,8 @@
    "senderRagBau": "Watch"
   },
   "A049": {
-   "text": "bee5fd2e36cdca37",
-   "numbers": "be8d08bd849a106d",
+   "text": "7aba9a54558a5e96",
+   "numbers": "e17b4e0c8a01c327",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -452,8 +452,8 @@
    "senderRagBau": "Watch"
   },
   "A050": {
-   "text": "c1f6c2684dbeb069",
-   "numbers": "9b72f270257d0394",
+   "text": "00868b61bedfef9f",
+   "numbers": "b35539ea79d9d15d",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -461,8 +461,8 @@
    "senderRagBau": "Watch"
   },
   "A051": {
-   "text": "f0344a6411b45a18",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "a351631071bd90c8",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -470,8 +470,8 @@
    "senderRagBau": "Watch"
   },
   "A052": {
-   "text": "9d15afab1b061bc4",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "efc5c19f8d1d7eb0",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -479,8 +479,8 @@
    "senderRagBau": "Watch"
   },
   "A053": {
-   "text": "be9a14cf5d684340",
-   "numbers": "753f56dc67e92df9",
+   "text": "a0af2b1c827092fb",
+   "numbers": "b0e5c44102e2e659",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -488,8 +488,8 @@
    "senderRagBau": "Watch"
   },
   "A054": {
-   "text": "c7c941943f84dc3a",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "d59d5a33f0a2b4bd",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -497,8 +497,8 @@
    "senderRagBau": "Watch"
   },
   "A055": {
-   "text": "95b84a484bfd525c",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "7079a24ccfcae0ee",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -506,8 +506,8 @@
    "senderRagBau": "Watch"
   },
   "A056": {
-   "text": "69410867cb5c90b7",
-   "numbers": "753f56dc67e92df9",
+   "text": "d9907d3d6180551f",
+   "numbers": "b0e5c44102e2e659",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -515,8 +515,8 @@
    "senderRagBau": "Watch"
   },
   "A057": {
-   "text": "0ee34746f21529d8",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "0eb845f48910411d",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -524,8 +524,8 @@
    "senderRagBau": "Watch"
   },
   "A058": {
-   "text": "f25c4ee6a1011a75",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "5fb2ddf73c546d1a",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -533,8 +533,8 @@
    "senderRagBau": "Watch"
   },
   "A059": {
-   "text": "6f61a19344df3bc7",
-   "numbers": "753f56dc67e92df9",
+   "text": "40cb558d4f71f8b5",
+   "numbers": "b0e5c44102e2e659",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -542,8 +542,8 @@
    "senderRagBau": "Watch"
   },
   "A060": {
-   "text": "6735c891eb5c0c5a",
-   "numbers": "be8d08bd849a106d",
+   "text": "8bb65973db51c8b5",
+   "numbers": "e17b4e0c8a01c327",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -551,8 +551,8 @@
    "senderRagBau": "Watch"
   },
   "A061": {
-   "text": "2a1a12c34a04d796",
-   "numbers": "be8d08bd849a106d",
+   "text": "02a275e1c13b9c66",
+   "numbers": "e17b4e0c8a01c327",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -560,8 +560,8 @@
    "senderRagBau": "Watch"
   },
   "A062": {
-   "text": "c57e934c7610fa18",
-   "numbers": "9b72f270257d0394",
+   "text": "05701517edd399fe",
+   "numbers": "b35539ea79d9d15d",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -569,8 +569,8 @@
    "senderRagBau": "Watch"
   },
   "A063": {
-   "text": "d2540442f9ba87b8",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "da9d4c17517f1d5d",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -578,8 +578,8 @@
    "senderRagBau": "Watch"
   },
   "A064": {
-   "text": "ab0a2cc351091927",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "89a2434935a1b083",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -587,8 +587,8 @@
    "senderRagBau": "Watch"
   },
   "A065": {
-   "text": "7110b508c46b18d2",
-   "numbers": "753f56dc67e92df9",
+   "text": "2adfe4221c6c9dc3",
+   "numbers": "b0e5c44102e2e659",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -596,8 +596,8 @@
    "senderRagBau": "Watch"
   },
   "A066": {
-   "text": "978a7bdcb6cf1605",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "9b1930c8921b1289",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -605,8 +605,8 @@
    "senderRagBau": "Watch"
   },
   "A067": {
-   "text": "fe0f9bb179d945bc",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "52ccc22eec623191",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -614,8 +614,8 @@
    "senderRagBau": "Watch"
   },
   "A068": {
-   "text": "6f748c020707c39a",
-   "numbers": "753f56dc67e92df9",
+   "text": "3af7468f6bd71b07",
+   "numbers": "b0e5c44102e2e659",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -623,8 +623,8 @@
    "senderRagBau": "Watch"
   },
   "A069": {
-   "text": "8375992d628ea895",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "f175e49ece36e452",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -632,8 +632,8 @@
    "senderRagBau": "Watch"
   },
   "A070": {
-   "text": "4b7326900e5c9d55",
-   "numbers": "25eb6e5b5471d69c",
+   "text": "5bee13460e2890d9",
+   "numbers": "32d7525c180f539b",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -641,8 +641,8 @@
    "senderRagBau": "Watch"
   },
   "A071": {
-   "text": "c1c950cc8d0f60d4",
-   "numbers": "753f56dc67e92df9",
+   "text": "45713dbe41ae0778",
+   "numbers": "b0e5c44102e2e659",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -650,8 +650,8 @@
    "senderRagBau": "Watch"
   },
   "A072": {
-   "text": "3c12acee91c3071f",
-   "numbers": "4e8d589e15506f93",
+   "text": "6db389d5a5dda655",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -659,8 +659,8 @@
    "senderRagBau": "Watch"
   },
   "A073": {
-   "text": "7e372964a29ff53f",
-   "numbers": "4e8d589e15506f93",
+   "text": "ed4c8aeac252b8a9",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -668,8 +668,8 @@
    "senderRagBau": "Watch"
   },
   "A074": {
-   "text": "a3c0bcd209cbf09e",
-   "numbers": "d79ea0a830421c4e",
+   "text": "04cec20a1c661e53",
+   "numbers": "39ab33171fe455f1",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -677,8 +677,8 @@
    "senderRagBau": "Watch"
   },
   "A075": {
-   "text": "843fcc314f172c0c",
-   "numbers": "00e3575eec1f166c",
+   "text": "b7c123c26cc94d2d",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -686,8 +686,8 @@
    "senderRagBau": "Watch"
   },
   "A076": {
-   "text": "2680079d677f90b5",
-   "numbers": "00e3575eec1f166c",
+   "text": "abc04230095f0866",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -695,8 +695,8 @@
    "senderRagBau": "Watch"
   },
   "A077": {
-   "text": "b689f0f7592eee42",
-   "numbers": "4858d901896fd63d",
+   "text": "3532be78e3f884f3",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -704,8 +704,8 @@
    "senderRagBau": "Watch"
   },
   "A078": {
-   "text": "11218732291f2015",
-   "numbers": "00e3575eec1f166c",
+   "text": "721035fa918891d8",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -713,8 +713,8 @@
    "senderRagBau": "Watch"
   },
   "A079": {
-   "text": "7cbd5b6b6c7271d7",
-   "numbers": "00e3575eec1f166c",
+   "text": "dd644bae0d928d33",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -722,8 +722,8 @@
    "senderRagBau": "Watch"
   },
   "A080": {
-   "text": "212db4493953ac0f",
-   "numbers": "4858d901896fd63d",
+   "text": "f2c488c8a8b9cb31",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -731,8 +731,8 @@
    "senderRagBau": "Watch"
   },
   "A081": {
-   "text": "872edf7b5b065709",
-   "numbers": "00e3575eec1f166c",
+   "text": "796c49e5a25f92fd",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -740,8 +740,8 @@
    "senderRagBau": "Watch"
   },
   "A082": {
-   "text": "25f7cadbc7995efa",
-   "numbers": "00e3575eec1f166c",
+   "text": "40b6697c5866c708",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -749,8 +749,8 @@
    "senderRagBau": "Watch"
   },
   "A083": {
-   "text": "a64c4ec0d12392c3",
-   "numbers": "4858d901896fd63d",
+   "text": "36056f9b226933fc",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -758,8 +758,8 @@
    "senderRagBau": "Watch"
   },
   "A084": {
-   "text": "beedfb59b08d3567",
-   "numbers": "4e8d589e15506f93",
+   "text": "f9f89afc8b8a78e5",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -767,8 +767,8 @@
    "senderRagBau": "Watch"
   },
   "A085": {
-   "text": "7f6608ffe442b25d",
-   "numbers": "4e8d589e15506f93",
+   "text": "3b9c749befd26981",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -776,8 +776,8 @@
    "senderRagBau": "Watch"
   },
   "A086": {
-   "text": "f9ec35698c1e867a",
-   "numbers": "d79ea0a830421c4e",
+   "text": "576d930138d2756f",
+   "numbers": "39ab33171fe455f1",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -785,8 +785,8 @@
    "senderRagBau": "Watch"
   },
   "A087": {
-   "text": "f80b5b8e1dcae332",
-   "numbers": "00e3575eec1f166c",
+   "text": "1404e6bb77d67dac",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -794,8 +794,8 @@
    "senderRagBau": "Watch"
   },
   "A088": {
-   "text": "e95069caf612c69d",
-   "numbers": "00e3575eec1f166c",
+   "text": "08904f4f41fc6726",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -803,8 +803,8 @@
    "senderRagBau": "Watch"
   },
   "A089": {
-   "text": "5737b6c8387f11e5",
-   "numbers": "4858d901896fd63d",
+   "text": "019c6a11e96fdfee",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -812,8 +812,8 @@
    "senderRagBau": "Watch"
   },
   "A090": {
-   "text": "dee1474dcc25fb3a",
-   "numbers": "00e3575eec1f166c",
+   "text": "3f58c8c8af81346e",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -821,8 +821,8 @@
    "senderRagBau": "Watch"
   },
   "A091": {
-   "text": "d9b845ab33ee1c55",
-   "numbers": "00e3575eec1f166c",
+   "text": "534b13a24f2e0507",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -830,8 +830,8 @@
    "senderRagBau": "Watch"
   },
   "A092": {
-   "text": "618a3f1074cf4f2c",
-   "numbers": "4858d901896fd63d",
+   "text": "77ae6e24ef5d1cef",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -839,8 +839,8 @@
    "senderRagBau": "Watch"
   },
   "A093": {
-   "text": "c1a1f08fcdcc6f54",
-   "numbers": "00e3575eec1f166c",
+   "text": "a148cd17fd930377",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -848,8 +848,8 @@
    "senderRagBau": "Watch"
   },
   "A094": {
-   "text": "a88ec83be8408660",
-   "numbers": "00e3575eec1f166c",
+   "text": "b82b316597eda2a5",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -857,8 +857,8 @@
    "senderRagBau": "Watch"
   },
   "A095": {
-   "text": "c13cb442e6e15bf1",
-   "numbers": "4858d901896fd63d",
+   "text": "ba1d46518e77e85f",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -866,8 +866,8 @@
    "senderRagBau": "Watch"
   },
   "A096": {
-   "text": "6d70c17678c6f7d9",
-   "numbers": "4e8d589e15506f93",
+   "text": "5cbcd37ec0731d97",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -875,8 +875,8 @@
    "senderRagBau": "Watch"
   },
   "A097": {
-   "text": "40fa2339d2d38fcb",
-   "numbers": "4e8d589e15506f93",
+   "text": "501026dd3ce02fd5",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -884,8 +884,8 @@
    "senderRagBau": "Watch"
   },
   "A098": {
-   "text": "cf2be39316f4a227",
-   "numbers": "d79ea0a830421c4e",
+   "text": "a830b0ae44d53bce",
+   "numbers": "39ab33171fe455f1",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -893,8 +893,8 @@
    "senderRagBau": "Watch"
   },
   "A099": {
-   "text": "c493652f50c545e7",
-   "numbers": "00e3575eec1f166c",
+   "text": "2dfcc2b15af2009e",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -902,8 +902,8 @@
    "senderRagBau": "Watch"
   },
   "A100": {
-   "text": "f150cb8a92d2094f",
-   "numbers": "00e3575eec1f166c",
+   "text": "7ba0a294d03e43aa",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -911,8 +911,8 @@
    "senderRagBau": "Watch"
   },
   "A101": {
-   "text": "0fd04be996b34576",
-   "numbers": "4858d901896fd63d",
+   "text": "aeef3bd0942a318b",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -920,8 +920,8 @@
    "senderRagBau": "Watch"
   },
   "A102": {
-   "text": "dc59ae713003108b",
-   "numbers": "00e3575eec1f166c",
+   "text": "aad3a9118d7b4818",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -929,8 +929,8 @@
    "senderRagBau": "Watch"
   },
   "A103": {
-   "text": "cb701729076b00a0",
-   "numbers": "00e3575eec1f166c",
+   "text": "28c233e12793a563",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -938,8 +938,8 @@
    "senderRagBau": "Watch"
   },
   "A104": {
-   "text": "ab2e9e724e6a5e70",
-   "numbers": "4858d901896fd63d",
+   "text": "fc94ffdc78f5f933",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -947,8 +947,8 @@
    "senderRagBau": "Watch"
   },
   "A105": {
-   "text": "430cf6156d34cab9",
-   "numbers": "00e3575eec1f166c",
+   "text": "5c2407a6ce3c0731",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -956,8 +956,8 @@
    "senderRagBau": "Watch"
   },
   "A106": {
-   "text": "0ac20fb7599d6011",
-   "numbers": "00e3575eec1f166c",
+   "text": "92443d315aca422e",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -965,8 +965,8 @@
    "senderRagBau": "Watch"
   },
   "A107": {
-   "text": "8c0a2adf0ea7130e",
-   "numbers": "4858d901896fd63d",
+   "text": "4c8f7bd1b0f5dd6a",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -974,8 +974,8 @@
    "senderRagBau": "Watch"
   },
   "A108": {
-   "text": "2cb004afcc73e2ff",
-   "numbers": "4e8d589e15506f93",
+   "text": "ae6ee0ba16a36934",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -983,8 +983,8 @@
    "senderRagBau": "Watch"
   },
   "A109": {
-   "text": "9df023a3c45fc36d",
-   "numbers": "4e8d589e15506f93",
+   "text": "9a7a338458b149dc",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -992,8 +992,8 @@
    "senderRagBau": "Watch"
   },
   "A110": {
-   "text": "0c884af7ea93e020",
-   "numbers": "d79ea0a830421c4e",
+   "text": "b8c1378994ddbb06",
+   "numbers": "39ab33171fe455f1",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1001,8 +1001,8 @@
    "senderRagBau": "Watch"
   },
   "A111": {
-   "text": "d6db4405e0ad7d2a",
-   "numbers": "00e3575eec1f166c",
+   "text": "f066df509a1acd81",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1010,8 +1010,8 @@
    "senderRagBau": "Watch"
   },
   "A112": {
-   "text": "9f16e662e263245e",
-   "numbers": "00e3575eec1f166c",
+   "text": "e7fd4588ab487a0b",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1019,8 +1019,8 @@
    "senderRagBau": "Watch"
   },
   "A113": {
-   "text": "a628bc37174e6504",
-   "numbers": "4858d901896fd63d",
+   "text": "560631bae2b0cc28",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1028,8 +1028,8 @@
    "senderRagBau": "Watch"
   },
   "A114": {
-   "text": "4ef47bdbbed6f5bc",
-   "numbers": "00e3575eec1f166c",
+   "text": "9f38f82809ad1cf5",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1037,8 +1037,8 @@
    "senderRagBau": "Watch"
   },
   "A115": {
-   "text": "4dcc487d1fb294d6",
-   "numbers": "00e3575eec1f166c",
+   "text": "961a183a0d926c8a",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1046,8 +1046,8 @@
    "senderRagBau": "Watch"
   },
   "A116": {
-   "text": "6a8fa36e6545abab",
-   "numbers": "4858d901896fd63d",
+   "text": "e25f0058d853e572",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1055,8 +1055,8 @@
    "senderRagBau": "Watch"
   },
   "A117": {
-   "text": "cffcbca45019ed3e",
-   "numbers": "00e3575eec1f166c",
+   "text": "016c13fe6e1f243e",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1064,8 +1064,8 @@
    "senderRagBau": "Watch"
   },
   "A118": {
-   "text": "5e3b4a1fc031a65d",
-   "numbers": "00e3575eec1f166c",
+   "text": "75963fb6a4ac595e",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1073,8 +1073,8 @@
    "senderRagBau": "Watch"
   },
   "A119": {
-   "text": "ce78eeee9d20a387",
-   "numbers": "4858d901896fd63d",
+   "text": "121c5e2cbfb1ba61",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1082,8 +1082,8 @@
    "senderRagBau": "Watch"
   },
   "A120": {
-   "text": "c5cb62cf3b986166",
-   "numbers": "4e8d589e15506f93",
+   "text": "eb232273abeda6cc",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1091,8 +1091,8 @@
    "senderRagBau": "Watch"
   },
   "A121": {
-   "text": "a6a1199a468bb3ef",
-   "numbers": "4e8d589e15506f93",
+   "text": "b9db78f2284c1208",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1100,8 +1100,8 @@
    "senderRagBau": "Watch"
   },
   "A122": {
-   "text": "53c7aa071d1c5fe1",
-   "numbers": "d79ea0a830421c4e",
+   "text": "c598d7f2da3b51f4",
+   "numbers": "39ab33171fe455f1",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1109,8 +1109,8 @@
    "senderRagBau": "Watch"
   },
   "A123": {
-   "text": "dd31dd9087320d4a",
-   "numbers": "00e3575eec1f166c",
+   "text": "56894ba6b8e75746",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1118,8 +1118,8 @@
    "senderRagBau": "Watch"
   },
   "A124": {
-   "text": "36f2d2c1dc3c824b",
-   "numbers": "00e3575eec1f166c",
+   "text": "588f3154f56f0e5e",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1127,8 +1127,8 @@
    "senderRagBau": "Watch"
   },
   "A125": {
-   "text": "c24337a5b75fcef1",
-   "numbers": "4858d901896fd63d",
+   "text": "0cc875629547cfe5",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1136,8 +1136,8 @@
    "senderRagBau": "Watch"
   },
   "A126": {
-   "text": "2418a4abdf62bf77",
-   "numbers": "00e3575eec1f166c",
+   "text": "dfa4d32c95e7e22d",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1145,8 +1145,8 @@
    "senderRagBau": "Watch"
   },
   "A127": {
-   "text": "fa68a8b860ad95aa",
-   "numbers": "00e3575eec1f166c",
+   "text": "9e8e80565d56995e",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1154,8 +1154,8 @@
    "senderRagBau": "Watch"
   },
   "A128": {
-   "text": "4514c4cfe8e5ebc1",
-   "numbers": "4858d901896fd63d",
+   "text": "f2da556faa7997fa",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1163,8 +1163,8 @@
    "senderRagBau": "Watch"
   },
   "A129": {
-   "text": "9966c0bb56867feb",
-   "numbers": "00e3575eec1f166c",
+   "text": "25b847a6855b425d",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1172,8 +1172,8 @@
    "senderRagBau": "Watch"
   },
   "A130": {
-   "text": "e0d2b7b36393ecd7",
-   "numbers": "00e3575eec1f166c",
+   "text": "fc4d492005c37937",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1181,8 +1181,8 @@
    "senderRagBau": "Watch"
   },
   "A131": {
-   "text": "c2b090a8a42a7878",
-   "numbers": "4858d901896fd63d",
+   "text": "5d5673d991354d06",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1190,8 +1190,8 @@
    "senderRagBau": "Watch"
   },
   "A132": {
-   "text": "b8481cf5bb0c48ab",
-   "numbers": "4e8d589e15506f93",
+   "text": "15fb0f58ab92fe2e",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1199,8 +1199,8 @@
    "senderRagBau": "Watch"
   },
   "A133": {
-   "text": "fafbdc63bca2d95b",
-   "numbers": "4e8d589e15506f93",
+   "text": "b80a26d15ebdf6f9",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1208,8 +1208,8 @@
    "senderRagBau": "Watch"
   },
   "A134": {
-   "text": "f47b5c7c00ec1905",
-   "numbers": "14bf5105b16b5d66",
+   "text": "222fd903efb7c776",
+   "numbers": "ae1594f745088087",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1217,8 +1217,8 @@
    "senderRagBau": "Watch"
   },
   "A135": {
-   "text": "fa94859790ab4a62",
-   "numbers": "00e3575eec1f166c",
+   "text": "ac2b669d4ea3e3f1",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1226,8 +1226,8 @@
    "senderRagBau": "Watch"
   },
   "A136": {
-   "text": "417ef3e73a64f0e7",
-   "numbers": "00e3575eec1f166c",
+   "text": "0e372d6e8faf303a",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1235,8 +1235,8 @@
    "senderRagBau": "Watch"
   },
   "A137": {
-   "text": "aa25b77d63f93ed8",
-   "numbers": "c8e8f020ddc95259",
+   "text": "4ad7b57bb04012bb",
+   "numbers": "cb9e1be67452f5f9",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1244,8 +1244,8 @@
    "senderRagBau": "Watch"
   },
   "A138": {
-   "text": "e86fe8d3fd2922ef",
-   "numbers": "00e3575eec1f166c",
+   "text": "d6dcca587a921ca2",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1253,8 +1253,8 @@
    "senderRagBau": "Watch"
   },
   "A139": {
-   "text": "ddaacb847a913dc8",
-   "numbers": "00e3575eec1f166c",
+   "text": "de505db9e90a8f8a",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1262,8 +1262,8 @@
    "senderRagBau": "Watch"
   },
   "A140": {
-   "text": "a30627e197ff2ab6",
-   "numbers": "c8e8f020ddc95259",
+   "text": "97d1c7350a91312b",
+   "numbers": "cb9e1be67452f5f9",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1271,8 +1271,8 @@
    "senderRagBau": "Watch"
   },
   "A141": {
-   "text": "c6f128ac428ed415",
-   "numbers": "00e3575eec1f166c",
+   "text": "9aeff2c6e2773fa1",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1280,8 +1280,8 @@
    "senderRagBau": "Watch"
   },
   "A142": {
-   "text": "aa2fe63e9f561560",
-   "numbers": "00e3575eec1f166c",
+   "text": "6d5bcf99b4c288db",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1289,8 +1289,8 @@
    "senderRagBau": "Watch"
   },
   "A143": {
-   "text": "1a162dd8059296e4",
-   "numbers": "c8e8f020ddc95259",
+   "text": "dcc38fc61d1d8ec5",
+   "numbers": "cb9e1be67452f5f9",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1298,8 +1298,8 @@
    "senderRagBau": "Watch"
   },
   "A144": {
-   "text": "8ff4ea1b415d25cc",
-   "numbers": "4e8d589e15506f93",
+   "text": "1114aa6f366b1a91",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1307,8 +1307,8 @@
    "senderRagBau": "Watch"
   },
   "A145": {
-   "text": "9f850f6241f7a303",
-   "numbers": "4e8d589e15506f93",
+   "text": "9dac96209886eb9c",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1316,8 +1316,8 @@
    "senderRagBau": "Watch"
   },
   "A146": {
-   "text": "83a190a22ef825ff",
-   "numbers": "d79ea0a830421c4e",
+   "text": "598dead6bc7173ac",
+   "numbers": "39ab33171fe455f1",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1325,8 +1325,8 @@
    "senderRagBau": "Watch"
   },
   "A147": {
-   "text": "4c3e8cde51ee073d",
-   "numbers": "00e3575eec1f166c",
+   "text": "072adcb7de906e1f",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1334,8 +1334,8 @@
    "senderRagBau": "Watch"
   },
   "A148": {
-   "text": "0c147e1fbaecbeb2",
-   "numbers": "00e3575eec1f166c",
+   "text": "8e5c71b4a427e3d6",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1343,8 +1343,8 @@
    "senderRagBau": "Watch"
   },
   "A149": {
-   "text": "c4a76d9b6d0f8f59",
-   "numbers": "4858d901896fd63d",
+   "text": "9baf9d3aa4504b8d",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1352,8 +1352,8 @@
    "senderRagBau": "Watch"
   },
   "A150": {
-   "text": "5a0ad1ca75eebf14",
-   "numbers": "00e3575eec1f166c",
+   "text": "d153f38c8a925394",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1361,8 +1361,8 @@
    "senderRagBau": "Watch"
   },
   "A151": {
-   "text": "7f3beac04df7c458",
-   "numbers": "00e3575eec1f166c",
+   "text": "686ccec83893386a",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1370,8 +1370,8 @@
    "senderRagBau": "Watch"
   },
   "A152": {
-   "text": "a0896d4ca6a9647c",
-   "numbers": "4858d901896fd63d",
+   "text": "b3ca1130e2026ce0",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1379,8 +1379,8 @@
    "senderRagBau": "Watch"
   },
   "A153": {
-   "text": "b01116ea3dc9fb9c",
-   "numbers": "00e3575eec1f166c",
+   "text": "9051c1b9b5773a0f",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1388,8 +1388,8 @@
    "senderRagBau": "Watch"
   },
   "A154": {
-   "text": "73112d0f22539aeb",
-   "numbers": "00e3575eec1f166c",
+   "text": "22f7a9f8eed06c0b",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1397,8 +1397,8 @@
    "senderRagBau": "Watch"
   },
   "A155": {
-   "text": "202db2a8a4a5799e",
-   "numbers": "4858d901896fd63d",
+   "text": "3373ce805e9a8261",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1406,8 +1406,8 @@
    "senderRagBau": "Watch"
   },
   "A156": {
-   "text": "7423173ab22e2fb4",
-   "numbers": "4e8d589e15506f93",
+   "text": "94db48d6dbc90293",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1415,8 +1415,8 @@
    "senderRagBau": "Watch"
   },
   "A157": {
-   "text": "ab72eba55d8d306a",
-   "numbers": "4e8d589e15506f93",
+   "text": "40b099155a3b2def",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1424,8 +1424,8 @@
    "senderRagBau": "Watch"
   },
   "A158": {
-   "text": "ae2277423d3b63ed",
-   "numbers": "d79ea0a830421c4e",
+   "text": "b8b92a3905295f04",
+   "numbers": "39ab33171fe455f1",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1433,8 +1433,8 @@
    "senderRagBau": "Watch"
   },
   "A159": {
-   "text": "d673b1d34a07ed36",
-   "numbers": "00e3575eec1f166c",
+   "text": "323173aad8e6580c",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1442,8 +1442,8 @@
    "senderRagBau": "Watch"
   },
   "A160": {
-   "text": "718dc59020dcb9fc",
-   "numbers": "00e3575eec1f166c",
+   "text": "389cc9abbbc18ad3",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1451,8 +1451,8 @@
    "senderRagBau": "Watch"
   },
   "A161": {
-   "text": "0174a9c01c2dc86a",
-   "numbers": "4858d901896fd63d",
+   "text": "e7d1d327ff6c0fe5",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1460,8 +1460,8 @@
    "senderRagBau": "Watch"
   },
   "A162": {
-   "text": "2186b1158ff7b90a",
-   "numbers": "00e3575eec1f166c",
+   "text": "b10d4a21052a74fb",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1469,8 +1469,8 @@
    "senderRagBau": "Watch"
   },
   "A163": {
-   "text": "0db866659df1640a",
-   "numbers": "00e3575eec1f166c",
+   "text": "e8f3bd1342aad479",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1478,8 +1478,8 @@
    "senderRagBau": "Watch"
   },
   "A164": {
-   "text": "aa3fb881fe48228b",
-   "numbers": "4858d901896fd63d",
+   "text": "300139508b8ee869",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1487,8 +1487,8 @@
    "senderRagBau": "Watch"
   },
   "A165": {
-   "text": "841e30efb967fdbd",
-   "numbers": "00e3575eec1f166c",
+   "text": "2caba9963d643262",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1496,8 +1496,8 @@
    "senderRagBau": "Watch"
   },
   "A166": {
-   "text": "e88dad4cc9c80615",
-   "numbers": "00e3575eec1f166c",
+   "text": "5b129ee531c8ace4",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1505,8 +1505,8 @@
    "senderRagBau": "Watch"
   },
   "A167": {
-   "text": "991f7d697bdf1970",
-   "numbers": "4858d901896fd63d",
+   "text": "c73554e5e7547dbd",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1514,8 +1514,8 @@
    "senderRagBau": "Watch"
   },
   "A168": {
-   "text": "6a8c8d3b869cc924",
-   "numbers": "4e8d589e15506f93",
+   "text": "c6a8f4437a6ff65b",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1523,8 +1523,8 @@
    "senderRagBau": "Watch"
   },
   "A169": {
-   "text": "325de0e7815dfba1",
-   "numbers": "4e8d589e15506f93",
+   "text": "c40cc9859a48145a",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1532,8 +1532,8 @@
    "senderRagBau": "Watch"
   },
   "A170": {
-   "text": "93af22fcec0221e5",
-   "numbers": "d79ea0a830421c4e",
+   "text": "6e7b64af691597dd",
+   "numbers": "39ab33171fe455f1",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1541,8 +1541,8 @@
    "senderRagBau": "Watch"
   },
   "A171": {
-   "text": "44ad0672e6e68227",
-   "numbers": "00e3575eec1f166c",
+   "text": "474f2145a4541cc3",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1550,8 +1550,8 @@
    "senderRagBau": "Watch"
   },
   "A172": {
-   "text": "80382882de2c0dae",
-   "numbers": "00e3575eec1f166c",
+   "text": "ba8482430494540d",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1559,8 +1559,8 @@
    "senderRagBau": "Watch"
   },
   "A173": {
-   "text": "74df4680a4fac5c1",
-   "numbers": "4858d901896fd63d",
+   "text": "28cbd4df2ea0f3e0",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1568,8 +1568,8 @@
    "senderRagBau": "Watch"
   },
   "A174": {
-   "text": "b2abc7dd30d031b7",
-   "numbers": "00e3575eec1f166c",
+   "text": "6035fb6bd0dfdc96",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1577,8 +1577,8 @@
    "senderRagBau": "Watch"
   },
   "A175": {
-   "text": "5fcdd0a88a370642",
-   "numbers": "00e3575eec1f166c",
+   "text": "c0c69a2752ab1903",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1586,8 +1586,8 @@
    "senderRagBau": "Watch"
   },
   "A176": {
-   "text": "af3df75e77a1968a",
-   "numbers": "4858d901896fd63d",
+   "text": "96ca972ce2f39b17",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1595,8 +1595,8 @@
    "senderRagBau": "Watch"
   },
   "A177": {
-   "text": "c55d9709e6da6705",
-   "numbers": "00e3575eec1f166c",
+   "text": "7bc008170493eee6",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1604,8 +1604,8 @@
    "senderRagBau": "Watch"
   },
   "A178": {
-   "text": "b04a7d983d01f4cc",
-   "numbers": "00e3575eec1f166c",
+   "text": "1d0ea40cb0332dbd",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1613,8 +1613,8 @@
    "senderRagBau": "Watch"
   },
   "A179": {
-   "text": "1c6fa86db4e108c8",
-   "numbers": "4858d901896fd63d",
+   "text": "705a203530871692",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1622,8 +1622,8 @@
    "senderRagBau": "Watch"
   },
   "A180": {
-   "text": "6096ba6f6fcd32e3",
-   "numbers": "4e8d589e15506f93",
+   "text": "0c9a3533c886ce81",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1631,8 +1631,8 @@
    "senderRagBau": "Watch"
   },
   "A181": {
-   "text": "c6a784aa40d765a9",
-   "numbers": "4e8d589e15506f93",
+   "text": "a001e809dbef73db",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1640,8 +1640,8 @@
    "senderRagBau": "Watch"
   },
   "A182": {
-   "text": "b70de56cfe173981",
-   "numbers": "d79ea0a830421c4e",
+   "text": "c792b6cc8d20666d",
+   "numbers": "39ab33171fe455f1",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1649,8 +1649,8 @@
    "senderRagBau": "Watch"
   },
   "A183": {
-   "text": "f980261f56ad4819",
-   "numbers": "00e3575eec1f166c",
+   "text": "905162f582bf323c",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1658,8 +1658,8 @@
    "senderRagBau": "Watch"
   },
   "A184": {
-   "text": "1d17cfa27029eb76",
-   "numbers": "00e3575eec1f166c",
+   "text": "55b81d189aae0452",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1667,8 +1667,8 @@
    "senderRagBau": "Watch"
   },
   "A185": {
-   "text": "bc2f01ef4cd21dbe",
-   "numbers": "4858d901896fd63d",
+   "text": "51c89f46bd661ecc",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1676,8 +1676,8 @@
    "senderRagBau": "Watch"
   },
   "A186": {
-   "text": "5600e50cd50a313c",
-   "numbers": "00e3575eec1f166c",
+   "text": "09552850774af8f5",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1685,8 +1685,8 @@
    "senderRagBau": "Watch"
   },
   "A187": {
-   "text": "f509347884962cae",
-   "numbers": "00e3575eec1f166c",
+   "text": "41983d5d7928290b",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1694,8 +1694,8 @@
    "senderRagBau": "Watch"
   },
   "A188": {
-   "text": "c980295c17778363",
-   "numbers": "4858d901896fd63d",
+   "text": "9f324b680e7b72c3",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1703,8 +1703,8 @@
    "senderRagBau": "Watch"
   },
   "A189": {
-   "text": "7b72d7ac89ac6cb8",
-   "numbers": "00e3575eec1f166c",
+   "text": "5490fa1f8f99c466",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1712,8 +1712,8 @@
    "senderRagBau": "Watch"
   },
   "A190": {
-   "text": "39d8e12b39e0bf6d",
-   "numbers": "00e3575eec1f166c",
+   "text": "33ba5b2b0cc26e8e",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1721,8 +1721,8 @@
    "senderRagBau": "Watch"
   },
   "A191": {
-   "text": "02467667e26d58df",
-   "numbers": "4858d901896fd63d",
+   "text": "783040e775eb8565",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1730,8 +1730,8 @@
    "senderRagBau": "Watch"
   },
   "A192": {
-   "text": "7b9426d0f9371d2c",
-   "numbers": "4e8d589e15506f93",
+   "text": "93d08d9b4de107ba",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1739,8 +1739,8 @@
    "senderRagBau": "Watch"
   },
   "A193": {
-   "text": "aa76b5ec1abc8488",
-   "numbers": "4e8d589e15506f93",
+   "text": "50394f0b729fbde6",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1748,8 +1748,8 @@
    "senderRagBau": "Watch"
   },
   "A194": {
-   "text": "02f062fc6df1ceba",
-   "numbers": "d79ea0a830421c4e",
+   "text": "33a4bbf5a489db5a",
+   "numbers": "39ab33171fe455f1",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1757,8 +1757,8 @@
    "senderRagBau": "Watch"
   },
   "A195": {
-   "text": "ed2f3289f98b9457",
-   "numbers": "00e3575eec1f166c",
+   "text": "4ac34937fa0d9786",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1766,8 +1766,8 @@
    "senderRagBau": "Watch"
   },
   "A196": {
-   "text": "f0fdc9f9f776ccf2",
-   "numbers": "00e3575eec1f166c",
+   "text": "58665259a023561d",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1775,8 +1775,8 @@
    "senderRagBau": "Watch"
   },
   "A197": {
-   "text": "dc6908cef923463f",
-   "numbers": "4858d901896fd63d",
+   "text": "c4f1039ac09e0bcb",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1784,8 +1784,8 @@
    "senderRagBau": "Watch"
   },
   "A198": {
-   "text": "f5fb762295261f0f",
-   "numbers": "00e3575eec1f166c",
+   "text": "6e3e51c3b211a49a",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1793,8 +1793,8 @@
    "senderRagBau": "Watch"
   },
   "A199": {
-   "text": "1082efd9e60f3276",
-   "numbers": "00e3575eec1f166c",
+   "text": "3ff4dfc1d7aad3d0",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1802,8 +1802,8 @@
    "senderRagBau": "Watch"
   },
   "A200": {
-   "text": "5ac71817dcead62c",
-   "numbers": "4858d901896fd63d",
+   "text": "1a809b3e82807e2a",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1811,8 +1811,8 @@
    "senderRagBau": "Watch"
   },
   "A201": {
-   "text": "2727c4e33a3455e9",
-   "numbers": "00e3575eec1f166c",
+   "text": "1dc2f361dc6901ea",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1820,8 +1820,8 @@
    "senderRagBau": "Watch"
   },
   "A202": {
-   "text": "50c8b35768324f20",
-   "numbers": "00e3575eec1f166c",
+   "text": "27b0668e367bd412",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1829,8 +1829,8 @@
    "senderRagBau": "Watch"
   },
   "A203": {
-   "text": "07a6c02990b91df2",
-   "numbers": "4858d901896fd63d",
+   "text": "db4ea841fc11bb9c",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1838,8 +1838,8 @@
    "senderRagBau": "Watch"
   },
   "A204": {
-   "text": "b9877b072d9e1c4f",
-   "numbers": "4e8d589e15506f93",
+   "text": "3ae431b1951df317",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1847,8 +1847,8 @@
    "senderRagBau": "Watch"
   },
   "A205": {
-   "text": "6fd016cb2aeccc46",
-   "numbers": "4e8d589e15506f93",
+   "text": "c3948c2f54d75b84",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1856,8 +1856,8 @@
    "senderRagBau": "Watch"
   },
   "A206": {
-   "text": "f1e4b22fbb038507",
-   "numbers": "d79ea0a830421c4e",
+   "text": "4d799c71b0b637df",
+   "numbers": "39ab33171fe455f1",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1865,8 +1865,8 @@
    "senderRagBau": "Watch"
   },
   "A207": {
-   "text": "d9f2258be6573829",
-   "numbers": "00e3575eec1f166c",
+   "text": "5fc94de137d34488",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1874,8 +1874,8 @@
    "senderRagBau": "Watch"
   },
   "A208": {
-   "text": "8061ad872b5c2698",
-   "numbers": "00e3575eec1f166c",
+   "text": "0da7db9a5ffc3e82",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1883,8 +1883,8 @@
    "senderRagBau": "Watch"
   },
   "A209": {
-   "text": "9629b02cdf82d946",
-   "numbers": "4858d901896fd63d",
+   "text": "4ea78f3940fae940",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1892,8 +1892,8 @@
    "senderRagBau": "Watch"
   },
   "A210": {
-   "text": "4db6f223b07d2e71",
-   "numbers": "00e3575eec1f166c",
+   "text": "ef1762eef7e15d72",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1901,8 +1901,8 @@
    "senderRagBau": "Watch"
   },
   "A211": {
-   "text": "c0a3a480fd2b8e4d",
-   "numbers": "00e3575eec1f166c",
+   "text": "966b4a08a04debb6",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1910,8 +1910,8 @@
    "senderRagBau": "Watch"
   },
   "A212": {
-   "text": "84f844c64774954c",
-   "numbers": "4858d901896fd63d",
+   "text": "feaf183f8e88a40d",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1919,8 +1919,8 @@
    "senderRagBau": "Watch"
   },
   "A213": {
-   "text": "d8ed263360edbb94",
-   "numbers": "00e3575eec1f166c",
+   "text": "fcddb67169d717bb",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1928,8 +1928,8 @@
    "senderRagBau": "Watch"
   },
   "A214": {
-   "text": "01a21567bedb473c",
-   "numbers": "00e3575eec1f166c",
+   "text": "e895d94d4c52cf67",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1937,8 +1937,8 @@
    "senderRagBau": "Watch"
   },
   "A215": {
-   "text": "22c05e05bc2a2cd5",
-   "numbers": "4858d901896fd63d",
+   "text": "e18d366ad9e38c07",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1946,8 +1946,8 @@
    "senderRagBau": "Watch"
   },
   "A216": {
-   "text": "520226bce6ba4bfd",
-   "numbers": "4e8d589e15506f93",
+   "text": "3397849ea1258a51",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1955,8 +1955,8 @@
    "senderRagBau": "Watch"
   },
   "A217": {
-   "text": "91238f9965fb6007",
-   "numbers": "4e8d589e15506f93",
+   "text": "fa211acdcbef2a41",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1964,8 +1964,8 @@
    "senderRagBau": "Watch"
   },
   "A218": {
-   "text": "3e580858bc80d6fa",
-   "numbers": "d79ea0a830421c4e",
+   "text": "0fe35293430f75f8",
+   "numbers": "39ab33171fe455f1",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1973,8 +1973,8 @@
    "senderRagBau": "Watch"
   },
   "A219": {
-   "text": "3a31e7cf4089d69d",
-   "numbers": "00e3575eec1f166c",
+   "text": "8dbf6d964cf03412",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1982,8 +1982,8 @@
    "senderRagBau": "Watch"
   },
   "A220": {
-   "text": "4bacb383b91efb94",
-   "numbers": "00e3575eec1f166c",
+   "text": "69b57f98eef67992",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -1991,8 +1991,8 @@
    "senderRagBau": "Watch"
   },
   "A221": {
-   "text": "1fbec4dacf620625",
-   "numbers": "4858d901896fd63d",
+   "text": "d8f85121e2061a9d",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2000,8 +2000,8 @@
    "senderRagBau": "Watch"
   },
   "A222": {
-   "text": "8cc4c71ad44bd3c7",
-   "numbers": "00e3575eec1f166c",
+   "text": "d0fe049f565c615b",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2009,8 +2009,8 @@
    "senderRagBau": "Watch"
   },
   "A223": {
-   "text": "f90ecaa9b2c97aaf",
-   "numbers": "00e3575eec1f166c",
+   "text": "389aab3a32573019",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2018,8 +2018,8 @@
    "senderRagBau": "Watch"
   },
   "A224": {
-   "text": "d1582b4cb2b7e998",
-   "numbers": "4858d901896fd63d",
+   "text": "43bf0fbd7c8b26c4",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2027,8 +2027,8 @@
    "senderRagBau": "Watch"
   },
   "A225": {
-   "text": "1857b10247ca1c9f",
-   "numbers": "00e3575eec1f166c",
+   "text": "ff5f429838d35bde",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2036,8 +2036,8 @@
    "senderRagBau": "Watch"
   },
   "A226": {
-   "text": "53e3d4b350587599",
-   "numbers": "00e3575eec1f166c",
+   "text": "d761edc023ec43d9",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2045,8 +2045,8 @@
    "senderRagBau": "Watch"
   },
   "A227": {
-   "text": "048d98caa9f8929d",
-   "numbers": "4858d901896fd63d",
+   "text": "68e84f363c89bc6b",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2054,8 +2054,8 @@
    "senderRagBau": "Watch"
   },
   "A228": {
-   "text": "e61e003afc0f3544",
-   "numbers": "4e8d589e15506f93",
+   "text": "4212dca978cbd6b8",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2063,8 +2063,8 @@
    "senderRagBau": "Watch"
   },
   "A229": {
-   "text": "669ef36916cd4f77",
-   "numbers": "4e8d589e15506f93",
+   "text": "776bfdd0d8ec4140",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2072,8 +2072,8 @@
    "senderRagBau": "Watch"
   },
   "A230": {
-   "text": "ed6ec6c52847251f",
-   "numbers": "d79ea0a830421c4e",
+   "text": "d5c97b9102d3223b",
+   "numbers": "39ab33171fe455f1",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2081,8 +2081,8 @@
    "senderRagBau": "Watch"
   },
   "A231": {
-   "text": "d23c22cc95f9a7ce",
-   "numbers": "00e3575eec1f166c",
+   "text": "7bae1abfa35157e0",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2090,8 +2090,8 @@
    "senderRagBau": "Watch"
   },
   "A232": {
-   "text": "6d749ba0806ee364",
-   "numbers": "00e3575eec1f166c",
+   "text": "1f842efd3839134d",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2099,8 +2099,8 @@
    "senderRagBau": "Watch"
   },
   "A233": {
-   "text": "4a256eaa478a5f0d",
-   "numbers": "4858d901896fd63d",
+   "text": "2dbc831cb572674b",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2108,8 +2108,8 @@
    "senderRagBau": "Watch"
   },
   "A234": {
-   "text": "13b8b1269cd061d9",
-   "numbers": "00e3575eec1f166c",
+   "text": "f740e508b1ed785e",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2117,8 +2117,8 @@
    "senderRagBau": "Watch"
   },
   "A235": {
-   "text": "1dc7a79aa13af852",
-   "numbers": "00e3575eec1f166c",
+   "text": "af70b4f4f8433ad0",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2126,8 +2126,8 @@
    "senderRagBau": "Watch"
   },
   "A236": {
-   "text": "c0e72c57b20cb8d0",
-   "numbers": "4858d901896fd63d",
+   "text": "4871257177a036b8",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2135,8 +2135,8 @@
    "senderRagBau": "Watch"
   },
   "A237": {
-   "text": "0e7a9faa90308825",
-   "numbers": "00e3575eec1f166c",
+   "text": "85e3e6ad6c52c90f",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2144,8 +2144,8 @@
    "senderRagBau": "Watch"
   },
   "A238": {
-   "text": "0a9c28ca0f1735da",
-   "numbers": "00e3575eec1f166c",
+   "text": "4e8a42c954e39a50",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2153,8 +2153,8 @@
    "senderRagBau": "Watch"
   },
   "A239": {
-   "text": "fff2f62ec1e8bc0b",
-   "numbers": "4858d901896fd63d",
+   "text": "a20eaf8b006d3db0",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2162,8 +2162,8 @@
    "senderRagBau": "Watch"
   },
   "A240": {
-   "text": "1171eea88d74cc0b",
-   "numbers": "4e8d589e15506f93",
+   "text": "96d0b39aa42fc2e6",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2171,8 +2171,8 @@
    "senderRagBau": "Watch"
   },
   "A241": {
-   "text": "bc8c6936c298cc48",
-   "numbers": "4e8d589e15506f93",
+   "text": "aaa5dd4919901670",
+   "numbers": "41c34477e347e138",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2180,8 +2180,8 @@
    "senderRagBau": "Watch"
   },
   "A242": {
-   "text": "8ea6388ecb41adda",
-   "numbers": "d79ea0a830421c4e",
+   "text": "0d3518a02032f56f",
+   "numbers": "39ab33171fe455f1",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2189,8 +2189,8 @@
    "senderRagBau": "Watch"
   },
   "A243": {
-   "text": "1fdc1022fa95c559",
-   "numbers": "00e3575eec1f166c",
+   "text": "201f0269b94416de",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2198,8 +2198,8 @@
    "senderRagBau": "Watch"
   },
   "A244": {
-   "text": "534b5c2785504b16",
-   "numbers": "00e3575eec1f166c",
+   "text": "c20e99e454d39f31",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2207,8 +2207,8 @@
    "senderRagBau": "Watch"
   },
   "A245": {
-   "text": "ba78c56a9930c679",
-   "numbers": "4858d901896fd63d",
+   "text": "e62e838929e3c938",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2216,8 +2216,8 @@
    "senderRagBau": "Watch"
   },
   "A246": {
-   "text": "42d6d264655dd182",
-   "numbers": "00e3575eec1f166c",
+   "text": "e2b806c823c9e416",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2225,8 +2225,8 @@
    "senderRagBau": "Watch"
   },
   "A247": {
-   "text": "882a7ffaa6987adb",
-   "numbers": "00e3575eec1f166c",
+   "text": "3f2487d76135072a",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2234,8 +2234,8 @@
    "senderRagBau": "Watch"
   },
   "A248": {
-   "text": "027582a14c8e8b52",
-   "numbers": "4858d901896fd63d",
+   "text": "b060897071bc0c42",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2243,8 +2243,8 @@
    "senderRagBau": "Watch"
   },
   "A249": {
-   "text": "91a5085efc21ee9e",
-   "numbers": "00e3575eec1f166c",
+   "text": "ae7dd02e702dc71e",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2252,8 +2252,8 @@
    "senderRagBau": "Watch"
   },
   "A250": {
-   "text": "55128a7119db272b",
-   "numbers": "00e3575eec1f166c",
+   "text": "888a797f134019a1",
+   "numbers": "1977629c173697d3",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2261,8 +2261,8 @@
    "senderRagBau": "Watch"
   },
   "A251": {
-   "text": "cb4e04a2fcaaf42e",
-   "numbers": "4858d901896fd63d",
+   "text": "4a8181c13ce22656",
+   "numbers": "8d74f205cf0fd3b5",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -2270,8 +2270,8 @@
    "senderRagBau": "Watch"
   },
   "B000": {
-   "text": "4a9124bede76e74c",
-   "numbers": "749c436f967c3cc6",
+   "text": "d5f1a74d06320d9b",
+   "numbers": "cdecd5725ad6ecfc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2279,8 +2279,8 @@
    "senderRagBau": "Healthy"
   },
   "B001": {
-   "text": "8ae815aef68d7710",
-   "numbers": "749c436f967c3cc6",
+   "text": "8d1a1797a18fab99",
+   "numbers": "cdecd5725ad6ecfc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2288,8 +2288,8 @@
    "senderRagBau": "Healthy"
   },
   "B002": {
-   "text": "9e81138c2b415509",
-   "numbers": "4eee29d12839ed7b",
+   "text": "670c9aa28980f699",
+   "numbers": "a52385b576b152e3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2297,8 +2297,8 @@
    "senderRagBau": "Healthy"
   },
   "B003": {
-   "text": "3708df9a9160b68d",
-   "numbers": "4521e1237f481a66",
+   "text": "d4d6051e73aefb56",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2306,8 +2306,8 @@
    "senderRagBau": "Healthy"
   },
   "B004": {
-   "text": "6ad31511707ac233",
-   "numbers": "4521e1237f481a66",
+   "text": "7b04f0eff16d73aa",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2315,8 +2315,8 @@
    "senderRagBau": "Healthy"
   },
   "B005": {
-   "text": "2bb1b34f8855572d",
-   "numbers": "ab1d08cafe7181a8",
+   "text": "e3ce8dca9baf6240",
+   "numbers": "c0a1e19cd317a1ab",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2324,8 +2324,8 @@
    "senderRagBau": "Healthy"
   },
   "B006": {
-   "text": "e2b4b191945a5de0",
-   "numbers": "4521e1237f481a66",
+   "text": "bf98a27e46712a2c",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2333,8 +2333,8 @@
    "senderRagBau": "Healthy"
   },
   "B007": {
-   "text": "23bf43fed98032a3",
-   "numbers": "4521e1237f481a66",
+   "text": "5e8272ace0e022e1",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2342,8 +2342,8 @@
    "senderRagBau": "Healthy"
   },
   "B008": {
-   "text": "1df0b164c0dc7b41",
-   "numbers": "ab1d08cafe7181a8",
+   "text": "fe06c2a0e23fd753",
+   "numbers": "c0a1e19cd317a1ab",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2351,8 +2351,8 @@
    "senderRagBau": "Healthy"
   },
   "B009": {
-   "text": "30fe9a4585e1429f",
-   "numbers": "4521e1237f481a66",
+   "text": "d489ba5459ed40be",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2360,8 +2360,8 @@
    "senderRagBau": "Healthy"
   },
   "B010": {
-   "text": "7864e02f20ba663b",
-   "numbers": "4521e1237f481a66",
+   "text": "3164ed173c268c25",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2369,8 +2369,8 @@
    "senderRagBau": "Healthy"
   },
   "B011": {
-   "text": "c4f99f7c9ffad9e4",
-   "numbers": "ab1d08cafe7181a8",
+   "text": "3b9dd2dac6a5f743",
+   "numbers": "c0a1e19cd317a1ab",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2378,8 +2378,8 @@
    "senderRagBau": "Healthy"
   },
   "B012": {
-   "text": "cccaa9143558eaa5",
-   "numbers": "749c436f967c3cc6",
+   "text": "693e99fbd0d9ea60",
+   "numbers": "cdecd5725ad6ecfc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2387,8 +2387,8 @@
    "senderRagBau": "Healthy"
   },
   "B013": {
-   "text": "cd55a27a6fb129c8",
-   "numbers": "749c436f967c3cc6",
+   "text": "24dc6e9db0bf7a0f",
+   "numbers": "cdecd5725ad6ecfc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2396,8 +2396,8 @@
    "senderRagBau": "Healthy"
   },
   "B014": {
-   "text": "b54e77a15dc50402",
-   "numbers": "4eee29d12839ed7b",
+   "text": "35857e6ab213cb26",
+   "numbers": "a52385b576b152e3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2405,8 +2405,8 @@
    "senderRagBau": "Healthy"
   },
   "B015": {
-   "text": "4048f3684988dfed",
-   "numbers": "4521e1237f481a66",
+   "text": "ef6fd11a42474067",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2414,8 +2414,8 @@
    "senderRagBau": "Healthy"
   },
   "B016": {
-   "text": "9badacd6b64016b0",
-   "numbers": "4521e1237f481a66",
+   "text": "53ef893a47a702b5",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2423,8 +2423,8 @@
    "senderRagBau": "Healthy"
   },
   "B017": {
-   "text": "a30f58fc511ff11e",
-   "numbers": "ab1d08cafe7181a8",
+   "text": "a638bf575f9d6f95",
+   "numbers": "c0a1e19cd317a1ab",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2432,8 +2432,8 @@
    "senderRagBau": "Healthy"
   },
   "B018": {
-   "text": "ee9356bb51279f2d",
-   "numbers": "4521e1237f481a66",
+   "text": "e14ef0fc726669b8",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2441,8 +2441,8 @@
    "senderRagBau": "Healthy"
   },
   "B019": {
-   "text": "b9a2a2fd179accd1",
-   "numbers": "4521e1237f481a66",
+   "text": "2371e2a363d95d96",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2450,8 +2450,8 @@
    "senderRagBau": "Healthy"
   },
   "B020": {
-   "text": "cfc681035cfc3719",
-   "numbers": "ab1d08cafe7181a8",
+   "text": "a1f1e45e2fde66e6",
+   "numbers": "c0a1e19cd317a1ab",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2459,8 +2459,8 @@
    "senderRagBau": "Healthy"
   },
   "B021": {
-   "text": "aea0bcb803b7b9cb",
-   "numbers": "4521e1237f481a66",
+   "text": "b16574fa832a24d8",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2468,8 +2468,8 @@
    "senderRagBau": "Healthy"
   },
   "B022": {
-   "text": "14970f614e28d0a5",
-   "numbers": "4521e1237f481a66",
+   "text": "b318ac89f4c7f64d",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2477,8 +2477,8 @@
    "senderRagBau": "Healthy"
   },
   "B023": {
-   "text": "f4d6483c489b44b9",
-   "numbers": "ab1d08cafe7181a8",
+   "text": "34a3629566036334",
+   "numbers": "c0a1e19cd317a1ab",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2486,8 +2486,8 @@
    "senderRagBau": "Healthy"
   },
   "B024": {
-   "text": "e651508af6003736",
-   "numbers": "749c436f967c3cc6",
+   "text": "b3d7c74b8e3804ee",
+   "numbers": "cdecd5725ad6ecfc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2495,8 +2495,8 @@
    "senderRagBau": "Healthy"
   },
   "B025": {
-   "text": "987211ace5f630ab",
-   "numbers": "749c436f967c3cc6",
+   "text": "cad266ff57b96ada",
+   "numbers": "cdecd5725ad6ecfc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2504,8 +2504,8 @@
    "senderRagBau": "Healthy"
   },
   "B026": {
-   "text": "f5444ca61b30d38b",
-   "numbers": "4eee29d12839ed7b",
+   "text": "dfd78f10a34620fa",
+   "numbers": "a52385b576b152e3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2513,8 +2513,8 @@
    "senderRagBau": "Healthy"
   },
   "B027": {
-   "text": "6f7061772fc53065",
-   "numbers": "4521e1237f481a66",
+   "text": "fefc1fce76cea30c",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2522,8 +2522,8 @@
    "senderRagBau": "Healthy"
   },
   "B028": {
-   "text": "bd28c7c126946993",
-   "numbers": "4521e1237f481a66",
+   "text": "ba90c856f1ffca9d",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2531,8 +2531,8 @@
    "senderRagBau": "Healthy"
   },
   "B029": {
-   "text": "a8b3dd5a57abe23f",
-   "numbers": "ab1d08cafe7181a8",
+   "text": "dc5132f889e26260",
+   "numbers": "c0a1e19cd317a1ab",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2540,8 +2540,8 @@
    "senderRagBau": "Healthy"
   },
   "B030": {
-   "text": "1dda9088fd4e1ff3",
-   "numbers": "4521e1237f481a66",
+   "text": "48163cf9d397c089",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2549,8 +2549,8 @@
    "senderRagBau": "Healthy"
   },
   "B031": {
-   "text": "2c542113fdadae70",
-   "numbers": "4521e1237f481a66",
+   "text": "31a1f6692f9bf9cf",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2558,8 +2558,8 @@
    "senderRagBau": "Healthy"
   },
   "B032": {
-   "text": "862615dac00758ce",
-   "numbers": "ab1d08cafe7181a8",
+   "text": "483bd5e5a5402602",
+   "numbers": "c0a1e19cd317a1ab",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2567,8 +2567,8 @@
    "senderRagBau": "Healthy"
   },
   "B033": {
-   "text": "f881efb427c6cc1d",
-   "numbers": "4521e1237f481a66",
+   "text": "fa8781b72f99e948",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2576,8 +2576,8 @@
    "senderRagBau": "Healthy"
   },
   "B034": {
-   "text": "94193bcda9a8dc72",
-   "numbers": "4521e1237f481a66",
+   "text": "f5e8680a7194742f",
+   "numbers": "d66541b5893270b3",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2585,8 +2585,8 @@
    "senderRagBau": "Healthy"
   },
   "B035": {
-   "text": "74788ee83717ec0f",
-   "numbers": "ab1d08cafe7181a8",
+   "text": "689f20d2e37cc2e3",
+   "numbers": "c0a1e19cd317a1ab",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2594,8 +2594,8 @@
    "senderRagBau": "Healthy"
   },
   "B036": {
-   "text": "fa9f70ca096d73e0",
-   "numbers": "5d368aad980a67d5",
+   "text": "9df643bfc81bf95e",
+   "numbers": "234cd1803295bf6f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2603,8 +2603,8 @@
    "senderRagBau": "Healthy"
   },
   "B037": {
-   "text": "5fd97b19b3b9d720",
-   "numbers": "5d368aad980a67d5",
+   "text": "0c8c475a128ef1ab",
+   "numbers": "234cd1803295bf6f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2612,8 +2612,8 @@
    "senderRagBau": "Healthy"
   },
   "B038": {
-   "text": "160d3fa312f15014",
-   "numbers": "da9a936dd40f801d",
+   "text": "c5863a4fc7e4bf3b",
+   "numbers": "36d73aa9bb354034",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2621,8 +2621,8 @@
    "senderRagBau": "Healthy"
   },
   "B039": {
-   "text": "8ea56adb4292cc2c",
-   "numbers": "73f3988a001d74b1",
+   "text": "9b9e6f74ceac3c58",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2630,8 +2630,8 @@
    "senderRagBau": "Healthy"
   },
   "B040": {
-   "text": "820dc7f1c818da1c",
-   "numbers": "73f3988a001d74b1",
+   "text": "ac6b65875a463bda",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2639,8 +2639,8 @@
    "senderRagBau": "Healthy"
   },
   "B041": {
-   "text": "f2ab415abb80aa7b",
-   "numbers": "ab705c8dfcdc06c9",
+   "text": "fc4609f576d82485",
+   "numbers": "12e084a4ef353e1f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2648,8 +2648,8 @@
    "senderRagBau": "Healthy"
   },
   "B042": {
-   "text": "37149e539dbb6330",
-   "numbers": "73f3988a001d74b1",
+   "text": "43aeb4904f963e7d",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2657,8 +2657,8 @@
    "senderRagBau": "Healthy"
   },
   "B043": {
-   "text": "21aa2c17f4e1e087",
-   "numbers": "73f3988a001d74b1",
+   "text": "10563ce27d8d730c",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2666,8 +2666,8 @@
    "senderRagBau": "Healthy"
   },
   "B044": {
-   "text": "66c1bc7c3fd1cbec",
-   "numbers": "ab705c8dfcdc06c9",
+   "text": "50f3acf0dad8fec3",
+   "numbers": "12e084a4ef353e1f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2675,8 +2675,8 @@
    "senderRagBau": "Healthy"
   },
   "B045": {
-   "text": "6371d4676938a11f",
-   "numbers": "73f3988a001d74b1",
+   "text": "8a02cfe13a12f641",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2684,8 +2684,8 @@
    "senderRagBau": "Healthy"
   },
   "B046": {
-   "text": "a038907e674c519b",
-   "numbers": "73f3988a001d74b1",
+   "text": "09b8144b1d0a8e1c",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2693,8 +2693,8 @@
    "senderRagBau": "Healthy"
   },
   "B047": {
-   "text": "5f34ce8f1110d3bb",
-   "numbers": "ab705c8dfcdc06c9",
+   "text": "5304f1b33f3c904c",
+   "numbers": "12e084a4ef353e1f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2702,8 +2702,8 @@
    "senderRagBau": "Healthy"
   },
   "B048": {
-   "text": "7211eaf18a714c26",
-   "numbers": "5d368aad980a67d5",
+   "text": "04a6b6203a6135cd",
+   "numbers": "234cd1803295bf6f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2711,8 +2711,8 @@
    "senderRagBau": "Healthy"
   },
   "B049": {
-   "text": "9bd1e69702c0ffb0",
-   "numbers": "5d368aad980a67d5",
+   "text": "f5c493e2b7764655",
+   "numbers": "234cd1803295bf6f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2720,8 +2720,8 @@
    "senderRagBau": "Healthy"
   },
   "B050": {
-   "text": "c82ec5da02b59701",
-   "numbers": "da9a936dd40f801d",
+   "text": "7da75ead40d212f2",
+   "numbers": "36d73aa9bb354034",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2729,8 +2729,8 @@
    "senderRagBau": "Healthy"
   },
   "B051": {
-   "text": "b81549cdd389dd2d",
-   "numbers": "73f3988a001d74b1",
+   "text": "d037f8808660350d",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2738,8 +2738,8 @@
    "senderRagBau": "Healthy"
   },
   "B052": {
-   "text": "4219dfcede966869",
-   "numbers": "73f3988a001d74b1",
+   "text": "8a62e78468e20210",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2747,8 +2747,8 @@
    "senderRagBau": "Healthy"
   },
   "B053": {
-   "text": "c5a86c0fe332c5f3",
-   "numbers": "ab705c8dfcdc06c9",
+   "text": "f51eef74a36d9a15",
+   "numbers": "12e084a4ef353e1f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2756,8 +2756,8 @@
    "senderRagBau": "Healthy"
   },
   "B054": {
-   "text": "1209dcc0a1d6f7f1",
-   "numbers": "73f3988a001d74b1",
+   "text": "f6c4f8dcc6320541",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2765,8 +2765,8 @@
    "senderRagBau": "Healthy"
   },
   "B055": {
-   "text": "7cce0001bb563652",
-   "numbers": "73f3988a001d74b1",
+   "text": "6a4c619a1d82d9f5",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2774,8 +2774,8 @@
    "senderRagBau": "Healthy"
   },
   "B056": {
-   "text": "084c0458923e7282",
-   "numbers": "ab705c8dfcdc06c9",
+   "text": "a9460a3507add87f",
+   "numbers": "12e084a4ef353e1f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2783,8 +2783,8 @@
    "senderRagBau": "Healthy"
   },
   "B057": {
-   "text": "71687955ed0186bc",
-   "numbers": "73f3988a001d74b1",
+   "text": "5195c4834aa7c0f7",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2792,8 +2792,8 @@
    "senderRagBau": "Healthy"
   },
   "B058": {
-   "text": "70c62fc078a52a0a",
-   "numbers": "73f3988a001d74b1",
+   "text": "6ac5d4cc484bdb78",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2801,8 +2801,8 @@
    "senderRagBau": "Healthy"
   },
   "B059": {
-   "text": "099a9b6389a0afcb",
-   "numbers": "ab705c8dfcdc06c9",
+   "text": "4d1bdd3327c22898",
+   "numbers": "12e084a4ef353e1f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2810,8 +2810,8 @@
    "senderRagBau": "Healthy"
   },
   "B060": {
-   "text": "f2e538a9b2509cda",
-   "numbers": "5d368aad980a67d5",
+   "text": "8793f3f108bcefc7",
+   "numbers": "234cd1803295bf6f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2819,8 +2819,8 @@
    "senderRagBau": "Healthy"
   },
   "B061": {
-   "text": "3c406744d62f8636",
-   "numbers": "5d368aad980a67d5",
+   "text": "eb5ad4a84b524a7c",
+   "numbers": "234cd1803295bf6f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2828,8 +2828,8 @@
    "senderRagBau": "Healthy"
   },
   "B062": {
-   "text": "a2deeac5fc9fbde5",
-   "numbers": "da9a936dd40f801d",
+   "text": "424380d64076783f",
+   "numbers": "36d73aa9bb354034",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2837,8 +2837,8 @@
    "senderRagBau": "Healthy"
   },
   "B063": {
-   "text": "c1d8a0799ddf2239",
-   "numbers": "73f3988a001d74b1",
+   "text": "7a1e355f5b80a9d5",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2846,8 +2846,8 @@
    "senderRagBau": "Healthy"
   },
   "B064": {
-   "text": "857a39e2e2f3287a",
-   "numbers": "73f3988a001d74b1",
+   "text": "31da6921a8ee4cc1",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2855,8 +2855,8 @@
    "senderRagBau": "Healthy"
   },
   "B065": {
-   "text": "bcf9260ac41a7c64",
-   "numbers": "ab705c8dfcdc06c9",
+   "text": "14370dc724c4f18f",
+   "numbers": "12e084a4ef353e1f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2864,8 +2864,8 @@
    "senderRagBau": "Healthy"
   },
   "B066": {
-   "text": "f121ceb8269dc2e1",
-   "numbers": "73f3988a001d74b1",
+   "text": "0b556bc5cd40aa8f",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2873,8 +2873,8 @@
    "senderRagBau": "Healthy"
   },
   "B067": {
-   "text": "c2fa603497fc307f",
-   "numbers": "73f3988a001d74b1",
+   "text": "824872007fce5f83",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2882,8 +2882,8 @@
    "senderRagBau": "Healthy"
   },
   "B068": {
-   "text": "c8f26106cbc504f1",
-   "numbers": "ab705c8dfcdc06c9",
+   "text": "aecd8ab659e175cc",
+   "numbers": "12e084a4ef353e1f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2891,8 +2891,8 @@
    "senderRagBau": "Healthy"
   },
   "B069": {
-   "text": "8352f001c8809464",
-   "numbers": "73f3988a001d74b1",
+   "text": "dcc293f57c8b2d56",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2900,8 +2900,8 @@
    "senderRagBau": "Healthy"
   },
   "B070": {
-   "text": "cff84d5b6b9c0536",
-   "numbers": "73f3988a001d74b1",
+   "text": "70992e24f54dc299",
+   "numbers": "bb479f2f85ac3677",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2909,8 +2909,8 @@
    "senderRagBau": "Healthy"
   },
   "B071": {
-   "text": "97066d9e42d679b5",
-   "numbers": "ab705c8dfcdc06c9",
+   "text": "97d0e12b5fc4f371",
+   "numbers": "12e084a4ef353e1f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2918,8 +2918,8 @@
    "senderRagBau": "Healthy"
   },
   "B072": {
-   "text": "5fab3a700c4e6326",
-   "numbers": "272ad7f2be31380a",
+   "text": "498b462ab1a02f68",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2927,8 +2927,8 @@
    "senderRagBau": "Healthy"
   },
   "B073": {
-   "text": "f0cd56a9470ad1d4",
-   "numbers": "272ad7f2be31380a",
+   "text": "54b946f95675a451",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2936,8 +2936,8 @@
    "senderRagBau": "Healthy"
   },
   "B074": {
-   "text": "9b57306cb3d9cb30",
-   "numbers": "21a0793650e9a174",
+   "text": "052417bac75eefd8",
+   "numbers": "ef1cc9840389dbcc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2945,8 +2945,8 @@
    "senderRagBau": "Healthy"
   },
   "B075": {
-   "text": "8020aa6866b7cc17",
-   "numbers": "cb11a13edaecc149",
+   "text": "b2a49c57a875c1f0",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2954,8 +2954,8 @@
    "senderRagBau": "Healthy"
   },
   "B076": {
-   "text": "acc5573c98a0fea0",
-   "numbers": "cb11a13edaecc149",
+   "text": "db31b4d609bee107",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2963,8 +2963,8 @@
    "senderRagBau": "Healthy"
   },
   "B077": {
-   "text": "7e9f39f0a8492774",
-   "numbers": "f851b32fa481334b",
+   "text": "da46d7a39c575425",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2972,8 +2972,8 @@
    "senderRagBau": "Healthy"
   },
   "B078": {
-   "text": "42d0b43973f5f4c8",
-   "numbers": "cb11a13edaecc149",
+   "text": "01c057cbda17e973",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2981,8 +2981,8 @@
    "senderRagBau": "Healthy"
   },
   "B079": {
-   "text": "15deeeb448b9c4ff",
-   "numbers": "cb11a13edaecc149",
+   "text": "e01b17274241f03f",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2990,8 +2990,8 @@
    "senderRagBau": "Healthy"
   },
   "B080": {
-   "text": "f3e41e9f4f71d79a",
-   "numbers": "f851b32fa481334b",
+   "text": "95bc7cdd2ec9e4ea",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -2999,8 +2999,8 @@
    "senderRagBau": "Healthy"
   },
   "B081": {
-   "text": "11571418c23d6a6d",
-   "numbers": "cb11a13edaecc149",
+   "text": "da26a739ce25b9dd",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3008,8 +3008,8 @@
    "senderRagBau": "Healthy"
   },
   "B082": {
-   "text": "a30e680729901f9c",
-   "numbers": "cb11a13edaecc149",
+   "text": "c50ea8fa55a916c6",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3017,8 +3017,8 @@
    "senderRagBau": "Healthy"
   },
   "B083": {
-   "text": "aab8e5751ccbf1a6",
-   "numbers": "f851b32fa481334b",
+   "text": "3cf3876c48ee82b1",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3026,8 +3026,8 @@
    "senderRagBau": "Healthy"
   },
   "B084": {
-   "text": "1401240e0fa18227",
-   "numbers": "272ad7f2be31380a",
+   "text": "ae6346bc52e73139",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3035,8 +3035,8 @@
    "senderRagBau": "Healthy"
   },
   "B085": {
-   "text": "530e1bf76c396a6d",
-   "numbers": "272ad7f2be31380a",
+   "text": "7bf8c4241412d3f5",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3044,8 +3044,8 @@
    "senderRagBau": "Healthy"
   },
   "B086": {
-   "text": "a63afbee7b358da4",
-   "numbers": "21a0793650e9a174",
+   "text": "46cca256c90b799a",
+   "numbers": "ef1cc9840389dbcc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3053,8 +3053,8 @@
    "senderRagBau": "Healthy"
   },
   "B087": {
-   "text": "ba0a78ab74416004",
-   "numbers": "cb11a13edaecc149",
+   "text": "ae179af4b1185b10",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3062,8 +3062,8 @@
    "senderRagBau": "Healthy"
   },
   "B088": {
-   "text": "844a1949036930a3",
-   "numbers": "cb11a13edaecc149",
+   "text": "7a720075e51dab5f",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3071,8 +3071,8 @@
    "senderRagBau": "Healthy"
   },
   "B089": {
-   "text": "992b81179c0e06c8",
-   "numbers": "f851b32fa481334b",
+   "text": "d1483a3626bbef5e",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3080,8 +3080,8 @@
    "senderRagBau": "Healthy"
   },
   "B090": {
-   "text": "b58ae94933bcae45",
-   "numbers": "cb11a13edaecc149",
+   "text": "b925ce39e9589314",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3089,8 +3089,8 @@
    "senderRagBau": "Healthy"
   },
   "B091": {
-   "text": "83dc6cbe56f0bc5b",
-   "numbers": "cb11a13edaecc149",
+   "text": "e5aafbb0ec702c4b",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3098,8 +3098,8 @@
    "senderRagBau": "Healthy"
   },
   "B092": {
-   "text": "2506468ba2f8039c",
-   "numbers": "f851b32fa481334b",
+   "text": "48eeb4ef083989db",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3107,8 +3107,8 @@
    "senderRagBau": "Healthy"
   },
   "B093": {
-   "text": "7cd06e1f7ee49211",
-   "numbers": "cb11a13edaecc149",
+   "text": "8a3aa2099370ad69",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3116,8 +3116,8 @@
    "senderRagBau": "Healthy"
   },
   "B094": {
-   "text": "b5e4d305c46973b2",
-   "numbers": "cb11a13edaecc149",
+   "text": "110cc86197e6c1e0",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3125,8 +3125,8 @@
    "senderRagBau": "Healthy"
   },
   "B095": {
-   "text": "4b8563d10f3a4bd2",
-   "numbers": "f851b32fa481334b",
+   "text": "596d33675447a292",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3134,8 +3134,8 @@
    "senderRagBau": "Healthy"
   },
   "B096": {
-   "text": "5c5e1ef0436cd0be",
-   "numbers": "272ad7f2be31380a",
+   "text": "0e0662fae3178d6a",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3143,8 +3143,8 @@
    "senderRagBau": "Healthy"
   },
   "B097": {
-   "text": "bfa628ba3d56aeec",
-   "numbers": "272ad7f2be31380a",
+   "text": "deac884f3a0338b5",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3152,8 +3152,8 @@
    "senderRagBau": "Healthy"
   },
   "B098": {
-   "text": "77255e08793f7e45",
-   "numbers": "21a0793650e9a174",
+   "text": "b065c51d8e910025",
+   "numbers": "ef1cc9840389dbcc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3161,8 +3161,8 @@
    "senderRagBau": "Healthy"
   },
   "B099": {
-   "text": "a36ab76e83e01f92",
-   "numbers": "cb11a13edaecc149",
+   "text": "46605a7a1fd9822e",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3170,8 +3170,8 @@
    "senderRagBau": "Healthy"
   },
   "B100": {
-   "text": "b525796ca1d264b6",
-   "numbers": "cb11a13edaecc149",
+   "text": "f8a5da1f9e1d725c",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3179,8 +3179,8 @@
    "senderRagBau": "Healthy"
   },
   "B101": {
-   "text": "adad9888611b7998",
-   "numbers": "f851b32fa481334b",
+   "text": "b6eb1ff321929fcd",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3188,8 +3188,8 @@
    "senderRagBau": "Healthy"
   },
   "B102": {
-   "text": "9b20f580e940f966",
-   "numbers": "cb11a13edaecc149",
+   "text": "798ecb2e3605912a",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3197,8 +3197,8 @@
    "senderRagBau": "Healthy"
   },
   "B103": {
-   "text": "3b8b1200f305f464",
-   "numbers": "cb11a13edaecc149",
+   "text": "3f9a61e670a81756",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3206,8 +3206,8 @@
    "senderRagBau": "Healthy"
   },
   "B104": {
-   "text": "4c2bf5a02ac1ea31",
-   "numbers": "f851b32fa481334b",
+   "text": "87f914e1924c99f9",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3215,8 +3215,8 @@
    "senderRagBau": "Healthy"
   },
   "B105": {
-   "text": "7bbc843859330f3c",
-   "numbers": "cb11a13edaecc149",
+   "text": "5c6360b85ffd4608",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3224,8 +3224,8 @@
    "senderRagBau": "Healthy"
   },
   "B106": {
-   "text": "24e0d0526cc125f6",
-   "numbers": "cb11a13edaecc149",
+   "text": "45c3e15ed124fdd4",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3233,8 +3233,8 @@
    "senderRagBau": "Healthy"
   },
   "B107": {
-   "text": "212866e053a8a55d",
-   "numbers": "f851b32fa481334b",
+   "text": "8a4e39389b2f1767",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3242,8 +3242,8 @@
    "senderRagBau": "Healthy"
   },
   "B108": {
-   "text": "0027a75d6da74cbe",
-   "numbers": "272ad7f2be31380a",
+   "text": "070621d50dd94c82",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3251,8 +3251,8 @@
    "senderRagBau": "Healthy"
   },
   "B109": {
-   "text": "2642156aaea47d2e",
-   "numbers": "272ad7f2be31380a",
+   "text": "f95f1b656b73c0b8",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3260,8 +3260,8 @@
    "senderRagBau": "Healthy"
   },
   "B110": {
-   "text": "74e0fbba6decc8a9",
-   "numbers": "21a0793650e9a174",
+   "text": "5f9f2a99b7a68857",
+   "numbers": "ef1cc9840389dbcc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3269,8 +3269,8 @@
    "senderRagBau": "Healthy"
   },
   "B111": {
-   "text": "fe713bd0cd32c2e8",
-   "numbers": "cb11a13edaecc149",
+   "text": "614d611ea1c45614",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3278,8 +3278,8 @@
    "senderRagBau": "Healthy"
   },
   "B112": {
-   "text": "11894d58385aa915",
-   "numbers": "cb11a13edaecc149",
+   "text": "89ffc7aa7784b040",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3287,8 +3287,8 @@
    "senderRagBau": "Healthy"
   },
   "B113": {
-   "text": "d0eb298a47835bd3",
-   "numbers": "f851b32fa481334b",
+   "text": "76715c29426f3da4",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3296,8 +3296,8 @@
    "senderRagBau": "Healthy"
   },
   "B114": {
-   "text": "a0f2adf4ce23c587",
-   "numbers": "cb11a13edaecc149",
+   "text": "7c66451dcfc66040",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3305,8 +3305,8 @@
    "senderRagBau": "Healthy"
   },
   "B115": {
-   "text": "b9a60d9426d6d387",
-   "numbers": "cb11a13edaecc149",
+   "text": "e87b51d236609b7d",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3314,8 +3314,8 @@
    "senderRagBau": "Healthy"
   },
   "B116": {
-   "text": "1876ffac8e54400b",
-   "numbers": "f851b32fa481334b",
+   "text": "5a174e490084eaae",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3323,8 +3323,8 @@
    "senderRagBau": "Healthy"
   },
   "B117": {
-   "text": "c0aca626190c1239",
-   "numbers": "cb11a13edaecc149",
+   "text": "9335736e7ff43431",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3332,8 +3332,8 @@
    "senderRagBau": "Healthy"
   },
   "B118": {
-   "text": "8e249ffeb01eaed1",
-   "numbers": "cb11a13edaecc149",
+   "text": "e16f5ed820d8ed3b",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3341,8 +3341,8 @@
    "senderRagBau": "Healthy"
   },
   "B119": {
-   "text": "22715983ca904858",
-   "numbers": "f851b32fa481334b",
+   "text": "356956d32f9300e2",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3350,8 +3350,8 @@
    "senderRagBau": "Healthy"
   },
   "B120": {
-   "text": "56a29e3eabb8b2dc",
-   "numbers": "272ad7f2be31380a",
+   "text": "91423880610e5971",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3359,8 +3359,8 @@
    "senderRagBau": "Healthy"
   },
   "B121": {
-   "text": "a5a91c37dfb37713",
-   "numbers": "272ad7f2be31380a",
+   "text": "56b995c95f244ed3",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3368,8 +3368,8 @@
    "senderRagBau": "Healthy"
   },
   "B122": {
-   "text": "02aef15775f1cd98",
-   "numbers": "21a0793650e9a174",
+   "text": "c4c2e2985967d141",
+   "numbers": "ef1cc9840389dbcc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3377,8 +3377,8 @@
    "senderRagBau": "Healthy"
   },
   "B123": {
-   "text": "798e41de0dbfae32",
-   "numbers": "cb11a13edaecc149",
+   "text": "3806af16b5a9a01a",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3386,8 +3386,8 @@
    "senderRagBau": "Healthy"
   },
   "B124": {
-   "text": "4f28441e2291a19e",
-   "numbers": "cb11a13edaecc149",
+   "text": "d5ba79a401619d79",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3395,8 +3395,8 @@
    "senderRagBau": "Healthy"
   },
   "B125": {
-   "text": "50f764ce3ead13c5",
-   "numbers": "f851b32fa481334b",
+   "text": "4eaa2522450a00f3",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3404,8 +3404,8 @@
    "senderRagBau": "Healthy"
   },
   "B126": {
-   "text": "26ffe5119a5cd588",
-   "numbers": "cb11a13edaecc149",
+   "text": "db157135a58a01b2",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3413,8 +3413,8 @@
    "senderRagBau": "Healthy"
   },
   "B127": {
-   "text": "379a8e6e470af01b",
-   "numbers": "cb11a13edaecc149",
+   "text": "cc0e7b98435a7e00",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3422,8 +3422,8 @@
    "senderRagBau": "Healthy"
   },
   "B128": {
-   "text": "7896aa5cff65d5f6",
-   "numbers": "f851b32fa481334b",
+   "text": "09e73f10fdb8fb85",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3431,8 +3431,8 @@
    "senderRagBau": "Healthy"
   },
   "B129": {
-   "text": "5d639640a9505d67",
-   "numbers": "cb11a13edaecc149",
+   "text": "588a642091bb6e26",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3440,8 +3440,8 @@
    "senderRagBau": "Healthy"
   },
   "B130": {
-   "text": "99849f7a797bcf36",
-   "numbers": "cb11a13edaecc149",
+   "text": "2a3bedf3890c8c2a",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3449,8 +3449,8 @@
    "senderRagBau": "Healthy"
   },
   "B131": {
-   "text": "34c265880ce8977a",
-   "numbers": "f851b32fa481334b",
+   "text": "6158912af081687b",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3458,8 +3458,8 @@
    "senderRagBau": "Healthy"
   },
   "B132": {
-   "text": "df677397a509817a",
-   "numbers": "272ad7f2be31380a",
+   "text": "48b74d19f7900db9",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3467,8 +3467,8 @@
    "senderRagBau": "Healthy"
   },
   "B133": {
-   "text": "29b7aa5cb3fab92b",
-   "numbers": "272ad7f2be31380a",
+   "text": "cabd3d70f364636c",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3476,8 +3476,8 @@
    "senderRagBau": "Healthy"
   },
   "B134": {
-   "text": "3fbccb07a4cf14b8",
-   "numbers": "83375c6c78d697cb",
+   "text": "4337e94767f88903",
+   "numbers": "5ab279dd585d67d6",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3485,8 +3485,8 @@
    "senderRagBau": "Healthy"
   },
   "B135": {
-   "text": "8c7bb413325afd7f",
-   "numbers": "cb11a13edaecc149",
+   "text": "b164065399eb1cf2",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3494,8 +3494,8 @@
    "senderRagBau": "Healthy"
   },
   "B136": {
-   "text": "3678de50992184fd",
-   "numbers": "cb11a13edaecc149",
+   "text": "1152e4c4cb2c6db5",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3503,8 +3503,8 @@
    "senderRagBau": "Healthy"
   },
   "B137": {
-   "text": "3d09cc0df732e2e5",
-   "numbers": "83d274fad89321a5",
+   "text": "c8f739f96cd9c674",
+   "numbers": "ccf8acb093bde55b",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3512,8 +3512,8 @@
    "senderRagBau": "Healthy"
   },
   "B138": {
-   "text": "ae61c8c161f9157b",
-   "numbers": "cb11a13edaecc149",
+   "text": "143ac62af2055b2f",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3521,8 +3521,8 @@
    "senderRagBau": "Healthy"
   },
   "B139": {
-   "text": "bdedbcc8026f9b88",
-   "numbers": "cb11a13edaecc149",
+   "text": "7ef7e41148407ffb",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3530,8 +3530,8 @@
    "senderRagBau": "Healthy"
   },
   "B140": {
-   "text": "82fd90bd7e60e668",
-   "numbers": "83d274fad89321a5",
+   "text": "0d574458c2e6e6b9",
+   "numbers": "ccf8acb093bde55b",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3539,8 +3539,8 @@
    "senderRagBau": "Healthy"
   },
   "B141": {
-   "text": "3623d9725e23c073",
-   "numbers": "cb11a13edaecc149",
+   "text": "1ef70d29b8ef1c96",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3548,8 +3548,8 @@
    "senderRagBau": "Healthy"
   },
   "B142": {
-   "text": "55216ab919df443b",
-   "numbers": "cb11a13edaecc149",
+   "text": "a48f4dded1727efe",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3557,8 +3557,8 @@
    "senderRagBau": "Healthy"
   },
   "B143": {
-   "text": "42341a63405d1469",
-   "numbers": "83d274fad89321a5",
+   "text": "a84d5bcb6d73957c",
+   "numbers": "ccf8acb093bde55b",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3566,8 +3566,8 @@
    "senderRagBau": "Healthy"
   },
   "B144": {
-   "text": "da262b24712b4a07",
-   "numbers": "272ad7f2be31380a",
+   "text": "06f7c7ccdf977f7d",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3575,8 +3575,8 @@
    "senderRagBau": "Healthy"
   },
   "B145": {
-   "text": "1474f4c1f2d7d097",
-   "numbers": "272ad7f2be31380a",
+   "text": "4771f268c48dc060",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3584,8 +3584,8 @@
    "senderRagBau": "Healthy"
   },
   "B146": {
-   "text": "557c14faaeba48cd",
-   "numbers": "21a0793650e9a174",
+   "text": "d6d1875b478f6a99",
+   "numbers": "ef1cc9840389dbcc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3593,8 +3593,8 @@
    "senderRagBau": "Healthy"
   },
   "B147": {
-   "text": "24f3c17c2314bf86",
-   "numbers": "cb11a13edaecc149",
+   "text": "3f0af1bb3bc3b6a6",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3602,8 +3602,8 @@
    "senderRagBau": "Healthy"
   },
   "B148": {
-   "text": "f6ce04662a295642",
-   "numbers": "cb11a13edaecc149",
+   "text": "513211cd90dbaa1e",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3611,8 +3611,8 @@
    "senderRagBau": "Healthy"
   },
   "B149": {
-   "text": "7df41232ea147794",
-   "numbers": "f851b32fa481334b",
+   "text": "866cbe64b6e75e2c",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3620,8 +3620,8 @@
    "senderRagBau": "Healthy"
   },
   "B150": {
-   "text": "2f3f1b73acdb22e0",
-   "numbers": "cb11a13edaecc149",
+   "text": "88861b8346b292dd",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3629,8 +3629,8 @@
    "senderRagBau": "Healthy"
   },
   "B151": {
-   "text": "15d6a8b7d995eadf",
-   "numbers": "cb11a13edaecc149",
+   "text": "4daac368afa54ce9",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3638,8 +3638,8 @@
    "senderRagBau": "Healthy"
   },
   "B152": {
-   "text": "85a47249eef137f9",
-   "numbers": "f851b32fa481334b",
+   "text": "4551c2cfe659f3be",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3647,8 +3647,8 @@
    "senderRagBau": "Healthy"
   },
   "B153": {
-   "text": "6bc84e1abb94246a",
-   "numbers": "cb11a13edaecc149",
+   "text": "82dc1a6e4c47c4f5",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3656,8 +3656,8 @@
    "senderRagBau": "Healthy"
   },
   "B154": {
-   "text": "21a0f7315a89adf0",
-   "numbers": "cb11a13edaecc149",
+   "text": "de2ae019ebe189e3",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3665,8 +3665,8 @@
    "senderRagBau": "Healthy"
   },
   "B155": {
-   "text": "18bc95b0d7a3f31e",
-   "numbers": "f851b32fa481334b",
+   "text": "2742ab6ac7520ce4",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3674,8 +3674,8 @@
    "senderRagBau": "Healthy"
   },
   "B156": {
-   "text": "69685e3bc3736c17",
-   "numbers": "272ad7f2be31380a",
+   "text": "0af0e0e4bd7ce165",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3683,8 +3683,8 @@
    "senderRagBau": "Healthy"
   },
   "B157": {
-   "text": "6714fe162323c004",
-   "numbers": "272ad7f2be31380a",
+   "text": "dc408105b9f22b4e",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3692,8 +3692,8 @@
    "senderRagBau": "Healthy"
   },
   "B158": {
-   "text": "67c5eb007c42ce5b",
-   "numbers": "21a0793650e9a174",
+   "text": "76fe34752a944e71",
+   "numbers": "ef1cc9840389dbcc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3701,8 +3701,8 @@
    "senderRagBau": "Healthy"
   },
   "B159": {
-   "text": "fde431e8aae525f6",
-   "numbers": "cb11a13edaecc149",
+   "text": "38f1a1784a547832",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3710,8 +3710,8 @@
    "senderRagBau": "Healthy"
   },
   "B160": {
-   "text": "0cdf8a5ec7e66335",
-   "numbers": "cb11a13edaecc149",
+   "text": "b1ebf4a0032220c9",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3719,8 +3719,8 @@
    "senderRagBau": "Healthy"
   },
   "B161": {
-   "text": "22b815fbd63bf7f3",
-   "numbers": "f851b32fa481334b",
+   "text": "0b18bdfdbbe9e688",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3728,8 +3728,8 @@
    "senderRagBau": "Healthy"
   },
   "B162": {
-   "text": "62351c9f32413a41",
-   "numbers": "cb11a13edaecc149",
+   "text": "d35d4e03fe9cde58",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3737,8 +3737,8 @@
    "senderRagBau": "Healthy"
   },
   "B163": {
-   "text": "71b64b37647b0b93",
-   "numbers": "cb11a13edaecc149",
+   "text": "ab4914e7bc75d9d7",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3746,8 +3746,8 @@
    "senderRagBau": "Healthy"
   },
   "B164": {
-   "text": "a8a39db51e1fa008",
-   "numbers": "f851b32fa481334b",
+   "text": "8718b52fd74865ba",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3755,8 +3755,8 @@
    "senderRagBau": "Healthy"
   },
   "B165": {
-   "text": "a6654286965a0a9b",
-   "numbers": "cb11a13edaecc149",
+   "text": "ef638887223be0ff",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3764,8 +3764,8 @@
    "senderRagBau": "Healthy"
   },
   "B166": {
-   "text": "5048e42c19fb0555",
-   "numbers": "cb11a13edaecc149",
+   "text": "73fa8e0b70f9e1f7",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3773,8 +3773,8 @@
    "senderRagBau": "Healthy"
   },
   "B167": {
-   "text": "f7cd63b8aba05f9f",
-   "numbers": "f851b32fa481334b",
+   "text": "994712ddeaff4179",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3782,8 +3782,8 @@
    "senderRagBau": "Healthy"
   },
   "B168": {
-   "text": "188608250d5e9eca",
-   "numbers": "272ad7f2be31380a",
+   "text": "96e5472a57b6d079",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3791,8 +3791,8 @@
    "senderRagBau": "Healthy"
   },
   "B169": {
-   "text": "38ef50cbc0b34cfc",
-   "numbers": "272ad7f2be31380a",
+   "text": "f600c7ff159cada3",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3800,8 +3800,8 @@
    "senderRagBau": "Healthy"
   },
   "B170": {
-   "text": "0aaa74bb5606240f",
-   "numbers": "21a0793650e9a174",
+   "text": "f436e4064d907f0b",
+   "numbers": "ef1cc9840389dbcc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3809,8 +3809,8 @@
    "senderRagBau": "Healthy"
   },
   "B171": {
-   "text": "f3380f4374c639b2",
-   "numbers": "cb11a13edaecc149",
+   "text": "2d75c60cbd16f4e0",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3818,8 +3818,8 @@
    "senderRagBau": "Healthy"
   },
   "B172": {
-   "text": "3065b426ae53554f",
-   "numbers": "cb11a13edaecc149",
+   "text": "019ba11e3eb2aefc",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3827,8 +3827,8 @@
    "senderRagBau": "Healthy"
   },
   "B173": {
-   "text": "2d37b968835590e9",
-   "numbers": "f851b32fa481334b",
+   "text": "5d6b80f76c843fc7",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3836,8 +3836,8 @@
    "senderRagBau": "Healthy"
   },
   "B174": {
-   "text": "43b70bee3f29a46e",
-   "numbers": "cb11a13edaecc149",
+   "text": "f87dd893fd07689a",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3845,8 +3845,8 @@
    "senderRagBau": "Healthy"
   },
   "B175": {
-   "text": "dbc64ca397c0a631",
-   "numbers": "cb11a13edaecc149",
+   "text": "5e7c93027054e0d8",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3854,8 +3854,8 @@
    "senderRagBau": "Healthy"
   },
   "B176": {
-   "text": "d1563782e8e60c63",
-   "numbers": "f851b32fa481334b",
+   "text": "09bcd6d2e481edc2",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3863,8 +3863,8 @@
    "senderRagBau": "Healthy"
   },
   "B177": {
-   "text": "af1b778a5c767f03",
-   "numbers": "cb11a13edaecc149",
+   "text": "6c1e17c5aa768cf6",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3872,8 +3872,8 @@
    "senderRagBau": "Healthy"
   },
   "B178": {
-   "text": "af5ea48bac778e50",
-   "numbers": "cb11a13edaecc149",
+   "text": "366eb136d80a178d",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3881,8 +3881,8 @@
    "senderRagBau": "Healthy"
   },
   "B179": {
-   "text": "7bbd4077ab0cb7f9",
-   "numbers": "f851b32fa481334b",
+   "text": "ac0876b6a92cd0eb",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3890,8 +3890,8 @@
    "senderRagBau": "Healthy"
   },
   "B180": {
-   "text": "3ca3403719ee51a1",
-   "numbers": "272ad7f2be31380a",
+   "text": "f57ea6731c109293",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3899,8 +3899,8 @@
    "senderRagBau": "Healthy"
   },
   "B181": {
-   "text": "539ffada391ab27e",
-   "numbers": "272ad7f2be31380a",
+   "text": "c1e156626c24054c",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3908,8 +3908,8 @@
    "senderRagBau": "Healthy"
   },
   "B182": {
-   "text": "79c445c0325796a3",
-   "numbers": "21a0793650e9a174",
+   "text": "fe1efb56064c5324",
+   "numbers": "ef1cc9840389dbcc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3917,8 +3917,8 @@
    "senderRagBau": "Healthy"
   },
   "B183": {
-   "text": "425fe76991b4494e",
-   "numbers": "cb11a13edaecc149",
+   "text": "92f17a3e9277b51c",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3926,8 +3926,8 @@
    "senderRagBau": "Healthy"
   },
   "B184": {
-   "text": "f694eabfb2daa1df",
-   "numbers": "cb11a13edaecc149",
+   "text": "114d7b1b11a649b9",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3935,8 +3935,8 @@
    "senderRagBau": "Healthy"
   },
   "B185": {
-   "text": "97d89045e70d11bb",
-   "numbers": "f851b32fa481334b",
+   "text": "20e96e2d7437bc13",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3944,8 +3944,8 @@
    "senderRagBau": "Healthy"
   },
   "B186": {
-   "text": "16dc35023767e93c",
-   "numbers": "cb11a13edaecc149",
+   "text": "2089e949d53bccf6",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3953,8 +3953,8 @@
    "senderRagBau": "Healthy"
   },
   "B187": {
-   "text": "7e3aa2708854f472",
-   "numbers": "cb11a13edaecc149",
+   "text": "b0a601d081720df9",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3962,8 +3962,8 @@
    "senderRagBau": "Healthy"
   },
   "B188": {
-   "text": "8fa4c9416c3a494e",
-   "numbers": "f851b32fa481334b",
+   "text": "8febf17147b13076",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3971,8 +3971,8 @@
    "senderRagBau": "Healthy"
   },
   "B189": {
-   "text": "a4b0628070a6d1ec",
-   "numbers": "cb11a13edaecc149",
+   "text": "1016d6ee80445118",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3980,8 +3980,8 @@
    "senderRagBau": "Healthy"
   },
   "B190": {
-   "text": "0af149d4a37e4617",
-   "numbers": "cb11a13edaecc149",
+   "text": "39f459aeb3d9a579",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3989,8 +3989,8 @@
    "senderRagBau": "Healthy"
   },
   "B191": {
-   "text": "07dc066ac96a2ee1",
-   "numbers": "f851b32fa481334b",
+   "text": "e1a223da9080a1ad",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -3998,8 +3998,8 @@
    "senderRagBau": "Healthy"
   },
   "B192": {
-   "text": "ca776f15d07ae0e4",
-   "numbers": "272ad7f2be31380a",
+   "text": "a6ddf25742267624",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4007,8 +4007,8 @@
    "senderRagBau": "Healthy"
   },
   "B193": {
-   "text": "0d8ed8b1a2090b23",
-   "numbers": "272ad7f2be31380a",
+   "text": "3f9dee61ee2c4cd4",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4016,8 +4016,8 @@
    "senderRagBau": "Healthy"
   },
   "B194": {
-   "text": "650db8db61816af5",
-   "numbers": "21a0793650e9a174",
+   "text": "160162b63b8984f2",
+   "numbers": "ef1cc9840389dbcc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4025,8 +4025,8 @@
    "senderRagBau": "Healthy"
   },
   "B195": {
-   "text": "71394cd1dca7471c",
-   "numbers": "cb11a13edaecc149",
+   "text": "18bd7d7b23b4cd8f",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4034,8 +4034,8 @@
    "senderRagBau": "Healthy"
   },
   "B196": {
-   "text": "51e4b6c7f8681cfd",
-   "numbers": "cb11a13edaecc149",
+   "text": "cd563d9f6842d0b6",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4043,8 +4043,8 @@
    "senderRagBau": "Healthy"
   },
   "B197": {
-   "text": "a7e95ca8160811ca",
-   "numbers": "f851b32fa481334b",
+   "text": "486ac77d54639650",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4052,8 +4052,8 @@
    "senderRagBau": "Healthy"
   },
   "B198": {
-   "text": "53d07d88a89264ef",
-   "numbers": "cb11a13edaecc149",
+   "text": "6f16a30dc46fca73",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4061,8 +4061,8 @@
    "senderRagBau": "Healthy"
   },
   "B199": {
-   "text": "721af75cef282855",
-   "numbers": "cb11a13edaecc149",
+   "text": "43b263862c558ecb",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4070,8 +4070,8 @@
    "senderRagBau": "Healthy"
   },
   "B200": {
-   "text": "a5c9c24b24af9aea",
-   "numbers": "f851b32fa481334b",
+   "text": "1d166cdf6142e76f",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4079,8 +4079,8 @@
    "senderRagBau": "Healthy"
   },
   "B201": {
-   "text": "9439ba5b79c9f5fa",
-   "numbers": "cb11a13edaecc149",
+   "text": "3269e36e3dc3e195",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4088,8 +4088,8 @@
    "senderRagBau": "Healthy"
   },
   "B202": {
-   "text": "e6dd3a4100398140",
-   "numbers": "cb11a13edaecc149",
+   "text": "ce07c67a510add3d",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4097,8 +4097,8 @@
    "senderRagBau": "Healthy"
   },
   "B203": {
-   "text": "b5955495165ba165",
-   "numbers": "f851b32fa481334b",
+   "text": "8eb4732ef0500c2b",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4106,8 +4106,8 @@
    "senderRagBau": "Healthy"
   },
   "B204": {
-   "text": "412f289b7179a846",
-   "numbers": "272ad7f2be31380a",
+   "text": "e7437e60037e90d3",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4115,8 +4115,8 @@
    "senderRagBau": "Healthy"
   },
   "B205": {
-   "text": "3350d657effd7691",
-   "numbers": "272ad7f2be31380a",
+   "text": "fecb78c5da592d72",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4124,8 +4124,8 @@
    "senderRagBau": "Healthy"
   },
   "B206": {
-   "text": "ed9da999138f8eb6",
-   "numbers": "21a0793650e9a174",
+   "text": "c16de49c872bbfaf",
+   "numbers": "ef1cc9840389dbcc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4133,8 +4133,8 @@
    "senderRagBau": "Healthy"
   },
   "B207": {
-   "text": "2d325aa5f4644439",
-   "numbers": "cb11a13edaecc149",
+   "text": "9f1ba1e10663e277",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4142,8 +4142,8 @@
    "senderRagBau": "Healthy"
   },
   "B208": {
-   "text": "dfe631a65e5fb4b5",
-   "numbers": "cb11a13edaecc149",
+   "text": "89b344f039ef327d",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4151,8 +4151,8 @@
    "senderRagBau": "Healthy"
   },
   "B209": {
-   "text": "f676480a69d50aef",
-   "numbers": "f851b32fa481334b",
+   "text": "f09ca5ed9ffcff8d",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4160,8 +4160,8 @@
    "senderRagBau": "Healthy"
   },
   "B210": {
-   "text": "fdca8f4f353ed0c9",
-   "numbers": "cb11a13edaecc149",
+   "text": "cc7ecdad72885aa6",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4169,8 +4169,8 @@
    "senderRagBau": "Healthy"
   },
   "B211": {
-   "text": "51ca1b2d550f1fb2",
-   "numbers": "cb11a13edaecc149",
+   "text": "5293cf2393ec3f52",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4178,8 +4178,8 @@
    "senderRagBau": "Healthy"
   },
   "B212": {
-   "text": "84f852c22b52fdb1",
-   "numbers": "f851b32fa481334b",
+   "text": "023af55e2a2b0d0a",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4187,8 +4187,8 @@
    "senderRagBau": "Healthy"
   },
   "B213": {
-   "text": "ba671084ac972b9c",
-   "numbers": "cb11a13edaecc149",
+   "text": "4cf6b31a209b7794",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4196,8 +4196,8 @@
    "senderRagBau": "Healthy"
   },
   "B214": {
-   "text": "e4e6b5f23ae36888",
-   "numbers": "cb11a13edaecc149",
+   "text": "ad5a9e8e3dd398b1",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4205,8 +4205,8 @@
    "senderRagBau": "Healthy"
   },
   "B215": {
-   "text": "4a8ee7aef45812e7",
-   "numbers": "f851b32fa481334b",
+   "text": "626ed82b367d01c6",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4214,8 +4214,8 @@
    "senderRagBau": "Healthy"
   },
   "B216": {
-   "text": "5811e11bfe4b5706",
-   "numbers": "272ad7f2be31380a",
+   "text": "b79a944ca1b076d1",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4223,8 +4223,8 @@
    "senderRagBau": "Healthy"
   },
   "B217": {
-   "text": "a255ae2daade675a",
-   "numbers": "272ad7f2be31380a",
+   "text": "74eb641b00158cb9",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4232,8 +4232,8 @@
    "senderRagBau": "Healthy"
   },
   "B218": {
-   "text": "c40d2f0c950be5fb",
-   "numbers": "21a0793650e9a174",
+   "text": "0eb0c76179a44782",
+   "numbers": "ef1cc9840389dbcc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4241,8 +4241,8 @@
    "senderRagBau": "Healthy"
   },
   "B219": {
-   "text": "67072f07d27f952f",
-   "numbers": "cb11a13edaecc149",
+   "text": "af3a40c42fe05927",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4250,8 +4250,8 @@
    "senderRagBau": "Healthy"
   },
   "B220": {
-   "text": "2b4b66723432b734",
-   "numbers": "cb11a13edaecc149",
+   "text": "b9424b1098b9c177",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4259,8 +4259,8 @@
    "senderRagBau": "Healthy"
   },
   "B221": {
-   "text": "ead7e2eb5af9edbd",
-   "numbers": "f851b32fa481334b",
+   "text": "ee5879cc187468ef",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4268,8 +4268,8 @@
    "senderRagBau": "Healthy"
   },
   "B222": {
-   "text": "0375eae8310f75f5",
-   "numbers": "cb11a13edaecc149",
+   "text": "2634e5d6b87277c8",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4277,8 +4277,8 @@
    "senderRagBau": "Healthy"
   },
   "B223": {
-   "text": "c3b9d0e5441ecbc6",
-   "numbers": "cb11a13edaecc149",
+   "text": "989d2528d0f8de4a",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4286,8 +4286,8 @@
    "senderRagBau": "Healthy"
   },
   "B224": {
-   "text": "4b5759e64159d39b",
-   "numbers": "f851b32fa481334b",
+   "text": "4d29b44f24b7690c",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4295,8 +4295,8 @@
    "senderRagBau": "Healthy"
   },
   "B225": {
-   "text": "2bb8945854048564",
-   "numbers": "cb11a13edaecc149",
+   "text": "804653ae5a312145",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4304,8 +4304,8 @@
    "senderRagBau": "Healthy"
   },
   "B226": {
-   "text": "e1ff49fb52f85c5b",
-   "numbers": "cb11a13edaecc149",
+   "text": "e0d9fe8937df12c6",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4313,8 +4313,8 @@
    "senderRagBau": "Healthy"
   },
   "B227": {
-   "text": "d936da6408002494",
-   "numbers": "f851b32fa481334b",
+   "text": "832754d0f6d91169",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4322,8 +4322,8 @@
    "senderRagBau": "Healthy"
   },
   "B228": {
-   "text": "b880e2b9aef4aaa9",
-   "numbers": "272ad7f2be31380a",
+   "text": "09fa268933d9d8c8",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4331,8 +4331,8 @@
    "senderRagBau": "Healthy"
   },
   "B229": {
-   "text": "62aabf71257bdfb4",
-   "numbers": "272ad7f2be31380a",
+   "text": "a54e4ae863b6b4f5",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4340,8 +4340,8 @@
    "senderRagBau": "Healthy"
   },
   "B230": {
-   "text": "be03d3591a470874",
-   "numbers": "21a0793650e9a174",
+   "text": "b396c1a944235c2e",
+   "numbers": "ef1cc9840389dbcc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4349,8 +4349,8 @@
    "senderRagBau": "Healthy"
   },
   "B231": {
-   "text": "96337d0c2e276a2d",
-   "numbers": "cb11a13edaecc149",
+   "text": "579f9c11e89155c0",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4358,8 +4358,8 @@
    "senderRagBau": "Healthy"
   },
   "B232": {
-   "text": "e96f4563e2b4d796",
-   "numbers": "cb11a13edaecc149",
+   "text": "60ae84663c1ed419",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4367,8 +4367,8 @@
    "senderRagBau": "Healthy"
   },
   "B233": {
-   "text": "dfecd1ecd82c5132",
-   "numbers": "f851b32fa481334b",
+   "text": "592ca1ab3e25b885",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4376,8 +4376,8 @@
    "senderRagBau": "Healthy"
   },
   "B234": {
-   "text": "827b416c54148f3a",
-   "numbers": "cb11a13edaecc149",
+   "text": "3b09cc5a5baa8cba",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4385,8 +4385,8 @@
    "senderRagBau": "Healthy"
   },
   "B235": {
-   "text": "0ec0f6a605ed3353",
-   "numbers": "cb11a13edaecc149",
+   "text": "805e50a8f84c948c",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4394,8 +4394,8 @@
    "senderRagBau": "Healthy"
   },
   "B236": {
-   "text": "219966d639fd0e0e",
-   "numbers": "f851b32fa481334b",
+   "text": "79a9fd14ead12809",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4403,8 +4403,8 @@
    "senderRagBau": "Healthy"
   },
   "B237": {
-   "text": "a1575191ecea91e7",
-   "numbers": "cb11a13edaecc149",
+   "text": "5ec8ea6302f103b8",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4412,8 +4412,8 @@
    "senderRagBau": "Healthy"
   },
   "B238": {
-   "text": "6727656eca7d045d",
-   "numbers": "cb11a13edaecc149",
+   "text": "c389dcc35f962311",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4421,8 +4421,8 @@
    "senderRagBau": "Healthy"
   },
   "B239": {
-   "text": "6e955e15005b20e6",
-   "numbers": "f851b32fa481334b",
+   "text": "897c2d771166206c",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4430,8 +4430,8 @@
    "senderRagBau": "Healthy"
   },
   "B240": {
-   "text": "83f0e0c8d5782b36",
-   "numbers": "272ad7f2be31380a",
+   "text": "4682b1cfaa9298a6",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4439,8 +4439,8 @@
    "senderRagBau": "Healthy"
   },
   "B241": {
-   "text": "a63cce91ce7caa08",
-   "numbers": "272ad7f2be31380a",
+   "text": "0f3dad99c75bfe2d",
+   "numbers": "5121d0d83691fe32",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4448,8 +4448,8 @@
    "senderRagBau": "Healthy"
   },
   "B242": {
-   "text": "3f9d6391ff8e2f41",
-   "numbers": "21a0793650e9a174",
+   "text": "cb9b978516a6b1e5",
+   "numbers": "ef1cc9840389dbcc",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4457,8 +4457,8 @@
    "senderRagBau": "Healthy"
   },
   "B243": {
-   "text": "912af70d10317ba9",
-   "numbers": "cb11a13edaecc149",
+   "text": "a0fb3033312d6194",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4466,8 +4466,8 @@
    "senderRagBau": "Healthy"
   },
   "B244": {
-   "text": "0c57584bd0dd48cf",
-   "numbers": "cb11a13edaecc149",
+   "text": "76f54d32c6b6327f",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4475,8 +4475,8 @@
    "senderRagBau": "Healthy"
   },
   "B245": {
-   "text": "28f350e417e66d35",
-   "numbers": "f851b32fa481334b",
+   "text": "1116fe0a3101f719",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4484,8 +4484,8 @@
    "senderRagBau": "Healthy"
   },
   "B246": {
-   "text": "0e2ee8c5fd3691d4",
-   "numbers": "cb11a13edaecc149",
+   "text": "71906e19e2d324ad",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4493,8 +4493,8 @@
    "senderRagBau": "Healthy"
   },
   "B247": {
-   "text": "732279a299620daa",
-   "numbers": "cb11a13edaecc149",
+   "text": "e6f2b38286a1dc5d",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4502,8 +4502,8 @@
    "senderRagBau": "Healthy"
   },
   "B248": {
-   "text": "dcbbe822e2b6b717",
-   "numbers": "f851b32fa481334b",
+   "text": "b95e7bda5dc896a4",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4511,8 +4511,8 @@
    "senderRagBau": "Healthy"
   },
   "B249": {
-   "text": "45c2c98ffaac1920",
-   "numbers": "cb11a13edaecc149",
+   "text": "0cd22e4ffba05300",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4520,8 +4520,8 @@
    "senderRagBau": "Healthy"
   },
   "B250": {
-   "text": "ac505b8b90e65661",
-   "numbers": "cb11a13edaecc149",
+   "text": "15219085fe55945d",
+   "numbers": "8218ebb2194d05b8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4529,8 +4529,8 @@
    "senderRagBau": "Healthy"
   },
   "B251": {
-   "text": "d2253e86e58745e4",
-   "numbers": "f851b32fa481334b",
+   "text": "46eff212c44189ff",
+   "numbers": "20ac386d64133f9d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 18,
@@ -4538,8 +4538,8 @@
    "senderRagBau": "Healthy"
   },
   "C000": {
-   "text": "c6c7f83b2eb7d2b3",
-   "numbers": "f65b99f6b1e15e61",
+   "text": "ec5575228b1d558b",
+   "numbers": "d0c72f32534b291d",
    "ragPM": null,
    "ragFTE": "healthy",
    "headroom": "",
@@ -4547,8 +4547,8 @@
    "senderRagBau": "Healthy"
   },
   "C001": {
-   "text": "b732e475df950b49",
-   "numbers": "432471da838f5ed6",
+   "text": "f5d9bc4604aa3538",
+   "numbers": "5ee6b107b671cfe1",
    "ragPM": null,
    "ragFTE": "healthy",
    "headroom": 88,
@@ -4556,8 +4556,8 @@
    "senderRagBau": "Healthy"
   },
   "C002": {
-   "text": "77aa824b1e16fe7e",
-   "numbers": "3ed134ea2656c237",
+   "text": "c5a1a97ed2d2a7c4",
+   "numbers": "e2e548823477d71d",
    "ragPM": null,
    "ragFTE": "healthy",
    "headroom": 69,
@@ -4565,8 +4565,8 @@
    "senderRagBau": "Healthy"
   },
   "C003": {
-   "text": "77aa824b1e16fe7e",
-   "numbers": "3ed134ea2656c237",
+   "text": "c5a1a97ed2d2a7c4",
+   "numbers": "e2e548823477d71d",
    "ragPM": null,
    "ragFTE": "healthy",
    "headroom": 69,
@@ -4574,8 +4574,8 @@
    "senderRagBau": "Healthy"
   },
   "C004": {
-   "text": "c42952ddf6e9d8f3",
-   "numbers": "22968223792f8b84",
+   "text": "fcad819c8ec0e17c",
+   "numbers": "cb18b91422ed4c6b",
    "ragPM": null,
    "ragFTE": "healthy",
    "headroom": 63,
@@ -4583,8 +4583,8 @@
    "senderRagBau": "Healthy"
   },
   "C005": {
-   "text": "37ca4cbee2e4c2c2",
-   "numbers": "df29eab2d8dafe13",
+   "text": "aee1911800e259c4",
+   "numbers": "c7225e383f3a1a5b",
    "ragPM": null,
    "ragFTE": "healthy",
    "headroom": 57,
@@ -4592,8 +4592,8 @@
    "senderRagBau": "Healthy"
   },
   "C006": {
-   "text": "37ca4cbee2e4c2c2",
-   "numbers": "df29eab2d8dafe13",
+   "text": "aee1911800e259c4",
+   "numbers": "c7225e383f3a1a5b",
    "ragPM": null,
    "ragFTE": "healthy",
    "headroom": 57,
@@ -4601,8 +4601,8 @@
    "senderRagBau": "Healthy"
   },
   "C007": {
-   "text": "b14eba7c0a81fd91",
-   "numbers": "5a58376e109e3b7d",
+   "text": "257122723a395306",
+   "numbers": "9a0c7e6faf62d97c",
    "ragPM": null,
    "ragFTE": "atrisk",
    "headroom": 43,
@@ -4610,8 +4610,8 @@
    "senderRagBau": "Watch"
   },
   "C008": {
-   "text": "1b5606c3d4b402cb",
-   "numbers": "15d6cd211880c6fb",
+   "text": "98b54ff9012ee940",
+   "numbers": "3a26cf6083da970a",
    "ragPM": null,
    "ragFTE": "atrisk",
    "headroom": 23,
@@ -4619,8 +4619,8 @@
    "senderRagBau": "Watch"
   },
   "C009": {
-   "text": "4da3d0e58165996a",
-   "numbers": "c75e6f10c01f0daa",
+   "text": "5cd34bdacb56417b",
+   "numbers": "10a293b21360a32d",
    "ragPM": null,
    "ragFTE": "atrisk",
    "headroom": 3,
@@ -4628,8 +4628,8 @@
    "senderRagBau": "Watch"
   },
   "C010": {
-   "text": "854a27ca2496ba60",
-   "numbers": "ffe19b7d0d09378b",
+   "text": "aca681f82bd00888",
+   "numbers": "f6bed89783c173b9",
    "ragPM": null,
    "ragFTE": "over",
    "headroom": -64,
@@ -4637,8 +4637,8 @@
    "senderRagBau": "At risk"
   },
   "C011": {
-   "text": "7dd927522e2abe61",
-   "numbers": "e267d992cd349211",
+   "text": "d7b4105dd9b4fa1c",
+   "numbers": "33cf368a01fd0f8d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": "",
@@ -4646,8 +4646,8 @@
    "senderRagBau": "Healthy"
   },
   "C012": {
-   "text": "e7db0b557f6c513b",
-   "numbers": "6d7c21504b710c65",
+   "text": "055a41f16e6c0c1c",
+   "numbers": "2248b18908042dbf",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 6,
@@ -4655,8 +4655,8 @@
    "senderRagBau": "Healthy"
   },
   "C013": {
-   "text": "2799bee1b411d52a",
-   "numbers": "9a41e140f1b830e4",
+   "text": "eead9b92c0d0138e",
+   "numbers": "6e5b6e1455f5df12",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 3,
@@ -4664,8 +4664,8 @@
    "senderRagBau": "Healthy"
   },
   "C014": {
-   "text": "2799bee1b411d52a",
-   "numbers": "9a41e140f1b830e4",
+   "text": "eead9b92c0d0138e",
+   "numbers": "6e5b6e1455f5df12",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 3,
@@ -4673,8 +4673,8 @@
    "senderRagBau": "Healthy"
   },
   "C015": {
-   "text": "735aa5cfc44dc1d0",
-   "numbers": "c6f93e40afada641",
+   "text": "a4132e79de2411ca",
+   "numbers": "7fcdb86df5341467",
    "ragPM": "atrisk",
    "ragFTE": "healthy",
    "headroom": 1,
@@ -4682,8 +4682,8 @@
    "senderRagBau": "Healthy"
   },
   "C016": {
-   "text": "202817edf61933aa",
-   "numbers": "678bbe1ba739a77b",
+   "text": "71b10648a8f12a59",
+   "numbers": "fa9d4951294590fa",
    "ragPM": "atrisk",
    "ragFTE": "healthy",
    "headroom": 0,
@@ -4691,8 +4691,8 @@
    "senderRagBau": "Healthy"
   },
   "C017": {
-   "text": "202817edf61933aa",
-   "numbers": "678bbe1ba739a77b",
+   "text": "71b10648a8f12a59",
+   "numbers": "fa9d4951294590fa",
    "ragPM": "atrisk",
    "ragFTE": "healthy",
    "headroom": 0,
@@ -4700,8 +4700,8 @@
    "senderRagBau": "Healthy"
   },
   "C018": {
-   "text": "213a0d551a4bfe32",
-   "numbers": "c3545a414190f330",
+   "text": "2182bd2efd63d852",
+   "numbers": "a33b514503cd24a5",
    "ragPM": "over",
    "ragFTE": "healthy",
    "headroom": -4,
@@ -4709,8 +4709,8 @@
    "senderRagBau": "Healthy"
   },
   "C019": {
-   "text": "315d084e0591eaff",
-   "numbers": "2c0cc9403c9c2e9d",
+   "text": "21fae9a9459dfd27",
+   "numbers": "d93e5bcfbbe97aef",
    "ragPM": "over",
    "ragFTE": "healthy",
    "headroom": -9,
@@ -4718,8 +4718,8 @@
    "senderRagBau": "Healthy"
   },
   "C020": {
-   "text": "568d751c16518a62",
-   "numbers": "6d03cc53c55af137",
+   "text": "fc5f3fe96e5cf285",
+   "numbers": "21d2f1911507cc8d",
    "ragPM": "over",
    "ragFTE": "healthy",
    "headroom": -14,
@@ -4727,8 +4727,8 @@
    "senderRagBau": "Healthy"
   },
   "C021": {
-   "text": "cdbb281c113c3bbc",
-   "numbers": "403abb58b7832662",
+   "text": "948fce0203ea2b9d",
+   "numbers": "57f6d114113e09b5",
    "ragPM": "over",
    "ragFTE": "healthy",
    "headroom": -31,
@@ -4736,8 +4736,8 @@
    "senderRagBau": "Healthy"
   },
   "C022": {
-   "text": "a45f1d3e3e1912ba",
-   "numbers": "6b7fcaa03301b07e",
+   "text": "739cdeb8c1ac9a7c",
+   "numbers": "0acae0d98ca69295",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": "",
@@ -4745,8 +4745,8 @@
    "senderRagBau": "Healthy"
   },
   "C023": {
-   "text": "34eb81431658c559",
-   "numbers": "fa3088327f1d8bed",
+   "text": "ec51a2995e794ab2",
+   "numbers": "4e07bdeab573bbed",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 14,
@@ -4754,8 +4754,8 @@
    "senderRagBau": "Healthy"
   },
   "C024": {
-   "text": "a6d7f27b84b2044d",
-   "numbers": "c1003f88a4094354",
+   "text": "84e5a6be3e5cbc02",
+   "numbers": "43293de287ee4e5f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 6,
@@ -4763,8 +4763,8 @@
    "senderRagBau": "Healthy"
   },
   "C025": {
-   "text": "a6d7f27b84b2044d",
-   "numbers": "c1003f88a4094354",
+   "text": "84e5a6be3e5cbc02",
+   "numbers": "43293de287ee4e5f",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 6,
@@ -4772,8 +4772,8 @@
    "senderRagBau": "Healthy"
   },
   "C026": {
-   "text": "e1887bf72a3ffe77",
-   "numbers": "12170ac265b611e4",
+   "text": "8a80686bbf425248",
+   "numbers": "37c1e620f6970e04",
    "ragPM": "atrisk",
    "ragFTE": "healthy",
    "headroom": 3,
@@ -4781,8 +4781,8 @@
    "senderRagBau": "Healthy"
   },
   "C027": {
-   "text": "3e382200b531e68a",
-   "numbers": "eaa51e8d9d7d138e",
+   "text": "ea3596368681bedf",
+   "numbers": "845154e4fa6d5194",
    "ragPM": "atrisk",
    "ragFTE": "healthy",
    "headroom": 0,
@@ -4790,8 +4790,8 @@
    "senderRagBau": "Healthy"
   },
   "C028": {
-   "text": "3e382200b531e68a",
-   "numbers": "eaa51e8d9d7d138e",
+   "text": "ea3596368681bedf",
+   "numbers": "845154e4fa6d5194",
    "ragPM": "atrisk",
    "ragFTE": "healthy",
    "headroom": 0,
@@ -4799,8 +4799,8 @@
    "senderRagBau": "Healthy"
   },
   "C029": {
-   "text": "0beb8ea67f2b8694",
-   "numbers": "87b5048f327c33a6",
+   "text": "83b2ff7ddb2aebb5",
+   "numbers": "88fdd4315ebed3ca",
    "ragPM": "over",
    "ragFTE": "healthy",
    "headroom": -7,
@@ -4808,8 +4808,8 @@
    "senderRagBau": "Healthy"
   },
   "C030": {
-   "text": "a8728f9899f78f03",
-   "numbers": "1bb31066645bb18a",
+   "text": "e5b1740450fb1874",
+   "numbers": "c3cbebdd541dfe7a",
    "ragPM": "over",
    "ragFTE": "healthy",
    "headroom": -17,
@@ -4817,8 +4817,8 @@
    "senderRagBau": "Healthy"
   },
   "C031": {
-   "text": "f87b0ce50a04c1b7",
-   "numbers": "b2e8e62c5aa0669f",
+   "text": "bc0013b79a188c51",
+   "numbers": "355d14acba4b0c1f",
    "ragPM": "over",
    "ragFTE": "healthy",
    "headroom": -27,
@@ -4826,8 +4826,8 @@
    "senderRagBau": "Healthy"
   },
   "C032": {
-   "text": "1e617e73c41592ef",
-   "numbers": "b573d515eaa4d2ad",
+   "text": "54f29a4308d20859",
+   "numbers": "999b518c95bc9a0f",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -60,
@@ -4835,8 +4835,8 @@
    "senderRagBau": "Watch"
   },
   "C033": {
-   "text": "369f0b3db7edf607",
-   "numbers": "b89f138ee3abd566",
+   "text": "665d7533653bb220",
+   "numbers": "f11d7e0e641367f6",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": "",
@@ -4844,8 +4844,8 @@
    "senderRagBau": "Healthy"
   },
   "C034": {
-   "text": "6d45ee9e8f9f422e",
-   "numbers": "225df7e4271dc5e4",
+   "text": "ee59227a78cca069",
+   "numbers": "729df738bb1471f0",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 30,
@@ -4853,8 +4853,8 @@
    "senderRagBau": "Healthy"
   },
   "C035": {
-   "text": "a20711da244f4c2f",
-   "numbers": "832f9b84dd379ca3",
+   "text": "ea44a7f14172cfd7",
+   "numbers": "c79e1c4548831e2e",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 13,
@@ -4862,8 +4862,8 @@
    "senderRagBau": "Healthy"
   },
   "C036": {
-   "text": "a20711da244f4c2f",
-   "numbers": "832f9b84dd379ca3",
+   "text": "ea44a7f14172cfd7",
+   "numbers": "c79e1c4548831e2e",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 13,
@@ -4871,8 +4871,8 @@
    "senderRagBau": "Healthy"
   },
   "C037": {
-   "text": "2e83be758311cd01",
-   "numbers": "5d35ff1134ec5ecc",
+   "text": "b07fab8309b89a18",
+   "numbers": "0f8958bac53010fe",
    "ragPM": "atrisk",
    "ragFTE": "healthy",
    "headroom": 6,
@@ -4880,8 +4880,8 @@
    "senderRagBau": "Healthy"
   },
   "C038": {
-   "text": "0a042e946ec8e6be",
-   "numbers": "dae62dc81cf299b6",
+   "text": "16c1777b81f31b03",
+   "numbers": "6a1afb827e843c09",
    "ragPM": "atrisk",
    "ragFTE": "healthy",
    "headroom": 0,
@@ -4889,8 +4889,8 @@
    "senderRagBau": "Healthy"
   },
   "C039": {
-   "text": "0a042e946ec8e6be",
-   "numbers": "dae62dc81cf299b6",
+   "text": "16c1777b81f31b03",
+   "numbers": "6a1afb827e843c09",
    "ragPM": "atrisk",
    "ragFTE": "healthy",
    "headroom": 0,
@@ -4898,8 +4898,8 @@
    "senderRagBau": "Healthy"
   },
   "C040": {
-   "text": "232942a1bd443ef1",
-   "numbers": "cdbdbd782dc11b8f",
+   "text": "b3dfac64cc9c7c7f",
+   "numbers": "f4880d8ce3aa21fc",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -14,
@@ -4907,8 +4907,8 @@
    "senderRagBau": "Watch"
   },
   "C041": {
-   "text": "79a0414e8c756744",
-   "numbers": "f7c69ca6c7e617bf",
+   "text": "1017627eba2b8fb5",
+   "numbers": "98d8a8e5e589d6ad",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -34,
@@ -4916,8 +4916,8 @@
    "senderRagBau": "Watch"
   },
   "C042": {
-   "text": "43836c1716376814",
-   "numbers": "4112c06f17d6149e",
+   "text": "052dbc84df846d5a",
+   "numbers": "f0d9de51e8de248e",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -54,
@@ -4925,8 +4925,8 @@
    "senderRagBau": "Watch"
   },
   "C043": {
-   "text": "31a0448a6633a559",
-   "numbers": "8948648833ad818e",
+   "text": "cfc08dbf61465638",
+   "numbers": "ea4cddf152126bae",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -121,
@@ -4934,8 +4934,8 @@
    "senderRagBau": "At risk"
   },
   "C044": {
-   "text": "e4f0e8475b2631af",
-   "numbers": "cd1e690997a2877c",
+   "text": "77ea623fb55863f3",
+   "numbers": "4378efca1d730cc6",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": "",
@@ -4943,8 +4943,8 @@
    "senderRagBau": "Healthy"
   },
   "C045": {
-   "text": "02bbd4abc9684adc",
-   "numbers": "5ea20bd6ef9bd845",
+   "text": "2f495ecf06d95be6",
+   "numbers": "b3c0618a007df12d",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 37,
@@ -4952,8 +4952,8 @@
    "senderRagBau": "Healthy"
   },
   "C046": {
-   "text": "a71f005cedf61401",
-   "numbers": "704a76c52b6f07da",
+   "text": "4aabf03a640c1e20",
+   "numbers": "4b71b08e6586f422",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 16,
@@ -4961,8 +4961,8 @@
    "senderRagBau": "Healthy"
   },
   "C047": {
-   "text": "a71f005cedf61401",
-   "numbers": "704a76c52b6f07da",
+   "text": "4aabf03a640c1e20",
+   "numbers": "4b71b08e6586f422",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 16,
@@ -4970,8 +4970,8 @@
    "senderRagBau": "Healthy"
   },
   "C048": {
-   "text": "6d70a78274209d91",
-   "numbers": "48a9b1f467249505",
+   "text": "57d8bab66b19b564",
+   "numbers": "db82f9ae29fab81c",
    "ragPM": "atrisk",
    "ragFTE": "healthy",
    "headroom": 8,
@@ -4979,8 +4979,8 @@
    "senderRagBau": "Healthy"
   },
   "C049": {
-   "text": "4fc1741b98d37890",
-   "numbers": "b0eeacb7583cb7bb",
+   "text": "4e87ce65705fd930",
+   "numbers": "cb45256f920891e1",
    "ragPM": "atrisk",
    "ragFTE": "atrisk",
    "headroom": 0,
@@ -4988,8 +4988,8 @@
    "senderRagBau": "Watch"
   },
   "C050": {
-   "text": "4fc1741b98d37890",
-   "numbers": "b0eeacb7583cb7bb",
+   "text": "4e87ce65705fd930",
+   "numbers": "cb45256f920891e1",
    "ragPM": "atrisk",
    "ragFTE": "atrisk",
    "headroom": 0,
@@ -4997,8 +4997,8 @@
    "senderRagBau": "Watch"
   },
   "C051": {
-   "text": "784b08fd51809fea",
-   "numbers": "5c128d44e9e09e22",
+   "text": "f549955a673151c0",
+   "numbers": "a4a3a4be64ca6541",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -17,
@@ -5006,8 +5006,8 @@
    "senderRagBau": "Watch"
   },
   "C052": {
-   "text": "ac8021efada3a8f5",
-   "numbers": "03cac71b58a965dc",
+   "text": "fa4bfeabd2ef6769",
+   "numbers": "41bd3e6c78da881a",
    "ragPM": "over",
    "ragFTE": "atrisk",
    "headroom": -42,
@@ -5015,8 +5015,8 @@
    "senderRagBau": "Watch"
   },
   "C053": {
-   "text": "049c37d7120e15e1",
-   "numbers": "e8797fe0dc818a94",
+   "text": "2067717c66c474ed",
+   "numbers": "02ec652d68ed47f0",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -67,
@@ -5024,8 +5024,8 @@
    "senderRagBau": "At risk"
   },
   "C054": {
-   "text": "370bad5d643d3e17",
-   "numbers": "c394b83a2d97522d",
+   "text": "88785879e3ab627d",
+   "numbers": "df6491fc05c91c8e",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -150,
@@ -5033,8 +5033,8 @@
    "senderRagBau": "At risk"
   },
   "C055": {
-   "text": "a62ee053bd110ee5",
-   "numbers": "438eb2a7ab38c918",
+   "text": "df3d3b6a6cf1e229",
+   "numbers": "4713c185bfae5c78",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": "",
@@ -5042,8 +5042,8 @@
    "senderRagBau": "Healthy"
   },
   "C056": {
-   "text": "17e3ccc98b77ffcb",
-   "numbers": "783fe2af867b8c64",
+   "text": "2e1c1f6a07124eb3",
+   "numbers": "860a38c80852c3a8",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 59,
@@ -5051,8 +5051,8 @@
    "senderRagBau": "Healthy"
   },
   "C057": {
-   "text": "d7c73ef74000106d",
-   "numbers": "69275f85535dbca3",
+   "text": "75398b8b1372e99b",
+   "numbers": "6e8e66c40ee0e769",
    "ragPM": "healthy",
    "ragFTE": "atrisk",
    "headroom": 26,
@@ -5060,8 +5060,8 @@
    "senderRagBau": "Watch"
   },
   "C058": {
-   "text": "d7c73ef74000106d",
-   "numbers": "69275f85535dbca3",
+   "text": "75398b8b1372e99b",
+   "numbers": "6e8e66c40ee0e769",
    "ragPM": "healthy",
    "ragFTE": "atrisk",
    "headroom": 26,
@@ -5069,8 +5069,8 @@
    "senderRagBau": "Watch"
   },
   "C059": {
-   "text": "d3ded7d19b2dc006",
-   "numbers": "40f93eeed06c49b9",
+   "text": "b7f96662e7ac7c38",
+   "numbers": "320ef5e14d84ba33",
    "ragPM": "atrisk",
    "ragFTE": "atrisk",
    "headroom": 13,
@@ -5078,8 +5078,8 @@
    "senderRagBau": "Watch"
   },
   "C060": {
-   "text": "8d07002873a5b5d9",
-   "numbers": "9647979eb9241bb4",
+   "text": "fcffc30915124d71",
+   "numbers": "23c9c40581a34faa",
    "ragPM": "atrisk",
    "ragFTE": "atrisk",
    "headroom": 0,
@@ -5087,8 +5087,8 @@
    "senderRagBau": "Watch"
   },
   "C061": {
-   "text": "8d07002873a5b5d9",
-   "numbers": "9647979eb9241bb4",
+   "text": "fcffc30915124d71",
+   "numbers": "23c9c40581a34faa",
    "ragPM": "atrisk",
    "ragFTE": "atrisk",
    "headroom": 0,
@@ -5096,8 +5096,8 @@
    "senderRagBau": "Watch"
   },
   "C062": {
-   "text": "684adaf70be81497",
-   "numbers": "0c309bcda6911e85",
+   "text": "753b467e486974a5",
+   "numbers": "045975a62b1b7345",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -27,
@@ -5105,8 +5105,8 @@
    "senderRagBau": "At risk"
   },
   "C063": {
-   "text": "4dee56be31bc7a72",
-   "numbers": "fd11d5dc76586b84",
+   "text": "900a6f871b5ba62c",
+   "numbers": "b08a2b4ffc414749",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -67,
@@ -5114,8 +5114,8 @@
    "senderRagBau": "At risk"
   },
   "C064": {
-   "text": "bfd5a3b3b39937fa",
-   "numbers": "d7fd620532740579",
+   "text": "e6c7f653f7042717",
+   "numbers": "74349fef2cda7f6a",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -107,
@@ -5123,8 +5123,8 @@
    "senderRagBau": "At risk"
   },
   "C065": {
-   "text": "2b680b3843108698",
-   "numbers": "e95bcc92913a0de1",
+   "text": "66d0377a42a9f9b7",
+   "numbers": "a795b7b1791c9b97",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -240,
@@ -5132,8 +5132,8 @@
    "senderRagBau": "At risk"
   },
   "C066": {
-   "text": "d1050920d11756e1",
-   "numbers": "4867bf08ae94b1be",
+   "text": "8e6c2286141b2b56",
+   "numbers": "862f4d1409a76361",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": "",
@@ -5141,8 +5141,8 @@
    "senderRagBau": "Healthy"
   },
   "C067": {
-   "text": "1bf874f4ccca19bd",
-   "numbers": "8d583dc67c0ccc4a",
+   "text": "31ce09c5e542f06e",
+   "numbers": "3cf5f90c0c9489d2",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": 62,
@@ -5150,8 +5150,8 @@
    "senderRagBau": "Healthy"
   },
   "C068": {
-   "text": "3b7f62019ab878ab",
-   "numbers": "81d1bb8cbedd1f3e",
+   "text": "b763bca128418ad3",
+   "numbers": "b61c90ce2ad9ab4e",
    "ragPM": "healthy",
    "ragFTE": "atrisk",
    "headroom": 19,
@@ -5159,8 +5159,8 @@
    "senderRagBau": "Watch"
   },
   "C069": {
-   "text": "3b7f62019ab878ab",
-   "numbers": "81d1bb8cbedd1f3e",
+   "text": "b763bca128418ad3",
+   "numbers": "b61c90ce2ad9ab4e",
    "ragPM": "healthy",
    "ragFTE": "atrisk",
    "headroom": 19,
@@ -5168,8 +5168,8 @@
    "senderRagBau": "Watch"
   },
   "C070": {
-   "text": "8b2262f1e5a1ec37",
-   "numbers": "e2e7fcefad948bd5",
+   "text": "ef694f0b52fa3903",
+   "numbers": "ef0e6c944a0d4d18",
    "ragPM": "atrisk",
    "ragFTE": "atrisk",
    "headroom": 3,
@@ -5177,8 +5177,8 @@
    "senderRagBau": "Watch"
   },
   "C071": {
-   "text": "821ae7c38c7b00bf",
-   "numbers": "0fdc556a11e8a7b4",
+   "text": "da70c2d615a5eef2",
+   "numbers": "f1a9fd9199908675",
    "ragPM": "atrisk",
    "ragFTE": "over",
    "headroom": -14,
@@ -5186,8 +5186,8 @@
    "senderRagBau": "At risk"
   },
   "C072": {
-   "text": "78f165cdad995698",
-   "numbers": "4968becc37dbdadd",
+   "text": "a0731f10430afc0b",
+   "numbers": "b8d55019b28470e9",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -15,
@@ -5195,8 +5195,8 @@
    "senderRagBau": "At risk"
   },
   "C073": {
-   "text": "ff7d608b3543dc51",
-   "numbers": "0811096b4fa8b038",
+   "text": "408fc1cae49d4c5b",
+   "numbers": "24a67056822deb1d",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -47,
@@ -5204,8 +5204,8 @@
    "senderRagBau": "At risk"
   },
   "C074": {
-   "text": "5b137d3d2111eb6f",
-   "numbers": "e4c9db3f443f2ed1",
+   "text": "98862edc6f9c882a",
+   "numbers": "c3c9d197a4631ae3",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -97,
@@ -5213,8 +5213,8 @@
    "senderRagBau": "At risk"
   },
   "C075": {
-   "text": "8d9d34264bb9ff30",
-   "numbers": "11abf578b770be1d",
+   "text": "53272255df6a66be",
+   "numbers": "e3df7538ebfe078a",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -147,
@@ -5222,8 +5222,8 @@
    "senderRagBau": "At risk"
   },
   "C076": {
-   "text": "5ac64c95e87e220a",
-   "numbers": "6436e9ee209ae699",
+   "text": "4e5016cd4ba8eba3",
+   "numbers": "4241a503e0a993a7",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -314,
@@ -5231,8 +5231,8 @@
    "senderRagBau": "At risk"
   },
   "C077": {
-   "text": "c7209bf239897df7",
-   "numbers": "4f4cf48f34688994",
+   "text": "5cb5722430b80c0c",
+   "numbers": "4f1bf06918cccc89",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": "",
@@ -5240,8 +5240,8 @@
    "senderRagBau": "Healthy"
   },
   "C078": {
-   "text": "df8b9268577d455d",
-   "numbers": "7e215e1fc58fa68b",
+   "text": "72e5ef7c39a61292",
+   "numbers": "6b4f59835fbce3d3",
    "ragPM": "healthy",
    "ragFTE": "atrisk",
    "headroom": 19,
@@ -5249,8 +5249,8 @@
    "senderRagBau": "Watch"
   },
   "C079": {
-   "text": "0762c6ac258e3436",
-   "numbers": "32955b7ddb4aa954",
+   "text": "dc088a009e8c2696",
+   "numbers": "a03f3398ec69e578",
    "ragPM": "healthy",
    "ragFTE": "over",
    "headroom": -64,
@@ -5258,8 +5258,8 @@
    "senderRagBau": "At risk"
   },
   "C080": {
-   "text": "cb1906d284f34fec",
-   "numbers": "3954071a787869b5",
+   "text": "fd54839b9ed77dca",
+   "numbers": "4a04fcbf9a57c765",
    "ragPM": "atrisk",
    "ragFTE": "over",
    "headroom": -65,
@@ -5267,8 +5267,8 @@
    "senderRagBau": "At risk"
   },
   "C081": {
-   "text": "53515cdeaa4aa06b",
-   "numbers": "279b8d8a326a1a79",
+   "text": "706be71977d8776a",
+   "numbers": "6c505e00b7c18eb0",
    "ragPM": "atrisk",
    "ragFTE": "over",
    "headroom": -97,
@@ -5276,8 +5276,8 @@
    "senderRagBau": "At risk"
   },
   "C082": {
-   "text": "33db57d1b501f528",
-   "numbers": "010cc575cdaa594f",
+   "text": "fb9df5bd41ac1c7e",
+   "numbers": "e5f7d3474490ff78",
    "ragPM": "atrisk",
    "ragFTE": "over",
    "headroom": -130,
@@ -5285,8 +5285,8 @@
    "senderRagBau": "At risk"
   },
   "C083": {
-   "text": "8088a0482cbdd3f0",
-   "numbers": "0c9230e94202ed82",
+   "text": "e4901709213967c3",
+   "numbers": "6998a4ca85ffe379",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -132,
@@ -5294,8 +5294,8 @@
    "senderRagBau": "At risk"
   },
   "C084": {
-   "text": "bcfb51cb4d702b46",
-   "numbers": "d01de02eae2cd237",
+   "text": "f4d8b4f1439b8eb4",
+   "numbers": "b5716977fcd1dd4e",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -197,
@@ -5303,8 +5303,8 @@
    "senderRagBau": "At risk"
   },
   "C085": {
-   "text": "fdbe2d1b9b05fe3b",
-   "numbers": "1b1dca655654968d",
+   "text": "d538f858bffb1a08",
+   "numbers": "3c458bf5bdf68435",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -297,
@@ -5312,8 +5312,8 @@
    "senderRagBau": "At risk"
   },
   "C086": {
-   "text": "30d0a94c6088b385",
-   "numbers": "4d45cc791ef32435",
+   "text": "f64f77e7ecbf1a2d",
+   "numbers": "bef80ab9862b5f19",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -397,
@@ -5321,8 +5321,8 @@
    "senderRagBau": "At risk"
   },
   "C087": {
-   "text": "df079847bcd3889f",
-   "numbers": "a75aca17ac1a7af8",
+   "text": "16661272a89caf5f",
+   "numbers": "18ea1c68bac5a134",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -730,
@@ -5330,8 +5330,8 @@
    "senderRagBau": "At risk"
   },
   "C088": {
-   "text": "777ebb8fad851382",
-   "numbers": "4fc86b29f663d572",
+   "text": "46b39d86f116a7af",
+   "numbers": "2e278d6518a18cde",
    "ragPM": "healthy",
    "ragFTE": "healthy",
    "headroom": "",
@@ -5339,8 +5339,8 @@
    "senderRagBau": "Healthy"
   },
   "C089": {
-   "text": "ea7f0da14b7f84a2",
-   "numbers": "89b4668cc84b807b",
+   "text": "26008f1c9cae63d2",
+   "numbers": "f741b3eb1e30b533",
    "ragPM": "healthy",
    "ragFTE": "over",
    "headroom": -2,
@@ -5348,8 +5348,8 @@
    "senderRagBau": "At risk"
   },
   "C090": {
-   "text": "dff5dfb3ffa54eaa",
-   "numbers": "7c89433eb38db716",
+   "text": "628c2b15169999e3",
+   "numbers": "d14ad5da50fdf6a6",
    "ragPM": "healthy",
    "ragFTE": "over",
    "headroom": -105,
@@ -5357,8 +5357,8 @@
    "senderRagBau": "At risk"
   },
   "C091": {
-   "text": "d072a5618d65500a",
-   "numbers": "c7fb3abfb033035a",
+   "text": "43284f91bcf1aa1d",
+   "numbers": "4af9ddfa15304843",
    "ragPM": "healthy",
    "ragFTE": "over",
    "headroom": -107,
@@ -5366,8 +5366,8 @@
    "senderRagBau": "At risk"
   },
   "C092": {
-   "text": "d5255de01e26925b",
-   "numbers": "27e6908408f91302",
+   "text": "64024f4cb9a40daf",
+   "numbers": "00ce9419c4987fe1",
    "ragPM": "atrisk",
    "ragFTE": "over",
    "headroom": -147,
@@ -5375,8 +5375,8 @@
    "senderRagBau": "At risk"
   },
   "C093": {
-   "text": "f35379219765a558",
-   "numbers": "6a5035100bc0ef8c",
+   "text": "29d05e64310b2054",
+   "numbers": "a2a764f448117f41",
    "ragPM": "atrisk",
    "ragFTE": "over",
    "headroom": -189,
@@ -5384,8 +5384,8 @@
    "senderRagBau": "At risk"
   },
   "C094": {
-   "text": "ad2a4c16895232e9",
-   "numbers": "e9bf868d9fb50181",
+   "text": "9cb33ddc06038d06",
+   "numbers": "ae11a6ff756077a1",
    "ragPM": "atrisk",
    "ragFTE": "over",
    "headroom": -190,
@@ -5393,8 +5393,8 @@
    "senderRagBau": "At risk"
   },
   "C095": {
-   "text": "b702f51d8e5ccb22",
-   "numbers": "edde853b4a33032a",
+   "text": "04e4615ee6ca0a61",
+   "numbers": "9e1e2d813250ac52",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -272,
@@ -5402,8 +5402,8 @@
    "senderRagBau": "At risk"
   },
   "C096": {
-   "text": "d5938d0f9aeb7922",
-   "numbers": "ab75219a5babca9d",
+   "text": "df3750d612cae83f",
+   "numbers": "0feec6a8b4596284",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -397,
@@ -5411,8 +5411,8 @@
    "senderRagBau": "At risk"
   },
   "C097": {
-   "text": "b28ee02fb4e4c159",
-   "numbers": "6e9c9bd9bc528d6d",
+   "text": "e96e59b5613eea8e",
+   "numbers": "7a0fa92ca3dc5656",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -522,
@@ -5420,8 +5420,8 @@
    "senderRagBau": "At risk"
   },
   "C098": {
-   "text": "7b7726d98553567a",
-   "numbers": "413a23252d3354fe",
+   "text": "1c97cf4b16797820",
+   "numbers": "91b4156f2765d219",
    "ragPM": "over",
    "ragFTE": "over",
    "headroom": -939,

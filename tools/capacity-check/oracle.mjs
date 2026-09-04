@@ -33,8 +33,17 @@ export function bandBAU(ratio) {
 
 export const CORROBORATION_TOLERANCE = 3;
 
-/* §3.6. Two published anchors, and the window between them is ProjexaR's. */
+/* §3.6. Two published anchors, and the window between them is ProjexaR's.
+
+   The anchors are published in different units — HDI/MetricNet per technician
+   per month, Jitbit per technician per day — so comparing them needs a
+   working-days figure. That figure is ours, and the page must state it: a
+   conversion made silently replaces an unattributed number with an unexplained
+   one. WORKING_DAYS is here so the suite can assert both units agree. */
 export const TICKETS_LO = 170, TICKETS_HI = 320;
+export const WORKING_DAYS = 21;
+export const JITBIT_PER_DAY = 21;
+export const HDI_LO = 87, HDI_HI = 133;
 
 /* §3.3. Employer NI verified against gov.uk for 2026/27; the overhead is
    ProjexaR's declared judgement. */

@@ -18,7 +18,8 @@ import { corpus, FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_LOADED_COST, FIXTURE_S
 import { capture, allText, numbersIn } from './capture.mjs';
 import { TOOL_PATH, loadTool } from './harness.mjs';
 import { evaluate, roundN, round1, redThreshold, loadedCost, bandContaining,
-         finding2State, finding3State, finding4State } from './oracle.mjs';
+         finding2State, finding3State, finding4State,
+         TICKETS_LO, TICKETS_HI, WORKING_DAYS, JITBIT_PER_DAY, HDI_LO, HDI_HI } from './oracle.mjs';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -637,7 +638,30 @@ section('§3.6 — the ticket divisor is a range, with both anchors named');
     ok(has(cap.print['pr-sources'], '30 to 198'), 'the full published range is cited');
     ok(has(cap.print['pr-sources'], 'Jitbit'), 'the upper anchor is cited');
     ok(has(cap.print['pr-sources'], 'ProjexaR’s control'), 'the window is named as ProjexaR’s control');
-    ok(has(cap.print['pr-sources'], 'Not a published figure'), 'and explicitly not a published figure');
+    ok(has(cap.print['pr-sources'], 'Neither is a published figure'), 'and explicitly not a published figure');
+
+    /* The two anchors are published in different units, so the conversion needs
+       a working-days figure and the page has to state it. A conversion made
+       silently replaces an unattributed number with an unexplained one. */
+    const perDayLo = round1(TICKETS_LO / WORKING_DAYS);
+    const perDayHi = round1(TICKETS_HI / WORKING_DAYS);
+    ok(has(t, `${WORKING_DAYS}-working-day month`),
+       'the working-days basis for the conversion is stated');
+    ok(has(t, `${perDayLo.toFixed(1)} to ${perDayHi.toFixed(1)} per agent per day`),
+       'the control is stated in days as well as months', cap.print['pr-sources']);
+    ok(has(cap.print['pr-formulas'], `${perDayLo.toFixed(1)} to ${perDayHi.toFixed(1)} a day`),
+       'the workings page carries the daily figure too, not just the sources page');
+    ok(has(t, `${JITBIT_PER_DAY} tickets per technician per day`),
+       'Jitbit is quoted in the unit it publishes');
+    ok(has(t, `${HDI_LO} to ${HDI_HI}`), 'HDI/MetricNet is quoted in the unit it publishes');
+    /* A reader must be able to check the window against both anchors in one
+       step, in the unit each is published in. */
+    ok(perDayHi < JITBIT_PER_DAY,
+       'the control sits below Jitbit’s daily figure, checkable in days');
+    ok(TICKETS_LO > HDI_HI,
+       'the control sits above HDI/MetricNet’s monthly figures, checkable in months');
+    /* No stateable working-days figure produces 480, so it is not quoted. */
+    ok(!/\b480\b/.test(t), 'the unattributed 480 is not quoted anywhere in output');
     /* The characterisation the specification carried was never checked against
        the source, and the source does not support it. */
     ok(!/tier-1|tier 1|high-throughput remote/i.test(t),
@@ -957,11 +981,12 @@ section('Sources — every retained source is attached to a surviving claim');
       'the concurrent-projects tile'],
     ['Project overload in multi-project settings', (cap) => cap.computed.pmLoad !== null,
       'the concurrent-projects tile'],
-    ['Tickets per technician per month — lower anchor', (cap) => cap.computed.ticketFTE !== null,
+    ['Lower anchor — published per month', (cap) => cap.computed.ticketFTE !== null,
       'the ticket FTE range'],
-    ['Tickets per agent per month — upper anchor', (cap) => cap.computed.ticketFTE !== null,
+    ['Upper anchor — published per day', (cap) => cap.computed.ticketFTE !== null,
       'the ticket FTE range'],
-    ['The divisor we apply', (cap) => cap.computed.ticketFTE !== null, 'the ticket FTE range'],
+    ['The divisor we apply, in both units', (cap) => cap.computed.ticketFTE !== null,
+      'the ticket FTE range'],
     ['Tickets per employee per month by sector', (cap) => cap.computed.rateOutside,
       'the ticket-rate consistency check'],
     ['Run against growth spend', (cap) => cap.values.bauSplitEstimate !== null, 'the BAU/change split figure'],

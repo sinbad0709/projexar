@@ -1242,15 +1242,30 @@ window.submitToSender = function(payload){
      in those words. It is not a published figure and must never be presented as
      one.
 
-     On the Jitbit anchor. The source publishes 21 tickets per technician per
-     DAY; the 480 monthly figure is that daily rate carried across a working
-     month, which is our step and not the source's. The population is ~1,000
-     businesses of every size and industry using Jitbit's helpdesk, and the
-     source does not separate internal IT service desks from customer support,
-     nor name any tier. Earlier drafts described it as high-throughput remote
-     tier-1 operation. That was inferred from the number's magnitude and the
-     source does not support it, so it is not said here or anywhere on the page. */
+     On the Jitbit anchor, and on units. The two anchors are not published in the
+     same unit: HDI/MetricNet publishes per technician per MONTH, Jitbit per
+     technician per DAY. Converting between them needs a working-days figure, and
+     an unstated one would replace an unattributed number with an unexplained
+     one. WORKING_DAYS is ours, it is stated on the page in those words, and the
+     page gives the control in both units so a reader can check it against
+     Jitbit's daily figure in one step without knowing what we assumed.
+
+     Twenty-one days is the conservative end of a working month, and conservative
+     here means a lower monthly throughput, so more FTE absorbed by tickets and a
+     larger stated gap. We would rather overstate what tickets take than flatter
+     the answer.
+
+     An earlier version of this tool used 480 a month for Jitbit. No stateable
+     working-days figure produces it — 21 × 21 is 441 and 21 × 23 is 483 — so it
+     is not used or quoted anywhere. The population is ~1,000 businesses of every
+     size and industry using Jitbit's helpdesk, and the source does not separate
+     internal IT service desks from customer support, nor name any tier. Earlier
+     drafts described it as high-throughput remote tier-1 operation. That was
+     inferred from the number's magnitude and the source does not support it, so
+     it is not said here or anywhere on the page. */
   var TICKETS_PER_AGENT_LO = 170, TICKETS_PER_AGENT_HI = 320;
+  var WORKING_DAYS = 21;
+  var JITBIT_PER_DAY = 21;
 
   /* ---- Loaded cost per head (§3.3) ----
      One blended figure for project managers and BAU staff alike. Not split by
@@ -2251,8 +2266,10 @@ window.submitToSender = function(payload){
           : 'Of ongoing capacity — ' + spanText(c.ticketFtePercent, pctFmt) + ' of your ' + n0(c.nonPmStaff)
             + ' non-PM IT staff — is absorbed by ticket volume before any project work is considered',
         note:'your monthly ticket volume against a mixed internal queue of ' + TICKETS_PER_AGENT_LO + ' to '
-           + TICKETS_PER_AGENT_HI + ' tickets per agent per month — a window ProjexaR sets between two published '
-           + 'figures, not a published figure itself' });
+           + TICKETS_PER_AGENT_HI + ' tickets per agent per month — ' + d1(TICKETS_PER_AGENT_LO / WORKING_DAYS)
+           + ' to ' + d1(TICKETS_PER_AGENT_HI / WORKING_DAYS) + ' a day across the ' + WORKING_DAYS
+           + '-working-day month we assume. That window is one ProjexaR sets between two published figures, not a '
+           + 'published figure itself' });
 
       /* Consistency check. Queries the input rather than rating the output, and
          sits directly beneath the bullet it questions. */
@@ -2773,17 +2790,23 @@ window.submitToSender = function(payload){
        earlier draft of the specification described it as high-throughput remote
        tier-1 operation; the source does not support that and it is not said. */
     if(c.ticketFTE !== null){
-      src.push(['Tickets per technician per month — lower anchor',
+      src.push(['Lower anchor — published per month',
         'HDI/MetricNet (Rumburg, <em>Metric of the Month: Tickets per Technician per Month</em>) — desktop support '
-        + 'industry averages of 87 to 133 tickets per technician per month, across a full range of 30 to 198']);
-      src.push(['Tickets per agent per month — upper anchor',
+        + 'industry averages of <strong>87 to 133</strong> tickets per technician per month, across a full range '
+        + 'of 30 to 198. Published in months, and used as published']);
+      src.push(['Upper anchor — published per day',
         'Jitbit, 2017 analysis of 7 million support tickets across around 1,000 companies using its hosted '
-        + 'helpdesk — 21 tickets per technician per day. Carried across a working month that is the 480 we use as '
-        + 'the upper anchor, which is our conversion and not a figure the source publishes. The source spans '
-        + 'every industry and size and does not separate internal IT service desks from customer support']);
-      src.push(['The divisor we apply',
-        'ProjexaR’s control: a mixed internal queue of ' + TICKETS_PER_AGENT_LO + ' to ' + TICKETS_PER_AGENT_HI
-        + ' tickets per agent per month, set between the two anchors above. Not a published figure']);
+        + 'helpdesk — <strong>21 tickets per technician per day</strong>. The source spans every industry and '
+        + 'size, does not separate internal IT service desks from customer support, and names no tier']);
+      src.push(['The divisor we apply, in both units',
+        'ProjexaR’s control: a mixed internal queue of <strong>' + TICKETS_PER_AGENT_LO + ' to '
+        + TICKETS_PER_AGENT_HI + ' tickets per agent per month</strong>, which at the ' + WORKING_DAYS
+        + '-working-day month we assume is <strong>' + d1(TICKETS_PER_AGENT_LO / WORKING_DAYS) + ' to '
+        + d1(TICKETS_PER_AGENT_HI / WORKING_DAYS) + ' per agent per day</strong>. Stated in both units because the '
+        + 'two anchors are published in different ones: our window sits above HDI/MetricNet’s ' + '87 to 133 a '
+        + 'month and below Jitbit’s ' + JITBIT_PER_DAY + ' a day, and you can check either comparison without '
+        + 'knowing what we assumed. The window and the ' + WORKING_DAYS + '-day month are both ProjexaR’s '
+        + 'judgement. Neither is a published figure']);
     }
     if(c.rateOutside){
       src.push(['Tickets per employee per month by sector',
@@ -3067,6 +3090,14 @@ window.submitToSender = function(payload){
         n0(v.ticketsPerMonth) + ' ÷ ' + TICKETS_PER_AGENT_HI + ' to ' + n0(v.ticketsPerMonth) + ' ÷ '
           + TICKETS_PER_AGENT_LO + ' a month',
         spanText(c.ticketFTE, fteFmt) + ' FTE']);
+      /* Both anchors and the basis that makes them comparable, on the workings
+         page rather than only in the sources — a reader checking the divisor
+         should not have to turn to another page to find out what a month is. */
+      fx.push(['The divisor window, and where it sits',
+        d1(TICKETS_PER_AGENT_LO / WORKING_DAYS) + ' to ' + d1(TICKETS_PER_AGENT_HI / WORKING_DAYS)
+          + ' a day at the ' + WORKING_DAYS + '-working-day month we assume, against HDI/MetricNet’s 87 to 133 a '
+          + 'month and Jitbit’s ' + JITBIT_PER_DAY + ' a day',
+        TICKETS_PER_AGENT_LO + ' to ' + TICKETS_PER_AGENT_HI + ' a month — ProjexaR’s control']);
       fx.push(['Tickets per employee per month', n0(v.ticketsPerMonth) + ' ÷ ' + n0(v.companyHeadcount),
                n2(c.impliedRate)]);
     }
