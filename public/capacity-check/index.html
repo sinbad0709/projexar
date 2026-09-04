@@ -7,6 +7,31 @@
 <meta name="description" content="A free check of how much of your IT project delivery rests on BAU staff who are also keeping the lights on. Your results in a few minutes.">
 <link rel="canonical" href="https://projexar.com/capacity-check/">
 <link rel="icon" href="/assets/logo-mark.svg" type="image/svg+xml">
+<!-- Link preview (§4.4). The report renders client-side, so a shared result URL
+     previews blank in Teams and Slack and indexes blank. One static branded
+     card, no per-result generation.
+
+     og:image is absolute. A relative path fails on most platforms — they fetch
+     the tag without a document base — and the failure is silent, which is how a
+     relative path survives review.
+
+     The description is generic on purpose. It describes the Capacity Check, not
+     the reader's outcome: these tags are the same for every shared URL,
+     including the permalinks that carry a respondent's own answers, and a
+     description written about a result would be wrong on all of them. og:url is
+     the canonical page for the same reason.
+
+     Verification is manual and post-deploy. Teams and Slack cache OG data hard,
+     so a first-attempt failure is nearly always a stale cache rather than broken
+     markup — re-check through each platform's own debugger before editing
+     anything here. -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://projexar.com/capacity-check/">
+<meta property="og:title" content="Capacity Check &mdash; ProjexaR">
+<meta property="og:description" content="A free check of how much of your IT project delivery rests on BAU staff who are also keeping the lights on. Your results in a few minutes.">
+<meta property="og:image" content="https://projexar.com/capacity-check/capacity-check-og.png">
+<meta property="og:image:alt" content="A ProjexaR card reading &lsquo;Your projects are staffed by people who already have day jobs&rsquo;, above the words Capacity Check &mdash; free, three minutes, no sign-up.">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 /* ==========================================================================
    ProjexaR Capacity Check — v5 (BAU capacity model)
@@ -690,10 +715,19 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <fieldset class="fieldset">
         <legend class="legend">Your projects</legend>
         <div class="grid">
+          <!-- The definition sits under the input because the count is the
+               denominator of two rated figures and the growth ceiling, and two
+               respondents counting differently is the largest uncontrolled
+               source of variance in this tool. Rejected in specification and not
+               to be reopened: "exclude minor works" — too subjective to apply
+               consistently. A sharper second filter on concrete criteria
+               (running beyond four weeks, or needing more than one person) is
+               Norm's call on wording and is not implemented here. Wording is
+               Norm's. -->
           <div class="field" id="f-live">
             <label for="live">Live projects right now</label>
             <div class="control"><input type="number" id="live" min="0" max="2000" step="1" inputmode="numeric" placeholder="e.g. 45"></div>
-            <div class="under"><span class="hint">Anything currently running.</span><span class="error"></span></div>
+            <div class="under"><span class="hint">Anything currently running. <strong>A project is work that requires project management oversight</strong> &mdash; someone with responsibility for holding the plan together, whether or not that person holds the title.</span><span class="error"></span></div>
           </div>
           <div class="field" id="f-annual">
             <label for="annual">Typical number of IT projects run annually</label>
@@ -1035,6 +1069,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
         <thead><tr><th style="width:38%">Figure</th><th style="width:32%">How</th><th>Result</th></tr></thead>
         <tbody id="pr-formulas"></tbody>
       </table>
+      <p class="p-note" style="margin-top:6pt" id="pr-derivations"></p>
 
       <h2 style="margin-top:12pt">How the bands were set</h2>
       <p>These bands are ProjexaR's management controls. They are informed by published research but are not values
@@ -1664,6 +1699,23 @@ window.submitToSender = function(payload){
        both conditions are stated because both are the rule. */
     c.turnover = (v.live > 0 && v.annual > 0) ? v.annual / v.live : null;
 
+    /* §4.1. What the report shows in place of the turnover multiple. Turnover
+       itself is retained above and nowhere displayed: the growth ceiling still
+       projects a live-project threshold forward at that pace, so the quantity is
+       needed, but a reader is given the duration instead.
+
+       The name carries a caution and the page states it. This is not a measured
+       fact about projects. It is the ratio of what is live to what runs in a
+       year, which describes portfolio throughput on the assumption of a steady
+       state — a department part-way through a ramp-up, or winding one down, gets
+       a figure about its throughput rather than about its projects.
+
+       Suppressed with either input at zero (§1.1). Validation holds annual ≥
+       live, so in practice the two go absent together, but both conditions are
+       stated because both are the rule. */
+    c.typicalDurationMonths = (v.live > 0 && v.annual > 0)
+      ? roundN(v.live / v.annual * 12, 1) : null;
+
     c.loaded = loadedCostOf(v.loadedSalary);
 
     /* The summing path needs an explicit out-the-door answer AND a spend figure
@@ -1716,8 +1768,16 @@ window.submitToSender = function(payload){
                   : (c.impliedRate < TICKET_RATE_LO || c.impliedRate > TICKET_RATE_HI);
 
     /* Permanent IT staff only. Contractors are counted separately and are not
-       part of this ratio; the workings page says so. */
-    c.itPercent = v.staff / v.companyHeadcount * 100;
+       part of this ratio; the workings page says so.
+
+       Suppressed at either input zero (§1.1). Both are required questions with a
+       minimum of 1, so no respondent reaches this and no rendered output moves —
+       the guard is here because the formula divides by a respondent-supplied
+       figure, and §1.1's rule is about the formula rather than about which
+       inputs happen to be reachable today. Without it a loosened validation rule
+       would put NaN on the page rather than a stated reason. */
+    c.itPercent = (v.companyHeadcount > 0 && v.staff > 0)
+      ? v.staff / v.companyHeadcount * 100 : null;
 
     /* Licence basis is the people who appear on project plans: the BAU staff
        working on projects plus the project managers coordinating them. It
@@ -2238,6 +2298,26 @@ window.submitToSender = function(payload){
   }
 
   /* ---- Informational bullets. Nothing here is rated. ---- */
+  /* Why a duration could not be taken, in one clause, so the numbers section
+     and the workings page give the same reason rather than two wordings of it.
+     Validation holds annual ≥ live, so the both-zero case is the one a
+     respondent can actually reach; the other two are stated because the rule
+     is written per input. */
+  /* The same treatment for the share, so a suppressed figure gives a reason
+     rather than a blank. Unreachable through the form — both inputs are required
+     at 1 or above — and stated per input because the rule is written per input. */
+  function noShareReason(v){
+    if(v.companyHeadcount === 0 && v.staff === 0) return 'you reported neither a company headcount nor any IT staff';
+    if(v.companyHeadcount === 0) return 'you reported no company headcount';
+    return 'you reported no IT staff';
+  }
+
+  function noPaceReason(v){
+    if(v.live === 0 && v.annual === 0) return 'nothing is live and you reported no projects in a typical year';
+    if(v.live === 0) return 'nothing is live';
+    return 'you reported no projects in a typical year';
+  }
+
   function facts(v, c){
     var out = [];
 
@@ -2252,17 +2332,28 @@ window.submitToSender = function(payload){
           note:n0(v.bauStaff) + ' BAU ' + plural(v.bauStaff,'person','people') + ' across the '
              + bandLabel(v) + ' band you picked, which is why this and everything drawn from it is a range' });
 
-    out.push({ figure: c.turnover === null ? '—' : d1(c.turnover) + '×',
-      label:'Annual portfolio turnover',
-      note: c.turnover === null
-        ? 'turnover needs a live project count to work from, and with nothing live there is no pace to measure'
-        : 'how many full project cycles your portfolio runs through each year' });
+    /* §4.1. The derivation is stated beside the figure, because the label
+       reads as a measured fact about projects and the number is not one. */
+    out.push(c.typicalDurationMonths === null
+      ? { figure:'Not computed', label:'Typical project duration',
+          note:'this is your live project count set against your annual pace, and ' + noPaceReason(v)
+             + ', so there is no ratio to take' }
+      : { figure:d1(c.typicalDurationMonths) + ' months',
+          label:'Typical project duration',
+          note:'your ' + qty(v.live, 'live project', 'live projects') + ' against '
+             + qty(v.annual, 'project', 'projects') + ' in a typical year, times twelve. It is derived from '
+             + 'that ratio rather than measured from your projects, so it describes the throughput of your '
+             + 'portfolio at a steady pace' });
 
-    out.push({ figure:d1(c.itPercent) + '%',
-      label:'IT staff as a share of the company',
-      note:n0(v.staff) + ' of ' + qty(v.companyHeadcount, 'person', 'people')
-         + (v.contractors ? ', permanent staff only — your ' + qty(v.contractors, 'contractor', 'contractors')
-              + ' are excluded from this ratio' : '') });
+    out.push(c.itPercent === null
+      ? { figure:'Not computed', label:'IT staff as a share of the company',
+          note:'this is your permanent IT staff set against your company headcount, and ' + noShareReason(v)
+             + ', so there is no ratio to take' }
+      : { figure:d1(c.itPercent) + '%',
+          label:'IT staff as a share of the company',
+          note:n0(v.staff) + ' of ' + qty(v.companyHeadcount, 'person', 'people')
+             + (v.contractors ? ', permanent staff only — your ' + qty(v.contractors, 'contractor', 'contractors')
+                  + ' are excluded from this ratio' : '') });
 
     if(c.ticketFTE !== null){
       /* The proportion is stated against non-PM IT staff, not against bauStaff.
@@ -3096,8 +3187,9 @@ window.submitToSender = function(payload){
           spanText(pick(c, 'deliveryPerFTE'), fteFmt)]);
       }
     }
-    if(c.turnover !== null){
-      fx.push(['Annual portfolio turnover', n0(v.annual) + ' ÷ ' + n0(v.live), d1(c.turnover) + '×']);
+    if(c.typicalDurationMonths !== null){
+      fx.push(['Typical project duration', '(' + n0(v.live) + ' ÷ ' + n0(v.annual) + ') × 12',
+               d1(c.typicalDurationMonths) + ' months']);
     }
     if(c.ticketFTE !== null){
       fx.push(['Capacity needed for tickets alone',
@@ -3126,8 +3218,11 @@ window.submitToSender = function(payload){
           spanText(c.runWorkGap, fteFmt) + ' FTE']);
       }
     }
-    fx.push(['IT staff as a share of the company', n0(v.staff) + ' ÷ ' + n0(v.companyHeadcount),
-             d1(c.itPercent) + '%']);
+    fx.push(c.itPercent === null
+      ? ['IT staff as a share of the company',
+         'not computed — ' + noShareReason(v), 'Not computed']
+      : ['IT staff as a share of the company', n0(v.staff) + ' ÷ ' + n0(v.companyHeadcount),
+         d1(c.itPercent) + '%']);
 
     /* The growth ceiling arithmetic, shown in full — it is the one figure on the
        report that projects rather than counts, so it should be checkable. */
@@ -3273,6 +3368,18 @@ window.submitToSender = function(payload){
     $('pr-formulas').innerHTML = fx.map(function(x){
       return '<tr><th>' + esc(x[0]) + '</th><td>' + esc(x[1]) + '</td><td><strong>' + esc(x[2])
            + '</strong></td></tr>'; }).join('');
+
+    /* §4.1. The one figure on this page whose label claims more than its
+       arithmetic does, so the arithmetic is named here as well as beside the
+       figure — and where it could not be taken, this page says why (§1.1). */
+    $('pr-derivations').innerHTML = c.typicalDurationMonths === null
+      ? '<strong>Typical project duration was not computed.</strong> It needs a live project count to divide and '
+        + 'an annual pace to divide by, and ' + noPaceReason(v) + '.'
+      : '<strong>Typical project duration is derived, not measured.</strong> It is your live project count '
+        + 'divided by the number of projects you run in a typical year, times twelve. That describes the '
+        + 'throughput of your portfolio on the assumption of a steady state — it is not the length of any project '
+        + 'you run, and a department part-way through a ramp-up or winding one down gets a figure about its '
+        + 'throughput rather than about its projects.';
 
     /* Both Flexera caveats travel with the figure wherever it is used. */
     $('pr-flexeranote').innerHTML = v.bauSplitEstimate === null ? ''

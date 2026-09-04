@@ -20,7 +20,7 @@ export const PRINT_NODES = [
   'pr-herohead', 'pr-figure', 'pr-ceiling',
   'pr-secondhead', 'pr-secondfigure', 'pr-secondnote',
   'pr-verdict', 'pr-tiles', 'pr-bandnote', 'pr-facts',
-  'pr-checkblock', 'pr-inputs', 'pr-formulas', 'pr-flexeranote', 'pr-fxnote',
+  'pr-checkblock', 'pr-inputs', 'pr-formulas', 'pr-derivations', 'pr-flexeranote', 'pr-fxnote',
   'pr-cards', 'pr-checks', 'pr-compare', 'pr-sources', 'pr-price',
 ];
 
