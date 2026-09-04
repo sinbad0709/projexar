@@ -1,0 +1,5432 @@
+{
+ "count": 603,
+ "shapes": {
+  "A000": {
+   "text": "33a438afad1d8a4f",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A001": {
+   "text": "9f8b2c1a843eb835",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A002": {
+   "text": "c9af9246bb11fae2",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A003": {
+   "text": "768e9c20b7f87fe1",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A004": {
+   "text": "c1cdb129a2723d72",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A005": {
+   "text": "d9695c6241bbfab5",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A006": {
+   "text": "e83a2ea886aa49ae",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A007": {
+   "text": "368972d4505d43d5",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A008": {
+   "text": "46d797c4bb17aafe",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A009": {
+   "text": "2bc6ab2c65c350a3",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A010": {
+   "text": "a06ee469abba2787",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A011": {
+   "text": "d569fd1ae99397bc",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A012": {
+   "text": "6126111e2ae422e1",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A013": {
+   "text": "d04cd105122306fc",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A014": {
+   "text": "31cd7dfbc77b80a5",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A015": {
+   "text": "8c11238b7d31c2ad",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A016": {
+   "text": "74ff1b1a9d2fa77d",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A017": {
+   "text": "4411d2e38de6790a",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A018": {
+   "text": "9395a335c5095ca2",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A019": {
+   "text": "3e0bcb107c1dc72c",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A020": {
+   "text": "92ba7e036b7c9077",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A021": {
+   "text": "e699d828a4c1ab7c",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A022": {
+   "text": "00dc55aa177b737a",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A023": {
+   "text": "a07dd7ad76e92da8",
+   "numbers": "fd4da2d214b272f4",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A024": {
+   "text": "28c8b95d8d062573",
+   "numbers": "fd1456c3b2de756e",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A025": {
+   "text": "82694929cfa70697",
+   "numbers": "fd1456c3b2de756e",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A026": {
+   "text": "fe97ec3622e5fc9d",
+   "numbers": "fd1456c3b2de756e",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A027": {
+   "text": "16d6351912cc3158",
+   "numbers": "fd1456c3b2de756e",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A028": {
+   "text": "28d793475b2a6163",
+   "numbers": "fd1456c3b2de756e",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A029": {
+   "text": "9e984367c1779c4c",
+   "numbers": "fd1456c3b2de756e",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A030": {
+   "text": "0f397cba332727ef",
+   "numbers": "fd1456c3b2de756e",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A031": {
+   "text": "2984b20e829aab19",
+   "numbers": "fd1456c3b2de756e",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A032": {
+   "text": "f2cb6894372ae420",
+   "numbers": "fd1456c3b2de756e",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A033": {
+   "text": "1e08f57bd7eff366",
+   "numbers": "fd1456c3b2de756e",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A034": {
+   "text": "9b50f46e0ef5eb0e",
+   "numbers": "fd1456c3b2de756e",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A035": {
+   "text": "f53200c369916f91",
+   "numbers": "fd1456c3b2de756e",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A036": {
+   "text": "39235f4d33080771",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A037": {
+   "text": "fc6b187ea6b8ea56",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A038": {
+   "text": "e191c5be8a606502",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A039": {
+   "text": "76d6a27cad182829",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A040": {
+   "text": "e9e9f3db2fdcf71b",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A041": {
+   "text": "fe0247c74b0e3a2b",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A042": {
+   "text": "81c243aaf82f1e6b",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A043": {
+   "text": "4604f209bcaa24ab",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A044": {
+   "text": "0d06711fd209ace0",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A045": {
+   "text": "627da025302a8e97",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A046": {
+   "text": "beea9849939aba22",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A047": {
+   "text": "06a0e58f776ca5f5",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A048": {
+   "text": "043def9f65fd3120",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A049": {
+   "text": "73db4d048b8a8df9",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A050": {
+   "text": "5b20f1a29ea6d2f4",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A051": {
+   "text": "1d0f12fc3991f163",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A052": {
+   "text": "4754cc93854ee8f4",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A053": {
+   "text": "a319b017223f26aa",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A054": {
+   "text": "3d5f792eb4cc2226",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A055": {
+   "text": "57ac45652fde20d9",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A056": {
+   "text": "88ce977dac705bc5",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A057": {
+   "text": "fb6810726035e2e2",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A058": {
+   "text": "e624af842c7b58a2",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A059": {
+   "text": "2d7ae4f9952803dd",
+   "numbers": "383f8d5d7e2d3797",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A060": {
+   "text": "e75a62c08bdc55d6",
+   "numbers": "398b42bd31b5013d",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A061": {
+   "text": "db2ea6d30472c628",
+   "numbers": "398b42bd31b5013d",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A062": {
+   "text": "ffb592c50bd67385",
+   "numbers": "398b42bd31b5013d",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A063": {
+   "text": "dafe0b4be154c8c1",
+   "numbers": "398b42bd31b5013d",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A064": {
+   "text": "f061b87932056929",
+   "numbers": "398b42bd31b5013d",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A065": {
+   "text": "10455b94dc1378b8",
+   "numbers": "398b42bd31b5013d",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A066": {
+   "text": "08e7716223ba78ea",
+   "numbers": "398b42bd31b5013d",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A067": {
+   "text": "e37c05dd2c11b370",
+   "numbers": "398b42bd31b5013d",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A068": {
+   "text": "c651039d85675c93",
+   "numbers": "398b42bd31b5013d",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A069": {
+   "text": "588ed86771d1a693",
+   "numbers": "398b42bd31b5013d",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A070": {
+   "text": "de79bf67ef373c3e",
+   "numbers": "398b42bd31b5013d",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A071": {
+   "text": "20d7078a0b40dbde",
+   "numbers": "398b42bd31b5013d",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A072": {
+   "text": "924432f7e3a8e2e1",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A073": {
+   "text": "195de3157eae1375",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A074": {
+   "text": "633e6da179c406fb",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A075": {
+   "text": "4aac73ee6e823f3e",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A076": {
+   "text": "efeebf6563610a4a",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A077": {
+   "text": "9ba5e9f4ca9c6a15",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A078": {
+   "text": "d9086d3c18061c56",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A079": {
+   "text": "2beb7768c72a3546",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A080": {
+   "text": "b976fcb3ce482221",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A081": {
+   "text": "6f05c2cf1af1a5b0",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A082": {
+   "text": "ba82831602b18295",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A083": {
+   "text": "0c5c96e716fa858b",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A084": {
+   "text": "fda8ad16a549df6a",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A085": {
+   "text": "7420ee364fe97de1",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A086": {
+   "text": "9a71400ead047b8d",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A087": {
+   "text": "8504dd8a20653490",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A088": {
+   "text": "82bb7c58827962cd",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A089": {
+   "text": "5d85dd5809f4287d",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A090": {
+   "text": "75df9c843385fb29",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A091": {
+   "text": "680d0bd94113a25b",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A092": {
+   "text": "5948e5c5c4312ea3",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A093": {
+   "text": "c50e74c8f431e775",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A094": {
+   "text": "8415574819fbeb53",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A095": {
+   "text": "587c1d998429a3bf",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A096": {
+   "text": "e7e96dde9192fef4",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A097": {
+   "text": "d612035f60fea841",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A098": {
+   "text": "d8bc080910034bba",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A099": {
+   "text": "e07c5e2cf16542d9",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A100": {
+   "text": "7e7f44c39978cb96",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A101": {
+   "text": "5baf7fc373bac8b1",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A102": {
+   "text": "193c9f61e3fdd825",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A103": {
+   "text": "c15340bd0c685e03",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A104": {
+   "text": "c280100eaae7af3b",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A105": {
+   "text": "ad3936af2ed71cbd",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A106": {
+   "text": "6666cd13f68c7420",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A107": {
+   "text": "3b262617fee7da13",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A108": {
+   "text": "ad42463f0016a0a3",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A109": {
+   "text": "1162f091e26b1fe1",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A110": {
+   "text": "396cc383b1333a01",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A111": {
+   "text": "de0cec002bd4b865",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A112": {
+   "text": "3c3ae1623f5e49fe",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A113": {
+   "text": "8d4ce83a57ae11b7",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A114": {
+   "text": "d1f4d6572297517a",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A115": {
+   "text": "46018143a4b56fb1",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A116": {
+   "text": "cbb5df3e22352ace",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A117": {
+   "text": "aaf0aea204fda46c",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A118": {
+   "text": "2471d7fbacdf1184",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A119": {
+   "text": "fe8e5d83c8c81d99",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A120": {
+   "text": "60d6ce15654f681f",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A121": {
+   "text": "ff81f1e055c23671",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A122": {
+   "text": "19b0345258b97ea0",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A123": {
+   "text": "d0733eb715479596",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A124": {
+   "text": "c39b0c654d00d050",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A125": {
+   "text": "46a8072496e2ce83",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A126": {
+   "text": "c54d85ef1b33526f",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A127": {
+   "text": "2c4887809682a8bb",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A128": {
+   "text": "fa4b0b1f399b9072",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A129": {
+   "text": "e5bad98be071133c",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A130": {
+   "text": "639fcfc238411a6b",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A131": {
+   "text": "3dfec3d180196a1f",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A132": {
+   "text": "b558dea7a8a3e7d6",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A133": {
+   "text": "b7f0fb9be16416f1",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A134": {
+   "text": "b966aeb5922beabd",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A135": {
+   "text": "ef26adf246907046",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A136": {
+   "text": "022b93a1e73f36b6",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A137": {
+   "text": "27013db74e86093f",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A138": {
+   "text": "453fb161ce4f0b8f",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A139": {
+   "text": "bcd101d499941e5d",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A140": {
+   "text": "0bafa294a152c5a1",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A141": {
+   "text": "a47f69a551c1ef48",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A142": {
+   "text": "6628110b531bd3d4",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A143": {
+   "text": "fc1b80a7d66138f6",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A144": {
+   "text": "8614b108c367dc86",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A145": {
+   "text": "d5c0020ba7d03afb",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A146": {
+   "text": "d8cfd391a02d131b",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A147": {
+   "text": "3488a2bd5b9f191d",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A148": {
+   "text": "acb45c7f42e07c9f",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A149": {
+   "text": "4a1985b8ec14af8b",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A150": {
+   "text": "896ccacea8124911",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A151": {
+   "text": "12ce88392178926c",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A152": {
+   "text": "f29794bf501a5880",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A153": {
+   "text": "db28076933635f89",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A154": {
+   "text": "35a394a448718bdd",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A155": {
+   "text": "ce6be4751a933f7b",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A156": {
+   "text": "ebc9e45ceb2968f9",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A157": {
+   "text": "6e7acaf247b7fe0a",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A158": {
+   "text": "a82f15418d81fadf",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A159": {
+   "text": "eed3db79265dd17d",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A160": {
+   "text": "1ea6b54853a518e2",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A161": {
+   "text": "20335828a105b087",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A162": {
+   "text": "bc5cbba11301615f",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A163": {
+   "text": "7b44585c5bdb9e56",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A164": {
+   "text": "20646e779ed9b8eb",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A165": {
+   "text": "0c1f33549cad556b",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A166": {
+   "text": "7df799ef52b47b4a",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A167": {
+   "text": "135b0c10611ac233",
+   "numbers": "57f74476bf6d92a0",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A168": {
+   "text": "813d43ca09ce1668",
+   "numbers": "0d3825cbaa03c0dd",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A169": {
+   "text": "5e0dc228c25ea18f",
+   "numbers": "0d3825cbaa03c0dd",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A170": {
+   "text": "4b9cccc3b73d9d9b",
+   "numbers": "0d3825cbaa03c0dd",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A171": {
+   "text": "2cf62611c3133591",
+   "numbers": "0d3825cbaa03c0dd",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A172": {
+   "text": "e5fed4374aa1bbe3",
+   "numbers": "0d3825cbaa03c0dd",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A173": {
+   "text": "35e1261585712e9e",
+   "numbers": "0d3825cbaa03c0dd",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A174": {
+   "text": "4cfc1f581b6e4bda",
+   "numbers": "0d3825cbaa03c0dd",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A175": {
+   "text": "e84d761025021b97",
+   "numbers": "0d3825cbaa03c0dd",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A176": {
+   "text": "5ff4e4afc78278d3",
+   "numbers": "0d3825cbaa03c0dd",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A177": {
+   "text": "d86e2b452a53a130",
+   "numbers": "0d3825cbaa03c0dd",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A178": {
+   "text": "c579d09776ac47c3",
+   "numbers": "0d3825cbaa03c0dd",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A179": {
+   "text": "c546edc00e0bac99",
+   "numbers": "0d3825cbaa03c0dd",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A180": {
+   "text": "c484bf280d9774a7",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A181": {
+   "text": "1342f56b5b5c8ab4",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A182": {
+   "text": "89e6daa5cd87cdd1",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A183": {
+   "text": "8c9817abd626dea2",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A184": {
+   "text": "3adf471713168ce7",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A185": {
+   "text": "1f13ef01bed27c2f",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A186": {
+   "text": "faf8f6706af28028",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A187": {
+   "text": "3f9953909119fe07",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A188": {
+   "text": "02567f99570ef896",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A189": {
+   "text": "52ebe73e36460f76",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A190": {
+   "text": "93653db159dc1acf",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A191": {
+   "text": "3b6bfe2f1b39345c",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A192": {
+   "text": "3727bec72351c6d8",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A193": {
+   "text": "f8cb02ac444cf5eb",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A194": {
+   "text": "f3142165e2538339",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A195": {
+   "text": "bb1290528ed271d0",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A196": {
+   "text": "c2f781af2c83c956",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A197": {
+   "text": "ea27749af1722907",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A198": {
+   "text": "f8b7825435fd5c2e",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A199": {
+   "text": "be73fc4b47047df9",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A200": {
+   "text": "9edcb6d82a09b469",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A201": {
+   "text": "b8072ad28485ad8d",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A202": {
+   "text": "c96c19564d084e7d",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A203": {
+   "text": "6c0e5e2d5b4ee08c",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A204": {
+   "text": "41ea83f58e77f156",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A205": {
+   "text": "72c193ac284a11d0",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A206": {
+   "text": "68a8ed1d4d61f77b",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A207": {
+   "text": "c08d013aea538e99",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A208": {
+   "text": "3652c9eff7177160",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A209": {
+   "text": "65094bdac23a6a05",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A210": {
+   "text": "f8f9eaaf15e03660",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A211": {
+   "text": "0e7ec60ea1e0b282",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A212": {
+   "text": "1ed40d4b26a42275",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A213": {
+   "text": "d42d388cc7a09753",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A214": {
+   "text": "8d7e29a27658b0ce",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A215": {
+   "text": "ec1696c62227a8e7",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A216": {
+   "text": "a1daafe908249636",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A217": {
+   "text": "089b715d89e44310",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A218": {
+   "text": "b6e9fce26cf892d9",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A219": {
+   "text": "c032a12e3adb6b3c",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A220": {
+   "text": "d7adcda41cb25e10",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A221": {
+   "text": "5d4ea0324f9eaf4a",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A222": {
+   "text": "1dbc8687ac1ff68f",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A223": {
+   "text": "1c5c28890ac24458",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A224": {
+   "text": "ce62f2f1d4c72e77",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A225": {
+   "text": "ed4052cd2dfa7b98",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A226": {
+   "text": "c1dd3f68ecf374ef",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A227": {
+   "text": "7d5582d10af7d0a1",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A228": {
+   "text": "0203ae29a8f3ebc7",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A229": {
+   "text": "15ee99f3a948018b",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A230": {
+   "text": "4e2abc6f03037889",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A231": {
+   "text": "1fa32de2fef91793",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A232": {
+   "text": "93c4526be7c4b23a",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A233": {
+   "text": "d0239dfa811f5a17",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A234": {
+   "text": "f8c723874afc1015",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A235": {
+   "text": "9c395070ee57004a",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A236": {
+   "text": "46f21c4c6dd621c7",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A237": {
+   "text": "22d93100ac40d6e4",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A238": {
+   "text": "8876bf4270cc4d44",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A239": {
+   "text": "d00ca4ae8ab8f1dc",
+   "numbers": "1fbb54c770722a1a",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A240": {
+   "text": "a45a64c55f1d9c38",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A241": {
+   "text": "5f9a3606201de7e2",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A242": {
+   "text": "78157a9bdd87d1f7",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A243": {
+   "text": "dba739aed2088409",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A244": {
+   "text": "afb77be25e6e7df5",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A245": {
+   "text": "66ae3ebb2b497827",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A246": {
+   "text": "4400c3ea65ce3437",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A247": {
+   "text": "b827af59cee9b26d",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A248": {
+   "text": "b067be0f6a4e42d0",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A249": {
+   "text": "50b9f80e94e82f07",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A250": {
+   "text": "080627f648ea1fd6",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "A251": {
+   "text": "2a50226c46362741",
+   "numbers": "6779ed0e5e885d41",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "B000": {
+   "text": "a203781b7895e2a4",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B001": {
+   "text": "a7f5b70be7b4719e",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B002": {
+   "text": "8d00b6f10dfc9d59",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B003": {
+   "text": "066c1b277f01b437",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B004": {
+   "text": "c7972a4a416da6e6",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B005": {
+   "text": "5eb0fae2c0df51b6",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B006": {
+   "text": "c9b2edc6191ddbad",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B007": {
+   "text": "8f5dff146df5e664",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B008": {
+   "text": "e19353b893df8c4c",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B009": {
+   "text": "30edfc775d846aa0",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B010": {
+   "text": "5daaf75705945c7b",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B011": {
+   "text": "d138f2edcaab8c5c",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B012": {
+   "text": "c97ec5f065db1e10",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B013": {
+   "text": "399180271a4f3c58",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B014": {
+   "text": "a13dc3bc0d1ab483",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B015": {
+   "text": "eed2da4f21f1a23b",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B016": {
+   "text": "9bb10828404e6348",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B017": {
+   "text": "d1343f0ede08f2cf",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B018": {
+   "text": "afff3cd4a3346dd9",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B019": {
+   "text": "7c03fadcbfac8eb6",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B020": {
+   "text": "8caba61bfdef1b62",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B021": {
+   "text": "a46fd14bca9b165e",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B022": {
+   "text": "234e827843fe58a0",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B023": {
+   "text": "629d11b46a96bd60",
+   "numbers": "a38373688052bec8",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B024": {
+   "text": "be95cccb19ff461e",
+   "numbers": "398d92d8005a313a",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B025": {
+   "text": "6737c6bcb7ab1457",
+   "numbers": "398d92d8005a313a",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B026": {
+   "text": "5245581b076efa9f",
+   "numbers": "398d92d8005a313a",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B027": {
+   "text": "984e4d6a3d45153b",
+   "numbers": "398d92d8005a313a",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B028": {
+   "text": "6087f9c1711a19bd",
+   "numbers": "398d92d8005a313a",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B029": {
+   "text": "cdcdad5894f5ee25",
+   "numbers": "398d92d8005a313a",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B030": {
+   "text": "f041247e6df496fe",
+   "numbers": "398d92d8005a313a",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B031": {
+   "text": "d325e991048416d8",
+   "numbers": "398d92d8005a313a",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B032": {
+   "text": "3e86a49d1f94c152",
+   "numbers": "398d92d8005a313a",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B033": {
+   "text": "a65840a28a5dc266",
+   "numbers": "398d92d8005a313a",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B034": {
+   "text": "7e98973671933692",
+   "numbers": "398d92d8005a313a",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B035": {
+   "text": "9c1f01772024e386",
+   "numbers": "398d92d8005a313a",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B036": {
+   "text": "e70c2f594c8fdddb",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B037": {
+   "text": "b92fbbe853b35aa0",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B038": {
+   "text": "e5c7e9f9c2eda834",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B039": {
+   "text": "193033b672663310",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B040": {
+   "text": "efe52dd3929c57e3",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B041": {
+   "text": "a210c1c3c2cc2f99",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B042": {
+   "text": "b002358be21abf7a",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B043": {
+   "text": "775fa70118db3cbf",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B044": {
+   "text": "752290a48f1a4d4d",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B045": {
+   "text": "41c5e17ed771b7e0",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B046": {
+   "text": "24e54b7dad575087",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B047": {
+   "text": "eaa5bd3b3262b2b0",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B048": {
+   "text": "bbda8ea337d69dcc",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B049": {
+   "text": "2d8e429761f58107",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B050": {
+   "text": "cd844d563e9d9735",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B051": {
+   "text": "d55ab9879e6567bb",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B052": {
+   "text": "6bac0484d2a8f242",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B053": {
+   "text": "0c558ae9ef01015a",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B054": {
+   "text": "aec4108266d89aa8",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B055": {
+   "text": "b46eff8936e426b8",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B056": {
+   "text": "a1d760cbcc2f31bf",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B057": {
+   "text": "3591a10cc1835054",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B058": {
+   "text": "4b670ea7dd2944c9",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B059": {
+   "text": "d1f06203640bb828",
+   "numbers": "a3c1eaa2e37e92e6",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B060": {
+   "text": "65e4ae1a9554b485",
+   "numbers": "973afbbcd12ad074",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B061": {
+   "text": "d1bbb897607944ca",
+   "numbers": "973afbbcd12ad074",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B062": {
+   "text": "3828af38a5ba07b9",
+   "numbers": "973afbbcd12ad074",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B063": {
+   "text": "9e1a084917d622a8",
+   "numbers": "973afbbcd12ad074",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B064": {
+   "text": "9a30685582af5450",
+   "numbers": "973afbbcd12ad074",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B065": {
+   "text": "15e6c5646f184d44",
+   "numbers": "973afbbcd12ad074",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B066": {
+   "text": "8707dcba6072a8e2",
+   "numbers": "973afbbcd12ad074",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B067": {
+   "text": "c05f44967c187077",
+   "numbers": "973afbbcd12ad074",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B068": {
+   "text": "cdab4dd26a3fb058",
+   "numbers": "973afbbcd12ad074",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B069": {
+   "text": "bda477b8289beb08",
+   "numbers": "973afbbcd12ad074",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B070": {
+   "text": "05d67ccbe9d98007",
+   "numbers": "973afbbcd12ad074",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B071": {
+   "text": "a63d1dea0cb1e481",
+   "numbers": "973afbbcd12ad074",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B072": {
+   "text": "e6a590fa08fe6b09",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B073": {
+   "text": "e06fe11540b8cdb3",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B074": {
+   "text": "036fed054d29a064",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B075": {
+   "text": "42e5f5f4e3abd0e9",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B076": {
+   "text": "717ddd0c13a94079",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B077": {
+   "text": "7a1335532c0ad110",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B078": {
+   "text": "1412f134377df8ee",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B079": {
+   "text": "7019f0b154853751",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B080": {
+   "text": "5f10bf031b285b86",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B081": {
+   "text": "06117ae617b2af61",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B082": {
+   "text": "ffb708ca1b288898",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B083": {
+   "text": "a38322bf7a286059",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B084": {
+   "text": "e1729f4d9631a46d",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B085": {
+   "text": "97695ea9ba45abe4",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B086": {
+   "text": "6d7315f496fff0bd",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B087": {
+   "text": "9669e09fbace7d10",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B088": {
+   "text": "2dc25a5de0e3f3f1",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B089": {
+   "text": "7d62b94656dd4602",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B090": {
+   "text": "f1b8e6a30ccb14a2",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B091": {
+   "text": "0cd42208dcb9a1a3",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B092": {
+   "text": "b8e977b6356ce942",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B093": {
+   "text": "e4225371fd6c04e8",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B094": {
+   "text": "aca01861c0679b85",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B095": {
+   "text": "06276bc092bf0565",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B096": {
+   "text": "2c794947772ec5cc",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B097": {
+   "text": "2758750528f87151",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B098": {
+   "text": "1f929367d791e780",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B099": {
+   "text": "1d4989b6982d9e77",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B100": {
+   "text": "e480ef9b2406b0ba",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B101": {
+   "text": "9105515c6089c48f",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B102": {
+   "text": "85570aaebcc6dd5d",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B103": {
+   "text": "e958f3b983c70bd9",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B104": {
+   "text": "3e9114d09c8a7dd2",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B105": {
+   "text": "93c29cc9f745153b",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B106": {
+   "text": "293336b7d7c008d1",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B107": {
+   "text": "eff4a8d17e9df3aa",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B108": {
+   "text": "e1700fa8e2c0ca29",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B109": {
+   "text": "310c35e273cee61c",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B110": {
+   "text": "1de49edae1869881",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B111": {
+   "text": "3d67aa5d25221962",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B112": {
+   "text": "7edfcdf117d7dfe3",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B113": {
+   "text": "fe8ad6859923227e",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B114": {
+   "text": "cf6b7b3d9210b2e7",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B115": {
+   "text": "11de9cbeaff1e03a",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B116": {
+   "text": "bc76d16d9da27766",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B117": {
+   "text": "ed93cf1f3f4b74ee",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B118": {
+   "text": "188388636709a7f4",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B119": {
+   "text": "4241a662f154084a",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B120": {
+   "text": "7b8da36e92c92063",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B121": {
+   "text": "786a2950e603f216",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B122": {
+   "text": "9674463dd6a63d7b",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B123": {
+   "text": "f7a1c185d1d2e216",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B124": {
+   "text": "d4f2c7095256bd02",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B125": {
+   "text": "6b54b24c22d1eccd",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B126": {
+   "text": "eb3bc82af9e20092",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B127": {
+   "text": "014fbbfb5a0645e0",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B128": {
+   "text": "bf3e2621d5abc686",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B129": {
+   "text": "f677519a005eeadc",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B130": {
+   "text": "f7a5532828ed02f9",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B131": {
+   "text": "cea1ce86d524dd63",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B132": {
+   "text": "8912d096c774f991",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B133": {
+   "text": "2ee3f66160576c86",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B134": {
+   "text": "dbb5a1ef4434c8c4",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B135": {
+   "text": "60c1d8ac20ba3b29",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B136": {
+   "text": "075b2db757e5d62b",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B137": {
+   "text": "240fa11cafe8571d",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B138": {
+   "text": "22aa8be1afeea71c",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B139": {
+   "text": "7f5c113af95746cb",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B140": {
+   "text": "ee36931f445b3c7f",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B141": {
+   "text": "7fe0b8c2bf96208c",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B142": {
+   "text": "10891e6db59b3627",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B143": {
+   "text": "0c16124bee9d4541",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B144": {
+   "text": "a7d801a9a2f5be5a",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B145": {
+   "text": "2df1e3401fc2bf24",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B146": {
+   "text": "53099d34c5d8b3a5",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B147": {
+   "text": "f60033606a422905",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B148": {
+   "text": "3c204c0f7ee9a769",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B149": {
+   "text": "800b1ec3f50fdb46",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B150": {
+   "text": "85d366679a539ffb",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B151": {
+   "text": "51adebe21efefd92",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B152": {
+   "text": "841afdba9a70187f",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B153": {
+   "text": "f1b3e75518ae8d8e",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B154": {
+   "text": "0ccd39febbe53630",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B155": {
+   "text": "f5eec0d3edf30021",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B156": {
+   "text": "b974fd509559522a",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B157": {
+   "text": "d11014d1473d65ac",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B158": {
+   "text": "fbcf26e8be2c4f0a",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B159": {
+   "text": "5c90ec7d4f942e69",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B160": {
+   "text": "aa5fb09f336f20e2",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B161": {
+   "text": "35a08ae30c4a622f",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B162": {
+   "text": "f8d4247c11c39679",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B163": {
+   "text": "4de94d61fe88ac0d",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B164": {
+   "text": "995fe69f22b5f03c",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B165": {
+   "text": "4c74c764b9eafe03",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B166": {
+   "text": "c552b5404fe49765",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B167": {
+   "text": "cff046b974e0e4fd",
+   "numbers": "0192253128e262e0",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B168": {
+   "text": "2a67e49ef6718f2f",
+   "numbers": "b919bee2a13fed2f",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B169": {
+   "text": "7dfbc4b1cec7892f",
+   "numbers": "b919bee2a13fed2f",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B170": {
+   "text": "8eb682e50fb63495",
+   "numbers": "b919bee2a13fed2f",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B171": {
+   "text": "0bc2f6b030eedcb2",
+   "numbers": "b919bee2a13fed2f",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B172": {
+   "text": "fd26205397c0aee5",
+   "numbers": "b919bee2a13fed2f",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B173": {
+   "text": "ef23ff9437d0a041",
+   "numbers": "b919bee2a13fed2f",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B174": {
+   "text": "d2bf165ecc6aae9d",
+   "numbers": "b919bee2a13fed2f",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B175": {
+   "text": "fae3b815d312e8a6",
+   "numbers": "b919bee2a13fed2f",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B176": {
+   "text": "4dc1ec500876bfdf",
+   "numbers": "b919bee2a13fed2f",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B177": {
+   "text": "06f86606cf4a4925",
+   "numbers": "b919bee2a13fed2f",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B178": {
+   "text": "55d4d154a46613cd",
+   "numbers": "b919bee2a13fed2f",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B179": {
+   "text": "9cc398a5dd0e319a",
+   "numbers": "b919bee2a13fed2f",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B180": {
+   "text": "de238bf85552349e",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B181": {
+   "text": "a8ff2ad3eacb823b",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B182": {
+   "text": "eb89eab7fc18fa96",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B183": {
+   "text": "1ff1af78ac298631",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B184": {
+   "text": "f5452dffab2f8ea2",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B185": {
+   "text": "a5adc9a5671b6f16",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B186": {
+   "text": "592e097b1492e8af",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B187": {
+   "text": "aa8be1ca0811d9c6",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B188": {
+   "text": "02d81e1533808b51",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B189": {
+   "text": "8ce3607d4c34efed",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B190": {
+   "text": "537d385d6f60e06d",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B191": {
+   "text": "9a9aa8d7178f61e9",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B192": {
+   "text": "6a93446f42150661",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B193": {
+   "text": "9135871e79a64b81",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B194": {
+   "text": "28f6e5e33b6349c0",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B195": {
+   "text": "63b9d6ac6d075f94",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B196": {
+   "text": "64f15991f2c6428a",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B197": {
+   "text": "1e53415cdc1cad4c",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B198": {
+   "text": "858ef535182c1463",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B199": {
+   "text": "278f1ab3b7c4c38c",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B200": {
+   "text": "5cd9eec32b317ebb",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B201": {
+   "text": "fda57dc1502cf80e",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B202": {
+   "text": "f2cd1debf1b00517",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B203": {
+   "text": "2fdf17b233b354b3",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B204": {
+   "text": "6cb616f24467df14",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B205": {
+   "text": "c78e668f8fa5364b",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B206": {
+   "text": "ade0179456e6194d",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B207": {
+   "text": "f581416b32b1fd52",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B208": {
+   "text": "00f326c406511a97",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B209": {
+   "text": "570a30856f756f34",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B210": {
+   "text": "4386de442ba25f0a",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B211": {
+   "text": "77c09e2867d91cbc",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B212": {
+   "text": "aae262a06d85f956",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B213": {
+   "text": "0e270032bf03028b",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B214": {
+   "text": "b87284477311ff8c",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B215": {
+   "text": "17c0aed98005d07c",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B216": {
+   "text": "c01a3178396832a3",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B217": {
+   "text": "d8b14cdecce6e410",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B218": {
+   "text": "5cc2ff36cc808744",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B219": {
+   "text": "70a5966c52002f9f",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B220": {
+   "text": "714cc2527a7ac7b4",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B221": {
+   "text": "a6f51aa2e30294ea",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B222": {
+   "text": "89ac75dbb8dc35fd",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B223": {
+   "text": "93e64d19ebfc702a",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B224": {
+   "text": "904bb01d4b64a69f",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B225": {
+   "text": "1f747bcd3edcba3d",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B226": {
+   "text": "59cce7cc57347e05",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B227": {
+   "text": "cbbba87152d09bb6",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B228": {
+   "text": "6dd214ca0e1921ea",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B229": {
+   "text": "4deff851eaeaadba",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B230": {
+   "text": "72ea75c553a0f26c",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B231": {
+   "text": "d1df7f35638f3a6a",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B232": {
+   "text": "75a6b2e4997f3759",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B233": {
+   "text": "a87bcdc4b739548d",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B234": {
+   "text": "d9183a1d0ea1559d",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B235": {
+   "text": "b176c2154a58daf6",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B236": {
+   "text": "adf9db5fd968d5ce",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B237": {
+   "text": "40c3be508a593ff2",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B238": {
+   "text": "770df2e9c679cffe",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B239": {
+   "text": "0760896b748b5d5e",
+   "numbers": "af7fd089e7759b0d",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B240": {
+   "text": "8796d53aa34682c2",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B241": {
+   "text": "e2b45944607b676c",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B242": {
+   "text": "666610716ee9b69a",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B243": {
+   "text": "74c0eb0c079299e4",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B244": {
+   "text": "22fcdf5d6ab3d214",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B245": {
+   "text": "ca02ce34d4cc021e",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B246": {
+   "text": "0fc98e21a40d9e3c",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B247": {
+   "text": "d0aeb715ee516204",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B248": {
+   "text": "4ea860ff516906de",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B249": {
+   "text": "b9563578fff03480",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B250": {
+   "text": "f3b70673e9f12c5b",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "B251": {
+   "text": "1b026fdabd7ff7ea",
+   "numbers": "1e122e052dcded29",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C000": {
+   "text": "b1c43ef532fcaf9d",
+   "numbers": "29bad389098bdcbd",
+   "ragPM": null,
+   "ragFTE": "healthy",
+   "headroom": "",
+   "senderRagPm": "",
+   "senderRagBau": "Healthy"
+  },
+  "C001": {
+   "text": "ff6dafae94146da1",
+   "numbers": "1dadf9a8f88111b2",
+   "ragPM": null,
+   "ragFTE": "healthy",
+   "headroom": 108,
+   "senderRagPm": "",
+   "senderRagBau": "Healthy"
+  },
+  "C002": {
+   "text": "755980e88f9fb8e4",
+   "numbers": "01017610f44227db",
+   "ragPM": null,
+   "ragFTE": "healthy",
+   "headroom": 89,
+   "senderRagPm": "",
+   "senderRagBau": "Healthy"
+  },
+  "C003": {
+   "text": "755980e88f9fb8e4",
+   "numbers": "01017610f44227db",
+   "ragPM": null,
+   "ragFTE": "healthy",
+   "headroom": 89,
+   "senderRagPm": "",
+   "senderRagBau": "Healthy"
+  },
+  "C004": {
+   "text": "ab429936d7cdc1c4",
+   "numbers": "7fc563fa37127056",
+   "ragPM": null,
+   "ragFTE": "healthy",
+   "headroom": 83,
+   "senderRagPm": "",
+   "senderRagBau": "Healthy"
+  },
+  "C005": {
+   "text": "3e68de4df445fd74",
+   "numbers": "20eb5a170295e0c9",
+   "ragPM": null,
+   "ragFTE": "healthy",
+   "headroom": 77,
+   "senderRagPm": "",
+   "senderRagBau": "Healthy"
+  },
+  "C006": {
+   "text": "3e68de4df445fd74",
+   "numbers": "20eb5a170295e0c9",
+   "ragPM": null,
+   "ragFTE": "healthy",
+   "headroom": 77,
+   "senderRagPm": "",
+   "senderRagBau": "Healthy"
+  },
+  "C007": {
+   "text": "afb862d56155f223",
+   "numbers": "8127587067350154",
+   "ragPM": null,
+   "ragFTE": "healthy",
+   "headroom": 63,
+   "senderRagPm": "",
+   "senderRagBau": "Healthy"
+  },
+  "C008": {
+   "text": "6451758400c3d763",
+   "numbers": "85bcb34444442823",
+   "ragPM": null,
+   "ragFTE": "atrisk",
+   "headroom": 43,
+   "senderRagPm": "",
+   "senderRagBau": "Watch"
+  },
+  "C009": {
+   "text": "05660de7f015d447",
+   "numbers": "f3bd562688978292",
+   "ragPM": null,
+   "ragFTE": "atrisk",
+   "headroom": 23,
+   "senderRagPm": "",
+   "senderRagBau": "Watch"
+  },
+  "C010": {
+   "text": "652014c90f675356",
+   "numbers": "fc2f9893675fd288",
+   "ragPM": null,
+   "ragFTE": "over",
+   "headroom": -44,
+   "senderRagPm": "",
+   "senderRagBau": "At risk"
+  },
+  "C011": {
+   "text": "91b36782a2046949",
+   "numbers": "4faddaaee25d9a1a",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": "",
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C012": {
+   "text": "63f3afa2e72c08b1",
+   "numbers": "dbf5d000f2ac2e1a",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 6,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C013": {
+   "text": "71da7e79c2da41d8",
+   "numbers": "5a0f2f3bca275c11",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 3,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C014": {
+   "text": "71da7e79c2da41d8",
+   "numbers": "5a0f2f3bca275c11",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 3,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C015": {
+   "text": "6d97bd96e9d59976",
+   "numbers": "28565ad76dc1b6e8",
+   "ragPM": "atrisk",
+   "ragFTE": "healthy",
+   "headroom": 1,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Healthy"
+  },
+  "C016": {
+   "text": "b2312bd93ebad534",
+   "numbers": "19b50a24a5c269ef",
+   "ragPM": "atrisk",
+   "ragFTE": "healthy",
+   "headroom": 0,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Healthy"
+  },
+  "C017": {
+   "text": "b2312bd93ebad534",
+   "numbers": "19b50a24a5c269ef",
+   "ragPM": "atrisk",
+   "ragFTE": "healthy",
+   "headroom": 0,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Healthy"
+  },
+  "C018": {
+   "text": "b780ffccd683bd95",
+   "numbers": "82702d27323b164b",
+   "ragPM": "over",
+   "ragFTE": "healthy",
+   "headroom": -4,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Healthy"
+  },
+  "C019": {
+   "text": "ca694b724fccdc6f",
+   "numbers": "389860fa4aeec311",
+   "ragPM": "over",
+   "ragFTE": "healthy",
+   "headroom": -9,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Healthy"
+  },
+  "C020": {
+   "text": "dd91b9da0435716d",
+   "numbers": "35f57e52253e05cd",
+   "ragPM": "over",
+   "ragFTE": "healthy",
+   "headroom": -14,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Healthy"
+  },
+  "C021": {
+   "text": "56b9cbd0588c14b0",
+   "numbers": "d509dd341a7f0222",
+   "ragPM": "over",
+   "ragFTE": "healthy",
+   "headroom": -31,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Healthy"
+  },
+  "C022": {
+   "text": "8913cdfab8762329",
+   "numbers": "dd984f7df5b2ed15",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": "",
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C023": {
+   "text": "54d7f144c04bfe11",
+   "numbers": "f3864aed5896bbc9",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 14,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C024": {
+   "text": "9e5fb705db9e19c0",
+   "numbers": "905e5022cf7456fb",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 6,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C025": {
+   "text": "9e5fb705db9e19c0",
+   "numbers": "905e5022cf7456fb",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 6,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C026": {
+   "text": "89145a675e618554",
+   "numbers": "5544843bfa8f3e33",
+   "ragPM": "atrisk",
+   "ragFTE": "healthy",
+   "headroom": 3,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Healthy"
+  },
+  "C027": {
+   "text": "7723bae16fd504c7",
+   "numbers": "be481f19078c1917",
+   "ragPM": "atrisk",
+   "ragFTE": "healthy",
+   "headroom": 0,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Healthy"
+  },
+  "C028": {
+   "text": "7723bae16fd504c7",
+   "numbers": "be481f19078c1917",
+   "ragPM": "atrisk",
+   "ragFTE": "healthy",
+   "headroom": 0,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Healthy"
+  },
+  "C029": {
+   "text": "8b8b9d85439f020b",
+   "numbers": "8cd70fe283c0cb3c",
+   "ragPM": "over",
+   "ragFTE": "healthy",
+   "headroom": -7,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Healthy"
+  },
+  "C030": {
+   "text": "879eed28a63f09ec",
+   "numbers": "b11186d3436aa3de",
+   "ragPM": "over",
+   "ragFTE": "healthy",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Healthy"
+  },
+  "C031": {
+   "text": "ceac26614d61a9e9",
+   "numbers": "2adac33a3bf926bd",
+   "ragPM": "over",
+   "ragFTE": "healthy",
+   "headroom": -27,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Healthy"
+  },
+  "C032": {
+   "text": "6e849ed193859018",
+   "numbers": "362c59a03ae5d4d7",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -60,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "C033": {
+   "text": "cf52492596a76291",
+   "numbers": "b2ef5afd85ec4214",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": "",
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C034": {
+   "text": "d57e177fa4b53498",
+   "numbers": "73b787f1c47cf018",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 30,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C035": {
+   "text": "1bdb974f8e3641dc",
+   "numbers": "72c82f9969804025",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 13,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C036": {
+   "text": "1bdb974f8e3641dc",
+   "numbers": "72c82f9969804025",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 13,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C037": {
+   "text": "360a17cdaf76f096",
+   "numbers": "100050776fa4e697",
+   "ragPM": "atrisk",
+   "ragFTE": "healthy",
+   "headroom": 6,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Healthy"
+  },
+  "C038": {
+   "text": "4494477d6efc411a",
+   "numbers": "c59608f78386ce32",
+   "ragPM": "atrisk",
+   "ragFTE": "healthy",
+   "headroom": 0,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Healthy"
+  },
+  "C039": {
+   "text": "4494477d6efc411a",
+   "numbers": "c59608f78386ce32",
+   "ragPM": "atrisk",
+   "ragFTE": "healthy",
+   "headroom": 0,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Healthy"
+  },
+  "C040": {
+   "text": "d2cb048ea1d1d276",
+   "numbers": "ee8696ab91d02b01",
+   "ragPM": "over",
+   "ragFTE": "healthy",
+   "headroom": -14,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Healthy"
+  },
+  "C041": {
+   "text": "00e2b361f4c29c32",
+   "numbers": "e7f46667f02e3d54",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -34,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "C042": {
+   "text": "6f0ef8c9b4dfd9e3",
+   "numbers": "f0c1d489b430aa35",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -54,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "C043": {
+   "text": "b17853604c5a079d",
+   "numbers": "852849b0f44f0c6d",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -121,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C044": {
+   "text": "0e724d4ddbde8ad8",
+   "numbers": "2aa8aa8487b8d8df",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": "",
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C045": {
+   "text": "52d5c3b5a10d8e98",
+   "numbers": "256c26f74c1c8689",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 37,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C046": {
+   "text": "5a2efe54ffd7cd56",
+   "numbers": "295021c08de1e271",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 16,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C047": {
+   "text": "5a2efe54ffd7cd56",
+   "numbers": "295021c08de1e271",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 16,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C048": {
+   "text": "16d23fabee8430bf",
+   "numbers": "868c6cd4584780f1",
+   "ragPM": "atrisk",
+   "ragFTE": "healthy",
+   "headroom": 8,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Healthy"
+  },
+  "C049": {
+   "text": "7839d463177b21f5",
+   "numbers": "04b5f74f1ce71095",
+   "ragPM": "atrisk",
+   "ragFTE": "healthy",
+   "headroom": 0,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Healthy"
+  },
+  "C050": {
+   "text": "7839d463177b21f5",
+   "numbers": "04b5f74f1ce71095",
+   "ragPM": "atrisk",
+   "ragFTE": "healthy",
+   "headroom": 0,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Healthy"
+  },
+  "C051": {
+   "text": "f715b5173fedd9b1",
+   "numbers": "e3bf220c57a16916",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -17,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "C052": {
+   "text": "72721ee6b5a788fb",
+   "numbers": "76dc360a3a290244",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -42,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "C053": {
+   "text": "ca04086c0e2f266a",
+   "numbers": "b475764476ea5de4",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -67,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C054": {
+   "text": "326e9a83cb9bdb71",
+   "numbers": "e2188b3af6afe7b0",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -150,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C055": {
+   "text": "5fa600bc2574face",
+   "numbers": "88bf5bcec12f1e4e",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": "",
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C056": {
+   "text": "60d128243063c734",
+   "numbers": "64b4f007fe48e3d2",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 59,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C057": {
+   "text": "f12b0b51f3b9682e",
+   "numbers": "cb56c79f7ca64b8e",
+   "ragPM": "healthy",
+   "ragFTE": "atrisk",
+   "headroom": 26,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Watch"
+  },
+  "C058": {
+   "text": "f12b0b51f3b9682e",
+   "numbers": "cb56c79f7ca64b8e",
+   "ragPM": "healthy",
+   "ragFTE": "atrisk",
+   "headroom": 26,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Watch"
+  },
+  "C059": {
+   "text": "beced633fd5a3c30",
+   "numbers": "252a1312a3a198df",
+   "ragPM": "atrisk",
+   "ragFTE": "atrisk",
+   "headroom": 13,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Watch"
+  },
+  "C060": {
+   "text": "76495466b996b87b",
+   "numbers": "61b49842cb44e497",
+   "ragPM": "atrisk",
+   "ragFTE": "atrisk",
+   "headroom": 0,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Watch"
+  },
+  "C061": {
+   "text": "76495466b996b87b",
+   "numbers": "61b49842cb44e497",
+   "ragPM": "atrisk",
+   "ragFTE": "atrisk",
+   "headroom": 0,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Watch"
+  },
+  "C062": {
+   "text": "12ca5aaa9e1abdd2",
+   "numbers": "09764ae83b296571",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -27,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "C063": {
+   "text": "f477966d6670b3e5",
+   "numbers": "8c2c75d2686ce239",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -67,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C064": {
+   "text": "50bb5d620fe127e1",
+   "numbers": "ba306022d67dc9da",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -107,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C065": {
+   "text": "de6b2d99e70a0342",
+   "numbers": "92eb65cfc4ef6744",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -240,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C066": {
+   "text": "8836102bebadcf6e",
+   "numbers": "85da04dad6ccad60",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": "",
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C067": {
+   "text": "d5ad10a2cf6dc157",
+   "numbers": "ea49a88ed895b127",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": 75,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C068": {
+   "text": "9ef8eea4685bf44e",
+   "numbers": "fb9b0b2266c83263",
+   "ragPM": "healthy",
+   "ragFTE": "atrisk",
+   "headroom": 33,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Watch"
+  },
+  "C069": {
+   "text": "9ef8eea4685bf44e",
+   "numbers": "fb9b0b2266c83263",
+   "ragPM": "healthy",
+   "ragFTE": "atrisk",
+   "headroom": 33,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Watch"
+  },
+  "C070": {
+   "text": "0eb00386fd3e879e",
+   "numbers": "8e4ca94d009635ef",
+   "ragPM": "atrisk",
+   "ragFTE": "atrisk",
+   "headroom": 16,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Watch"
+  },
+  "C071": {
+   "text": "07f1d3686103ffd1",
+   "numbers": "6eaaa8477e459a37",
+   "ragPM": "atrisk",
+   "ragFTE": "atrisk",
+   "headroom": 0,
+   "senderRagPm": "Watch",
+   "senderRagBau": "Watch"
+  },
+  "C072": {
+   "text": "a068cf5b3236cbf8",
+   "numbers": "7cebe1369173901c",
+   "ragPM": "over",
+   "ragFTE": "atrisk",
+   "headroom": -2,
+   "senderRagPm": "At risk",
+   "senderRagBau": "Watch"
+  },
+  "C073": {
+   "text": "58dfb211dee53f7e",
+   "numbers": "8d85edc58e4fd10a",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -34,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C074": {
+   "text": "a87e747751391d48",
+   "numbers": "62eb9686d1bd75b8",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -84,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C075": {
+   "text": "371898eb2c6dd7d4",
+   "numbers": "3a782a8d6861e2be",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -134,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C076": {
+   "text": "c53ac15010bb179b",
+   "numbers": "d04d056940a7cb82",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -301,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C077": {
+   "text": "7a4beabdd281b0a4",
+   "numbers": "0323fa8feed9aa7f",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": "",
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C078": {
+   "text": "8d6c49bfa543dd14",
+   "numbers": "bdf0fb2bd9f9994b",
+   "ragPM": "healthy",
+   "ragFTE": "atrisk",
+   "headroom": 39,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Watch"
+  },
+  "C079": {
+   "text": "d7a9373ede7b1c5e",
+   "numbers": "11e52f1f6918bda2",
+   "ragPM": "healthy",
+   "ragFTE": "over",
+   "headroom": -44,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "At risk"
+  },
+  "C080": {
+   "text": "ab0fd152c5a67a30",
+   "numbers": "e68ad36405eee6b6",
+   "ragPM": "atrisk",
+   "ragFTE": "over",
+   "headroom": -45,
+   "senderRagPm": "Watch",
+   "senderRagBau": "At risk"
+  },
+  "C081": {
+   "text": "f22c8e8cb1df695a",
+   "numbers": "ab3b691e09cce08e",
+   "ragPM": "atrisk",
+   "ragFTE": "over",
+   "headroom": -77,
+   "senderRagPm": "Watch",
+   "senderRagBau": "At risk"
+  },
+  "C082": {
+   "text": "8fd97e487cf77343",
+   "numbers": "411f265a03066be5",
+   "ragPM": "atrisk",
+   "ragFTE": "over",
+   "headroom": -110,
+   "senderRagPm": "Watch",
+   "senderRagBau": "At risk"
+  },
+  "C083": {
+   "text": "036b7064c1ea906f",
+   "numbers": "076ada997b75a70a",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -112,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C084": {
+   "text": "d042350f0f171792",
+   "numbers": "d480f2c6adf84402",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -177,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C085": {
+   "text": "6faecbbcdbc46149",
+   "numbers": "ac8ec0d69ec61769",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -277,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C086": {
+   "text": "5705fe99c5fa19ad",
+   "numbers": "f742f94babaff701",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -377,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C087": {
+   "text": "a098abea7837361b",
+   "numbers": "670ee87365186aa7",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -710,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C088": {
+   "text": "4dfaa5797eab22bd",
+   "numbers": "a03873657263f037",
+   "ragPM": "healthy",
+   "ragFTE": "healthy",
+   "headroom": "",
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Healthy"
+  },
+  "C089": {
+   "text": "af5077cbd4db77a6",
+   "numbers": "75650273dce0c2e4",
+   "ragPM": "healthy",
+   "ragFTE": "atrisk",
+   "headroom": 18,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "Watch"
+  },
+  "C090": {
+   "text": "cdaf16dfd393ec9f",
+   "numbers": "6de21cae0e0af709",
+   "ragPM": "healthy",
+   "ragFTE": "over",
+   "headroom": -85,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "At risk"
+  },
+  "C091": {
+   "text": "f7f026926f7863c9",
+   "numbers": "4a18c13f1d6335a8",
+   "ragPM": "healthy",
+   "ragFTE": "over",
+   "headroom": -87,
+   "senderRagPm": "Healthy",
+   "senderRagBau": "At risk"
+  },
+  "C092": {
+   "text": "52592d57e9a4ff1b",
+   "numbers": "721b020d48db478a",
+   "ragPM": "atrisk",
+   "ragFTE": "over",
+   "headroom": -127,
+   "senderRagPm": "Watch",
+   "senderRagBau": "At risk"
+  },
+  "C093": {
+   "text": "66226c54acec1b0a",
+   "numbers": "a59eb05555081d2c",
+   "ragPM": "atrisk",
+   "ragFTE": "over",
+   "headroom": -169,
+   "senderRagPm": "Watch",
+   "senderRagBau": "At risk"
+  },
+  "C094": {
+   "text": "0e0a1fdc2baa1753",
+   "numbers": "ff67229379df16f2",
+   "ragPM": "atrisk",
+   "ragFTE": "over",
+   "headroom": -170,
+   "senderRagPm": "Watch",
+   "senderRagBau": "At risk"
+  },
+  "C095": {
+   "text": "d9040e007c15df59",
+   "numbers": "5f115bbdabe37335",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -252,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C096": {
+   "text": "922232396add2be9",
+   "numbers": "af604212d5d86534",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -377,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C097": {
+   "text": "7fdd8475f9ba0692",
+   "numbers": "2d93df453432dfc6",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -502,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  },
+  "C098": {
+   "text": "7747acfdceb6b045",
+   "numbers": "9d3e3e65e8987599",
+   "ragPM": "over",
+   "ragFTE": "over",
+   "headroom": -919,
+   "senderRagPm": "At risk",
+   "senderRagBau": "At risk"
+  }
+ }
+}
