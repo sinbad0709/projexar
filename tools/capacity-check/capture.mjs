@@ -9,15 +9,19 @@ import { INPUT_KEYS } from './shapes.mjs';
 
 /* Every node the tool writes output into. Order is fixed so captures compare. */
 export const SCREEN_NODES = [
-  'positionLead', 'tileGrid', 'ceilingEyebrow', 'ceilingFigure', 'ceilingNote',
-  'factList', 'ragList', 'compareRows', 'ctaHead', 'ctaBody', 'priceLine',
+  'positionLead', 'tileGrid', 'rangeNote',
+  'costEyebrow', 'costFigure', 'costNote', 'loadedSalaryParts',
+  'ceilingEyebrow', 'ceilingFigure', 'ceilingNote',
+  'factList', 'ragList', 'checkList', 'compareRows', 'ctaHead', 'ctaBody', 'priceLine',
   'closingVerdict',
 ];
 
 export const PRINT_NODES = [
-  'pr-figure', 'pr-ceiling', 'pr-verdict', 'pr-tiles', 'pr-bandnote', 'pr-facts',
+  'pr-herohead', 'pr-figure', 'pr-ceiling',
+  'pr-secondhead', 'pr-secondfigure', 'pr-secondnote',
+  'pr-verdict', 'pr-tiles', 'pr-bandnote', 'pr-facts',
   'pr-checkblock', 'pr-inputs', 'pr-formulas', 'pr-flexeranote', 'pr-fxnote',
-  'pr-cards', 'pr-compare', 'pr-sources', 'pr-price',
+  'pr-cards', 'pr-checks', 'pr-compare', 'pr-sources', 'pr-price',
 ];
 
 function readNode(node) {
@@ -25,8 +29,10 @@ function readNode(node) {
   return node.innerHTML || node.textContent || '';
 }
 
-export function capture(shape) {
-  const tool = loadTool();
+/* `toolPath` loads a variant copy of the tool, for invariance shapes that need
+   a constant changed. Everything else about the capture is unchanged. */
+export function capture(shape, { toolPath } = {}) {
+  const tool = loadTool(toolPath);
 
   for (const key of INPUT_KEYS) {
     const raw = shape[key];
@@ -67,6 +73,18 @@ export function capture(shape) {
   const c = tool.api.compute(v);
   result.values = v;
   result.computed = c;
+  /* Which callout leads, and whether the full-cost tile is shown at all. The
+     gate is at the foot of the page, so a rendered tile is by construction
+     above it; what the suite checks is that it renders, unhidden, with no
+     partial-reveal class on it. */
+  result.hero = {
+    costHidden: tool.node('fullCostTile').hidden,
+    costOrder: tool.node('fullCostTile').style.order,
+    ceilingOrder: tool.node('growthCeiling').style.order,
+    costClass: tool.node('fullCostTile').className,
+    ceilingClass: tool.node('growthCeiling').className,
+  };
+  result.permalink = tool.api.permalink(v);
   result.ok = true;
   return result;
 }

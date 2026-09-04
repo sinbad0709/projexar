@@ -305,6 +305,10 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 .tile.atrisk .t-value{ color:var(--amber-600); }
 .tile.healthy .t-value{ color:var(--status-healthy-fg); }
 .tile .t-note{ font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line); color:var(--text-muted); }
+/* Unrated. The contractor companion carries a figure and no judgement, and the
+   neutral top border is what says so before the chip is read. */
+.tile.unrated{ border-top-color:var(--border-subtle); }
+.tile.unrated .t-value{ color:var(--text-default, inherit); }
 
 /* Solid fills, never a tint — the pill has to survive being photocopied. */
 .pill{ flex:none; display:inline-flex; align-items:center; font-size:var(--text-eyebrow-size);
@@ -333,6 +337,42 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 .ceiling .h-note{ font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line);
   color:var(--text-inverse-muted); max-width:64ch; }
 .ceiling .h-note strong{ color:var(--text-inverse); font-weight:var(--weight-semibold); }
+
+/* Two callouts of the same category — the full cost of the portfolio and the
+   growth ceiling — and which one leads depends on the answer about budgets.
+   Ordering them in the flow rather than in the markup keeps one set of nodes
+   for the suite to capture and one set of ids for the print report to read. */
+.hero-area{ display:flex; flex-direction:column; }
+.hero-area .secondary{ box-shadow:var(--shadow-md); }
+.hero-area .secondary .h-figure{ font-size:var(--text-h3-size); line-height:var(--text-h3-line); }
+
+/* The loaded-cost control sits inside the cost callout, on the figure it
+   drives. Input furniture on a dark ground, so it borrows the callout's
+   inverse text colours rather than the form's. */
+.assumption{ margin-top:var(--space-5); padding-top:var(--space-5);
+  border-top:1px solid var(--border-inverse-subtle, rgba(255,255,255,.18)); }
+.assumption .a-row{ display:flex; flex-wrap:wrap; align-items:center; gap:var(--space-3);
+  font-size:var(--text-body-sm-size); color:var(--text-inverse-muted); }
+.assumption label{ font-size:var(--text-body-sm-size); color:var(--text-inverse-muted); }
+.assumption input{ width:9rem; padding:var(--space-2) var(--space-3);
+  border:1px solid rgba(255,255,255,.34); border-radius:var(--radius-input, 8px);
+  background:rgba(255,255,255,.08); color:var(--text-inverse);
+  font-family:var(--font-mono, monospace); font-size:var(--text-body-sm-size); }
+.assumption input:focus-visible{ outline:2px solid var(--text-accent-figure); outline-offset:2px; }
+.assumption .a-parts{ margin-top:var(--space-3); font-size:var(--text-body-sm-size);
+  line-height:var(--text-body-sm-line); color:var(--text-inverse-muted); max-width:64ch; }
+.assumption .a-parts strong{ color:var(--text-inverse); font-weight:var(--weight-semibold); }
+
+/* Checks on the respondent's own answers. Not findings, and styled apart from
+   them so the difference is visible before the heading is read. */
+.checks{ display:flex; flex-direction:column; gap:var(--space-4); }
+.check-item{ border:1px solid var(--border-subtle); border-radius:var(--radius-card);
+  padding:var(--space-5) var(--space-6); background:var(--surface-raised, #fff); }
+.check-item .c-head{ display:flex; align-items:center; gap:var(--space-3);
+  margin-bottom:var(--space-3); flex-wrap:wrap; }
+.check-item .c-title{ font-weight:var(--weight-semibold); }
+.check-item .c-body{ font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line);
+  color:var(--text-muted); max-width:72ch; }
 
 /* Category three — informational bullets. No threshold exists for any of
    these, so nothing here is rated and nothing here is coloured. */
@@ -687,10 +727,34 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
             <div class="control"><input type="number" id="bauStaff" min="0" max="20000" step="1" inputmode="numeric" placeholder="e.g. 20"></div>
             <div class="under"><span class="hint">Excluding your project managers.</span><span class="error"></span></div>
           </div>
+          <!-- Banded, not free text (§3.5). A blended average across a whole
+               department is not knowable to the percentage point, and asking
+               for one produced a report full of figures more precise than the
+               answer they came from. The band is carried through to every
+               dependent figure as a range. Wording is Norm's. -->
           <div class="field full" id="f-bauPercent2">
-            <label for="bauPercent2">Your best estimate of the blended average percentage of their time spent on that project work<span class="tip" data-tip="Averaged across all of them. One person giving half their week and one giving a day a month average out to somewhere in the middle — a rough figure is genuinely useful here."><i class="info" tabindex="0" role="note" aria-label="Averaged across all of them; a rough figure is useful.">i</i></span></label>
-            <div class="control" data-suffix="%"><input type="number" id="bauPercent2" min="1" max="100" step="1" inputmode="numeric" placeholder="e.g. 37"></div>
-            <div class="under"><span class="hint">A whole-number percentage, at least 1.</span><span class="error"></span></div>
+            <label for="bauPercent2">Your best estimate of the blended average share of their time spent on that project work<span class="tip" data-tip="Averaged across all of them. One person giving half their week and one giving a day a month average out to somewhere in the middle — pick the band containing your best guess."><i class="info" tabindex="0" role="note" aria-label="Averaged across all of them; pick the band containing your best guess.">i</i></span></label>
+            <div class="control"><select id="bauPercent2">
+              <option value="" selected>Select a band</option>
+              <option value="1">1&ndash;10%</option>
+              <option value="11">11&ndash;20%</option>
+              <option value="21">21&ndash;30%</option>
+              <option value="31">31&ndash;40%</option>
+              <option value="41">41&ndash;50%</option>
+              <option value="51">51&ndash;60%</option>
+              <option value="61">61&ndash;70%</option>
+              <option value="71">71&ndash;80%</option>
+              <option value="81">81&ndash;90%</option>
+              <option value="91">91&ndash;100%</option>
+            </select></div>
+            <div class="under"><span class="hint">We report every figure this drives as a range across the band you pick.</span><span class="error"></span></div>
+          </div>
+          <!-- Counted, displayed beside the BAU tile, and excluded from every
+               rated figure (§3.2). Wording is Norm's. -->
+          <div class="field full" id="f-contractors">
+            <label for="contractors">Contractors and outsourced staff working on projects<span class="tip" data-tip="Counted separately from your permanent IT staff. They appear beside your BAU capacity figure but are left out of the ratings, the growth ceiling and the cost calculation — the report says where and why."><i class="info" tabindex="0" role="note" aria-label="Counted separately from your permanent IT staff.">i</i></span></label>
+            <div class="control"><input type="number" id="contractors" min="0" max="20000" step="1" inputmode="numeric" placeholder="0"></div>
+            <div class="under"><span class="hint">Counted separately from your permanent IT staff.</span><span class="error"></span></div>
           </div>
           <div class="field" id="f-ticketsPerMonth">
             <label for="ticketsPerMonth">Estimated number of IT service desk tickets handled each month <span class="opt">(optional)</span></label>
@@ -767,27 +831,75 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <h2 class="section-title">Your capacity position</h2>
       <p class="section-sub" id="positionLead"></p>
       <div class="tile-grid" id="tileGrid"></div>
+      <!-- Why a range. This is an argument, not a disclaimer, and it is placed
+           directly under the figures it explains rather than in a footnote. -->
+      <p class="section-sub" id="rangeNote" style="margin-top:var(--space-5)"></p>
     </div>
 
-    <!-- Portfolio growth ceiling. Sits below the tiles and above the
-         informational panel, as a third visual category: a projection, not a
-         measurement. Called "portfolio headroom" until v5.1 — the Sender field
-         still carries that name, nothing else does. -->
-    <div class="ceiling" id="growthCeiling">
-      <p class="h-eyebrow" id="ceilingEyebrow">Portfolio growth ceiling</p>
-      <p class="h-figure" id="ceilingFigure"></p>
-      <p class="h-note" id="ceilingNote"></p>
+    <!-- The two callouts, in a flow whose order the tool sets. Where project
+         budgets carry out-the-door spend only, the full cost of the portfolio
+         leads and the growth ceiling drops to second; on every other answer the
+         ceiling leads and the cost block shows internal effort cost alone,
+         unsummed.
+
+         Both render here, above the email gate at the foot of the page, and
+         neither is blurred, truncated or partially revealed. The full-cost
+         figure is the most forwardable number this tool produces and putting it
+         behind a form defeats the reason it was promoted. -->
+    <div class="hero-area" id="heroArea">
+      <div class="ceiling" id="fullCostTile" hidden>
+        <p class="h-eyebrow" id="costEyebrow">The full cost of your portfolio</p>
+        <p class="h-figure" id="costFigure"></p>
+        <p class="h-note" id="costNote"></p>
+        <!-- The loaded-cost control. The input is in the markup rather than
+             written by render(), so it exists before the first submit, keeps
+             whatever the respondent typed across a redraw, and carries one
+             listener rather than a new one each time. Its default is set from
+             ASHE_MEDIAN on init so the sourced figure has a single home in the
+             script; a shared link overrides it.
+
+             Label and helper text are input furniture, where a hedge is
+             allowed. Everything it produces is output, where one is not. -->
+        <div class="assumption" id="costAssumption">
+          <div class="a-row">
+            <label for="loadedSalary">Median IT salary these figures use</label>
+            <input type="number" id="loadedSalary" min="1" max="1000000" step="500" inputmode="numeric" aria-describedby="loadedSalaryParts">
+          </div>
+          <p class="a-parts" id="loadedSalaryParts"></p>
+        </div>
+      </div>
+
+      <!-- Portfolio growth ceiling. A projection, not a measurement — the navy
+           fill is what keeps it from being read as either a RAG tile or a plain
+           bullet. Called "portfolio headroom" until v5.1; the Sender field still
+           carries that name, nothing else does. -->
+      <div class="ceiling" id="growthCeiling">
+        <p class="h-eyebrow" id="ceilingEyebrow">Portfolio growth ceiling</p>
+        <p class="h-figure" id="ceilingFigure"></p>
+        <p class="h-note" id="ceilingNote"></p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">What your answers show</h2>
+      <div class="rag-list" id="ragList"></div>
+    </div>
+
+    <!-- Checks on the respondent's own answers, kept apart from the findings.
+         These are not capacity mechanisms: they read two answers against each
+         other and say whether they agree. Listing them among the findings mixed
+         two different kinds of thing. §3.8 places the block here, after the
+         findings and before the numbers. -->
+    <div class="section">
+      <h2 class="section-title">Checks on your answers</h2>
+      <p class="section-sub">Two of your answers describe the same department from different directions. Reading each against the other is something a single figure cannot do &mdash; and where they disagree, that is worth more than either one alone.</p>
+      <div class="checks" id="checkList"></div>
     </div>
 
     <div class="section">
       <h2 class="section-title">Your numbers</h2>
       <p class="section-sub">Counted from what you told us. Nothing on this list is rated against a threshold &mdash; these are the figures your position is built from.</p>
       <ul class="facts" id="factList"></ul>
-    </div>
-
-    <div class="section">
-      <h2 class="section-title">What your answers show</h2>
-      <div class="rag-list" id="ragList"></div>
     </div>
 
     <div class="section">
@@ -870,10 +982,18 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
     <section class="page">
       <div class="p-head"><span>ProjexaR Capacity Check</span><span id="pr-date"></span></div>
       <h1>Your project capacity, and what is left of it</h1>
+      <!-- The two callouts, hero first. Which one leads is set in JS from the
+           budgets answer, so the printed report and the screen agree on which
+           figure the report is about. Ids are stable across the swap. -->
       <div class="p-block">
-        <h2>Portfolio growth ceiling</h2>
+        <h2 id="pr-herohead">Portfolio growth ceiling</h2>
         <div class="p-figure" id="pr-figure"></div>
         <p id="pr-ceiling"></p>
+      </div>
+      <div class="p-block" id="pr-secondblock">
+        <h2 id="pr-secondhead"></h2>
+        <div class="p-figure" id="pr-secondfigure"></div>
+        <p id="pr-secondnote"></p>
       </div>
       <div class="p-block"><h2>What you told us</h2><p id="pr-verdict"></p></div>
       <div class="p-block">
@@ -900,8 +1020,17 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
     <section class="page">
       <div class="p-head"><span>How the numbers were worked out</span><span>ProjexaR Capacity Check</span></div>
       <h2>Every figure is arithmetic on something you supplied</h2>
-      <p>Two external benchmarks appear in this report and both are named where they are used: a tickets-per-agent
-        figure, and a cross-industry split between run and change work. Everything else below is your own arithmetic.</p>
+      <p>Four external figures appear in this report and each is named where it is used: a tickets-per-technician
+        window, a cross-industry split between run and change work, a median IT salary, and an employer National
+        Insurance rate. Two of the numbers we apply are ours rather than anyone's published figure &mdash; the
+        170&ndash;320 tickets-per-agent window and the 25% overhead uplift &mdash; and both are labelled as our
+        judgement wherever they appear. Everything else below is your own arithmetic.</p>
+      <p style="margin-top:6pt"><strong>What the cost figures exclude.</strong> They count your permanent project
+        managers and the effective BAU capacity behind your projects, and nothing else. Contractors and outsourced
+        staff are excluded: what they cost is paid out of budget, and these figures exist to put a number on the
+        internal staff time your project budgets do not record. Anyone who works on projects without also holding a
+        BAU role is excluded too, because this check never counted them &mdash; so the internal figure is a floor,
+        not a total.</p>
       <table class="p-table">
         <thead><tr><th style="width:38%">Figure</th><th style="width:32%">How</th><th>Result</th></tr></thead>
         <tbody id="pr-formulas"></tbody>
@@ -930,13 +1059,17 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 
       <h2 style="margin-top:12pt">What this does not account for</h2>
       <div class="p-callout">
-        <!-- PR2 seam: this blended-average paragraph is rewritten when the free-text
-             percentage becomes a band and every dependent figure becomes a range.
-             Left intact here deliberately. -->
-        <p><strong>Effective FTE is a blended average, not a roster.</strong> Twenty people at 37% and seven people
-          at full time both come to a similar number of full-time equivalents, and they behave nothing alike. A blend
-          tells you how much capacity exists; it does not tell you whether it is available in the weeks a plan needs
-          it.</p>
+        <p><strong>Effective FTE is a blended average, not a roster.</strong> Twenty people at a third of their time
+          and seven people at full time both come to a similar number of full-time equivalents, and they behave
+          nothing alike. A blend tells you how much capacity exists; it does not tell you whether it is available in
+          the weeks a plan needs it.</p>
+        <p style="margin-top:6pt"><strong>That is why these figures are ranges.</strong> We ask for the blended
+          share of time as a ten-point band rather than a single percentage, and every figure drawn from it is
+          computed at both ends of that band and shown as a range. We never publish the middle. Where a range
+          crosses one of our thresholds we rate it on the less favourable end and name both states. None of this is
+          an apology for the arithmetic: the width of these ranges is the measure of how much a department-wide
+          average leaves unsaid, and it is the argument for holding what each person is actually committed to
+          rather than what they average.</p>
         <p style="margin-top:6pt"><strong>Project shape varies and this does not capture it.</strong> Projects have a
           cadence: a subject-matter expert may be needed full time in discovery, part time in build, and not at all
           until go-live. A figure taken today is a snapshot of a moving picture.</p>
@@ -954,10 +1087,19 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 
     <section class="page">
       <div class="p-head"><span>What your answers show</span><span>ProjexaR Capacity Check</span></div>
-      <h2>Read against what you told us about tools and process</h2>
+      <h2>Four findings, read against what you told us</h2>
       <table class="p-table">
         <thead><tr><th style="width:14%">Rating</th><th>Finding</th></tr></thead>
         <tbody id="pr-cards"></tbody>
+      </table>
+
+      <h2 style="margin-top:12pt">Checks on your answers</h2>
+      <p>These are not findings about your capacity. They take two things you told us and read each against the
+        other &mdash; which is the one thing on this page a list of your own figures could not do for you. One of
+        them carries a state. The other is stated and deliberately carries none.</p>
+      <table class="p-table">
+        <thead><tr><th style="width:14%">Result</th><th>Check</th></tr></thead>
+        <tbody id="pr-checks"></tbody>
       </table>
     </section>
 
@@ -1083,15 +1225,95 @@ window.submitToSender = function(payload){
   var PRICE_MONTH = 10, PRICE_YEAR = 100;
   var CURRENCY = { GBP:'£', USD:'$', EUR:'€', AUD:'A$', NZD:'NZ$', CAD:'C$' };
 
-  /* Tickets one service desk agent handles in a month. Jitbit put the range at
-     440–525 from an analysis of 7 million support tickets across roughly 1,000
-     companies; 480 is its mid-point and the only figure we apply.
-     Source: Jitbit, analysis of 7 million support tickets across ~1,000 companies.
+  /* Tickets one service desk agent handles in a month. A single divisor was
+     false precision of exactly the kind the banded time input exists to remove,
+     so §3.6 replaces it with a window between two published anchors and the
+     ticket figure becomes a range.
 
-     Jitbit publishes a higher secondary benchmark of 500–875 a month for desks
-     using AI-assisted tooling. We do not ask whether the respondent has any, so
-     we do not use it — see the deferred follow-up question. */
-  var TICKETS_PER_AGENT_MONTH = 480;
+     Lower anchor, cited: HDI/MetricNet (Rumburg, Metric of the Month: Tickets
+     per Technician per Month) reports desktop support industry averages from 87
+     (business services) to 133 (energy utilities) tickets per technician per
+     month, across a full range of 30 to 198.
+
+     Upper anchor, cited: Jitbit's figure, from a 2017 analysis of 7 million
+     support tickets across roughly 1,000 companies using its hosted helpdesk.
+
+     The 170–320 window between them is ProjexaR's control, and the page says so
+     in those words. It is not a published figure and must never be presented as
+     one.
+
+     On the Jitbit anchor, and on units. The two anchors are not published in the
+     same unit: HDI/MetricNet publishes per technician per MONTH, Jitbit per
+     technician per DAY. Converting between them needs a working-days figure, and
+     an unstated one would replace an unattributed number with an unexplained
+     one. WORKING_DAYS is ours, it is stated on the page in those words, and the
+     page gives the control in both units so a reader can check it against
+     Jitbit's daily figure in one step without knowing what we assumed.
+
+     WORKING_DAYS is display-only and must stay that way. Ticket capacity is
+     worked from the monthly window directly — c.ticketFTE divides by
+     TICKETS_PER_AGENT_HI and _LO and nothing else — so this constant moves no
+     computed figure, and the render suite asserts that by varying it and
+     requiring every number in the report to be identical.
+
+     That is also why it carries no claim to being conservative, in either
+     direction. An earlier draft of this comment said 21 days was the
+     conservative end because it meant more FTE absorbed by tickets and a larger
+     stated gap. Both halves were wrong: more ticket FTE gives a SMALLER gap, not
+     a larger one, since the gap is reported run work minus ticket FTE. And an
+     assumption that reaches no computation cannot be conservative or generous
+     about anything. Twenty-one days is a common reading of a working month and
+     it is here so the two anchors can be compared in one unit — nothing more,
+     and the page says so.
+
+     An earlier version of this tool used 480 a month for Jitbit. No stateable
+     working-days figure produces it — 21 × 21 is 441 and 21 × 23 is 483 — so it
+     is not used or quoted anywhere. The population is ~1,000 businesses of every
+     size and industry using Jitbit's helpdesk, and the source does not separate
+     internal IT service desks from customer support, nor name any tier. Earlier
+     drafts described it as high-throughput remote tier-1 operation. That was
+     inferred from the number's magnitude and the source does not support it, so
+     it is not said here or anywhere on the page. */
+  var TICKETS_PER_AGENT_LO = 170, TICKETS_PER_AGENT_HI = 320;
+  var WORKING_DAYS = 21;
+  var JITBIT_PER_DAY = 21;
+
+  /* ---- Loaded cost per head (§3.3) ----
+     One blended figure for project managers and BAU staff alike. Not split by
+     role: the band range already carries far more uncertainty than a PM against
+     technical salary split would resolve, and a second rate doubles the
+     explaining the tile has to do.
+
+     ASHE_MEDIAN is sourced and the respondent can edit it. The other two are
+     formulas applied to whatever figure is in that field, so the decomposition
+     stays arithmetically true at every edited value — which is why the salary is
+     the editable number and the total is not.
+
+     Salary: ONS Annual Survey of Hours and Earnings 2025 (provisional, released
+     23 October 2025), Table 14.7a, full-time employee jobs, United Kingdom,
+     median gross annual pay for SOC 2020 minor group 213, Information Technology
+     Professionals — £56,348, on 875,000 jobs, CV 1.5% (ONS treats a CV at or
+     under 5% as precise). Contains public sector information licensed under the
+     Open Government Licence v3.0.
+
+     The specification named ASHE Table 2 for this. Table 2 is published at
+     two-digit SOC and stops at sub-major group 21, Science, research,
+     engineering and technology professionals, which is far wider than IT.
+     Table 14 carries the three-digit minor groups, so group 213 — the grouping
+     the specification actually asked for — is taken from there.
+
+     Employer NI: 15% on earnings above the Secondary Threshold of £5,000 a year
+     (£96 a week, £417 a month), gov.uk rates and thresholds for employers,
+     2026 to 2027. £5,000 is gov.uk's own annual figure, not an annualisation of
+     the weekly one.
+
+     Overhead: 25%, covering workspace, equipment, licences, training and
+     management overhead. This is ProjexaR's judgement and the page labels it as
+     such, beside two figures that are sourced. */
+  var ASHE_MEDIAN = 56348;
+  var ASHE_YEAR = '2025';
+  var ASHE_GROUPING = 'SOC 2020 group 213, Information Technology Professionals';
+  var NI_RATE = 0.15, NI_THRESHOLD = 5000, OVERHEAD_RATE = 0.25;
 
   /* Tickets per employee per month observed across sectors. Used only to tell a
      respondent that their own figure looks unusual, never to correct it.
@@ -1165,8 +1387,48 @@ window.submitToSender = function(payload){
   /* Rate on the rounded, displayed figure — never on the raw float. A raw 5.04
      shown as 5.0 and rated Watch against a published "Healthy ≤ 5.0" band is
      exactly the contradiction between a tile and its own workings that this
-     release exists to remove. Round first, display, then band. */
-  function round1(x){ return Math.round(x * 10 + 1e-9) / 10; }
+     release exists to remove. Round first, display, then band.
+
+     One helper at every precision, so a figure rounded for display and the same
+     figure rounded for arithmetic cannot drift apart (§2.3).
+
+     The epsilon earns its keep here. The hero figure £1,095,000 rendered in
+     millions is 1.095, which in IEEE 754 is 1.09499999999999997… and rounds to
+     £1.09m without it. The fixture asserts £1.10m, which is what a reader
+     dividing 1,095,000 by a million and rounding to two places gets. Do not
+     remove it. */
+  function roundN(x, n){ var p = Math.pow(10, n); return Math.round(x * p + 1e-9) / p; }
+  function round1(x){ return roundN(x, 1); }
+
+  /* ---- Ranges (§2.1) ----
+     Every figure derived from the blended band is computed at both endpoints
+     and both are carried to the output. Never a midpoint, never a single value
+     with a ± attached.
+
+     A range is held as its two endpoint values in band order — index 0 is the
+     band's low endpoint, index 1 its high — because which of the two is the
+     larger figure differs from quantity to quantity, while which is the adverse
+     one does not. Lower time on projects means less effective BAU capacity,
+     which means more projects per FTE, a lower growth ceiling and a higher
+     derived run share. So the band's low endpoint is the adverse one throughout,
+     and `adverse()` is what every rating reads. */
+  function endpoints(a, b){ return [a, b]; }
+  function adverse(r){ return r[0]; }
+
+  /* Ascending order for display, on the displayed values. */
+  function span(r, dp){
+    var a = roundN(r[0], dp), b = roundN(r[1], dp);
+    return a <= b ? [a, b] : [b, a];
+  }
+
+  /* A range printed as text. Where both endpoints round to the same displayed
+     figure there is nothing to range over and one number is printed — a range
+     whose ends are identical is not more honest, only harder to read. */
+  function spanText(r, fmt, dp){
+    var s = span(r, dp === undefined ? 1 : dp);
+    var a = fmt(s[0]), b = fmt(s[1]);
+    return a === b ? a : a + '–' + b;
+  }
 
   /* The smallest project count that rates At risk against `cap`, for a divisor
      `d`. Every published red threshold comes from here.
@@ -1212,14 +1474,20 @@ window.submitToSender = function(payload){
      brief came from one quantity carrying two meanings, so there is no fourth
      FTE quantity and nothing recomputes these inline.
 
-     `e` is the band endpoint. PR1's blended time input is still a free-text
-     percentage, so there is one endpoint and each of these is called once. PR2
-     replaces the input with a band and calls them twice, formatting the pair as
-     a range. The parameter exists now so that change does not have to rewrite
-     every call site. */
-  var ENDPOINT = 0;
+     `e` is the band endpoint: E_LO is the bottom of the band the respondent
+     picked, E_HI the top. PR1 wrote every derived quantity as a function of an
+     endpoint and called each one once, against a free-text percentage. PR2
+     replaces that input with a band and calls each one twice.
 
-  function blendedShare(v, e){ return v.bauPercent2 === null ? null : v.bauPercent2 / 100; }
+     internal_project_fte is permanent staff only, in every use. Contractors are
+     never added to it — see the routing table in the comment above
+     contractorCompanion(). */
+  var E_LO = 0, E_HI = 1;
+
+  function blendedShare(v, e){
+    if(v.bandLo === null) return null;
+    return (e === E_LO ? v.bandLo : v.bandHi) / 100;
+  }
 
   /* null, not 0, where there is no BAU capacity to divide by — a zero divisor
      and an unanswered question are different states and the report says
@@ -1266,7 +1534,7 @@ window.submitToSender = function(payload){
 
      No toolset input is read here, or anywhere else in the rating path. The
      escalation this function used to have to work around was removed in §2.4. */
-  function growthCeilingOf(v, c){
+  function growthCeilingOf(v, bauFte, turnover){
     var h = {
       pmLive:null, bauLive:null, pmAnnual:null, bauAnnual:null,
       sustainable:null, value:null, binding:null, noPace:false, noRoute:false
@@ -1276,17 +1544,17 @@ window.submitToSender = function(payload){
        divisor; with no BAU capacity the BAU route has none. Whichever survives
        binds alone, and if neither does there is no ceiling and the report runs
        without one. */
-    h.pmLive  = v.pms > 0            ? redThreshold(BAND_PM.red,  v.pms)             : null;
-    h.bauLive = c.bauEffectiveFte !== null ? redThreshold(BAND_FTE.red, c.bauEffectiveFte) : null;
+    h.pmLive  = v.pms > 0      ? redThreshold(BAND_PM.red,  v.pms)  : null;
+    h.bauLive = bauFte !== null ? redThreshold(BAND_FTE.red, bauFte) : null;
 
     if(h.pmLive === null && h.bauLive === null){ h.noRoute = true; return h; }
 
     /* Converting a live threshold into an annual one needs a rate at which the
        portfolio turns over. Nothing live, or no annual pace, and there is none. */
-    if(c.turnover === null){ h.noPace = true; return h; }
+    if(turnover === null){ h.noPace = true; return h; }
 
-    h.pmAnnual  = h.pmLive  === null ? null : ifloor((h.pmLive  - 1) * c.turnover) + 1;
-    h.bauAnnual = h.bauLive === null ? null : ifloor((h.bauLive - 1) * c.turnover) + 1;
+    h.pmAnnual  = h.pmLive  === null ? null : ifloor((h.pmLive  - 1) * turnover) + 1;
+    h.bauAnnual = h.bauLive === null ? null : ifloor((h.bauLive - 1) * turnover) + 1;
 
     /* The sustainable pace is the last annual figure still inside every band —
        one below the lowest red threshold. Named against the metric it came
@@ -1302,28 +1570,126 @@ window.submitToSender = function(payload){
     return h;
   }
 
-  function compute(v){
-    var c = {};
+  /* ---- Loaded cost per head (§3.3) ----
+     Three components, all displayed, from one editable salary. Two are sourced
+     and one is ProjexaR's judgement, and the report says which is which every
+     time it shows them. */
+  function loadedCostOf(salary){
+    var ni = NI_RATE * Math.max(0, salary - NI_THRESHOLD);
+    var oh = OVERHEAD_RATE * salary;
+    return { salary:salary, ni:ni, overhead:oh, total:salary + ni + oh };
+  }
 
-    /* The named quantities of §1, computed once at the single PR1 endpoint. */
-    c.bauEffectiveFte    = bauEffectiveFte(v, ENDPOINT);
-    c.internalProjectFte = internalProjectFte(v, ENDPOINT);
+  /* ---- Contractors (§3.2) ----
+     Six routes, and contractors are excluded from five of them:
 
-    c.pmLoad = v.pms > 0 ? v.live / v.pms : null;
+       BAU tile ratio and growth ceiling  excluded — these measure how far the
+                                          portfolio depends on permanent BAU
+                                          capacity, which contractors do not change
+       Full-cost calculation              excluded — see the workings copy
+       Run/change derivation              excluded — not part of the permanent
+                                          department the stated split describes
+       IT staff as a share of company     excluded
+       Licence basis and the quote        excluded — basis is BAU staff + PMs
+
+     The sixth is this one: a companion figure displayed beside the BAU tile,
+     carrying no rating, showing what the same portfolio looks like against
+     delivery capacity that includes them. Nothing rated may read it. */
+  function contractorCompanion(v, bauFte){
+    if(!v.contractors || bauFte === null || v.live === 0) return null;
+    return v.live / (bauFte + v.contractors);
+  }
+
+  /* Everything the band moves, computed at one endpoint. Called twice. */
+  function computeAt(v, e, shared){
+    var a = {};
+
+    /* The named quantities of §1. */
+    a.bauEffectiveFte    = bauEffectiveFte(v, e);
+    a.internalProjectFte = internalProjectFte(v, e);
 
     /* No BAU staff on projects means there is no delivery capacity to divide
-       by. The tile, the BAU ceiling route and the corroboration check are all
-       suppressed rather than shown as a ratio of nothing. */
-    c.noBauCapacity = c.bauEffectiveFte === null;
-    c.projectsPerFTE = c.noBauCapacity ? null : v.live / c.bauEffectiveFte;
-    c.ftePerProject  = (v.live > 0 && !c.noBauCapacity) ? c.bauEffectiveFte / v.live : null;
+       by. The tile, the BAU ceiling route, the corroboration check and the
+       full-cost calculation are all suppressed rather than shown as a ratio or
+       a cost of nothing. */
+    a.noBauCapacity  = a.bauEffectiveFte === null;
+    a.projectsPerFTE = a.noBauCapacity ? null : v.live / a.bauEffectiveFte;
+    a.ftePerProject  = (v.live > 0 && !a.noBauCapacity) ? a.bauEffectiveFte / v.live : null;
+    a.ragFTE         = a.noBauCapacity ? null : ragFTE(a.projectsPerFTE);
+
+    a.deliveryPerFTE = contractorCompanion(v, a.bauEffectiveFte);
+
+    a.ceiling = growthCeilingOf(v, a.bauEffectiveFte, shared.turnover);
+
+    /* Corroboration (§2.9), derived at this endpoint. The comparison against
+       the stated split is made against the pair of endpoints, in compute(). */
+    if(a.noBauCapacity || v.staff === 0 || v.bauSplitEstimate === null){
+      a.derivedChangeShare = null; a.derivedRunShare = null;
+    }else{
+      a.derivedChangeShare = round1(a.internalProjectFte / v.staff * 100);
+      a.derivedRunShare    = round1((1 - a.internalProjectFte / v.staff) * 100);
+    }
+
+    /* ---- Full cost (§3.1) ----
+       Suppressed with the BAU tile: with no BAU capacity there is no blended
+       band to cost, and internal_project_fte falls back to the PM count alone,
+       which is not what this figure claims to measure. §1.1. */
+    if(a.noBauCapacity){
+      a.internalEffortCost = null; a.fullPortfolioCost = null; a.reportedShare = null;
+    }else{
+      a.internalEffortCost = a.internalProjectFte * shared.loaded.total;
+
+      /* Only an explicitly out-the-door answer takes the summing path. Summing
+         regardless double-counts for every respondent whose budgets already
+         carry internal time, and treating an ambiguous answer as out-the-door
+         bends toward the larger number. */
+      if(shared.sums){
+        /* §2.2. The sum uses the rounded, displayed internal figure, so a
+           reader adding the two numbers the page prints gets the total the
+           page prints. */
+        a.fullPortfolioCost = Math.round(a.internalEffortCost) + v.spend;
+        a.reportedShare     = v.spend / a.fullPortfolioCost * 100;
+      }else{
+        a.fullPortfolioCost = null; a.reportedShare = null;
+      }
+    }
+    return a;
+  }
+
+  function compute(v){
+    var c = {};
 
     /* turnover needs both a live count to project from and an annual pace to
        project. Validation makes annual ≥ live, so these go absent together, but
        both conditions are stated because both are the rule. */
     c.turnover = (v.live > 0 && v.annual > 0) ? v.annual / v.live : null;
 
-    c.ticketFTE   = v.ticketsPerMonth === null ? null : v.ticketsPerMonth / TICKETS_PER_AGENT_MONTH;
+    c.loaded = loadedCostOf(v.loadedSalary);
+
+    /* The summing path needs an explicit out-the-door answer AND a spend figure
+       to add the internal cost to. */
+    c.sums = v.budgetTracking === 'outthedoor' && v.spend !== null && v.spend > 0;
+
+    var shared = { turnover:c.turnover, loaded:c.loaded, sums:c.sums };
+    c.at = endpoints(computeAt(v, E_LO, shared), computeAt(v, E_HI, shared));
+
+    /* Every rating reads the adverse endpoint. Where the two endpoints rate
+       differently the report displays both states — "Watch to At risk", never
+       the flattering end alone. */
+    c.adv = adverse(c.at);
+    c.noBauCapacity = c.adv.noBauCapacity;
+
+    /* Band-independent quantities. Concurrent projects per PM does not move
+       with the band and is not a range. */
+    c.pmLoad = v.pms > 0 ? v.live / v.pms : null;
+    c.ragPM  = c.pmLoad === null ? null : ragPM(c.pmLoad);
+    c.ragFTE = c.adv.ragFTE;
+
+    /* ---- Ticket FTE (§3.6) ----
+       A range from the divisor window, not from the band. Ascending: a bigger
+       divisor gives fewer FTE. */
+    c.ticketFTE = v.ticketsPerMonth === null ? null
+                : [v.ticketsPerMonth / TICKETS_PER_AGENT_HI, v.ticketsPerMonth / TICKETS_PER_AGENT_LO];
 
     /* The service desk draws on the whole non-PM department, not just the BAU
        staff who happen to be named on project work. Expressing the ticket load
@@ -1332,27 +1698,44 @@ window.submitToSender = function(payload){
        a valid set of answers — in which case the proportion is suppressed and
        the FTE figure stands on its own. */
     c.nonPmStaff = v.staff - v.pms;
-    c.ticketFtePercent = (c.ticketFTE === null || c.nonPmStaff <= 0)
-                       ? null : c.ticketFTE / c.nonPmStaff * 100;
+    c.ticketFtePercent = (c.ticketFTE === null || c.nonPmStaff <= 0) ? null
+                       : [c.ticketFTE[0] / c.nonPmStaff * 100, c.ticketFTE[1] / c.nonPmStaff * 100];
+
+    /* ---- Run-work composition (§3.6) ----
+       Contractors are excluded: the stated split describes the permanent
+       department. The gap is computed from the DISPLAYED FTE figures (§2.2), so
+       a reader subtracting the two numbers on the page gets the number the page
+       prints — 13.4 − 4.4 reads 9.0, not the 9.1 the raw floats give. */
+    c.runWorkFte = v.bauSplitEstimate === null ? null : v.staff * v.bauSplitEstimate / 100;
+    c.runWorkGap = (c.runWorkFte === null || c.ticketFTE === null) ? null
+                 : [round1(round1(c.runWorkFte) - round1(c.ticketFTE[1])),
+                    round1(round1(c.runWorkFte) - round1(c.ticketFTE[0]))];
 
     c.impliedRate = v.ticketsPerMonth === null ? null : v.ticketsPerMonth / v.companyHeadcount;
     c.rateOutside = c.impliedRate === null ? false
                   : (c.impliedRate < TICKET_RATE_LO || c.impliedRate > TICKET_RATE_HI);
 
+    /* Permanent IT staff only. Contractors are counted separately and are not
+       part of this ratio; the workings page says so. */
     c.itPercent = v.staff / v.companyHeadcount * 100;
 
     /* Licence basis is the people who appear on project plans: the BAU staff
        working on projects plus the project managers coordinating them. It
        assumes non-PM project staff also hold a BAU role, which holds for the
-       segment this tool is aimed at. */
+       segment this tool is aimed at. Contractors are not licensed. */
     c.licenceCount = v.bauStaff + v.pms;
     c.monthly = c.licenceCount * PRICE_MONTH;
     c.yearly  = c.licenceCount * PRICE_YEAR;
-    c.annualCost = c.licenceCount * PRICE_MONTH * 12;
-    c.spendPct = (v.spend !== null && v.spend > 0) ? (c.annualCost / v.spend) * 100 : null;
 
-    c.ragPM  = c.pmLoad === null ? null : ragPM(c.pmLoad);
-    c.ragFTE = c.noBauCapacity ? null : ragFTE(c.projectsPerFTE);
+    /* §3.7. The annual plan is twelve months for the price of ten, so the
+       annual cost is licences × £100, not licences × £10 × 12. The published
+       prices were always right; only this workings row was wrong. */
+    c.spendPct = (v.spend !== null && v.spend > 0) ? (c.yearly / v.spend) * 100 : null;
+
+    /* ProjexaR against the full portfolio cost, as a range. A midpoint here
+       would breach §2.1 exactly as it would anywhere else. */
+    c.fullCostPct = c.at[0].fullPortfolioCost === null ? null
+                  : [c.yearly / c.at[0].fullPortfolioCost * 100, c.yearly / c.at[1].fullPortfolioCost * 100];
 
     /* The PM tile used to escalate Watch to At risk where the toolset offered
        no cross-project resourcing view. It is gone (§2.4), and nothing replaces
@@ -1365,14 +1748,18 @@ window.submitToSender = function(payload){
        run a PPM tool, which is the category of product ProjexaR sells. That is
        the scoring layer bending toward a desired outcome.
 
-       The toolset signal is not lost. It still drives its own findings below,
-       and PR2 folds it into the consolidated finding on demand visibility. What
-       it no longer does is move a rating.
+       The toolset signal is not lost. PR2 folds it into finding 2 as one of the
+       three adverse conditions, which is what it always was. What it no longer
+       does is move a rating.
 
        ---- Corroboration check (§2.9) ----
        Two independently supplied answers about the same department: the run and
        change split the respondent stated, and the split implied by the staff
        they told us are on project work.
+
+       The derived share is now a range, so the stated figure is compared
+       against the range's endpoints with the tolerance applied outward from
+       each — inside [lo − 3, hi + 3] corroborates.
 
        The test is asymmetric, and the asymmetry is the point. The derivation
        counts only project managers and BAU staff on projects, so a department
@@ -1381,13 +1768,13 @@ window.submitToSender = function(payload){
        publish a confident wrong finding, which is the class of error this
        release exists to remove. Above the window is therefore a note carrying
        no rating; only below it is a Watch. */
-    if(c.noBauCapacity || v.staff === 0 || v.bauSplitEstimate === null){
+    if(c.at[0].derivedRunShare === null){
       c.derivedChangeShare = null; c.derivedRunShare = null; c.corroboration = null;
     }else{
-      c.derivedChangeShare = round1(c.internalProjectFte / v.staff * 100);
-      c.derivedRunShare    = round1((1 - c.internalProjectFte / v.staff) * 100);
-      c.corroborationLo    = round1(c.derivedRunShare - CORROBORATION_TOLERANCE);
-      c.corroborationHi    = round1(c.derivedRunShare + CORROBORATION_TOLERANCE);
+      c.derivedChangeShare = span([c.at[0].derivedChangeShare, c.at[1].derivedChangeShare], 1);
+      c.derivedRunShare    = span([c.at[0].derivedRunShare,    c.at[1].derivedRunShare],    1);
+      c.corroborationLo    = round1(c.derivedRunShare[0] - CORROBORATION_TOLERANCE);
+      c.corroborationHi    = round1(c.derivedRunShare[1] + CORROBORATION_TOLERANCE);
       c.corroboration = v.bauSplitEstimate < c.corroborationLo ? 'watch'
                       : (v.bauSplitEstimate > c.corroborationHi ? 'note' : 'healthy');
     }
@@ -1400,7 +1787,12 @@ window.submitToSender = function(payload){
                   : (v.bauSplitEstimate < BENCH_BAU ? 'transformation-heavy' : 'level');
     }
 
-    c.ceiling = growthCeilingOf(v, c);
+    /* The ceiling the copy reads. Both endpoints are carried; where they differ
+       the tile shows a range and says whether the binding route changed with
+       them. `ceiling` is the adverse endpoint, so anything reading a single
+       value gets the less flattering one. */
+    c.ceiling    = c.adv.ceiling;
+    c.ceilingHi  = c.at[E_HI].ceiling;
     return c;
   }
 
@@ -1413,19 +1805,53 @@ window.submitToSender = function(payload){
     { id:'annual',             req:true,  min:0, max:5000,       what:'projects in a typical year' },
     { id:'spend',              req:false, min:0, max:1000000000, what:'annual project spend' },
     { id:'bauStaff',           req:true,  min:0, max:20000,      what:'how many BAU staff work on projects' },
-    { id:'bauPercent2',        req:true,  min:1, max:100,        what:'the average share of their time' },
+    /* Norm's wording. A band, not a free-text percentage — see §3.5 and the
+       explanation the report carries. */
+    { id:'bauPercent2',        req:true,  select:true },
+    /* Norm's wording. Permanent staff are counted separately; this figure is
+       excluded from every rated quantity (§3.2). */
+    { id:'contractors',        req:false, min:0, max:20000,      what:'how many contractors work on projects' },
     { id:'ticketsPerMonth',    req:false, min:0, max:1000000,    what:'monthly ticket volume' },
     { id:'bauSplitEstimate',   req:false, min:0, max:100,        what:'your BAU effort split' },
+    /* The loaded-cost assumption. It lives on the report rather than in the
+       question set, beside the figure it drives, and is pre-filled with the
+       sourced default. Bounds are wide because a respondent correcting it knows
+       their own payroll better than this tool does. */
+    { id:'loadedSalary',       req:false, min:1, max:1000000,    what:'the salary the cost figures use' },
     { id:'toolset',            req:true,  select:true },
     { id:'resourceVisibility', req:true,  select:true },
     { id:'budgetTracking',     req:true,  select:true },
     { id:'assignmentKnowledge',req:true,  select:true }
   ];
 
-  /* Left blank, these three stay null so the report can tell "not answered"
-     apart from a genuine zero — 0% BAU effort and 0 tickets are both real
-     answers with real output. */
+  /* Left blank, these stay null so the report can tell "not answered" apart
+     from a genuine zero — 0% BAU effort and 0 tickets are both real answers
+     with real output. `contractors` is not among them: it defaults to 0, and a
+     blank answer means none rather than "not asked". */
   var OPTIONAL_NUMERIC = { spend:1, ticketsPerMonth:1, bauSplitEstimate:1 };
+
+  /* Blank falls back to the sourced default rather than to zero — a cleared
+     field must not silently cost every project manager nothing. */
+  var OPTIONAL_DEFAULT = { loadedSalary:ASHE_MEDIAN };
+
+  /* ---- Blended time band (§3.5) ----
+     Ten-point bands. The select carries the low endpoint; the high endpoint is
+     nine above it, which holds for 1–10 and 91–100 as well as the eight in
+     between. */
+  function bandHiOf(lo){ return lo + 9; }
+  function bandLabel(v){ return v.bandLo === null ? '' : v.bandLo + '–' + v.bandHi + '%'; }
+
+  /* Legacy shared URLs carry a free-text percentage where the band now sits.
+     Map it to the band containing it so an old link renders rather than errors.
+     p ≥ 91 lands in the top band; p ≤ 0 or absent is no answer. Defensive, not
+     a feature: it costs these four lines and nothing else in the tool knows
+     about it. */
+  function bandContaining(p){
+    var n = Number(p);
+    if(!isFinite(n) || n <= 0) return null;
+    if(n >= 91) return 91;
+    return Math.floor((Math.ceil(n) - 1) / 10) * 10 + 1;
+  }
 
   function setError(id, msg){
     var wrap = $('f-'+id), input = $(id);
@@ -1444,19 +1870,24 @@ window.submitToSender = function(payload){
         v[r.id] = raw;
       }else if(raw === ''){
         if(r.req) msg = 'We need ' + r.what + ' to work this out.';
-        v[r.id] = OPTIONAL_NUMERIC[r.id] ? null : 0;
+        v[r.id] = OPTIONAL_NUMERIC[r.id] ? null
+                : (OPTIONAL_DEFAULT[r.id] !== undefined ? OPTIONAL_DEFAULT[r.id] : 0);
       }else{
         var num = Number(raw);
         if(!isFinite(num))   msg = 'Numbers only, please.';
-        else if(num < r.min) msg = r.id === 'bauPercent2'
-          ? 'This needs to be at least 1% — at zero there would be no project capacity to measure.'
-          : 'That should be at least ' + r.min + '.';
+        else if(num < r.min) msg = 'That should be at least ' + r.min + '.';
         else if(num > r.max) msg = 'That looks too high — the most we handle is ' + r.max.toLocaleString('en-GB') + '.';
         v[r.id] = num;
       }
       setError(r.id, msg);
       if(msg){ ok = false; firstBad = firstBad || r.id; }
     });
+
+    /* The band endpoints, derived once and used by name everywhere. `bandLo`
+       null means no band was picked, which suppresses everything that divides
+       by effective BAU capacity — §1.1. */
+    v.bandLo = v.bauPercent2 === '' ? null : Number(v.bauPercent2);
+    v.bandHi = v.bandLo === null ? null : bandHiOf(v.bandLo);
 
     if(ok){
       if(v.staff > v.companyHeadcount){
@@ -1485,24 +1916,51 @@ window.submitToSender = function(payload){
 
   /* ================= Copy ================= */
   var STATUS_WORD = { over:'At risk', atrisk:'Watch', healthy:'Healthy' };
+  /* Adverse first, so a straddling range reads "Watch to At risk" and never the
+     flattering end alone. */
+  var RAG_ORDER = { healthy:0, atrisk:1, over:2 };
+
+  /* The two endpoint values of one named quantity, in band order. */
+  function pick(c, key){ return [c.at[E_LO][key], c.at[E_HI][key]]; }
+
+  var pctFmt  = function(x){ return d1(x) + '%'; };
+  var fteFmt  = function(x){ return d1(x); };
+  var pct0Fmt = function(x){ return n0(x) + '%'; };
+
+  /* A rating pair. Where both endpoints land in the same band there is one
+     word; where they straddle a boundary both are named, adverse end first. */
+  function ragSpan(a, b){
+    if(a === null || b === null) return null;
+    if(a === b) return STATUS_WORD[a];
+    return RAG_ORDER[a] > RAG_ORDER[b]
+      ? STATUS_WORD[a] + ' to ' + STATUS_WORD[b]
+      : STATUS_WORD[b] + ' to ' + STATUS_WORD[a];
+  }
 
   /* The share of one person each live project is getting. Expressed as a
      percentage of one person rather than as an FTE decimal, because "16% of one
      person's time" lands and "0.16 FTE" does not. */
-  function ftePhrase(c){ return n0(c.ftePerProject * 100) + '%'; }
+  function ftePhrase(c){
+    return spanText([c.at[E_LO].ftePerProject * 100, c.at[E_HI].ftePerProject * 100], pct0Fmt, 0);
+  }
+
+  /* The band, as the respondent picked it. Every figure derived from it is a
+     range and this is the phrase that says why. */
+  function bandPhrase(v){ return 'an average of ' + bandLabel(v) + ' of their time'; }
 
   function positionLead(v, c){
     if(c.noBauCapacity){
       return 'You reported no BAU staff working on IT projects, so on your own figures there is no BAU delivery '
            + 'capacity behind your ' + n0(v.live) + ' live ' + plural(v.live,'project','projects') + ' at all.';
     }
+    var fteRange = spanText(pick(c, 'bauEffectiveFte'), fteFmt);
     if(v.live === 0){
       return 'Nothing is live right now. Your ' + n0(v.bauStaff) + ' BAU ' + plural(v.bauStaff,'person','people')
-           + ' at an average of ' + v.bauPercent2 + '% of their time come to <strong>' + n1(c.bauEffectiveFte)
+           + ' at ' + bandPhrase(v) + ' come to <strong>' + fteRange
            + ' effective FTE</strong> of project capacity, none of it currently committed.';
     }
-    var fte = 'your <strong>' + n1(c.bauEffectiveFte) + ' effective BAU FTE</strong> — ' + n0(v.bauStaff) + ' '
-            + plural(v.bauStaff,'person','people') + ' at an average of ' + v.bauPercent2 + '% of their time — is '
+    var fte = 'your <strong>' + fteRange + ' effective BAU FTE</strong> — ' + n0(v.bauStaff) + ' '
+            + plural(v.bauStaff,'person','people') + ' at ' + bandPhrase(v) + ' — is '
             + 'spread across all ' + n0(v.live) + ' of them';
     if(v.pms === 0){
       return 'With nobody formally running projects, ' + fte + '.';
@@ -1535,7 +1993,8 @@ window.submitToSender = function(payload){
               + 'reacting to projects rather than planning them, and a clash between two of a single PM’s own '
               + 'projects is unlikely to be caught before it has already cost time';
 
-      out.push({ key:'pm', rag:c.ragPM, label:METRIC_PM, value:d1(c.pmLoad), note:pmNote });
+      out.push({ key:'pm', rag:c.ragPM, status:STATUS_WORD[c.ragPM],
+                 label:METRIC_PM, value:d1(c.pmLoad), note:pmNote });
     }
 
     /* Suppressed where no BAU staff were reported against project work. There
@@ -1543,24 +2002,51 @@ window.submitToSender = function(payload){
        through the finding below rather than publishing a tile rated on
        nothing. §1.1. */
     if(!c.noBauCapacity){
+      var fteRange   = spanText(pick(c, 'bauEffectiveFte'), fteFmt);
+      var ratioRange = spanText(pick(c, 'projectsPerFTE'), fteFmt);
+      /* Rated on the adverse endpoint, and where the band straddles a boundary
+         both states are named. Never the flattering end alone. */
+      var fteStatus  = ragSpan(c.at[E_LO].ragFTE, c.at[E_HI].ragFTE);
+      var straddles  = c.at[E_LO].ragFTE !== c.at[E_HI].ragFTE;
+
       out.push({
-        key:'fte', rag:c.ragFTE, label:METRIC_FTE, value:d1(c.projectsPerFTE),
-        tip:'Your BAU staff contribute ' + n1(c.bauEffectiveFte) + ' full-time-equivalent people’s worth of time '
+        key:'fte', rag:c.ragFTE, status:fteStatus, label:METRIC_FTE, value:ratioRange,
+        tip:'Your BAU staff contribute ' + fteRange + ' full-time-equivalent people’s worth of time '
           + 'to project work, and that is currently spread across ' + qty(v.live, 'live project', 'live projects')
-          + ' — ' + qty1(c.projectsPerFTE, 'project', 'projects') + ' for each of '
-          + 'those full-time-equivalents.',
+          + ' — ' + ratioRange + ' projects for each of those full-time-equivalents, depending on where in the '
+          + 'band you picked the real average falls.',
         tipShort:'What this ratio means in plain language.',
         note: v.live === 0
           ? 'Nothing is live, so none of your BAU capacity is committed to project work right now.'
-          : c.ragFTE === 'healthy'
-            ? 'Inside sustainable BAU coverage — each project is getting an average of ' + ftePhrase(c)
-              + ' of one person’s time'
-            : c.ragFTE === 'atrisk'
-              ? 'Above the coverage we treat as comfortable, and inside the band we watch — each project is '
-                + 'getting an average of ' + ftePhrase(c) + ' of one person’s time'
-              : 'Past sustainable BAU coverage — each project is getting an average of ' + ftePhrase(c)
+          : straddles
+            ? 'The band you picked straddles a threshold, so we rate it on the less favourable end — each project '
+              + 'is getting ' + ftePhrase(c) + ' of one person’s time across the band'
+            : c.ragFTE === 'healthy'
+              ? 'Inside sustainable BAU coverage — each project is getting ' + ftePhrase(c)
                 + ' of one person’s time'
+              : c.ragFTE === 'atrisk'
+                ? 'Above the coverage we treat as comfortable, and inside the band we watch — each project is '
+                  + 'getting ' + ftePhrase(c) + ' of one person’s time'
+                : 'Past sustainable BAU coverage — each project is getting ' + ftePhrase(c)
+                  + ' of one person’s time'
       });
+
+      /* Contractors, displayed and unrated (§3.2). It sits beside the rated
+         tile so the two are read together, and carries no pill word because it
+         is not measured against a band: the bands describe how far a portfolio
+         leans on permanent BAU capacity, and contractors do not change that.
+         Nothing rated anywhere reads this figure. */
+      if(c.at[E_LO].deliveryPerFTE !== null){
+        out.push({
+          key:'delivery', rag:'unrated', status:'Unrated',
+          label:'Live projects per delivery FTE, including contractors',
+          value:spanText(pick(c, 'deliveryPerFTE'), fteFmt),
+          note:'Your ' + qty(v.contractors, 'contractor', 'contractors') + ' added to ' + fteRange
+             + ' effective BAU FTE. Shown because it is the capacity actually delivering, and left unrated '
+             + 'because the band above measures how far your portfolio leans on permanent BAU capacity — which '
+             + 'contractors do not change.'
+        });
+      }
     }
 
     return out;
@@ -1579,8 +2065,18 @@ window.submitToSender = function(payload){
      the toolset escalation it used to have to accommodate is gone (§2.4). */
   var CEILING_EYEBROW = 'Portfolio growth ceiling';
 
+  /* Which measure binds. Where the two endpoints of the band bind on different
+     measures, both are named in prose rather than one being picked — picking
+     one would be asserting something the answer does not support. */
+  function bindingPhrase(c){
+    var a = c.ceiling.binding, b = c.ceilingHi.binding;
+    if(a === b) return '<strong>' + esc(a) + '</strong> is the measure that binds first';
+    return 'which measure binds first changes across the band you picked — <strong>' + esc(a)
+         + '</strong> at the lower end, <strong>' + esc(b) + '</strong> at the upper';
+  }
+
   function growthCeilingCopy(v, c){
-    var h = c.ceiling;
+    var h = c.ceiling, hh = c.ceilingHi;
 
     /* Neither route survived suppression — no project managers and no BAU staff
        on projects. The report runs without a ceiling and says why, rather than
@@ -1606,34 +2102,139 @@ window.submitToSender = function(payload){
        the words "growth ceiling" reads as a broken calculation rather than as
        an overrun. Never clamped to zero — zero now means one thing only, which
        is the branch below. */
-    if(h.value < 0){
+    /* The pace sustained is a range across the band, and so is the gap to it.
+       Where both endpoints give the same figure there is one number to print;
+       where they differ the tile prints both. Never a midpoint. */
+    var pace = h.sustainable === hh.sustainable
+      ? qty(h.sustainable, 'project', 'projects') + ' a year'
+      : n0(h.sustainable) + ' to ' + qty(hh.sustainable, 'project', 'projects') + ' a year';
+    var tail = ' Assumes staff, PMs and BAU capacity stay as reported, and that new projects run at a similar '
+             + 'pace to today’s — adding people, reallocating time, or changing project pace would all change this.';
+
+    /* Both endpoints above the sustainable pace. */
+    if(h.value < 0 && hh.value < 0){
+      var over = h.value === hh.value
+        ? qty(-h.value, 'project', 'projects')
+        : n0(-hh.value) + ' to ' + qty(-h.value, 'project', 'projects');
       return { state:'over', eyebrow:CEILING_EYEBROW,
-        figure:'You are running ' + qty(-h.value, 'project', 'projects') + ' a year above your sustainable pace.',
-        note:'On your own figures the pace your capacity sustains is '
-           + qty(h.sustainable, 'project', 'projects') + ' a year, and you are running ' + n0(v.annual)
-           + '. <strong>' + esc(h.binding) + '</strong> is the measure that binds first. That gap is not a '
+        figure:'You are running ' + over + ' a year above your sustainable pace.',
+        note:'On your own figures the pace your capacity sustains is ' + pace + ', and you are running '
+           + n0(v.annual) + '. ' + bindingPhrase(c) + '. That gap is not a '
            + 'forecast: it is the difference between the pace you are running now and the pace the people you '
            + 'told us about can carry. Closing it means adding capacity, running fewer projects at once, or '
            + 'accepting that projects take longer than the plan says.' };
     }
 
-    if(h.value === 0){
+    /* The band straddles the ceiling: over it at one end, under it at the
+       other. Stated as what it is, rather than resolved to whichever end reads
+       better. */
+    if(h.value < 0){
+      return { state:'over', eyebrow:CEILING_EYEBROW,
+        figure:'Your band spans your sustainable pace — from ' + qty(-h.value, 'project', 'projects')
+             + ' a year above it to ' + qty(hh.value, 'project', 'projects') + ' a year of room.',
+        note:'The share of their time you picked is the difference between the two. At the bottom of that band the '
+           + 'pace your capacity sustains is ' + n0(h.sustainable) + ' a year against the ' + n0(v.annual)
+           + ' you run; at the top it is ' + n0(hh.sustainable) + '. ' + bindingPhrase(c) + '. Which of those '
+           + 'two positions you are actually in is not something an average can settle — it needs the commitments '
+           + 'themselves.' + tail };
+    }
+
+    if(h.value === 0 && hh.value === 0){
       return { state:'at', eyebrow:CEILING_EYEBROW,
         figure:'You are exactly at your sustainable pace.',
         note:'Your ' + qty(v.annual, 'project', 'projects') + ' a year is the pace your current capacity '
-           + 'sustains, and <strong>' + esc(h.binding) + '</strong> is the measure that binds. There is no room '
+           + 'sustains, and ' + bindingPhrase(c) + '. There is no room '
            + 'to take more on without adding capacity or finishing something first.' };
     }
 
+    var room = h.value === hh.value
+      ? qty(h.value, 'more project', 'more projects')
+      : n0(h.value) + ' to ' + qty(hh.value, 'more project', 'more projects');
     return { state:'room', eyebrow:CEILING_EYEBROW,
-      figure:'Room to grow: ' + qty(h.value, 'more project', 'more projects') + ' a year at today’s pace.',
+      figure:'Room to grow: ' + room + ' a year at today’s pace.',
       note:'Your typical annual throughput (' + qty(v.annual, 'project', 'projects') + ' a year) has room to grow '
-         + 'to ' + n0(h.sustainable) + ' a year before <strong>' + esc(h.binding) + '</strong> — the capacity '
-         + 'metric that would tip first — turns red. This is a pace ceiling, not a countdown of the year: it says '
-         + 'how much your typical annual volume could rise while projects keep taking about as long as they do '
-         + 'today, not how many project starts are left before December. Assumes staff, PMs and BAU capacity stay '
-         + 'as reported, and that new projects run at a similar pace to today’s — adding people, reallocating '
-         + 'time, or changing project pace would all change this.' };
+         + 'to ' + pace + ' before a capacity metric turns red, and ' + bindingPhrase(c) + '. This is a pace '
+         + 'ceiling, not a countdown of the year: it says how much your typical annual volume could rise while '
+         + 'projects keep taking as long as they do today, not how many project starts are left before December.'
+         + tail };
+  }
+
+  /* ---- The full cost of the portfolio (§3.1, §3.4) ----
+     Not "the true cost": the figure deliberately excludes contractors and any
+     staff who work on projects without holding a BAU role, so "true"
+     over-claims. And the internal figure is not "invisible" — a finance
+     director knows exactly what the payroll costs. The point is attribution:
+     which budget the money is sitting in, not whether it exists.
+
+     Nothing here compares the figure to a saving, a recovered cost or a payback
+     period, and nothing sets ProjexaR's price against it as a return. Completing
+     that argument is the temptation this release exists to resist. */
+  var COST_EYEBROW_FULL = 'The full cost of your portfolio';
+  var COST_EYEBROW_PART = 'What the internal time on your projects costs';
+
+  /* Millions to two places once the figure reaches seven digits, whole pounds
+     below that — chosen off the larger endpoint so a range never mixes units.
+     £1,095,000 must read £1.10m; see the epsilon note on roundN. */
+  function gbpBig(x){ return '£' + roundN(x / 1e6, 2).toFixed(2) + 'm'; }
+  function moneySpan(r){
+    var s = span(r, 0);
+    return s[1] >= 1e6 ? spanText(r, gbpBig, 0) : spanText(r, gbp, 0);
+  }
+
+  function fullCostCopy(v, c){
+    /* Suppressed with the BAU tile. With no BAU staff on project work there is
+       no blended band to cost, and internal_project_fte falls back to the PM
+       count alone — which is not what this figure claims to measure. §1.1. */
+    if(c.noBauCapacity) return null;
+
+    var effort  = moneySpan(pick(c, 'internalEffortCost'));
+    var fteSpan = spanText(pick(c, 'internalProjectFte'), fteFmt);
+    var excludes = ' It leaves out your contractors and outsourced staff, whose cost is paid out of budget, and '
+                 + 'anyone who works on projects without also holding a BAU role — this check never counted them.';
+
+    if(!c.sums){
+      /* Any answer other than an explicit out-the-door one. Summing regardless
+         would double-count for every respondent whose budgets already carry
+         internal time. */
+      var why = v.budgetTracking === 'outthedoor'
+        ? 'You told us your project budgets carry out-the-door spend only, but gave us no annual project spend to '
+          + 'set this against, so it stands on its own.'
+        : 'Your answer on budgets was not "out-the-door spend only", so we have not added this to your reported '
+          + 'spend — where budgets already carry internal staff time, adding it again would count it twice.';
+      return { state:'part', eyebrow:COST_EYEBROW_PART, figure:effort,
+        note:'The ' + fteSpan + ' effective full-time equivalents behind your projects, at '
+           + gbp(c.loaded.total) + ' a head. ' + why + excludes };
+    }
+
+    var full = moneySpan(pick(c, 'fullPortfolioCost'));
+    var share = spanText(pick(c, 'reportedShare'), pctFmt);
+    return { state:'full', eyebrow:COST_EYEBROW_FULL, figure:full,
+      note:'Your project budgets record <strong>' + CURRENCY[v.currency] + n0(v.spend) + '</strong> a year. The '
+         + 'people doing the work cost a further <strong>' + effort + '</strong> — the ' + fteSpan
+         + ' effective full-time equivalents on your projects at ' + gbp(c.loaded.total) + ' a head — and that '
+         + 'sits in the staff budget rather than the project budget. Both are real money already being spent; '
+         + 'what your reported figure gives you is <strong>' + share + '</strong> of the total.' + excludes };
+  }
+
+  /* The loaded-cost control. Its label and helper text are input furniture,
+     where a hedge is allowed; the figures it produces are output, where one is
+     not. Nothing below lets "estimated" reach a computed number.
+
+     The salary is the editable value and the other two are formulas applied to
+     it, so the decomposition stays arithmetically true at whatever the
+     respondent puts in — an edited total with a fixed breakdown beneath it
+     would contradict itself on the same line. */
+  function loadedCostControl(v, c){
+    var L = c.loaded;
+    var edited = v.loadedSalary !== ASHE_MEDIAN;
+    return '<strong>' + gbp(L.salary) + '</strong> salary'
+      + (edited ? ' — your figure, replacing the ' + gbp(ASHE_MEDIAN) + ' default'
+                : ' — ONS ASHE ' + ASHE_YEAR + ', ' + ASHE_GROUPING + ', UK full-time median gross annual pay')
+      + '. Plus <strong>' + gbp(L.ni) + '</strong> employer National Insurance, at 15% above the £5,000 secondary '
+      + 'threshold for 2026/27 (gov.uk). Plus <strong>' + gbp(L.overhead) + '</strong> overhead at 25% for '
+      + 'workspace, equipment, licences, training and management — that 25% is ProjexaR’s judgement, not a sourced '
+      + 'figure, and the other two are sourced. Total <strong>' + gbp(L.total) + '</strong> a head, and every cost '
+      + 'figure in this report, in your PDF and behind your saved link uses it.';
   }
 
   /* ---- Informational bullets. Nothing here is rated. ---- */
@@ -1643,12 +2244,13 @@ window.submitToSender = function(payload){
     /* A bare 0.0 standing in for "not computed" is exactly what §1.1 forbids,
        so where there is no BAU capacity the figure is suppressed and the reason
        is stated instead. */
-    out.push(c.bauEffectiveFte === null
+    out.push(c.noBauCapacity
       ? { figure:'Not computed', label:'Effective BAU capacity currently on projects',
           note:'you reported no BAU staff working on projects, so there is no capacity to divide' }
-      : { figure:d1(c.bauEffectiveFte) + ' FTE',
+      : { figure:spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' FTE',
           label:'Effective BAU capacity currently on projects',
-          note:'combining the BAU headcount and average time split you gave us' });
+          note:n0(v.bauStaff) + ' BAU ' + plural(v.bauStaff,'person','people') + ' across the '
+             + bandLabel(v) + ' band you picked, which is why this and everything drawn from it is a range' });
 
     out.push({ figure: c.turnover === null ? '—' : d1(c.turnover) + '×',
       label:'Annual portfolio turnover',
@@ -1658,7 +2260,9 @@ window.submitToSender = function(payload){
 
     out.push({ figure:d1(c.itPercent) + '%',
       label:'IT staff as a share of the company',
-      note:n0(v.staff) + ' of ' + qty(v.companyHeadcount, 'person', 'people') });
+      note:n0(v.staff) + ' of ' + qty(v.companyHeadcount, 'person', 'people')
+         + (v.contractors ? ', permanent staff only — your ' + qty(v.contractors, 'contractor', 'contractors')
+              + ' are excluded from this ratio' : '') });
 
     if(c.ticketFTE !== null){
       /* The proportion is stated against non-PM IT staff, not against bauStaff.
@@ -1667,13 +2271,16 @@ window.submitToSender = function(payload){
          overstate the share roughly twofold. Where every IT person is a PM
          there is no denominator, and the clause is dropped rather than
          guessed at. */
-      out.push({ figure:d1(c.ticketFTE) + ' FTE',
+      out.push({ figure:spanText(c.ticketFTE, fteFmt) + ' FTE',
         label: c.ticketFtePercent === null
           ? 'Of ongoing capacity is absorbed by ticket volume before any project work is considered'
-          : 'Of ongoing capacity — around ' + n1(c.ticketFtePercent) + '% of your ' + n0(c.nonPmStaff)
+          : 'Of ongoing capacity — ' + spanText(c.ticketFtePercent, pctFmt) + ' of your ' + n0(c.nonPmStaff)
             + ' non-PM IT staff — is absorbed by ticket volume before any project work is considered',
-        note:'at the 480 tickets per agent per month mid-point Jitbit derived from 7 million support tickets '
-           + 'across around 1,000 companies, against your reported monthly ticket volume' });
+        note:'your monthly ticket volume against a mixed internal queue of ' + TICKETS_PER_AGENT_LO + ' to '
+           + TICKETS_PER_AGENT_HI + ' tickets per agent per month — ' + d1(TICKETS_PER_AGENT_LO / WORKING_DAYS)
+           + ' to ' + d1(TICKETS_PER_AGENT_HI / WORKING_DAYS) + ' a day across the ' + WORKING_DAYS
+           + '-working-day month we assume. That window is one ProjexaR sets between two published figures, not a '
+           + 'published figure itself' });
 
       /* Consistency check. Queries the input rather than rating the output, and
          sits directly beneath the bullet it questions. */
@@ -1703,276 +2310,314 @@ window.submitToSender = function(payload){
     return out;
   }
 
-  /* ---- Cards ----
-     Card D is specified in the brief. Items 12, 13 and 14 carry the Answer
-     Option Mapping copy verbatim. Item 11 is composed from the Project Tools
-     outputs tab, which holds Issue/Risk/Watch rows rather than finished prose.
-     Severities throughout are as the matrix has them — they are not derivable
-     from the answer, so do not adjust one without the tab in front of you. */
+  /* ---- Findings (§3.8) ----
+     Exactly four, each capable of returning Healthy, and no two implying the
+     same action. The seven that came before them tested one answer each, which
+     meant the fragmented-toolset finding, the manual-reconciliation finding and
+     the stale-picture finding all arrived at the same instruction — put demand
+     and availability in one current place. Three findings, one action. They are
+     one finding now, and the detail each of them carried is preserved inside it
+     rather than lost with them.
+
+     Two things that used to sit in this list have left it entirely. The
+     corroboration check and the run-work composition are checks on the
+     respondent's own answers rather than capacity mechanisms, and they now have
+     their own block — see checks() below.
+
+     Finding 1 takes its state from the BAU tile and never recomputes it.
+     Finding 4 never reaches At risk: it describes a reporting practice, not a
+     capacity state, and the hero tile carries that weight. */
+
+  /* The three adverse conditions behind finding 2. Each is the absence of the
+     one thing that would make a single current view possible: a tool built to
+     hold it, a live rather than hand-worked reconciliation, and a picture of
+     who is on what that can be trusted without checking.
+
+     A non-PPM toolset is a condition inside a finding here, and nothing else.
+     It moves no rating, no threshold and no published figure anywhere in this
+     tool — see the note on the escalation removed in §2.4. */
+  function adverseConditions(v){
+    return {
+      toolset:    v.toolset !== 'ppm',
+      visibility: v.resourceVisibility !== 'dedicated',
+      assignment: v.assignmentKnowledge !== 'live'
+    };
+  }
+
+  /* The mechanism each answer actually names. This is where the nuance of the
+     three merged findings is kept: the severities and the substance are the
+     ones the Project Tools and Answer Option Mapping tabs carry, and the
+     sources that were attached to them are attached to this finding now. */
+  var TOOL_DETAIL = {
+    excel:'Your plans live in spreadsheets, so each one sits in a file — a laptop, an inbox, a shared drive — '
+        + 'rather than a shared system of record. Nothing connects those files to resource data, so consistency '
+        + 'depends on manual re-entry and nothing flags it when figures drift apart. Spreadsheets also carry a '
+        + 'materially higher error rate than purpose-built systems, and those errors feed decisions unnoticed '
+        + '(Panko, University of Hawaii). Overwrites are silent and there is no audit trail.',
+    msproject:'You plan in Microsoft Project, which is built around one file and one owner. It forecasts resource '
+        + 'demand inside a single project but cannot project demand across several concurrent ones without the '
+        + 'enterprise-tier service (Microsoft Learn), so without a deliberately configured shared resource pool '
+        + 'each file holds its own resource data and the company-wide view is assembled by hand. If Project Online '
+        + 'is part of your setup, it retires on 30 September 2026 with no automatic migration path published.',
+    planner:'You plan in Microsoft Planner, which is built for tasks and boards rather than portfolio-level '
+        + 'capacity, with the advanced capacity and reporting features behind a premium tier (Microsoft Support). '
+        + 'Boards are not natively linked to a resourcing system, so a conclusion drawn from one board can miss '
+        + 'what is happening across the others.',
+    mixed:'Your planning and resourcing data sits across several tools that do not share data natively, so there '
+        + 'are multiple sources of truth and no single place showing the full picture. Every cross-reference '
+        + 'between them is manual, and inconsistencies compound as tools are added.',
+    none:'There is no system holding the plan, the resourcing or the capacity. Basic capacity questions can only '
+        + 'be answered by asking around, and nothing prevents a decision being made on stale or incomplete '
+        + 'information — including the figures you entered here.',
+    other:'We cannot say how your tool handles cross-project resourcing, because you have not named it. That is '
+        + 'flagged for a conversation rather than answered with a generic claim.'
+  };
+
+  var VIS_DETAIL = {
+    manual:'Demand and availability are joined up by hand, so someone has to actively reconcile the two and that '
+         + 'process runs on a lag rather than in real time.',
+    none:'There is no one place showing demand and availability together, so every resourcing conflict on this '
+       + 'page stays invisible until it has already caused a delay.'
+  };
+
+  var ASSIGN_DETAIL = {
+    stale:'Who is working on what is broadly known but not something you would rely on without checking, so '
+        + 'decisions get made against a picture that is already out of date by the time anyone looks at it.',
+    none:'You would have to ask around to find out who is working on what, which means even the figures you '
+       + 'entered here are estimates rather than confirmed numbers.'
+  };
+
   function cards(v, c){
-    /* Order is part of the design (v5.1 §8). Both new cards read off an answer
-       that already drives an existing card, so each pair is sequenced
-       adjacently — the second then reads as escalation rather than repetition:
-
-         bau → toolset → pmcoord → visibility → linemanager → cost → assignment
-
-       Every card carries a `key` naming its family, so that sequence stays
-       checkable. */
     var out = [];
 
-    /* Card D — BAU coverage. Triggers above 5 live projects per effective FTE:
-       amber to 10, red beyond. */
-    if(c.noBauCapacity && v.live > 0){
-      out.push({ key:'bau', rag:'over', title:'No BAU capacity is recorded against your live projects',
-        body:'You told us no BAU staff are currently working on IT projects, while ' + n0(v.live) + ' '
-           + plural(v.live,'project is','projects are') + ' live. Either they are being delivered by people this check '
-           + 'has not counted — dedicated project staff, contractors or a supplier — or the BAU contribution is real '
-           + 'and has never been written down. Both are worth settling before the next plan is built, because a plan '
-           + 'assuming capacity nobody has committed is the most common way a date slips.' });
-    }else if(c.projectsPerFTE !== null && c.projectsPerFTE > BAND_FTE.watch){
-      out.push({ key:'bau', rag:c.ragFTE,
-        title:'Your ' + qty(v.live, 'live project is', 'live projects are') + ' sharing ' + n1(c.bauEffectiveFte)
-            + ' effective BAU FTE',
-        body:'With ' + n1(c.bauEffectiveFte) + ' effective BAU FTE — ' + qty(v.bauStaff, 'person', 'people') + ' '
-           + 'spending an average of ' + v.bauPercent2 + '% of their time on project work — spread across '
-           + qty(v.live, 'live project', 'live projects') + ', that works out to ' + n1(c.projectsPerFTE)
-           + ' live projects for every unit of BAU capacity. The same people are almost certainly booked across multiple plans with '
-           + 'no single view showing the overlap. A project plan that doesn’t explicitly allow for someone’s recurring '
-           + 'BAU duties is exactly where delays start.' });
+    /* ---- Finding 1 — effective BAU capacity across the live portfolio ----
+       Its state is the BAU tile's, read straight off c.ragFTE. It is never
+       recomputed here: a finding that derived its own rating could disagree
+       with the tile it describes, which is the fault this release exists to
+       remove.
+
+       Where no BAU staff were reported the tile is suppressed (§1.1) and there
+       is no rating to take. With projects live that absence is itself the
+       finding and is rated on its own terms; with nothing live there is nothing
+       to be at risk of, and the printed report's suppression note explains the
+       gap rather than a finding asserting something about a department it
+       cannot see. */
+    if(c.noBauCapacity){
+      if(v.live > 0){
+        out.push({ key:'bau', rag:'over',
+          title:'No BAU capacity is recorded against your live projects',
+          body:'You told us no BAU staff are currently working on IT projects, while ' + n0(v.live) + ' '
+             + plural(v.live,'project is','projects are') + ' live. Either they are being delivered by people this '
+             + 'check has not counted — dedicated project staff, contractors or a supplier — or the BAU '
+             + 'contribution is real and has never been written down. Both are worth settling before the next plan '
+             + 'is built, because a plan assuming capacity nobody has committed is the most common way a date '
+             + 'slips.' });
+      }
+    }else{
+      var fteRange   = spanText(pick(c, 'bauEffectiveFte'), fteFmt);
+      var ratioRange = spanText(pick(c, 'projectsPerFTE'), fteFmt);
+      var straddles  = c.at[E_LO].ragFTE !== c.at[E_HI].ragFTE;
+      var bauTitle, bauBody;
+
+      if(v.live === 0){
+        bauTitle = 'Your ' + fteRange + ' effective BAU FTE has nothing live drawing on it';
+        bauBody  = 'You have ' + fteRange + ' effective BAU FTE of project capacity — ' + qty(v.bauStaff,'person','people')
+                 + ' at ' + bandPhrase(v) + ' — and nothing live committed against it right now. This is the '
+                 + 'moment the commitments are worth writing down, while there is no plan depending on the answer.';
+      }else if(c.ragFTE === 'healthy'){
+        bauTitle = 'Your ' + fteRange + ' effective BAU FTE covers your live portfolio';
+        bauBody  = 'Your ' + qty(v.live,'live project','live projects') + ' share ' + fteRange + ' effective BAU '
+                 + 'FTE, which is ' + ratioRange + ' projects for each unit of capacity — inside the coverage we '
+                 + 'treat as sustainable across the whole of the ' + bandLabel(v) + ' band you picked. The thing '
+                 + 'worth confirming is the spread: an average this comfortable can still hide one person carrying '
+                 + 'six of those projects while somebody else carries one.';
+      }else{
+        bauTitle = 'Your ' + qty(v.live,'live project is','live projects are') + ' sharing ' + fteRange
+                 + ' effective BAU FTE';
+        bauBody  = 'With ' + fteRange + ' effective BAU FTE — ' + qty(v.bauStaff, 'person', 'people') + ' at '
+                 + bandPhrase(v) + ' — spread across ' + qty(v.live, 'live project', 'live projects') + ', that is '
+                 + ratioRange + ' live projects for every unit of BAU capacity. '
+                 + (straddles
+                     ? 'The band you picked straddles a threshold, so we rate this on the less favourable end. '
+                     : '')
+                 + 'The same people are almost certainly booked across several plans with no single view showing '
+                 + 'the overlap, and a project plan that does not explicitly allow for someone’s recurring BAU '
+                 + 'duties is exactly where delays start.';
+      }
+      out.push({ key:'bau', rag:c.ragFTE, status:ragSpan(c.at[E_LO].ragFTE, c.at[E_HI].ragFTE),
+                 title:bauTitle, body:bauBody });
     }
 
-    /* Item 11 — what projects are planned in. Composed from the Project Tools
-       outputs tab, which holds Issue/Risk/Watch rows rather than finished
-       prose; severities are as that tab has them. "Something else" gets no
-       card, so there is no `other` key here. */
-    var TOOLSET = {
-      excel:{ rag:'atrisk', title:'Your project plans live in a spreadsheet',
-        body:'The plan sits in one file — a laptop, an inbox, a shared drive — rather than a shared system of record, '
-           + 'so files fork, get emailed around and go stale until nobody is certain which version is current. '
-           + 'Nothing technically connects that file to resource data or other systems, so consistency depends on '
-           + 'manual re-entry and nothing flags it when figures drift apart. Spreadsheets also carry a materially '
-           + 'higher error rate than purpose-built systems, and those errors can feed into decisions unnoticed '
-           + '(Panko, University of Hawaii). There is no audit trail: overwrites are silent and unrecoverable.' },
-      msproject:{ rag:'atrisk', title:'You plan projects in Microsoft Project',
-        body:'Desktop Project is built around one file and one owner. Multi-user editing and shared resource pooling '
-           + 'are not native without added infrastructure, and while it forecasts resource demand within a single '
-           + 'project, it cannot project demand across several concurrent projects without the enterprise-tier '
-           + 'service (Microsoft Learn). Without a deliberately configured shared resource pool, each project '
-           + 'manager’s file holds its own resource data and a company-wide capacity view has to be assembled by '
-           + 'hand. If your setup already includes Project Online, note that the service retires on 30 September '
-           + '2026 with no automatic migration path published — worth confirming where your cross-project resource '
-           + 'view will live after that date.' },
-      planner:{ rag:'atrisk', title:'You plan projects in Microsoft Planner',
-        body:'Planner is built for tasks and boards rather than portfolio-level resource capacity planning; the '
-           + 'advanced capacity and reporting features sit behind a premium tier (Microsoft Support). Boards are not '
-           + 'natively linked to a resourcing system, so capacity conclusions drawn from one board can miss what is '
-           + 'happening across other boards and projects. Which tier you are on determines how much of this '
-           + 'applies.' },
-      ppm:{ rag:'healthy', title:'You already have a dedicated tool for this',
-        body:'That is a stronger foundation than most IT departments this size have. One thing worth confirming: PPM '
-           + 'products vary widely in whether resource management and capacity forecasting are built in, or sit in a '
-           + 'separate module or add-on. Without knowing the specific product this cannot be assumed solved — '
-           + 'particularly whether it holds BAU commitment as well as project demand.' },
-      mixed:{ rag:'over', title:'Your planning is spread across several tools',
-        body:'Planning and resourcing data sits across multiple tools that do not share data natively, which means '
-           + 'multiple sources of truth and no single place showing the full picture. Every cross-reference between '
-           + 'them is manual, so inconsistencies compound as more tools are added.' },
-      none:{ rag:'over', title:'There is no system holding this together',
-        body:'There is no record of the plan, the resourcing or the capacity anywhere. Basic capacity questions can '
-           + 'only be answered by asking around, and nothing prevents decisions being made on stale or incomplete '
-           + 'information — including the figures you entered here.' }
-    };
-    if(v.toolset && TOOLSET[v.toolset]) out.push(Object.assign({key:'toolset'}, TOOLSET[v.toolset]));
+    /* ---- Finding 2 — no single current view of demand and availability ----
+       Three adverse conditions, and the state is how many of them apply: none
+       is Healthy, one or two is Watch, all three is At risk. This is where the
+       toolset signal lives, as a mechanism inside a finding rather than as an
+       escalation on a rating. */
+    var adv = adverseConditions(v);
+    var hits = [];
+    if(adv.toolset)    hits.push(TOOL_DETAIL[v.toolset] || TOOL_DETAIL.other);
+    if(adv.visibility) hits.push(VIS_DETAIL[v.resourceVisibility] || VIS_DETAIL.none);
+    if(adv.assignment) hits.push(ASSIGN_DETAIL[v.assignmentKnowledge] || ASSIGN_DETAIL.none);
 
-    /* PM coordination overload. Sits immediately after the toolset card because
-       it reads off the same answer — the pair is meant to read as escalation
-       rather than repetition. It adds no new fact: it attaches the pmLoad figure
-       this report already calculates to a tool risk the visitor has already told
-       us applies, turning an abstract statement about a tool into a statement
-       about their own caseload.
-
-       Unlike the toolset card above, this one does render for `other` — the
-       finding there is that we cannot say, which is worth stating. Suppressed
-       entirely where there are no project managers, since pmLoad is undefined.
-       Sources are the ones the toolset card already cites; the rest is ProjexaR
-       positioning. */
-    if(c.pmLoad !== null){
-      var load = n1(c.pmLoad);
-      /* The caseload appears in prose beside a noun in almost every branch, so
-         it goes through qty1 wherever it does. `load` stays for the places that
-         name the figure on its own. */
-      var loadProjects = qty1(c.pmLoad, 'project', 'projects');
-      var loadConcurrent = qty1(c.pmLoad, 'concurrent project', 'concurrent projects');
-      var PM_COORD = {
-        excel:{ rag:'atrisk', title:'Each PM’s ' + loadProjects + ' sit in separate spreadsheet files',
-          body:'You told us your PM caseload works out to ' + loadConcurrent + ' each. On '
-             + 'spreadsheets, each of those likely lives in its own file — so spotting a resourcing conflict between '
-             + 'two of a PM’s own ' + loadProjects + ' means manually comparing files, and there’s no shared system '
-             + 'that would catch it automatically.' },
-        msproject:{ rag:'atrisk', title:'Each PM’s ' + loadProjects + ' sit in separate Project files',
-          body:'At ' + loadConcurrent + ' per PM, each file is likely tracking resourcing for one '
-             + 'project at a time — Project’s per-project view doesn’t natively roll up a PM’s own ' + load + ' '
-             + plural(round1(c.pmLoad),'file','files') + ' '
-             + 'into one picture unless Project Online or Project Server is already in place, which we haven’t '
-             + 'confirmed.' },
-        planner:{ rag:'atrisk', title:'Each PM’s ' + loadProjects + ' sit on separate Planner boards',
-          body:'With ' + loadConcurrent + ' per PM, a PM juggling that many boards has no native '
-             + 'way to see resourcing conflicts across boards — Planner’s capacity view works within a board, not '
-             + 'across a PM’s full caseload.' },
-        ppm:{ rag:'healthy', title:'A caseload of ' + loadProjects + ' per PM is what a resource-planning tool is for',
-          body:'At ' + loadConcurrent + ' per PM, this is exactly the caseload a resource-planning '
-             + 'tool is meant to handle — worth confirming the tool’s resource management module is actually switched '
-             + 'on and being used for this, since PPM products vary in whether that’s built in or a separate '
-             + 'add-on.' },
-        mixed:{ rag:'over', title:'Each PM reconciles ' + loadProjects + ' across tools that don’t share data',
-          body:'At ' + loadConcurrent + ' per PM, split across tools that don’t share data, a PM '
-             + 'would have to manually reconcile resourcing across every one of those ' + loadProjects + ' — and '
-             + 'every reconciliation is a chance for two projects to quietly double-book the same person.' },
-        none:{ rag:'over', title:'Nothing holds a PM’s ' + loadProjects + ' together',
-          body:'At ' + loadConcurrent + ' per PM with no system in place at all, resourcing '
-             + 'conflicts across that caseload can only be caught by asking around — and only after they’ve already '
-             + 'caused a delay.' },
-        other:{ rag:'atrisk', title:'We can’t say how your tool handles a caseload of ' + loadProjects + ' per PM',
-          body:'At ' + loadConcurrent + ' per PM, we can’t say how well an unnamed tool handles '
-             + 'cross-project resourcing — flagged for follow-up rather than a generic claim.' }
-      };
-      if(v.toolset && PM_COORD[v.toolset]) out.push(Object.assign({key:'pmcoord'}, PM_COORD[v.toolset]));
+    if(hits.length === 0){
+      out.push({ key:'visibility', rag:'healthy',
+        title:'You have the pieces of a single current view of demand and availability',
+        body:'A dedicated tool, one place showing demand against availability, and a picture of who is on what '
+           + 'you can read without asking anyone. That is a stronger foundation than most IT departments this '
+           + 'size have. Two things are worth confirming rather than assuming: that the tool holds BAU '
+           + 'commitment as well as project demand, since one that is project-aware but not BAU-aware misses the '
+           + 'same conflicts; and that the who-on-what view updates itself rather than depending on someone '
+           + 'remembering to refresh it.' });
+    }else{
+      var lead = hits.length === 3
+        ? 'All three of the things that would give you one current view of demand and availability are missing.'
+        : (hits.length === 2
+            ? 'Two of the three things that would give you one current view of demand and availability are missing.'
+            : 'One of the three things that would give you one current view of demand and availability is missing.');
+      var caseload = c.pmLoad !== null && v.live > 0
+        ? ' Each of your project managers is carrying ' + qty1(c.pmLoad, 'concurrent project', 'concurrent projects')
+          + ', and reconciling resourcing across that caseload by hand is where two projects quietly double-book '
+          + 'the same person.'
+        : '';
+      out.push({ key:'visibility', rag:hits.length === 3 ? 'over' : 'atrisk',
+        title:hits.length === 3
+          ? 'There is no single current view of demand and availability'
+          : 'Your view of demand and availability is not single and current',
+        body:lead + ' ' + hits.join(' ') + caseload
+           + ' Each of these is fixable on its own, but they compound: the fewer of them hold, the more of your '
+           + 'capacity picture depends on somebody remembering something.' });
     }
 
-    /* Item 12 — one live view of demand against availability.
-       Copy and severities per the Answer Option Mapping tab. */
-    var VISIBILITY = {
-      none:{ rag:'over', title:'There’s no shared view of resource demand and availability',
-        body:'You’ve told us there isn’t one place to see demand and availability together — every resourcing '
-           + 'conflict on this page is currently invisible until it already causes a delay.' },
-      manual:{ rag:'atrisk', title:'Demand and availability are joined up by hand',
-        body:'You’ve told us you rely on manually cross-referenced spreadsheets — someone has to actively reconcile '
-           + 'demand against availability, and that process runs on a lag, not in real time.' },
-      dedicated:{ rag:'healthy', title:'Demand and availability are visible in one place',
-        body:'Worth checking whether it’s BAU-aware as well as project-aware, since a tool that only tracks project '
-           + 'demand can still miss the same conflicts if BAU commitments sit outside it.' }
-    };
-    if(v.resourceVisibility && VISIBILITY[v.resourceVisibility]) out.push(Object.assign({key:'visibility'}, VISIBILITY[v.resourceVisibility]));
-
-    /* Line manager blind commitment. A corollary of item 12 rather than a new
-       question, and paired with it for the same reason the PM card is paired
-       with item 11. Whoever signs off releasing a BAU person onto a project
-       depends on exactly the view item 12 describes; this card names the
-       quantity riding on that gap.
-
-       No external source on any branch. The `manual` branch in particular
-       carries no citation: that a hand-reconciled picture of demand and
-       availability runs on a lag needs none.
-
-       Suppressed where no BAU staff were reported. The specification does not
-       call for that, but every branch names a headcount as the thing at stake,
-       and at zero the card would assert that nobody was signed off by anybody.
-       Card D already covers the no-BAU-capacity case. */
-    if(v.bauStaff > 0){
-      var bau = n0(v.bauStaff);
-      var LINE_MANAGER = {
-        none:{ rag:'over', title:'All ' + bau + ' BAU staff on projects were released without a shared view',
-          body:'You’ve told us there’s no shared view of resource demand and availability. That means every one of '
-             + 'the ' + bau + ' BAU staff currently drawn into project work was signed off by a line manager working '
-             + 'from whatever they personally knew at the time — not from a live picture of what else that person had '
-             + 'already been committed to.' },
-        manual:{ rag:'atrisk', title:'Line managers release those ' + bau + ' BAU staff from a lagging picture',
-          body:'You’ve told us demand and availability are joined up by hand, on a lag. A line manager releasing '
-             + 'someone from the ' + bau + ' BAU staff currently on projects is working from that same lagging, '
-             + 'manually-reconciled picture — so a commitment that looked fine when it was agreed can go stale before '
-             + 'anyone notices.' },
-        dedicated:{ rag:'healthy',
-          title:'Worth confirming line managers approve BAU releases in that same tool',
-          body:'Worth confirming the tool line managers actually use to approve releasing BAU time is the same one '
-             + 'shown here as covering demand and availability — a tool that’s project-aware but not BAU-aware would '
-             + 'still leave this gap for the ' + bau + ' BAU staff currently on projects, even though the headline '
-             + 'answer reads Healthy.' }
-      };
-      if(v.resourceVisibility && LINE_MANAGER[v.resourceVisibility]) out.push(Object.assign({key:'linemanager'}, LINE_MANAGER[v.resourceVisibility]));
+    /* ---- Finding 3 — line-manager commitments against a lagging picture ----
+       Whoever signs off releasing a BAU person onto a project depends on the
+       who-on-what picture being current. Healthy where it is; Watch where it is
+       not. It does not reach At risk — the mechanism is the same either way and
+       only the freshness of the picture changes. */
+    var current = v.assignmentKnowledge === 'live';
+    var bauN = n0(v.bauStaff);
+    if(current){
+      out.push({ key:'linemanager', rag:'healthy',
+        title:'Line managers can see what they are committing to when they release someone',
+        body:'You can say who is working on which project without asking anyone, so a line manager releasing one '
+           + 'of the ' + bauN + ' BAU staff currently on project work is agreeing to it against a picture that is '
+           + 'actually current. Worth confirming that the view they use to approve a release is the same one shown '
+           + 'here, and that it carries BAU commitment alongside project demand — a project-aware view that is not '
+           + 'BAU-aware leaves the same gap even when the headline answer reads Healthy.' });
+    }else{
+      out.push({ key:'linemanager', rag:'atrisk',
+        title:'Line managers release those ' + bauN + ' BAU staff against a lagging picture',
+        body:(v.assignmentKnowledge === 'none'
+              ? 'You would have to ask around to find out who is on what. '
+              : 'Your picture of who is on what is broadly right but not something you would rely on without '
+                + 'checking it. ')
+           + 'Every one of the ' + bauN + ' BAU staff currently drawn into project work was released by a line '
+           + 'manager working from that picture, or from whatever they personally knew at the time — not from a '
+           + 'live view of what else that person had already been committed to. The failure is rarely the original '
+           + 'agreement. It is that the agreement goes stale and the replan never formally happens.' });
     }
 
-    /* Item 13 — whether internal BAU time reaches a project budget.
-       Copy and severities per the Answer Option Mapping tab. Note there is no
-       healthy branch here: tracking internal time still leaves out whatever is
-       logged outside the process, so the best available answer is a watch. */
-    var COST = {
-      outthedoor:{ rag:'over', title:'Your project budgets carry out-the-door spend only',
-        body:'Your recorded project spend excludes internal staff time entirely, and that time isn’t being reliably '
-           + 'tracked either — so the cost of running your IT projects is higher than what’s being reported, by the '
-           + 'value of the internal time nobody is counting.' },
-      varies:{ rag:'over',
-        title:'Whether BAU staff time is budgeted depends on who’s running the project — there’s no consistent '
-            + 'picture of true cost',
-        body:'Whether BAU time is included depends on who’s running the project, so your recorded spend figures '
-           + 'aren’t consistent across the portfolio — and where BAU time is left out, they understate what those '
-           + 'projects cost to run.' },
-      partial:{ rag:'over',
-        title:'Only some of your project budgets include BAU staff time — the true cost is inconsistent across your '
-            + 'portfolio',
-        body:'Only some of your project budgets include BAU staff time, so your recorded spend is inconsistent across '
-           + 'the portfolio — and where it’s excluded, the recorded figure understates what those projects cost to '
-           + 'run.' },
-      tracked:{ rag:'atrisk',
-        title:'Internal BAU time is budgeted and tracked — though project spend figures still exclude time logged '
-            + 'outside this process by definition',
-        body:'Your project budgets already fold in the internal BAU time you’re tracking — worth confirming that '
-           + 'applies consistently across every project, since folding in time only where it’s tracked would give a '
-           + 'fuller picture.' }
+    /* ---- Finding 4 — what project budgets carry ----
+       A reporting practice, not a capacity state, so it never reaches At risk.
+       The hero tile carries the weight of what the practice costs. */
+    var COST_FINDING = {
+      tracked:{ rag:'healthy',
+        title:'Your project budgets already carry internal staff time',
+        body:'You told us internal BAU time is budgeted and tracked, so what your projects are reported to cost '
+           + 'includes the people doing the work rather than only what arrived as an invoice. That is the less '
+           + 'common answer to this question. Worth confirming it holds consistently across every project — where '
+           + 'time is folded in only on the projects that happen to track it, the portfolio total is still short '
+           + 'by whatever the others left out.' },
+      outthedoor:{ rag:'atrisk',
+        title:'Your project budgets carry out-the-door spend only',
+        body:'Your recorded project spend excludes internal staff time entirely, so the figure your projects are '
+           + 'reported to cost is the invoiced part and not the whole. The rest is real and already being spent; '
+           + 'it is sitting in the staff budget rather than the project budget, which is a question of which '
+           + 'ledger it lands in and not of whether anyone is paying it. The tile above puts a number on the '
+           + 'difference.' },
+      partial:{ rag:'atrisk',
+        title:'Only some of your project budgets include BAU staff time',
+        body:'Because internal time reaches some project budgets and not others, your recorded spend figures are '
+           + 'not comparable across the portfolio — and where it is excluded, the recorded figure is the invoiced '
+           + 'part rather than the whole. The first fix is not to cost everything; it is to make it the same rule '
+           + 'everywhere, so two projects can be read against each other.' },
+      varies:{ rag:'atrisk',
+        title:'Whether BAU staff time is budgeted depends on who is running the project',
+        body:'Whether internal time is included depends on the project manager or the team, so your recorded spend '
+           + 'figures are not consistent across the portfolio and where BAU time is left out they are the invoiced '
+           + 'part rather than the whole. That inconsistency costs more than the omission does: it means no two '
+           + 'project costs on your portfolio can be compared without first asking how each was built.' }
     };
-    if(v.budgetTracking && COST[v.budgetTracking]) out.push(Object.assign({key:'cost'}, COST[v.budgetTracking]));
+    if(v.budgetTracking && COST_FINDING[v.budgetTracking]){
+      out.push(Object.assign({key:'cost'}, COST_FINDING[v.budgetTracking]));
+    }
 
-    /* Item 14 — whether current assignments can be stated without asking.
-       Copy and severities per the Answer Option Mapping tab. */
-    var ASSIGNMENT = {
-      none:{ rag:'over', title:'You would have to ask around to find out who is on what',
-        body:'You’d have to ask around to find out who’s working on what, which means even the figures you’ve entered '
-           + 'here are estimates, not confirmed numbers.' },
-      stale:{ rag:'atrisk',
-        title:'Who’s working on what is loosely tracked — but the picture may already be out of date by the time you '
-            + 'check it',
-        body:'Your view of who’s working on what is broadly right but not something you’d rely on without checking — '
-           + 'decisions end up made against a picture that’s already wrong by the time anyone looks at it.' },
-      live:{ rag:'healthy', title:'You can see who’s working on what right now',
-        body:'Worth checking whether it updates automatically, or relies on someone remembering to refresh it — a '
-           + 'live view that’s only live when someone maintains it manually carries the same risk as not having '
-           + 'one.' }
-    };
-    if(v.assignmentKnowledge && ASSIGNMENT[v.assignmentKnowledge]) out.push(Object.assign({key:'assignment'}, ASSIGNMENT[v.assignmentKnowledge]));
+    return out;
+  }
 
-    /* Corroboration check (§2.9), in its interim home.
+  /* ---- Checks on your answers (§3.8) ----
+     A separate block, after the findings and before the numbers. These are not
+     capacity mechanisms: they take two things the respondent told us and read
+     each against the other. That is the clearest demonstration in the report of
+     something a spreadsheet of their own figures could not do for them, which
+     is why it has a heading of its own rather than a footnote.
 
-       This is a check on the respondent's own answers rather than a capacity
-       mechanism, so it does not belong in this list and PR2 moves it into a
-       separate checks block. It sits here for one merge because without it PR1
-       has no Healthy rating available anywhere and cannot meet its own
-       acceptance criteria. It is appended last so the existing seven keep the
-       order the design sequences them in.
+     One check carries a state and one deliberately does not. */
+  function checks(v, c){
+    var out = [];
 
-       The `note` branch carries no rating at all — see the compute() comment
-       for why reading it as a fault would publish a confident wrong finding. */
-    if(c.corroboration === 'healthy'){
-      out.push({ key:'corroboration', rag:'healthy',
-        title:'Your two answers about the same department agree',
-        body:'You told us ' + v.bauSplitEstimate + '% of IT effort goes to run work. Counting the people you named '
-           + '— ' + qty(v.pms, 'project manager', 'project managers') + ' and ' + n1(c.bauEffectiveFte)
-           + ' effective BAU FTE, against ' + qty(v.staff, 'person', 'people') + ' in IT — implies '
-           + n1(c.derivedRunShare) + '%. Those two figures came from different questions and they corroborate, so '
-           + 'the capacity figures on this page rest on a consistent picture of your department.' });
-    }else if(c.corroboration === 'note'){
-      out.push({ key:'corroboration', note:true,
-        title:'We derive less change effort than you reported, which is what we would expect',
-        body:'You told us ' + v.bauSplitEstimate + '% of IT effort goes to run work. The staff you named imply '
-           + n1(c.derivedRunShare) + '%. This check counts only project managers and BAU staff working on projects, '
-           + 'so anyone delivering projects without also holding a BAU role — dedicated project staff, for instance '
-           + '— is invisible to it. Where that is the case the gap is expected and there is nothing to correct. We '
-           + 'state it rather than rate it.' });
-    }else if(c.corroboration === 'watch'){
-      out.push({ key:'corroboration', rag:'atrisk',
-        title:'We derive more change effort than you reported',
-        body:'You told us ' + v.bauSplitEstimate + '% of IT effort goes to run work, but the staff you named imply '
-           + n1(c.derivedRunShare) + '% — we derive more change effort than your split accounts for. One of the two '
-           + 'answers is worth revisiting: either the run and change split, or the BAU headcount and time share. '
-           + 'Both your effective BAU FTE and the growth ceiling derived from it depend on the second.' });
+    /* Corroboration (§2.9), moved here from the findings list where PR1 parked
+       it. Asymmetric: above the window is a note carrying no rating, because
+       the derivation counts only project managers and BAU staff on projects and
+       is blind to anyone delivering projects without a BAU role. Reading that
+       as a fault would publish a confident wrong finding. */
+    if(c.corroboration !== null){
+      var derived = spanText(c.derivedRunShare, pctFmt);
+      if(c.corroboration === 'healthy'){
+        out.push({ key:'corroboration', rag:'healthy',
+          title:'Your two answers about the same department agree',
+          body:'You told us ' + v.bauSplitEstimate + '% of IT effort goes to run work. Counting the people you '
+             + 'named — ' + qty(v.pms, 'project manager', 'project managers') + ' and '
+             + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' effective BAU FTE, against '
+             + qty(v.staff, 'person', 'people') + ' in IT — implies ' + derived + '. Those two figures came from '
+             + 'different questions and they corroborate, so the capacity figures on this page rest on a '
+             + 'consistent picture of your department.' });
+      }else if(c.corroboration === 'note'){
+        out.push({ key:'corroboration', note:true,
+          title:'We derive less change effort than you reported, which is what we would expect',
+          body:'You told us ' + v.bauSplitEstimate + '% of IT effort goes to run work. The staff you named imply '
+             + derived + '. This check counts only project managers and BAU staff working on projects, so anyone '
+             + 'delivering projects without also holding a BAU role — dedicated project staff, for instance — is '
+             + 'invisible to it. Where that is the case the gap is expected and there is nothing to correct. We '
+             + 'state it rather than rate it.' });
+      }else{
+        out.push({ key:'corroboration', rag:'atrisk',
+          title:'We derive more change effort than you reported',
+          body:'You told us ' + v.bauSplitEstimate + '% of IT effort goes to run work, but the staff you named '
+             + 'imply ' + derived + ' — we derive more change effort than your split accounts for. One of the two '
+             + 'answers is worth revisiting: either the run and change split, or the BAU headcount and time band. '
+             + 'Both your effective BAU FTE and the growth ceiling derived from it depend on the second.' });
+      }
+    }
+
+    /* Run-work composition (§3.6). Stated, never rated. Twenty-seven to
+       twenty-nine FTE of non-ticket run work in a forty-five person department
+       is entirely normal, and a finding implying otherwise reads as naive to
+       the people this report is written for. Both readings are given because
+       both are useful, and the close is the point that actually matters: it is
+       the same population the projects draw from. */
+    if(c.runWorkGap !== null){
+      var ticket = spanText(c.ticketFTE, fteFmt);
+      var gap    = spanText(c.runWorkGap, fteFmt);
+      out.push({ key:'runwork', stated:true,
+        title:'Ticket work accounts for ' + ticket + ' FTE of the ' + d1(c.runWorkFte)
+            + ' FTE you reported on run work',
+        body:'Your ' + v.bauSplitEstimate + '% run share across ' + qty(v.staff, 'person', 'people')
+           + ' in IT comes to ' + d1(c.runWorkFte) + ' FTE. Your ticket volume accounts for ' + ticket + ' of it, '
+           + 'which leaves ' + gap + ' FTE of run work that is not ticket-shaped. That is a statement about '
+           + 'composition, not a deficiency — two readings fit it and both are worth having. Either ticket logging '
+           + 'is incomplete, or run work in your organisation genuinely is not ticket-shaped: infrastructure, '
+           + 'incident response, vendor management, compliance. Which of the two it is changes what you would do '
+           + 'about it. What does not change is that this is the same population your projects draw from.' });
     }
 
     return out;
@@ -1996,32 +2641,49 @@ window.submitToSender = function(payload){
         ? (v.live > 0 ? 'No BAU capacity reported, against ' + n0(v.live) + ' live '
                         + plural(v.live,'project','projects') + '.'
                       : 'No BAU capacity reported, and nothing live.')
-        : (v.live > 0 ? d1(c.bauEffectiveFte) + ' effective BAU FTE spread across ' + n0(v.live) + ' live '
-                        + plural(v.live,'project','projects') + '.'
-                      : d1(c.bauEffectiveFte) + ' effective BAU FTE, with nothing live to spread it across.'),
+        : (v.live > 0 ? spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' effective BAU FTE spread across '
+                        + n0(v.live) + ' live ' + plural(v.live,'project','projects') + '.'
+                      : spanText(pick(c, 'bauEffectiveFte'), fteFmt)
+                        + ' effective BAU FTE, with nothing live to spread it across.'),
       next:'Which named people are carrying it — and which weeks they are committed twice over.' });
 
     rows.push({
       now: c.noBauCapacity ? 'No capacity to average those projects against.'
          : v.live === 0    ? 'No projects currently drawing on that capacity.'
-         : 'An average of ' + qty1(c.projectsPerFTE, 'project', 'projects') + ' for every unit of capacity.',
+         : spanText(pick(c, 'projectsPerFTE'), fteFmt) + ' projects for every unit of capacity, across the band.',
       next:'The actual spread. An average hides the person on six projects and the person on one.' });
 
-    var h = c.ceiling;
+    var h = c.ceiling, hh = c.ceilingHi;
     rows.push({
       now: h.noRoute ? 'No project managers and no BAU staff on projects, so there is no capacity measure to '
                         + 'project a ceiling from.'
          : h.noPace   ? 'No live projects to project a pace from, so the growth ceiling cannot be worked out yet.'
-         : h.value < 0 ? 'Running ' + qty(-h.value,'project','projects')
-                         + ' a year above the pace your capacity sustains.'
-         : h.value === 0 ? 'Exactly at the pace your capacity sustains, with no room to raise it.'
-         : 'Room to raise your annual pace by ' + qty(h.value,'more project','more projects')
+         : (h.value < 0 && hh.value < 0)
+             ? 'Running ' + (h.value === hh.value ? qty(-h.value,'project','projects')
+                                                  : n0(-hh.value) + ' to ' + qty(-h.value,'project','projects'))
+               + ' a year above the pace your capacity sustains.'
+         : h.value < 0 ? 'Somewhere between ' + qty(-h.value,'project','projects') + ' a year above the pace your '
+                         + 'capacity sustains and ' + qty(hh.value,'project','projects') + ' a year of room.'
+         : (h.value === 0 && hh.value === 0)
+             ? 'Exactly at the pace your capacity sustains, with no room to raise it.'
+         : 'Room to raise your annual pace by ' + (h.value === hh.value
+             ? qty(h.value,'more project','more projects')
+             : n0(h.value) + ' to ' + qty(hh.value,'more project','more projects'))
            + ' a year before a capacity metric turns red.',
       next:'Which specific projects you could take on, and when the people they need are free.' });
 
+    if(c.at[E_LO].internalEffortCost !== null){
+      rows.push({
+        now: c.sums
+          ? moneySpan(pick(c, 'fullPortfolioCost')) + ' of portfolio cost, of which '
+            + moneySpan(pick(c, 'internalEffortCost')) + ' is internal time your budgets do not record.'
+          : moneySpan(pick(c, 'internalEffortCost')) + ' of internal staff time behind your projects.',
+        next:'Which projects that time went to, and what each one actually cost to run.' });
+    }
+
     if(c.ticketFTE !== null){
       rows.push({
-        now:d1(c.ticketFTE) + ' FTE of ticket demand on the same pool of people.',
+        now:spanText(c.ticketFTE, fteFmt) + ' FTE of ticket demand on the same pool of people.',
         next:'Whether the people absorbing that demand are the ones on your critical path.' });
     }
 
@@ -2043,16 +2705,23 @@ window.submitToSender = function(payload){
           + 'against ' + n0(v.live) + ' live ' + plural(v.live,'project','projects') + ' and around ' + n0(v.annual)
           + ' in a typical year.';
 
+    if(v.contractors){
+      s += ' You also told us about ' + qty(v.contractors, 'contractor or outsourced person', 'contractors and '
+         + 'outsourced staff') + ' on project work, counted separately throughout.';
+    }
+
     s += c.noBauCapacity
       ? ' <strong>No BAU staff are working on those projects</strong>, so this check finds no internal delivery '
         + 'capacity behind them at all.'
       : ' Of your IT staff, <strong>' + n0(v.bauStaff) + '</strong> BAU ' + plural(v.bauStaff,'person is','people are')
-        + ' working on projects at an average of ' + v.bauPercent2 + '% of their time — <strong>' + n1(c.bauEffectiveFte)
+        + ' working on projects at ' + bandPhrase(v) + ' — <strong>'
+        + spanText(pick(c, 'bauEffectiveFte'), fteFmt)
         + ' effective full-time equivalents</strong> of project capacity, from people whose first responsibility is '
         + 'keeping something running.';
 
     if(!c.noBauCapacity && v.live > 0){
-      s += ' That is <strong>' + n1(c.projectsPerFTE) + ' live projects for every unit of BAU capacity</strong>'
+      s += ' That is <strong>' + spanText(pick(c, 'projectsPerFTE'), fteFmt)
+         + ' live projects for every unit of BAU capacity</strong>'
          + (c.pmLoad !== null ? ', and ' + n1(c.pmLoad) + ' concurrent projects for each project manager' : '') + '.';
     }
 
@@ -2067,15 +2736,32 @@ window.submitToSender = function(payload){
 
   /* ================= Pricing ================= */
   /* Licence basis is bauStaff + pms — the people who appear on project plans.
-     Stated with the count visible so the basis is never implied. */
+     Stated with the count visible so the basis is never implied. Contractors
+     are not licensed and are not in the count (§3.2).
+
+     The share of spend is worked from the annual price, which is twelve months
+     for the price of ten. The workings row used to multiply the monthly price
+     by twelve, which published a share the respondent could not reconcile
+     against the price they would actually pay. The panel names the discount so
+     a reader multiplying the monthly figure by twelve does not find an
+     unexplained gap.
+
+     No sentence here compares the price to a saving, a recovered cost or a
+     payback period, and the full-cost comparator below is a share of a total
+     and nothing more. */
   function priceCopy(v, c){
     var s = 'ProjexaR is charged per managed resource — the ' + n0(c.licenceCount) + ' '
           + plural(c.licenceCount,'person','people') + ' on your project work, not your whole IT department of '
-          + n0(v.staff) + '. That is <strong>' + gbp(c.monthly) + ' a month</strong>, or ' + gbp(c.yearly) + ' a year.';
+          + n0(v.staff) + '. That is <strong>' + gbp(c.monthly) + ' a month</strong>, or ' + gbp(c.yearly)
+          + ' a year on the annual plan, two months free.';
     if(c.spendPct !== null){
       s += ' Against the ' + CURRENCY[v.currency] + n0(v.spend) + ' a year you spend on IT projects, that is '
-         + '<strong>' + pct2(c.spendPct) + '</strong> of your project budget.';
-      if(v.currency !== 'GBP') s += ' (Approximate — ProjexaR is priced in sterling.)';
+         + '<strong>' + pct2(c.spendPct) + '</strong> of your project budget';
+      s += c.fullCostPct !== null
+         ? ', and <strong>' + spanText(c.fullCostPct, function(x){ return pct2(x); }, 2)
+           + '</strong> of the full portfolio cost above.'
+         : '.';
+      if(v.currency !== 'GBP') s += ' (ProjexaR is priced in sterling; the comparison is made without conversion.)';
     }
     return s;
   }
@@ -2103,10 +2789,38 @@ window.submitToSender = function(payload){
         + 'work and management in multi-project settings. <em>International Journal of Project Management</em>, '
         + '24(5), 385–394 — cited for the overload mechanism; no figure from it is used']);
     }
+    /* Two published anchors and the window ProjexaR sets between them. The
+       window is named as ProjexaR's control in the same breath as the two
+       figures, because it is not a published number and must never read as one.
+
+       Jitbit's figure is quoted as the source publishes it — 21 per technician
+       per day — with the monthly conversion attributed to us. What population
+       it describes was checked against the source: roughly a thousand businesses
+       of every size and industry using its hosted helpdesk, with no separation
+       of internal IT service desks from customer support and no tier named. An
+       earlier draft of the specification described it as high-throughput remote
+       tier-1 operation; the source does not support that and it is not said. */
     if(c.ticketFTE !== null){
-      src.push(['Tickets per agent per month',
-        'Jitbit, analysis of 7 million support tickets across around 1,000 companies — 440 to 525 a month, '
-        + '480 mid-point']);
+      src.push(['Lower anchor — published per month',
+        'HDI/MetricNet (Rumburg, <em>Metric of the Month: Tickets per Technician per Month</em>) — desktop support '
+        + 'industry averages of <strong>87 to 133</strong> tickets per technician per month, across a full range '
+        + 'of 30 to 198. Published in months, and used as published']);
+      src.push(['Upper anchor — published per day',
+        'Jitbit, 2017 analysis of 7 million support tickets across around 1,000 companies using its hosted '
+        + 'helpdesk — <strong>21 tickets per technician per day</strong>. The source spans every industry and '
+        + 'size, does not separate internal IT service desks from customer support, and names no tier']);
+      src.push(['The divisor we apply, in both units',
+        'ProjexaR’s control: a mixed internal queue of <strong>' + TICKETS_PER_AGENT_LO + ' to '
+        + TICKETS_PER_AGENT_HI + ' tickets per agent per month</strong>, which at the ' + WORKING_DAYS
+        + '-working-day month we assume is <strong>' + d1(TICKETS_PER_AGENT_LO / WORKING_DAYS) + ' to '
+        + d1(TICKETS_PER_AGENT_HI / WORKING_DAYS) + ' per agent per day</strong>. Stated in both units because the '
+        + 'two anchors are published in different ones: our window sits above HDI/MetricNet’s ' + '87 to 133 a '
+        + 'month and below Jitbit’s ' + JITBIT_PER_DAY + ' a day, and you can check either comparison without '
+        + 'knowing what we assumed. The window and the ' + WORKING_DAYS + '-day month are both ProjexaR’s '
+        + 'judgement. Neither is a published figure. The ' + WORKING_DAYS + '-day month changes nothing this '
+        + 'report computes — ticket capacity is worked from the monthly window directly — so if you read a '
+        + 'working month differently, redo the daily comparison at your own figure and every number in this '
+        + 'report stands as it is']);
     }
     if(c.rateOutside){
       src.push(['Tickets per employee per month by sector',
@@ -2115,6 +2829,25 @@ window.submitToSender = function(payload){
     if(v.bauSplitEstimate !== null){
       src.push(['Run against growth spend',
         '<em>Flexera 2023 Tech Spend Pulse</em>, Figure 17 (N=506) — 67% run, 33% growth. Published under CC BY 4.0']);
+    }
+    /* The two sourced components of the loaded cost. Listed wherever a cost
+       figure is published, and only there. The 25% overhead is not listed here
+       because it is not sourced — it is ProjexaR's judgement and the tile that
+       uses it says so in those words. */
+    if(c.at[E_LO].internalEffortCost !== null){
+      src.push(['Median IT salary',
+        v.loadedSalary === ASHE_MEDIAN
+          ? 'ONS Annual Survey of Hours and Earnings ' + ASHE_YEAR + ' (provisional, released 23 October 2025), '
+            + 'Table 14.7a, United Kingdom, full-time employee jobs, median gross annual pay for ' + ASHE_GROUPING
+            + ' — ' + gbp(ASHE_MEDIAN) + '. Contains public sector information licensed under the Open Government '
+            + 'Licence v3.0'
+          : 'Your own figure of ' + gbp(v.loadedSalary) + ', replacing the default of ' + gbp(ASHE_MEDIAN)
+            + ' from ONS Annual Survey of Hours and Earnings ' + ASHE_YEAR + ' (Table 14.7a, UK full-time median '
+            + 'gross annual pay for ' + ASHE_GROUPING + '). Contains public sector information licensed under the '
+            + 'Open Government Licence v3.0']);
+      src.push(['Employer National Insurance',
+        'gov.uk, rates and thresholds for employers 2026 to 2027 — secondary Class 1 rate of 15% on earnings '
+        + 'above the Secondary Threshold of £5,000 a year (£96 a week, £417 a month)']);
     }
     if(v.toolset === 'excel'){
       src.push(['Spreadsheet error rates',
@@ -2135,9 +2868,26 @@ window.submitToSender = function(payload){
     return src;
   }
 
+  /* Why the figures are ranges. Written as the argument it is: the softness of
+     a blended average across a whole department is the case for holding actual
+     commitments, not an apology for the tool. A single percentage would have
+     produced figures more precise than the answer they came from, which is a
+     harder thing to defend than a range. */
+  function rangeNote(v, c){
+    if(c.noBauCapacity) return '';
+    return 'You told us your BAU staff give <strong>' + bandLabel(v) + '</strong> of their time to project work, '
+         + 'so every figure drawn from that answer is shown across the whole band. We do not publish the middle of '
+         + 'it. A blended average across a whole department is not knowable to the percentage point, and a single '
+         + 'number here would be more precise than the answer it came from. Where the band crosses a threshold we '
+         + 'rate it on the less favourable end and say so. The width of these ranges is not a caveat — it is the '
+         + 'case for holding what each person is actually committed to, week by week, instead of averaging across '
+         + 'all of them.';
+  }
+
   /* ================= Render ================= */
   function render(v, c){
     $('positionLead').innerHTML = positionLead(v, c);
+    $('rangeNote').innerHTML = rangeNote(v, c);
 
     $('tileGrid').innerHTML = tiles(v, c).map(function(t){
       /* Same tooltip markup the input labels use, so there is one pattern on
@@ -2148,17 +2898,39 @@ window.submitToSender = function(payload){
         : '';
       return '<div class="tile ' + t.rag + '">'
            + '<div class="t-top"><p class="t-label">' + esc(t.label) + tip + '</p>'
-           + '<span class="pill ' + t.rag + '">' + STATUS_WORD[t.rag] + '</span></div>'
+           + '<span class="pill ' + t.rag + '">' + esc(t.status) + '</span></div>'
            + '<p class="t-value">' + esc(t.value) + '</p>'
            + '<p class="t-note">' + esc(t.note) + '</p></div>';
     }).join('');
 
     var hc = growthCeilingCopy(v, c);
-    $('growthCeiling').className = 'ceiling'
-      + (hc.state === 'room' ? '' : ' is-constrained');
+    var fc = fullCostCopy(v, c);
+
     $('ceilingEyebrow').textContent = hc.eyebrow;
     $('ceilingFigure').textContent = hc.figure;
     $('ceilingNote').innerHTML = hc.note;
+
+    /* Which of the two callouts leads. Full cost leads only where the budgets
+       answer was explicitly out-the-door and there is a reported spend to add
+       to; on every other answer the growth ceiling keeps the position it had.
+
+       Ordered in the flow rather than in the markup, so both keep one set of
+       ids and the print report reads the same nodes either way. Neither is
+       gated: the email gate is at the foot of the page and this renders above
+       it, unblurred and whole. */
+    var costLeads = !!fc && fc.state === 'full';
+    $('fullCostTile').hidden = !fc;
+    $('fullCostTile').style.order  = costLeads ? '0' : '1';
+    $('growthCeiling').style.order = costLeads ? '1' : '0';
+    $('fullCostTile').className  = 'ceiling is-constrained' + (costLeads ? '' : ' secondary');
+    $('growthCeiling').className = 'ceiling'
+      + (hc.state === 'room' ? '' : ' is-constrained') + (costLeads ? ' secondary' : '');
+    if(fc){
+      $('costEyebrow').textContent = fc.eyebrow;
+      $('costFigure').textContent  = fc.figure;
+      $('costNote').innerHTML      = fc.note;
+      $('loadedSalaryParts').innerHTML = loadedCostControl(v, c);
+    }
 
     $('factList').innerHTML = facts(v, c).map(function(f){
       if(f.check) return '<li class="checknote">' + esc(f.text) + '</li>';
@@ -2168,13 +2940,23 @@ window.submitToSender = function(payload){
     }).join('');
 
     $('ragList').innerHTML = cards(v, c).map(function(card){
-      /* A card with `note` carries no rating, so it gets a neutral chip rather
-         than one of the three severity words. */
-      var cls = card.note ? 'note' : card.rag;
-      var word = card.note ? 'Note' : STATUS_WORD[card.rag];
-      return '<details class="rag ' + cls + '"><summary><span class="pill ' + cls + '">'
-           + word + '</span><span>' + esc(card.title) + '</span></summary>'
+      /* A finding whose band straddles a boundary carries both words. */
+      var word = card.status || STATUS_WORD[card.rag];
+      return '<details class="rag ' + card.rag + '"><summary><span class="pill ' + card.rag + '">'
+           + esc(word) + '</span><span>' + esc(card.title) + '</span></summary>'
            + '<div class="detail">' + esc(card.body) + '</div></details>';
+    }).join('');
+
+    /* Checks on the respondent's own answers. One carries a state, one is
+       stated and carries none — a run-work composition is an observation, not a
+       rating, and giving it a severity word would assert something about a
+       department this tool cannot see. */
+    $('checkList').innerHTML = checks(v, c).map(function(k){
+      var cls = k.stated ? 'note' : (k.note ? 'note' : k.rag);
+      var word = k.stated ? 'Stated' : (k.note ? 'Note' : STATUS_WORD[k.rag]);
+      return '<div class="check-item"><div class="c-head"><span class="pill ' + cls + '">' + word + '</span>'
+           + '<span class="c-title">' + esc(k.title) + '</span></div>'
+           + '<p class="c-body">' + esc(k.body) + '</p></div>';
     }).join('');
 
     $('compareRows').innerHTML = compare(v, c).map(function(row){
@@ -2191,20 +2973,34 @@ window.submitToSender = function(payload){
     $('priceLine').innerHTML = priceCopy(v, c);
     $('closingVerdict').innerHTML = verdict(v, c);
 
-    renderPrint(v, c, hc);
+    renderPrint(v, c, hc, fc);
   }
 
-  function renderPrint(v, c, hc){
+  function renderPrint(v, c, hc, fc){
     $('pr-date').textContent = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
-    $('pr-figure').textContent = hc.figure;
+
+    /* Hero first, secondary below it, so the printed report opens on the same
+       figure the screen led with. */
+    var costLeads = !!fc && fc.state === 'full';
+    var lead   = costLeads ? fc : hc;
+    var second = costLeads ? hc : fc;
+
+    $('pr-herohead').textContent = lead.eyebrow;
+    $('pr-figure').textContent   = lead.figure;
     /* The note is written to follow straight on from the figure, so it takes no
        prefix here — page 1 carries the heading instead. */
-    $('pr-ceiling').innerHTML = hc.note;
+    $('pr-ceiling').innerHTML    = lead.note;
+
+    $('pr-secondblock').hidden = !second;
+    $('pr-secondhead').textContent   = second ? second.eyebrow : '';
+    $('pr-secondfigure').textContent = second ? second.figure : '';
+    $('pr-secondnote').innerHTML     = second ? second.note : '';
+
     $('pr-verdict').innerHTML = verdict(v, c);
 
     $('pr-tiles').innerHTML = tiles(v, c).map(function(t){
       return '<tr><th>' + esc(t.label) + '</th><td><strong>' + esc(t.value) + '</strong></td>'
-           + '<td><span class="p-rag">' + STATUS_WORD[t.rag] + '</span><br>' + esc(t.note) + '</td></tr>';
+           + '<td><span class="p-rag">' + esc(t.status) + '</span><br>' + esc(t.note) + '</td></tr>';
     }).join('');
 
     /* Every suppressed figure says on this page that it was not computed and
@@ -2216,8 +3012,22 @@ window.submitToSender = function(payload){
     }
     if(c.noBauCapacity){
       suppressed.push('<strong>No BAU staff were reported against project work</strong>, so live projects per '
-        + 'effective BAU FTE is not shown, and neither the BAU route of the growth ceiling nor the run and change '
-        + 'corroboration could be computed.');
+        + 'effective BAU FTE is not shown, and neither the BAU route of the growth ceiling, the run and change '
+        + 'corroboration nor the cost of internal project time could be computed. The last of those needs a '
+        + 'blended time band to cost, and without BAU staff on projects there is none.');
+    }
+    /* Where contractors were reported, the routing is stated once here rather
+       than repeated beside every figure they are absent from. */
+    if(v.contractors){
+      suppressed.push('<strong>Your ' + qty(v.contractors, 'contractor', 'contractors') + ' are counted separately '
+        + 'from your permanent IT staff.</strong> They are excluded from the live-projects-per-BAU-FTE rating and '
+        + 'from the growth ceiling, both of which measure how far your portfolio depends on permanent BAU '
+        + 'capacity; from the run and change derivation, which describes the permanent department; from IT staff '
+        + 'as a share of the company; and from the ProjexaR licence basis, which is your BAU staff on projects '
+        + 'plus your project managers. They are excluded from the cost figures too: what contractors cost is paid '
+        + 'out of budget, and the cost figures here are built only from the permanent staff time your project '
+        + 'budgets do not record. They appear as a companion figure beside the BAU capacity rating and nowhere '
+        + 'else.');
     }
     $('pr-bandnote').innerHTML = suppressed.join(' ');
 
@@ -2242,10 +3052,13 @@ window.submitToSender = function(payload){
       ['Annual spend on IT projects, excluding internal staff time',
         v.spend === null ? 'Not given' : CURRENCY[v.currency] + n0(v.spend)],
       ['BAU staff currently working on IT projects', n0(v.bauStaff)],
-      ['Blended average share of their time on project work', v.bauPercent2 + '%'],
+      ['Blended average share of their time on project work', selText('bauPercent2')],
+      ['Contractors and outsourced staff working on projects', n0(v.contractors)],
       ['Service desk tickets each month', v.ticketsPerMonth === null ? 'Not given' : n0(v.ticketsPerMonth)],
       ['Share of IT effort spent on BAU or run work',
         v.bauSplitEstimate === null ? 'Not given' : v.bauSplitEstimate + '%'],
+      ['Median IT salary the cost figures use',
+        gbp(v.loadedSalary) + (v.loadedSalary === ASHE_MEDIAN ? ' (the sourced default)' : ' (your figure)')],
       ['What projects are planned in', selText('toolset')],
       ['Live view of demand and availability', selText('resourceVisibility')],
       ['Internal BAU time in project budgets', selText('budgetTracking')],
@@ -2254,24 +3067,64 @@ window.submitToSender = function(payload){
     $('pr-inputs').innerHTML = rows.map(function(x){
       return '<tr><th style="width:58%">' + esc(x[0]) + '</th><td>' + esc(x[1]) + '</td></tr>'; }).join('');
 
+    /* ---- The workings ----
+       Every published figure, with the arithmetic that produced it. Where a
+       figure is a range, both endpoints are shown and the "how" column carries
+       both sums — a range whose workings show only one end is not workings.
+
+       Where the report publishes A, B and A − B, the subtraction shown here is
+       on the displayed A and B (§2.2), so a reader doing the sum on the page
+       arrives at the number the page prints. */
     var fx = [];
-    fx.push(c.bauEffectiveFte === null
+    var band = bandLabel(v);
+
+    fx.push(c.noBauCapacity
       ? ['Effective BAU capacity on projects', 'no BAU staff were reported against project work', 'Not computed']
       : ['Effective BAU capacity on projects',
-         n0(v.bauStaff) + ' × ' + v.bauPercent2 + '%', d1(c.bauEffectiveFte) + ' FTE']);
+         n0(v.bauStaff) + ' × ' + band,
+         spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' FTE']);
     if(c.pmLoad !== null){
       fx.push([METRIC_PM, n0(v.live) + ' ÷ ' + n0(v.pms), d1(c.pmLoad)]);
     }
     if(!c.noBauCapacity){
-      fx.push([METRIC_FTE, n0(v.live) + ' ÷ ' + d1(c.bauEffectiveFte), d1(c.projectsPerFTE)]);
+      fx.push([METRIC_FTE,
+        n0(v.live) + ' ÷ ' + spanText(pick(c, 'bauEffectiveFte'), fteFmt),
+        spanText(pick(c, 'projectsPerFTE'), fteFmt)]);
+      if(c.at[E_LO].deliveryPerFTE !== null){
+        fx.push(['Live projects per delivery FTE, including contractors — unrated',
+          n0(v.live) + ' ÷ (' + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' + ' + n0(v.contractors) + ')',
+          spanText(pick(c, 'deliveryPerFTE'), fteFmt)]);
+      }
     }
     if(c.turnover !== null){
       fx.push(['Annual portfolio turnover', n0(v.annual) + ' ÷ ' + n0(v.live), d1(c.turnover) + '×']);
     }
     if(c.ticketFTE !== null){
-      fx.push(['Capacity needed for tickets alone', n0(v.ticketsPerMonth) + ' ÷ 480 a month', d1(c.ticketFTE) + ' FTE']);
+      fx.push(['Capacity needed for tickets alone',
+        n0(v.ticketsPerMonth) + ' ÷ ' + TICKETS_PER_AGENT_HI + ' to ' + n0(v.ticketsPerMonth) + ' ÷ '
+          + TICKETS_PER_AGENT_LO + ' a month',
+        spanText(c.ticketFTE, fteFmt) + ' FTE']);
+      /* Both anchors and the basis that makes them comparable, on the workings
+         page rather than only in the sources — a reader checking the divisor
+         should not have to turn to another page to find out what a month is. */
+      fx.push(['The divisor window, and where it sits',
+        d1(TICKETS_PER_AGENT_LO / WORKING_DAYS) + ' to ' + d1(TICKETS_PER_AGENT_HI / WORKING_DAYS)
+          + ' a day at the ' + WORKING_DAYS + '-working-day month we assume, against HDI/MetricNet’s 87 to 133 a '
+          + 'month and Jitbit’s ' + JITBIT_PER_DAY + ' a day',
+        TICKETS_PER_AGENT_LO + ' to ' + TICKETS_PER_AGENT_HI + ' a month — ProjexaR’s control']);
       fx.push(['Tickets per employee per month', n0(v.ticketsPerMonth) + ' ÷ ' + n0(v.companyHeadcount),
                n2(c.impliedRate)]);
+    }
+    /* Run-work composition. The gap is taken off the displayed figures, so the
+       subtraction printed here is the one a reader can do on the page. */
+    if(c.runWorkFte !== null){
+      fx.push(['Run work you reported', n0(v.staff) + ' × ' + v.bauSplitEstimate + '%', d1(c.runWorkFte) + ' FTE']);
+      if(c.runWorkGap !== null){
+        var t = span(c.ticketFTE, 1);
+        fx.push(['Run work that is not ticket-shaped',
+          d1(c.runWorkFte) + ' − ' + d1(t[1]) + ' to ' + d1(c.runWorkFte) + ' − ' + d1(t[0]),
+          spanText(c.runWorkGap, fteFmt) + ' FTE']);
+      }
     }
     fx.push(['IT staff as a share of the company', n0(v.staff) + ' ÷ ' + n0(v.companyHeadcount),
              d1(c.itPercent) + '%']);
@@ -2283,8 +3136,8 @@ window.submitToSender = function(payload){
        7.4 nor 1.7 is the number the threshold was calculated from — and the
        floor that turns 123.33 into 123 has to be visible or the "+ 1" looks
        like an error. */
-    var h = c.ceiling;
-    var fteExpr = '(' + n0(v.bauStaff) + ' × ' + v.bauPercent2 + '%)';
+    var h = c.ceiling, hh = c.ceilingHi;
+    var fteExpr = '(' + n0(v.bauStaff) + ' × ' + band + ')';
     var turnExpr = '(' + n0(v.annual) + ' ÷ ' + n0(v.live) + ')';
     /* 7.05 and 10.05, not 7 and 10. The tiles round to one decimal place, so the
        last caseload still displayed as 7.0 is the last one below 7.05 — and a
@@ -2292,12 +3145,19 @@ window.submitToSender = function(payload){
        still rates Watch. The half-step is what keeps this table and the tiles
        saying the same thing. */
     var pmLiveExpr  = '7.05 × ' + n0(v.pms) + ', rounded up';
-    var bauLiveExpr = '10.05 × ' + fteExpr + ', rounded up';
+    var bauLiveExpr = '10.05 × ' + fteExpr + ', rounded up, at each end of the band';
+    /* A pair of endpoint integers, printed as one number where they agree. */
+    var pair = function(a, b, one, many){
+      return a === b ? qty(a, one, many) : n0(Math.min(a,b)) + ' to ' + qty(Math.max(a,b), one, many);
+    };
+    var pairPlain = function(a, b){
+      return a === b ? n0(a) : n0(Math.min(a,b)) + ' to ' + n0(Math.max(a,b));
+    };
 
     if(h.pmLive !== null)  fx.push(['Red threshold, projects per PM', pmLiveExpr,
       qty(h.pmLive, 'live project', 'live projects')]);
     if(h.bauLive !== null) fx.push(['Red threshold, projects per BAU FTE', bauLiveExpr,
-      qty(h.bauLive, 'live project', 'live projects')]);
+      pair(h.bauLive, hh.bauLive, 'live project', 'live projects')]);
 
     if(h.noRoute){
       fx.push(['Portfolio growth ceiling',
@@ -2309,24 +3169,41 @@ window.submitToSender = function(payload){
     }else{
       if(h.pmAnnual !== null) fx.push(['The same threshold across a year, per PM',
         '(' + n0(h.pmLive) + ' − 1) × ' + turnExpr + ', rounded down, + 1', n0(h.pmAnnual) + ' a year']);
+      /* Written as two expressions rather than "(63 to 81 − 1)", which reads as
+         an arithmetic instruction nobody can follow. */
       if(h.bauAnnual !== null) fx.push(['The same threshold across a year, per BAU FTE',
-        '(' + n0(h.bauLive) + ' − 1) × ' + turnExpr + ', rounded down, + 1', n0(h.bauAnnual) + ' a year']);
-      fx.push(['Sustainable annual pace', 'the lower of those, minus 1', n0(h.sustainable) + ' a year']);
+        h.bauLive === hh.bauLive
+          ? '(' + n0(h.bauLive) + ' − 1) × ' + turnExpr + ', rounded down, + 1'
+          : '(' + n0(h.bauLive) + ' − 1) and (' + n0(hh.bauLive) + ' − 1), each × ' + turnExpr
+            + ', rounded down, + 1',
+        pairPlain(h.bauAnnual, hh.bauAnnual) + ' a year']);
+      fx.push(['Sustainable annual pace', 'the lower of those, minus 1, at each end of the band',
+        pairPlain(h.sustainable, hh.sustainable) + ' a year']);
+      fx.push(['Which measure binds first',
+        h.binding === hh.binding ? 'the lower of the two routes' : 'the lower of the two routes, at each end',
+        h.binding === hh.binding ? h.binding : h.binding + ' to ' + hh.binding]);
       fx.push(['Portfolio growth ceiling',
-        n0(h.sustainable) + ' − your ' + n0(v.annual) + ' a year',
-        h.value < 0  ? qty(-h.value, 'project', 'projects') + ' a year above your sustainable pace'
-      : h.value === 0 ? 'exactly at your sustainable pace'
-                      : qty(h.value, 'project', 'projects') + ' a year of room']);
+        pairPlain(h.sustainable, hh.sustainable) + ' a year − your ' + n0(v.annual) + ' a year',
+        (h.value < 0 && hh.value < 0)
+          ? pair(-h.value, -hh.value, 'project', 'projects') + ' a year above your sustainable pace'
+      : (h.value === 0 && hh.value === 0) ? 'exactly at your sustainable pace'
+      : h.value < 0 ? qty(-h.value, 'project', 'projects') + ' a year above your pace, to '
+                      + qty(hh.value, 'project', 'projects') + ' a year of room'
+                    : pair(h.value, hh.value, 'project', 'projects') + ' a year of room']);
     }
 
     /* The corroboration derivation, shown so the reader can check the two
        answers against each other themselves. */
     if(c.corroboration !== null){
       fx.push(['Change effort implied by the staff you named',
-        '(' + n0(v.pms) + ' + ' + d1(c.bauEffectiveFte) + ') ÷ ' + n0(v.staff),
-        d1(c.derivedChangeShare) + '%']);
+        '(' + n0(v.pms) + ' + ' + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ') ÷ ' + n0(v.staff),
+        spanText(c.derivedChangeShare, pctFmt) + '']);
       fx.push(['Run effort implied by the same figures',
-        '100% − ' + d1(c.derivedChangeShare) + '%', d1(c.derivedRunShare) + '%']);
+        '100% − ' + spanText(c.derivedChangeShare, pctFmt), spanText(c.derivedRunShare, pctFmt)]);
+      fx.push(['Corroboration window, ±3 points on the derived range',
+        d1(c.corroborationLo) + '% to ' + d1(c.corroborationHi) + '%, against your ' + v.bauSplitEstimate + '%',
+        c.corroboration === 'healthy' ? 'Inside the window'
+          : (c.corroboration === 'note' ? 'Above the window — stated, not rated' : 'Below the window')]);
     }else if(v.bauSplitEstimate !== null){
       fx.push(['Run and change corroboration',
         c.noBauCapacity ? 'needs BAU staff on project work to derive a change share from, and you reported none'
@@ -2334,10 +3211,65 @@ window.submitToSender = function(payload){
         'Not computed']);
     }
 
-    if(c.spendPct !== null){
-      fx.push(['ProjexaR as a share of project spend',
-        '(' + n0(c.licenceCount) + ' × £10 × 12) ÷ ' + n0(v.spend), pct2(c.spendPct)]);
+    /* ---- The cost workings (§3.1, §3.3) ----
+       All three components of the loaded cost, with the two sourced ones and
+       the one that is ProjexaR's judgement distinguished in the "how" column. */
+    var L = c.loaded;
+    if(c.at[E_LO].internalEffortCost === null){
+      fx.push(['Cost of the internal time on your projects',
+        'needs BAU staff on project work and a time band to cost, and you reported no BAU staff', 'Not computed']);
+    }else{
+      fx.push(['Median IT salary',
+        v.loadedSalary === ASHE_MEDIAN
+          ? 'ONS ASHE ' + ASHE_YEAR + ', ' + ASHE_GROUPING + ', UK full-time median gross annual pay'
+          : 'your figure, replacing the ONS ASHE ' + ASHE_YEAR + ' default of ' + gbp(ASHE_MEDIAN),
+        gbp(L.salary)]);
+      fx.push(['Employer National Insurance',
+        '15% × (' + n0(L.salary) + ' − 5,000), the 2026/27 secondary rate and threshold, gov.uk', gbp(L.ni)]);
+      fx.push(['Overhead — ProjexaR’s judgement, not a sourced figure',
+        '25% × ' + n0(L.salary) + ', for workspace, equipment, licences, training and management', gbp(L.overhead)]);
+      fx.push(['Loaded cost per head',
+        n0(L.salary) + ' + ' + n0(Math.round(L.ni)) + ' + ' + n0(L.overhead), gbp(L.total)]);
+      fx.push(['Internal project FTE — permanent staff only',
+        n0(v.pms) + ' project managers + ' + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' effective BAU FTE',
+        spanText(pick(c, 'internalProjectFte'), fteFmt) + ' FTE']);
+      fx.push(['Cost of the internal time on your projects',
+        spanText(pick(c, 'internalProjectFte'), fteFmt) + ' × ' + gbp(L.total),
+        moneySpan(pick(c, 'internalEffortCost'))]);
+
+      if(c.sums){
+        var ie = span(pick(c, 'internalEffortCost'), 0);
+        fx.push(['Full portfolio cost',
+          gbp(ie[0]) + ' + ' + gbp(v.spend) + ' to ' + gbp(ie[1]) + ' + ' + gbp(v.spend),
+          spanText(pick(c, 'fullPortfolioCost'), gbp, 0) + ', shown as '
+            + moneySpan(pick(c, 'fullPortfolioCost'))]);
+        fx.push(['Your reported spend as a share of it',
+          gbp(v.spend) + ' ÷ ' + spanText(pick(c, 'fullPortfolioCost'), gbp, 0),
+          spanText(pick(c, 'reportedShare'), pctFmt)]);
+      }else{
+        fx.push(['Whether this is added to your reported spend',
+          v.budgetTracking === 'outthedoor'
+            ? 'you told us budgets carry out-the-door spend only, but gave us no annual project spend to add it to'
+            : 'only an explicit "out-the-door spend only" answer takes the summing path — yours was "'
+              + selText('budgetTracking') + '", and adding internal time to budgets that may already carry it '
+              + 'would count it twice',
+          'Not summed']);
+      }
     }
+
+    if(c.spendPct !== null){
+      /* Twelve months for the price of ten. The old row multiplied the monthly
+         price by twelve and published a share nobody could reconcile against
+         the price they would pay. */
+      fx.push(['ProjexaR as a share of your reported project spend',
+        '(' + n0(c.licenceCount) + ' × £10 × 10, the annual plan paid upfront) ÷ ' + n0(v.spend), pct2(c.spendPct)]);
+      if(c.fullCostPct !== null){
+        fx.push(['ProjexaR as a share of your full portfolio cost',
+          n0(c.yearly) + ' ÷ ' + spanText(pick(c, 'fullPortfolioCost'), gbp, 0),
+          spanText(c.fullCostPct, pct2, 2)]);
+      }
+    }
+
     $('pr-formulas').innerHTML = fx.map(function(x){
       return '<tr><th>' + esc(x[0]) + '</th><td>' + esc(x[1]) + '</td><td><strong>' + esc(x[2])
            + '</strong></td></tr>'; }).join('');
@@ -2350,13 +3282,21 @@ window.submitToSender = function(payload){
       + 'respondent. Treat it as orientation, not a target.';
 
     $('pr-fxnote').innerHTML = (v.spend !== null && v.currency !== 'GBP')
-      ? '<strong>Currency.</strong> ProjexaR is priced in sterling. The percentage-of-spend figure compares the two '
-        + 'directly without conversion, so treat it as approximate.' : '';
+      ? '<strong>Currency.</strong> ProjexaR is priced in sterling and you gave us your spend in '
+        + esc(v.currency) + '. The percentage-of-spend figure compares the two directly, without conversion.' : '';
 
     $('pr-cards').innerHTML = cards(v, c).map(function(card){
-      return '<tr><td><span class="p-rag">' + (card.note ? 'Note' : STATUS_WORD[card.rag]) + '</span></td>'
+      return '<tr><td><span class="p-rag">' + esc(card.status || STATUS_WORD[card.rag]) + '</span></td>'
            + '<td><strong>' + esc(card.title)
            + '</strong><br>' + esc(card.body) + '</td></tr>'; }).join('');
+
+    $('pr-checks').innerHTML = checks(v, c).map(function(k){
+      var word = k.stated ? 'Stated' : (k.note ? 'Note' : STATUS_WORD[k.rag]);
+      return '<tr><td><span class="p-rag">' + word + '</span></td>'
+           + '<td><strong>' + esc(k.title) + '</strong><br>' + esc(k.body) + '</td></tr>'; }).join('')
+      || '<tr><td colspan="2">Neither check could run on your answers. The run and change corroboration needs '
+         + 'your BAU staff on projects and your run share; the run-work composition needs your run share and your '
+         + 'monthly ticket volume.</td></tr>';
 
     $('pr-compare').innerHTML = compare(v, c).map(function(row){
       return '<tr><td>' + esc(row.now) + '</td><td><strong>' + esc(row.next) + '</strong></td></tr>'; }).join('');
@@ -2368,9 +3308,15 @@ window.submitToSender = function(payload){
         + 'numbers.</td></tr>';
 
     var pp = 'ProjexaR is charged per managed resource — on your figures, ' + n0(c.licenceCount) + ' '
-      + plural(c.licenceCount,'person','people') + ' at ' + gbp(c.monthly) + ' a month or ' + gbp(c.yearly) + ' a year.';
+      + plural(c.licenceCount,'person','people') + ' at ' + gbp(c.monthly) + ' a month, or ' + gbp(c.yearly)
+      + ' a year on the annual plan paid upfront, which is twelve months for the price of ten.'
+      + (v.contractors ? ' Contractors are not licensed; the basis is your BAU staff on projects plus your project '
+         + 'managers.' : '');
     if(c.spendPct !== null){
-      pp += ' That is ' + pct2(c.spendPct) + ' of the annual IT project spend you gave us.';
+      pp += ' That is ' + pct2(c.spendPct) + ' of the annual IT project spend you gave us';
+      pp += c.fullCostPct !== null
+        ? ', and ' + spanText(c.fullCostPct, pct2, 2) + ' of the full portfolio cost on page 1.'
+        : '.';
     }
     $('pr-price').textContent = pp;
   }
@@ -2381,7 +3327,8 @@ window.submitToSender = function(payload){
      organisation — the four tool-and-process codes are needed because the
      report cannot be rebuilt without them, which is what a permalink is for. */
   var PARAMS = { companyHeadcount:'ch', staff:'st', pms:'m', live:'l', annual:'a', spend:'sp', currency:'cu',
-                 bauStaff:'bs', bauPercent2:'bp', ticketsPerMonth:'tk', bauSplitEstimate:'sx',
+                 bauStaff:'bs', bauPercent2:'bp', contractors:'ct', ticketsPerMonth:'tk', bauSplitEstimate:'sx',
+                 loadedSalary:'lc',
                  toolset:'tl', resourceVisibility:'rv', budgetTracking:'bt', assignmentKnowledge:'ak' };
 
   function permalink(v){
@@ -2399,7 +3346,17 @@ window.submitToSender = function(payload){
     var p = new URLSearchParams(location.search), any = false;
     Object.keys(PARAMS).forEach(function(k){
       var val = p.get(PARAMS[k]);
-      if(val !== null && $(k)){ $(k).value = val; any = true; }
+      if(val === null || !$(k)) return;
+      /* Links shared before PR2 carry a free-text percentage where the band now
+         sits. Map it to the band containing it so an old link renders rather
+         than errors — it will now show ranges where it showed points, which is
+         expected. A value already on a band boundary maps to itself. */
+      if(k === 'bauPercent2'){
+        var b = bandContaining(val);
+        if(b === null) return;
+        val = String(b);
+      }
+      $(k).value = val; any = true;
     });
     return any;
   }
@@ -2435,9 +3392,29 @@ window.submitToSender = function(payload){
   var lastV = null, lastC = null;
   $('year').textContent = new Date().getFullYear();
 
+  /* Recompute and redraw from the current form state, without scrolling or
+     firing an analytics event. The loaded-cost control calls this: an edited
+     salary has to flow through the whole report, the printed PDF and the shared
+     link, because a forwarded report showing the finance director different
+     numbers from the ones the respondent saw is worse than no edit control. */
+  function rerender(){
+    var res = readAndValidate();
+    if(!res.ok) return;
+    lastV = res.values; lastC = compute(lastV);
+    render(lastV, lastC);
+  }
+
   $('currency').addEventListener('change', function(){
     $('curPrefix').textContent = CURRENCY[$('currency').value];
   });
+
+  /* The sourced default has one home, in ASHE_MEDIAN, and the control is filled
+     from it here. prefill() runs after this, so a shared link carrying an edited
+     figure still wins. Editing it recomputes the whole report, which is what
+     makes the PDF and the saved link show the finance director the same numbers
+     the respondent saw. */
+  $('loadedSalary').value = String(ASHE_MEDIAN);
+  $('loadedSalary').addEventListener('change', rerender);
 
   $('calcForm').addEventListener('submit', function(e){
     e.preventDefault();
@@ -2513,9 +3490,18 @@ window.submitToSender = function(payload){
       it_staff:lastV.staff,
       bau_staff:lastV.bauStaff,
       licence_count:lastC.licenceCount,
-      effective_fte:Math.round(lastC.effectiveFTE*10)/10,
-      pm_load:lastC.pmLoad === null ? '' : Math.round(lastC.pmLoad*10)/10,
-      projects_per_fte:lastC.projectsPerFTE === null ? '' : Math.round(lastC.projectsPerFTE*10)/10,
+      /* Every band-dependent field carries the adverse endpoint, the same one
+         the ratings are computed from. A given respondent's values may
+         therefore differ from what PR1 would have produced for the same
+         answers; that is expected and is what the band change means.
+
+         effective_fte and projects_per_fte read c.adv rather than c, which is
+         also what fixes them: they used to read names that moved off the
+         compute object, and posted NaN into Sender for every respondent. No
+         new field is added and no field is removed — §6. */
+      effective_fte:lastC.adv.bauEffectiveFte === null ? '' : round1(lastC.adv.bauEffectiveFte),
+      pm_load:lastC.pmLoad === null ? '' : round1(lastC.pmLoad),
+      projects_per_fte:lastC.adv.projectsPerFTE === null ? '' : round1(lastC.adv.projectsPerFTE),
       /* Both are the band value and nothing else. The toolset escalation that
          used to be excluded here no longer exists to exclude (§2.4). */
       rag_pm:lastC.ragPM === null ? '' : STATUS_WORD[lastC.ragPM],
@@ -2587,11 +3573,14 @@ window.submitToSender = function(payload){
 
   /* Exposed for the console and for checking the worked example in the brief. */
   window.__ProjexaR = { compute:compute, growthCeilingOf:growthCeilingOf, ragPM:ragPM, ragFTE:ragFTE,
-                        tiles:tiles, facts:facts, cards:cards, growthCeilingCopy:growthCeilingCopy,
+                        tiles:tiles, facts:facts, cards:cards, checks:checks,
+                        growthCeilingCopy:growthCeilingCopy, fullCostCopy:fullCostCopy,
                         verdict:verdict, priceCopy:priceCopy, sources:sources, positionLead:positionLead,
-                        compare:compare,
-                        selText:selText, readAndValidate:readAndValidate, permalink:permalink,
-                        STATUS_WORD:STATUS_WORD, TICKETS_PER_AGENT_MONTH:TICKETS_PER_AGENT_MONTH,
+                        compare:compare, loadedCostOf:loadedCostOf, bandContaining:bandContaining,
+                        selText:selText, readAndValidate:readAndValidate, permalink:permalink, rerender:rerender,
+                        STATUS_WORD:STATUS_WORD,
+                        TICKETS_PER_AGENT_LO:TICKETS_PER_AGENT_LO, TICKETS_PER_AGENT_HI:TICKETS_PER_AGENT_HI,
+                        ASHE_MEDIAN:ASHE_MEDIAN, ASHE_YEAR:ASHE_YEAR,
                         BAND_PM:BAND_PM, BAND_FTE:BAND_FTE };
 })();
 </script>

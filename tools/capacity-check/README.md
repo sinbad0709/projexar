@@ -19,23 +19,41 @@ expected values back out of the implementation cannot catch that, so this one
 does not.
 
 - `oracle.mjs` reimplements every formula from the change spec, independently of
-  the page. All 603 corpus shapes are asserted against it. A number that
-  disagrees is a **failure**, never a diff category.
+  the page. All 603 corpus shapes are asserted against it, at **both endpoints of
+  the band**. A number that disagrees is a **failure**, never a diff category.
 - The §4 fixtures are asserted against the figures the brief states, typed in by
   hand.
 - Only *text* differences are categorised by judgement.
+
+## Ranges
+
+Every figure the blended time band moves is computed at both endpoints and
+carried to the output as a range. The oracle does the same, and the suite asserts
+both ends of every one of them — asserting one end would let a whole endpoint
+drift unnoticed.
+
+Index 0 is the band's low endpoint and is the **adverse** one throughout: less
+time on projects means less effective BAU capacity, so more projects per FTE, a
+lower growth ceiling and a higher derived run share. Every rating, every Sender
+RAG value and every threshold reads it. `straddleShapes()` covers the case where
+the two endpoints rate differently and the tile has to print both words.
+
+Where the report publishes A, B and A − B, the subtraction uses the **displayed**
+A and B, so a reader doing the sum on the page gets the number the page prints.
+Fixture 8.B is the case that matters: 13.44 shows as 13.4 and 4.375 as 4.4, the
+raw gap is 9.065 which would round to 9.1, and the page must print 9.0.
 
 ## The files
 
 | File | What it does |
 |---|---|
 | `harness.mjs` | Loads the HTML, extracts the tool's IIFE, runs it in a `vm` against a DOM stub. Parses the real `<select>` options so `selText()` returns what a respondent read, and freezes `Date` so the baseline does not change at midnight. |
-| `shapes.mjs` | The 603-shape corpus, the two §4 fixtures, and the assertion shapes (boundaries, toolset invariance, suppression rows, singulars, corroboration states). |
+| `shapes.mjs` | The 603-shape corpus, the three §4 fixtures, and the assertion shapes (boundaries, band straddles, toolset and contractor invariance, suppression rows, singulars, corroboration states, budget branches, loaded-cost edits, legacy band decoding). |
 | `oracle.mjs` | The formulas, written from the spec. Never imports from the page. |
 | `capture.mjs` | Drives one shape through the page's own submit handler, then reads back every node it wrote — screen, printed report and Sender payload. |
 | `baseline.mjs` | Writes the digest baseline. |
 | `check.mjs` | The suite. |
-| `baseline.json` | Blessed at PR1. Re-bless whenever a PR changes output on purpose. |
+| `baseline.json` | Blessed at PR2. Re-bless whenever a PR changes output on purpose. |
 
 ## The corpus
 
@@ -44,13 +62,24 @@ something:
 
 | Set | Count | What varies |
 |---|---|---|
-| A | 252 | every tools-and-process combination, at fixture 4.A's numbers |
-| B | 252 | the same combinations, at fixture 4.B's numbers |
+| A | 252 | every tools-and-process combination, at fixture 8.A's numbers |
+| B | 252 | the same combinations, at fixture 8.B's numbers |
 | C | 99 | a numeric sweep (9 PM counts × 11 caseload multipliers) at one fixed process profile |
 
 A and B hold the arithmetic still and move the wording; C does the reverse. A
 seeded 400-shape fuzz pass reaches the combinations the corpus fixes — blank
-optional answers, every currency, zero PMs against zero BAU staff.
+optional answers, every currency, every band, contractors, edited loaded costs,
+zero PMs against zero BAU staff.
+
+## Why the fixtures carry an odd-looking salary
+
+Every fixture pins the **loaded cost** at £65,000, because a fixture that moves
+when ONS republishes its salary survey is not a fixture. The value the respondent
+can edit is the salary, and the loaded cost is salary + employer NI + overhead —
+so the fixtures carry `salaryForLoadedCost(65000)`, which is £46,964.29 and
+produces exactly £65,000. The suite asserts that round-trip before it asserts
+anything built on it. The production default is the ASHE figure, and no fixture
+depends on it.
 
 ## Capturing a baseline from another commit
 
