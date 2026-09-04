@@ -18,7 +18,7 @@ import { corpus, FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_LOADED_COST, FIXTURE_S
          suppressionShapes, singularShapes, corroborationShapes, budgetShapes,
          loadedCostShapes, LEGACY_BAND_CASES,
          TOOLSETS, VISIBILITY, BUDGETS, ASSIGNMENT, BANDS } from './shapes.mjs';
-import { capture, allText, numbersIn, SCREEN_NODES, PRINT_NODES } from './capture.mjs';
+import { capture, allText, numbersIn, staticReportText, SCREEN_NODES, PRINT_NODES } from './capture.mjs';
 import { TOOL_PATH, loadTool } from './harness.mjs';
 import { evaluate, roundN, round1, redThreshold, loadedCost, bandContaining,
          typicalDurationMonths, itShare,
@@ -384,8 +384,8 @@ section('§3.2 contractors — 8.C must move nothing rated');
     eq(JSON.stringify(cap.computed.derivedRunShare), JSON.stringify(ref.computed.derivedRunShare),
        `${sh.id}: derived run share`);
     eq(cap.computed.corroboration, ref.computed.corroboration, `${sh.id}: corroboration`);
-    /* Rule 5: IT staff as a share of the company excludes them. */
-    eq(cap.computed.itPercent, ref.computed.itPercent, `${sh.id}: IT staff share of company`);
+    /* Rule 5: the size of IT against the company excludes them. */
+    eq(cap.computed.itPercent, ref.computed.itPercent, `${sh.id}: size of IT against the company`);
     /* Rule 6: the licence basis excludes them. */
     eq(cap.computed.licenceCount, ref.computed.licenceCount, `${sh.id}: licence count`);
     eq(cap.computed.yearly, ref.computed.yearly, `${sh.id}: annual price`);
@@ -407,7 +407,7 @@ section('§3.2 contractors — 8.C must move nothing rated');
        '8.C: the BAU-tile exclusion is stated');
     ok(has(c6.print['pr-bandnote'], 'growth ceiling'), '8.C: the ceiling exclusion is stated');
     ok(has(c6.print['pr-bandnote'], 'run and change derivation'), '8.C: the run/change exclusion is stated');
-    ok(has(c6.print['pr-bandnote'], 'IT staff as a share of the company'),
+    ok(has(c6.print['pr-bandnote'], 'the size of your IT department against the company'),
        '8.C: the staff-share exclusion is stated');
     ok(has(c6.print['pr-bandnote'], 'licence basis'), '8.C: the licence-basis exclusion is stated');
     ok(has(c6.print['pr-bandnote'], 'cost figures'), '8.C: the cost exclusion is stated');
@@ -658,7 +658,8 @@ section('§1.1 — the IT-share row, asserted against compute() directly');
     const label = `it-share at headcount ${companyHeadcount}, staff ${staff}`;
     eq(c.itPercent, null, `${label}: suppressed`);
     eq(c.itPercent, itShare(v), `${label}: agrees with the oracle`);
-    const row = tool.api.facts(v, c).find((f) => f.label === 'IT staff as a share of the company');
+    const row = tool.api.facts(v, c)
+      .find((f) => f.label === 'The size of your IT department, against the company');
     if (ok(!!row, `${label}: the numbers section still carries the row`)) {
       eq(row.figure, 'Not computed', `${label}: shown as not computed, never 0.0 or blank`);
       ok(has(row.note, why), `${label}: and says why`, row.note);
@@ -668,6 +669,103 @@ section('§1.1 — the IT-share row, asserted against compute() directly');
   /* And the reachable case is unaffected. */
   const okv = { ...base };
   eq(round1(tool.api.compute(okv).itPercent), 3.8, 'it-share at the fixture inputs is unchanged');
+}
+
+/* ============================ the Flexera figure — shown, never subtracted == */
+section('Flexera — both figures published, the difference never');
+{
+  /* Provenance is not commensurability. The 67/33 is correctly classified,
+     correctly attributed and correctly sourced, and subtracting it from the
+     respondent's answer was still wrong: Figure 17 is a split of IT BUDGET
+     ("Percentage of budget allocated to running the business vs. growth",
+     contents p25) and the question the tool asks is a split of people's TIME.
+     A caveat stated elsewhere does not repair a subtraction made inline. */
+  for (const [name, split] of [['below', 50], ['level', 67], ['above', 72], ['far above', 90]]) {
+    const cap = capture({ id: `flexera-${split}`, ...FIXTURE_A, bauSplitEstimate: split });
+    if (!ok(cap.ok, `flexera ${name}: renders`, cap.error)) continue;
+    const t = allText(cap);
+
+    /* The gap is never computed, so it can never be published. */
+    eq(cap.computed.splitDiff, undefined, `flexera ${name}: no splitDiff on the compute object`);
+    eq(cap.computed.splitLean, undefined, `flexera ${name}: no splitLean on the compute object`);
+    ok(!/percentage points more/i.test(t), `flexera ${name}: no difference in percentage points is published`);
+    ok(!/BAU-heavy|transformation-heavy/i.test(t), `flexera ${name}: no lean is asserted`);
+    const diff = Math.abs(split - 67);
+    if (diff > 0) {
+      ok(!new RegExp(`(^|[^\\d.])${diff} percentage point`).test(t),
+         `flexera ${name}: the ${diff}-point gap does not appear`);
+    }
+
+    /* Both figures are published, side by side. */
+    ok(has(t, `${split}% of your department’s time on run work`),
+       `flexera ${name}: the respondent's own figure is stated as a share of time`);
+    ok(has(t, '67%/33% run-versus-grow split'), `flexera ${name}: Flexera's figure is stated whole`);
+    /* In the unit the source uses, with the population it covers. */
+    ok(has(t, 'split of IT budget rather than of people’s time'),
+       `flexera ${name}: the unit mismatch is stated where the figure is shown`);
+    ok(has(t, '506 organisations, all above 2,000 employees'),
+       `flexera ${name}: the population is stated where the figure is shown`);
+    ok(has(t, 'we do not subtract one from the other'),
+       `flexera ${name}: and the page says it does not subtract them`);
+    /* The citation quotes the unit the source publishes. */
+    /* Read from the flattened text: the row emphasises "budget", so the raw
+       HTML carries a tag in the middle of the sentence. */
+    ok(has(t, 'estimate of the percentage of IT budget allocated to running the business against growth'),
+       `flexera ${name}: the source row names the unit Flexera publishes`);
+    ok(has(cap.print['pr-sources'], 'nearly half above 10,000'),
+       `flexera ${name}: and the population it is drawn from`);
+    ok(has(cap.print['pr-flexeranote'], 'arithmetic across two different quantities'),
+       `flexera ${name}: the workings page gives the reason`);
+    ok(copyRuleViolations(allText(cap, { forCopyRule: true })).length === 0,
+       `flexera ${name}: copy rule`);
+  }
+}
+
+/* ======================================== our hedges cut, theirs quoted ===== */
+section('Hedging — ours is cut, the source’s is quoted');
+{
+  const cap = capture({ id: 'hedge', ...FIXTURE_A });
+  const t = allText(cap);
+  /* The respondent gave 75 exactly. "In a typical year" already carries
+     whatever softness the question had; the word double-hedged a figure that is
+     not uncertain to us. */
+  ok(!/and around \d/.test(t), 'the verdict does not hedge the respondent’s own annual figure');
+  ok(has(t, `and ${FIXTURE_A.annual} in a typical year`), 'it states the figure they gave');
+  /* Jitbit's imprecision is Jitbit's. Cutting it would state their figure more
+     precisely than they do — the test is whose uncertainty it is. */
+  ok(has(t, 'across around 1,000 companies'), 'the source’s own imprecision is quoted as published');
+}
+
+/* ==================================== the static printed copy is captured === */
+section('Static printed copy — the eighteen numbers are inside the suite');
+{
+  /* Until PR3 no capture reached the copy written straight into the printed
+     report's markup. Eighteen published numbers sat outside the suite: edit one
+     and nothing caught it. They are in allText() now, so they are in the digest
+     and in the diff — and pinned here as well, so a change fails with a reason
+     rather than only a changed hash. */
+  const staticNums = numbersIn(staticReportText().replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/g, ' '));
+  const WANT = {
+    '9649': 'Colicev: project-month-employee observations',
+    '42': 'Colicev: projects', '580': 'Colicev: employees',
+    '5.16': 'Colicev: point estimate, concurrent projects',
+    '3.57': 'Colicev: confidence interval, lower', '6.19': 'Colicev: confidence interval, upper',
+    '44': 'Colicev: volume', '2': 'Colicev: issue', '610': 'Colicev: first page',
+    '636': 'Colicev: last page', '2023': 'Colicev: year', '10.1002': 'Colicev: DOI prefix',
+    '3443': 'Colicev: DOI suffix', '4.0': 'CC BY licence version',
+    '7.0': 'ProjexaR control: the PM red threshold, named in the bands statement',
+    '170': 'ProjexaR control: ticket window, lower', '320': 'ProjexaR control: ticket window, upper',
+    '25': 'ProjexaR control: overhead uplift, per cent',
+  };
+  eq(staticNums.length, 18, 'the static printed copy publishes eighteen numbers');
+  eq([...new Set(staticNums)].sort().join(','), Object.keys(WANT).sort().join(','),
+     'and they are exactly the eighteen accounted for in the provenance table');
+  /* The capture genuinely carries them: a number only in the static layer must
+     reach allText(), or none of the above is worth anything. */
+  const captured = new Set(numbersIn(allText(capture({ id: 'static', ...FIXTURE_A }))));
+  for (const [num, what] of Object.entries(WANT)) {
+    ok(captured.has(num), `static: ${num} (${what}) reaches the captured multiset`);
+  }
 }
 
 /* ================================= §4.1 typical project duration =========== */

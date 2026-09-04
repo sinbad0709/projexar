@@ -1355,12 +1355,37 @@ window.submitToSender = function(payload){
      Sources: HDI (Rumburg, 2012); MetricNet (2019, rev. 2023). */
   var TICKET_RATE_LO = 0.41, TICKET_RATE_HI = 1.38;
 
-  /* Cross-industry split between run and growth spend. Flexera 2023 Tech Spend
-     Pulse, Figure 17 (N=506), published under CC BY 4.0. Two caveats travel with
-     it into the report's methodology section: it measures spend rather than
-     effort, and the survey targets organisations above 2,000 employees, which is
-     larger than this tool's typical respondent. */
+  /* Cross-industry split between running the business and growth. Flexera 2023
+     Tech Spend Pulse, Figure 17, published under CC BY 4.0.
+
+     Read in the report rather than inferred, and both things it is were checked:
+
+     Unit. The section is titled "Percentage of BUDGET allocated to running the
+     business vs. growth" (contents, page 25), and the page reads "Industry
+     analysts often estimate the cost of running the business to be as high as
+     70%, which aligns with respondents' estimates of 67%." It is a split of IT
+     spend. The question this tool asks is a split of people's TIME. The two are
+     related and they are not the same quantity, so the report shows both figures
+     and never the difference between them. Subtracting one from the other would
+     be arithmetic across two different units, and stating a caveat elsewhere on
+     the page does not repair a subtraction made inline — that is the same fault
+     as a rating contradicted by its own workings.
+
+     Population. "This year's survey targets organizations with more than 2,000
+     employees, with nearly half (46%) exceeding 10,000 employees" (page 9). This
+     tool's typical respondent is smaller than that, so the average is drawn from
+     a population that may not contain them. That is stated where the figure is
+     shown, not only in the methodology.
+
+     Methodology and licence, both from page 8: 506 participants worldwide, summer
+     2023; reuse under the Creative Commons Attribution 4.0 International License.
+
+     The figure NUMBER is the one thing not readable in the published PDF — its
+     chart captions are images. 17 is derived from six figure-to-page pairs Flexera
+     cites in its own public infographic, every one of them at figure = page − 8,
+     and the run-versus-growth chart is on page 25. */
   var BENCH_BAU = 67, BENCH_CHANGE = 33;
+  var BENCH_N = 506, BENCH_MIN_EMPLOYEES = 2000;
 
   /* RAG bands. These are ProjexaR's management controls. They are informed by
      published research but they are not values the research establishes, and the
@@ -1624,7 +1649,7 @@ window.submitToSender = function(payload){
        Full-cost calculation              excluded — see the workings copy
        Run/change derivation              excluded — not part of the permanent
                                           department the stated split describes
-       IT staff as a share of company     excluded
+       Size of IT against the company     excluded
        Licence basis and the quote        excluded — basis is BAU staff + PMs
 
      The sixth is this one: a companion figure displayed beside the BAU tile,
@@ -1839,13 +1864,11 @@ window.submitToSender = function(payload){
                       : (v.bauSplitEstimate > c.corroborationHi ? 'note' : 'healthy');
     }
 
-    if(v.bauSplitEstimate === null){
-      c.splitDiff = null; c.splitLean = null;
-    }else{
-      c.splitDiff = Math.abs(v.bauSplitEstimate - BENCH_BAU);
-      c.splitLean = v.bauSplitEstimate > BENCH_BAU ? 'BAU-heavy'
-                  : (v.bauSplitEstimate < BENCH_BAU ? 'transformation-heavy' : 'level');
-    }
+    /* There is deliberately no splitDiff here. The reported figure and the
+       Flexera figure are shown side by side and the gap between them is never
+       computed, because they are not the same quantity — see the note on
+       BENCH_BAU. A difference left on the compute object is an invitation to
+       publish it again. */
 
     /* The ceiling the copy reads. Both endpoints are carried; where they differ
        the tile shows a range and says whether the binding route changed with
@@ -2321,6 +2344,21 @@ window.submitToSender = function(payload){
   function facts(v, c){
     var out = [];
 
+    /* First, because it describes the department every figure below it is about.
+       It sets the scale and it is not a measure of anything — unrated, and
+       positioned so it does not read as a score sitting among the capacity
+       figures waiting to be compared against something. */
+    out.push(c.itPercent === null
+      ? { figure:'Not computed', label:'The size of your IT department, against the company',
+          note:'this is your permanent IT staff set against your company headcount, and ' + noShareReason(v)
+             + ', so there is no ratio to take' }
+      : { figure:d1(c.itPercent) + '%',
+          label:'The size of your IT department, against the company',
+          note:n0(v.staff) + ' permanent IT staff out of ' + qty(v.companyHeadcount, 'person', 'people')
+             + ' — the department every figure below is about'
+             + (v.contractors ? '. Your ' + qty(v.contractors, 'contractor', 'contractors')
+                  + ' are counted separately and are not in it' : '') });
+
     /* A bare 0.0 standing in for "not computed" is exactly what §1.1 forbids,
        so where there is no BAU capacity the figure is suppressed and the reason
        is stated instead. */
@@ -2344,16 +2382,6 @@ window.submitToSender = function(payload){
              + qty(v.annual, 'project', 'projects') + ' in a typical year, times twelve. It is derived from '
              + 'that ratio rather than measured from your projects, so it describes the throughput of your '
              + 'portfolio at a steady pace' });
-
-    out.push(c.itPercent === null
-      ? { figure:'Not computed', label:'IT staff as a share of the company',
-          note:'this is your permanent IT staff set against your company headcount, and ' + noShareReason(v)
-             + ', so there is no ratio to take' }
-      : { figure:d1(c.itPercent) + '%',
-          label:'IT staff as a share of the company',
-          note:n0(v.staff) + ' of ' + qty(v.companyHeadcount, 'person', 'people')
-             + (v.contractors ? ', permanent staff only — your ' + qty(v.contractors, 'contractor', 'contractors')
-                  + ' are excluded from this ratio' : '') });
 
     if(c.ticketFTE !== null){
       /* The proportion is stated against non-PM IT staff, not against bauStaff.
@@ -2389,13 +2417,15 @@ window.submitToSender = function(payload){
     if(v.bauSplitEstimate !== null){
       var change = 100 - v.bauSplitEstimate;
       out.push({ figure:n0(v.bauSplitEstimate) + '/' + n0(change),
-        label:'Your reported BAU/transformation split compared to the cross-industry average',
-        note: c.splitLean === 'level'
-          ? 'your reported split — ' + v.bauSplitEstimate + '% BAU, ' + change + '% transformation — '
-            + 'matches the 67%/33% cross-industry average (Flexera 2023 Tech Spend Pulse)'
-          : 'your reported split — ' + v.bauSplitEstimate + '% BAU, ' + change + '% transformation — '
-            + 'compares to a 67%/33% cross-industry average (Flexera 2023 Tech Spend Pulse), running about '
-            + n0(c.splitDiff) + ' percentage points more ' + c.splitLean + ' than the cross-industry average' });
+        label:'Your reported split, and the closest published figure to it',
+        note:'you reported ' + n0(v.bauSplitEstimate) + '% of your department’s time on run work and '
+           + n0(change) + '% on transformation. The Flexera 2023 Tech Spend Pulse reports a '
+           + BENCH_BAU + '%/' + BENCH_CHANGE
+           + '% run-versus-grow split across ' + BENCH_N + ' organisations, all above '
+           + n0(BENCH_MIN_EMPLOYEES) + ' employees — but that is a split of IT budget rather than of '
+           + 'people’s time, and of organisations larger than most of the departments this check is built '
+           + 'for. We show it because it is the closest published figure we have, and we do not subtract '
+           + 'one from the other' });
     }
 
     return out;
@@ -2793,7 +2823,7 @@ window.submitToSender = function(payload){
           + n0(v.companyHeadcount) + ' in the company, '
           + (v.pms === 0 ? 'with nobody formally running projects, ' : 'with ' + n0(v.pms) + ' project '
              + plural(v.pms,'manager','managers') + ', ')
-          + 'against ' + n0(v.live) + ' live ' + plural(v.live,'project','projects') + ' and around ' + n0(v.annual)
+          + 'against ' + n0(v.live) + ' live ' + plural(v.live,'project','projects') + ' and ' + n0(v.annual)
           + ' in a typical year.';
 
     if(v.contractors){
@@ -2919,7 +2949,11 @@ window.submitToSender = function(payload){
     }
     if(v.bauSplitEstimate !== null){
       src.push(['Run against growth spend',
-        '<em>Flexera 2023 Tech Spend Pulse</em>, Figure 17 (N=506) — 67% run, 33% growth. Published under CC BY 4.0']);
+        '<em>Flexera 2023 Tech Spend Pulse</em>, Figure 17 — respondents’ estimate of the percentage of IT '
+        + '<strong>budget</strong> allocated to running the business against growth: <strong>' + BENCH_BAU
+        + '% run, ' + BENCH_CHANGE + '% growth</strong>. N=' + BENCH_N + ', worldwide, summer 2023, '
+        + 'organisations above ' + n0(BENCH_MIN_EMPLOYEES) + ' employees, nearly half above 10,000. Published '
+        + 'under CC BY 4.0']);
     }
     /* The two sourced components of the loaded cost. Listed wherever a cost
        figure is published, and only there. The 25% overhead is not listed here
@@ -3113,8 +3147,9 @@ window.submitToSender = function(payload){
       suppressed.push('<strong>Your ' + qty(v.contractors, 'contractor', 'contractors') + ' are counted separately '
         + 'from your permanent IT staff.</strong> They are excluded from the live-projects-per-BAU-FTE rating and '
         + 'from the growth ceiling, both of which measure how far your portfolio depends on permanent BAU '
-        + 'capacity; from the run and change derivation, which describes the permanent department; from IT staff '
-        + 'as a share of the company; and from the ProjexaR licence basis, which is your BAU staff on projects '
+        + 'capacity; from the run and change derivation, which describes the permanent department; from the size '
+        + 'of your IT department against the company; and from the ProjexaR licence basis, which is your BAU '
+        + 'staff on projects '
         + 'plus your project managers. They are excluded from the cost figures too: what contractors cost is paid '
         + 'out of budget, and the cost figures here are built only from the permanent staff time your project '
         + 'budgets do not record. They appear as a companion figure beside the BAU capacity rating and nowhere '
@@ -3219,10 +3254,10 @@ window.submitToSender = function(payload){
       }
     }
     fx.push(c.itPercent === null
-      ? ['IT staff as a share of the company',
+      ? ['The size of your IT department, against the company',
          'not computed — ' + noShareReason(v), 'Not computed']
-      : ['IT staff as a share of the company', n0(v.staff) + ' ÷ ' + n0(v.companyHeadcount),
-         d1(c.itPercent) + '%']);
+      : ['The size of your IT department, against the company',
+         n0(v.staff) + ' ÷ ' + n0(v.companyHeadcount), d1(c.itPercent) + '%']);
 
     /* The growth ceiling arithmetic, shown in full — it is the one figure on the
        report that projects rather than counts, so it should be checkable. */
@@ -3383,10 +3418,13 @@ window.submitToSender = function(payload){
 
     /* Both Flexera caveats travel with the figure wherever it is used. */
     $('pr-flexeranote').innerHTML = v.bauSplitEstimate === null ? ''
-      : '<strong>The 67%/33% comparison has two limits.</strong> Flexera’s figure measures <em>spend</em> rather '
-      + 'than effort, and the question you answered was about effort — the two are related but not the same. Its '
-      + 'survey also targets organisations above 2,000 employees, which sits above this tool’s typical '
-      + 'respondent. Treat it as orientation, not a target.';
+      : '<strong>Why we show both figures and not the gap between them.</strong> Flexera’s ' + BENCH_BAU + '%/'
+      + BENCH_CHANGE + '% is a split of IT <em>budget</em>. The figure you gave us is a split of your people’s '
+      + '<em>time</em>. A difference in percentage points between the two would be arithmetic across two '
+      + 'different quantities, so we do not publish one. Its survey also targets organisations above '
+      + n0(BENCH_MIN_EMPLOYEES) + ' employees, nearly half of them above 10,000 — larger than most of the '
+      + 'departments this check is built for, so it is an average drawn from a population that may not include '
+      + 'you. Orientation, not a target.';
 
     $('pr-fxnote').innerHTML = (v.spend !== null && v.currency !== 'GBP')
       ? '<strong>Currency.</strong> ProjexaR is priced in sterling and you gave us your spend in '
