@@ -402,15 +402,25 @@ section('Copy rule — static report and methodology copy');
      'bands statement: figures, with "point estimate" clearing the copy rule');
   ok(/Three things follow, and we state all three/.test(staticCopy), 'bands statement: three things');
   ok(/a portfolio of IT change projects is a different setting/.test(staticCopy), 'bands statement: 1 of 3 — setting');
-  ok(/does not test whether that curve differs for managers/.test(staticCopy), 'bands statement: 2 of 3 — managers');
+  ok(/Managerial responsibility appears in it only as a check on how people were allocated to projects/
+       .test(staticCopy), 'bands statement: 2 of 3 — managerial responsibility is an allocation check');
   ok(/our step, not the paper's/.test(staticCopy), 'bands statement: 2 of 3 — our step');
+  ok(/leadership role \(project leader, chief project engineer, project supervisor\) changes the benefit of multi-project work, and finds it does not/
+       .test(staticCopy), 'bands statement: Table S10 — leadership role tested as a moderator, and does not moderate');
+  ok(/never models project management caseload as such/.test(staticCopy),
+     'bands statement: what the leadership-role test does not cover');
   ok(/red threshold of 7\.0 sits above the top of that confidence interval/.test(staticCopy),
      'bands statement: 3 of 3 — the threshold sits above the interval');
 
-  /* The claim we must not make: the paper does not test the curve by role, so
-     nothing may say it found the inverted-U absent among managers. */
+  /* Two claims we must not make. The first inverts the paper: the -.507 result
+     is an allocation check with MPW as the dependent variable, not a finding
+     that the inverted-U fails for managers. The second is an asserted absence
+     contradicted by Table S10, which does test leadership role as a moderator
+     of the performance curve. */
   ok(!/not find (the |that )?(same )?pattern among managers/i.test(staticCopy),
      'no claim that the inverted-U was tested and not found for managers');
+  ok(!/does not test whether that curve differs for managers/i.test(staticCopy),
+     'no asserted absence about testing the curve by role — Table S10 tests leadership role');
   ok(!/8[–-]12/.test(html), 'no 8–12 reference anywhere in the file, comments included');
 }
 
