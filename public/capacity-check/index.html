@@ -1250,10 +1250,21 @@ window.submitToSender = function(payload){
      page gives the control in both units so a reader can check it against
      Jitbit's daily figure in one step without knowing what we assumed.
 
-     Twenty-one days is the conservative end of a working month, and conservative
-     here means a lower monthly throughput, so more FTE absorbed by tickets and a
-     larger stated gap. We would rather overstate what tickets take than flatter
-     the answer.
+     WORKING_DAYS is display-only and must stay that way. Ticket capacity is
+     worked from the monthly window directly — c.ticketFTE divides by
+     TICKETS_PER_AGENT_HI and _LO and nothing else — so this constant moves no
+     computed figure, and the render suite asserts that by varying it and
+     requiring every number in the report to be identical.
+
+     That is also why it carries no claim to being conservative, in either
+     direction. An earlier draft of this comment said 21 days was the
+     conservative end because it meant more FTE absorbed by tickets and a larger
+     stated gap. Both halves were wrong: more ticket FTE gives a SMALLER gap, not
+     a larger one, since the gap is reported run work minus ticket FTE. And an
+     assumption that reaches no computation cannot be conservative or generous
+     about anything. Twenty-one days is a common reading of a working month and
+     it is here so the two anchors can be compared in one unit — nothing more,
+     and the page says so.
 
      An earlier version of this tool used 480 a month for Jitbit. No stateable
      working-days figure produces it — 21 × 21 is 441 and 21 × 23 is 483 — so it
@@ -2806,7 +2817,10 @@ window.submitToSender = function(payload){
         + 'two anchors are published in different ones: our window sits above HDI/MetricNet’s ' + '87 to 133 a '
         + 'month and below Jitbit’s ' + JITBIT_PER_DAY + ' a day, and you can check either comparison without '
         + 'knowing what we assumed. The window and the ' + WORKING_DAYS + '-day month are both ProjexaR’s '
-        + 'judgement. Neither is a published figure']);
+        + 'judgement. Neither is a published figure. The ' + WORKING_DAYS + '-day month changes nothing this '
+        + 'report computes — ticket capacity is worked from the monthly window directly — so if you read a '
+        + 'working month differently, redo the daily comparison at your own figure and every number in this '
+        + 'report stands as it is']);
     }
     if(c.rateOutside){
       src.push(['Tickets per employee per month by sector',

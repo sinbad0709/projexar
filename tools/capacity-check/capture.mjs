@@ -29,8 +29,10 @@ function readNode(node) {
   return node.innerHTML || node.textContent || '';
 }
 
-export function capture(shape) {
-  const tool = loadTool();
+/* `toolPath` loads a variant copy of the tool, for invariance shapes that need
+   a constant changed. Everything else about the capture is unchanged. */
+export function capture(shape, { toolPath } = {}) {
+  const tool = loadTool(toolPath);
 
   for (const key of INPUT_KEYS) {
     const raw = shape[key];

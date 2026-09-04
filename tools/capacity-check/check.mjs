@@ -6,8 +6,10 @@
    corpus shapes against oracle.mjs. A number that disagrees is a failure, never
    a category. Only text differences are categorised. */
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 const sha = (v) => createHash('sha256').update(String(v)).digest('hex').slice(0, 16);
 import { corpus, FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_LOADED_COST, FIXTURE_SALARY,
@@ -15,7 +17,7 @@ import { corpus, FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_LOADED_COST, FIXTURE_S
          suppressionShapes, singularShapes, corroborationShapes, budgetShapes,
          loadedCostShapes, LEGACY_BAND_CASES,
          TOOLSETS, VISIBILITY, BUDGETS, ASSIGNMENT, BANDS } from './shapes.mjs';
-import { capture, allText, numbersIn } from './capture.mjs';
+import { capture, allText, numbersIn, SCREEN_NODES, PRINT_NODES } from './capture.mjs';
 import { TOOL_PATH, loadTool } from './harness.mjs';
 import { evaluate, roundN, round1, redThreshold, loadedCost, bandContaining,
          finding2State, finding3State, finding4State,
@@ -662,10 +664,63 @@ section('§3.6 — the ticket divisor is a range, with both anchors named');
        'the control sits above HDI/MetricNet’s monthly figures, checkable in months');
     /* No stateable working-days figure produces 480, so it is not quoted. */
     ok(!/\b480\b/.test(t), 'the unattributed 480 is not quoted anywhere in output');
+    /* An assumption that reaches no computation must not claim to be
+       conservative, in either direction. It cannot be either. */
+    ok(!/conservative/i.test(t), 'the working-days basis claims no conservatism');
+    ok(has(t, 'changes nothing this report computes'),
+       'the page says the working-days basis moves no computed figure');
     /* The characterisation the specification carried was never checked against
        the source, and the source does not support it. */
     ok(!/tier-1|tier 1|high-throughput remote/i.test(t),
        'Jitbit’s figure is not characterised as high-throughput remote tier-1');
+  }
+}
+
+/* ================================ the working-days basis is display-only ==== */
+section('§3.6 — the working-days basis moves no computed figure');
+{
+  /* The basis exists so two anchors published in different units can be read in
+     one. It must never reach a calculation: ticket capacity comes from the
+     monthly window directly. Varying it and requiring every number in the report
+     to be identical is what keeps that true — and is what makes it safe to tell
+     the reader they can redo the daily comparison at their own figure.
+
+     This shape exists because the claim was got wrong in review: the basis was
+     described as the conservative end, which is not something a display-only
+     constant can be. An assertion is worth more than a corrected sentence. */
+  const dir = mkdtempSync(join(tmpdir(), 'cc-workingdays-'));
+  const src = readFileSync(TOOL_PATH, 'utf8');
+  const DECL = 'var WORKING_DAYS = 21;';
+  ok(src.includes(DECL), 'the working-days constant is declared once and findably');
+
+  /* Nodes whose text names the daily rate, and so must move with the basis.
+     Everything else must not. */
+  const DISPLAY_NODES = new Set(['factList', 'pr-facts', 'pr-formulas', 'pr-sources']);
+
+  const ref = capture({ id: 'wd-21', ...FIXTURE_A });
+  for (const days of [20, 22, 23]) {
+    const path = join(dir, `wd${days}.html`);
+    writeFileSync(path, src.replace(DECL, `var WORKING_DAYS = ${days};`));
+    const cap = capture({ id: `wd-${days}`, ...FIXTURE_A }, { toolPath: path });
+    if (!ok(cap.ok, `wd-${days}: renders`, cap.error)) continue;
+
+    /* Every computed quantity, whole. Not a sample of them. */
+    eq(JSON.stringify(cap.computed), JSON.stringify(ref.computed),
+       `wd-${days}: the entire compute() object is unchanged`);
+    eq(JSON.stringify(cap.sender), JSON.stringify(ref.sender),
+       `wd-${days}: the Sender payload is unchanged`);
+    /* Node by node over everything that does not name the daily rate. This is
+       what proves the invariance; a filtered list of every number in the report
+       would strip legitimate 20s and 21s elsewhere in it and prove less. */
+    for (const id of [...SCREEN_NODES, ...PRINT_NODES]) {
+      if (DISPLAY_NODES.has(id)) continue;
+      eq(cap.screen[id] ?? cap.print[id], ref.screen[id] ?? ref.print[id],
+         `wd-${days}: ${id} is unchanged`);
+    }
+    /* And the basis genuinely is stated — a constant nothing renders would pass
+       every check above while telling the reader nothing. */
+    ok(has(allText(cap), `${days}-working-day month`),
+       `wd-${days}: the basis is stated in output`);
   }
 }
 
