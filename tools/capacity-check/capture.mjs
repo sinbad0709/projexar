@@ -4,8 +4,35 @@
    `compute` directly, so render() and renderPrint() both run and every node the
    tool writes into is captured — screen, printed report and Sender payload. */
 
-import { loadTool } from './harness.mjs';
+import { readFileSync } from 'node:fs';
+import { loadTool, TOOL_PATH } from './harness.mjs';
 import { INPUT_KEYS } from './shapes.mjs';
+
+/* The printed report also carries copy written straight into the markup — the
+   methodology page, the bands statement, "What this does not account for", the
+   four steps, the sources heading. All of it is output and all of it goes into
+   the PDF, and until now no capture reached any of it: eighteen published
+   numbers sat outside the suite entirely, so editing one caught nothing. The
+   copy rule was extended to this layer in PR2; the numbers were not.
+
+   Read here so it joins allText() with everything the page rendered. Comments
+   are stripped first — the tag regex in allText() would leave their contents
+   behind, and a note about the copy is not the copy.
+
+   Cached per file. It is identical for every shape, and re-reading a 220KB file
+   once per capture to get the same string back is pure waste. */
+const staticCache = new Map();
+
+export function staticReportText(path = TOOL_PATH) {
+  if (!staticCache.has(path)) {
+    const html = readFileSync(path, 'utf8');
+    const start = html.indexOf('<div id="printReport">');
+    const end = html.indexOf('</main>', start);
+    if (start < 0 || end < start) throw new Error('printReport block not found in the markup');
+    staticCache.set(path, html.slice(start, end).replace(/<!--[\s\S]*?-->/g, ' '));
+  }
+  return staticCache.get(path);
+}
 
 /* Every node the tool writes output into. Order is fixed so captures compare. */
 export const SCREEN_NODES = [
@@ -20,7 +47,7 @@ export const PRINT_NODES = [
   'pr-herohead', 'pr-figure', 'pr-ceiling',
   'pr-secondhead', 'pr-secondfigure', 'pr-secondnote',
   'pr-verdict', 'pr-tiles', 'pr-bandnote', 'pr-facts',
-  'pr-checkblock', 'pr-inputs', 'pr-formulas', 'pr-flexeranote', 'pr-fxnote',
+  'pr-checkblock', 'pr-inputs', 'pr-formulas', 'pr-derivations', 'pr-flexeranote', 'pr-fxnote',
   'pr-cards', 'pr-checks', 'pr-compare', 'pr-sources', 'pr-price',
 ];
 
@@ -54,6 +81,8 @@ export function capture(shape, { toolPath } = {}) {
 
   for (const id of SCREEN_NODES) result.screen[id] = readNode(tool.node(id));
   for (const id of PRINT_NODES) result.print[id] = readNode(tool.node(id));
+  /* The layer the page does not write: static printed-report copy. */
+  result.staticReport = staticReportText(toolPath);
 
   /* The Sender payload. The gate needs a valid email and a ticked box. */
   tool.node('email').value = 'reader@example.com';
@@ -108,6 +137,7 @@ export function allText(cap, { forCopyRule = false } = {}) {
     if (forCopyRule && COPY_EXEMPT.has(id)) continue;
     parts.push(cap.print[id] || '');
   }
+  parts.push(cap.staticReport || '');
   return parts.join('\n')
     .replace(/<[^>]*>/g, ' ')
     .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')

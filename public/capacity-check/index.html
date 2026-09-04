@@ -7,6 +7,31 @@
 <meta name="description" content="A free check of how much of your IT project delivery rests on BAU staff who are also keeping the lights on. Your results in a few minutes.">
 <link rel="canonical" href="https://projexar.com/capacity-check/">
 <link rel="icon" href="/assets/logo-mark.svg" type="image/svg+xml">
+<!-- Link preview (§4.4). The report renders client-side, so a shared result URL
+     previews blank in Teams and Slack and indexes blank. One static branded
+     card, no per-result generation.
+
+     og:image is absolute. A relative path fails on most platforms — they fetch
+     the tag without a document base — and the failure is silent, which is how a
+     relative path survives review.
+
+     The description is generic on purpose. It describes the Capacity Check, not
+     the reader's outcome: these tags are the same for every shared URL,
+     including the permalinks that carry a respondent's own answers, and a
+     description written about a result would be wrong on all of them. og:url is
+     the canonical page for the same reason.
+
+     Verification is manual and post-deploy. Teams and Slack cache OG data hard,
+     so a first-attempt failure is nearly always a stale cache rather than broken
+     markup — re-check through each platform's own debugger before editing
+     anything here. -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://projexar.com/capacity-check/">
+<meta property="og:title" content="Capacity Check &mdash; ProjexaR">
+<meta property="og:description" content="A free check of how much of your IT project delivery rests on BAU staff who are also keeping the lights on. Your results in a few minutes.">
+<meta property="og:image" content="https://projexar.com/capacity-check/capacity-check-og.png">
+<meta property="og:image:alt" content="A ProjexaR card reading &lsquo;Your projects are staffed by people who already have day jobs&rsquo;, above the words Capacity Check &mdash; free, three minutes, no sign-up.">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 /* ==========================================================================
    ProjexaR Capacity Check — v5 (BAU capacity model)
@@ -690,10 +715,19 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <fieldset class="fieldset">
         <legend class="legend">Your projects</legend>
         <div class="grid">
+          <!-- The definition sits under the input because the count is the
+               denominator of two rated figures and the growth ceiling, and two
+               respondents counting differently is the largest uncontrolled
+               source of variance in this tool. Rejected in specification and not
+               to be reopened: "exclude minor works" — too subjective to apply
+               consistently. A sharper second filter on concrete criteria
+               (running beyond four weeks, or needing more than one person) is
+               Norm's call on wording and is not implemented here. Wording is
+               Norm's. -->
           <div class="field" id="f-live">
             <label for="live">Live projects right now</label>
             <div class="control"><input type="number" id="live" min="0" max="2000" step="1" inputmode="numeric" placeholder="e.g. 45"></div>
-            <div class="under"><span class="hint">Anything currently running.</span><span class="error"></span></div>
+            <div class="under"><span class="hint">Anything currently running. <strong>A project is work that requires project management oversight</strong> &mdash; someone with responsibility for holding the plan together, whether or not that person holds the title.</span><span class="error"></span></div>
           </div>
           <div class="field" id="f-annual">
             <label for="annual">Typical number of IT projects run annually</label>
@@ -1035,6 +1069,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
         <thead><tr><th style="width:38%">Figure</th><th style="width:32%">How</th><th>Result</th></tr></thead>
         <tbody id="pr-formulas"></tbody>
       </table>
+      <p class="p-note" style="margin-top:6pt" id="pr-derivations"></p>
 
       <h2 style="margin-top:12pt">How the bands were set</h2>
       <p>These bands are ProjexaR's management controls. They are informed by published research but are not values
@@ -1320,12 +1355,43 @@ window.submitToSender = function(payload){
      Sources: HDI (Rumburg, 2012); MetricNet (2019, rev. 2023). */
   var TICKET_RATE_LO = 0.41, TICKET_RATE_HI = 1.38;
 
-  /* Cross-industry split between run and growth spend. Flexera 2023 Tech Spend
-     Pulse, Figure 17 (N=506), published under CC BY 4.0. Two caveats travel with
-     it into the report's methodology section: it measures spend rather than
-     effort, and the survey targets organisations above 2,000 employees, which is
-     larger than this tool's typical respondent. */
+  /* Cross-industry split between running the business and growth. Flexera 2023
+     Tech Spend Pulse, page 25, published under CC BY 4.0.
+
+     Read in the report rather than inferred, and both things it is were checked:
+
+     Unit. The section is titled "Percentage of BUDGET allocated to running the
+     business vs. growth" (contents, page 25), and the page reads "Industry
+     analysts often estimate the cost of running the business to be as high as
+     70%, which aligns with respondents' estimates of 67%." It is a split of IT
+     spend. The question this tool asks is a split of people's TIME. The two are
+     related and they are not the same quantity, so the report shows both figures
+     and never the difference between them. Subtracting one from the other would
+     be arithmetic across two different units, and stating a caveat elsewhere on
+     the page does not repair a subtraction made inline — that is the same fault
+     as a rating contradicted by its own workings.
+
+     Population. "This year's survey targets organizations with more than 2,000
+     employees, with nearly half (46%) exceeding 10,000 employees" (page 9). This
+     tool's typical respondent is smaller than that, so the average is drawn from
+     a population that may not contain them. That is stated where the figure is
+     shown, not only in the methodology.
+
+     Methodology and licence, both from page 8: 506 participants worldwide, summer
+     2023; reuse under the Creative Commons Attribution 4.0 International License.
+
+     We cite the page and the chart title, not a figure number, and that is
+     deliberate. The published PDF's chart captions are images, so no figure
+     number is readable in it. An earlier draft cited "Figure 17", derived from
+     six figure-to-page pairs in Flexera's own public infographic that all sat at
+     figure = page − 8. The derivation held, and it was still the wrong thing to
+     print: a derived number set in the same type as a read one is the Jitbit 480
+     again in miniature. A search summary also offered "Figure 17 is the IT spend
+     decentralisation chart", which is page 26 — near enough to have been taken.
+     The page number and the chart title are what was read, so they are what is
+     cited. */
   var BENCH_BAU = 67, BENCH_CHANGE = 33;
+  var BENCH_N = 506, BENCH_MIN_EMPLOYEES = 2000;
 
   /* RAG bands. These are ProjexaR's management controls. They are informed by
      published research but they are not values the research establishes, and the
@@ -1589,7 +1655,7 @@ window.submitToSender = function(payload){
        Full-cost calculation              excluded — see the workings copy
        Run/change derivation              excluded — not part of the permanent
                                           department the stated split describes
-       IT staff as a share of company     excluded
+       Size of IT against the company     excluded
        Licence basis and the quote        excluded — basis is BAU staff + PMs
 
      The sixth is this one: a companion figure displayed beside the BAU tile,
@@ -1664,6 +1730,23 @@ window.submitToSender = function(payload){
        both conditions are stated because both are the rule. */
     c.turnover = (v.live > 0 && v.annual > 0) ? v.annual / v.live : null;
 
+    /* §4.1. What the report shows in place of the turnover multiple. Turnover
+       itself is retained above and nowhere displayed: the growth ceiling still
+       projects a live-project threshold forward at that pace, so the quantity is
+       needed, but a reader is given the duration instead.
+
+       The name carries a caution and the page states it. This is not a measured
+       fact about projects. It is the ratio of what is live to what runs in a
+       year, which describes portfolio throughput on the assumption of a steady
+       state — a department part-way through a ramp-up, or winding one down, gets
+       a figure about its throughput rather than about its projects.
+
+       Suppressed with either input at zero (§1.1). Validation holds annual ≥
+       live, so in practice the two go absent together, but both conditions are
+       stated because both are the rule. */
+    c.typicalDurationMonths = (v.live > 0 && v.annual > 0)
+      ? roundN(v.live / v.annual * 12, 1) : null;
+
     c.loaded = loadedCostOf(v.loadedSalary);
 
     /* The summing path needs an explicit out-the-door answer AND a spend figure
@@ -1716,8 +1799,16 @@ window.submitToSender = function(payload){
                   : (c.impliedRate < TICKET_RATE_LO || c.impliedRate > TICKET_RATE_HI);
 
     /* Permanent IT staff only. Contractors are counted separately and are not
-       part of this ratio; the workings page says so. */
-    c.itPercent = v.staff / v.companyHeadcount * 100;
+       part of this ratio; the workings page says so.
+
+       Suppressed at either input zero (§1.1). Both are required questions with a
+       minimum of 1, so no respondent reaches this and no rendered output moves —
+       the guard is here because the formula divides by a respondent-supplied
+       figure, and §1.1's rule is about the formula rather than about which
+       inputs happen to be reachable today. Without it a loosened validation rule
+       would put NaN on the page rather than a stated reason. */
+    c.itPercent = (v.companyHeadcount > 0 && v.staff > 0)
+      ? v.staff / v.companyHeadcount * 100 : null;
 
     /* Licence basis is the people who appear on project plans: the BAU staff
        working on projects plus the project managers coordinating them. It
@@ -1779,13 +1870,11 @@ window.submitToSender = function(payload){
                       : (v.bauSplitEstimate > c.corroborationHi ? 'note' : 'healthy');
     }
 
-    if(v.bauSplitEstimate === null){
-      c.splitDiff = null; c.splitLean = null;
-    }else{
-      c.splitDiff = Math.abs(v.bauSplitEstimate - BENCH_BAU);
-      c.splitLean = v.bauSplitEstimate > BENCH_BAU ? 'BAU-heavy'
-                  : (v.bauSplitEstimate < BENCH_BAU ? 'transformation-heavy' : 'level');
-    }
+    /* There is deliberately no splitDiff here. The reported figure and the
+       Flexera figure are shown side by side and the gap between them is never
+       computed, because they are not the same quantity — see the note on
+       BENCH_BAU. A difference left on the compute object is an invitation to
+       publish it again. */
 
     /* The ceiling the copy reads. Both endpoints are carried; where they differ
        the tile shows a range and says whether the binding route changed with
@@ -2238,8 +2327,43 @@ window.submitToSender = function(payload){
   }
 
   /* ---- Informational bullets. Nothing here is rated. ---- */
+  /* Why a duration could not be taken, in one clause, so the numbers section
+     and the workings page give the same reason rather than two wordings of it.
+     Validation holds annual ≥ live, so the both-zero case is the one a
+     respondent can actually reach; the other two are stated because the rule
+     is written per input. */
+  /* The same treatment for the share, so a suppressed figure gives a reason
+     rather than a blank. Unreachable through the form — both inputs are required
+     at 1 or above — and stated per input because the rule is written per input. */
+  function noShareReason(v){
+    if(v.companyHeadcount === 0 && v.staff === 0) return 'you reported neither a company headcount nor any IT staff';
+    if(v.companyHeadcount === 0) return 'you reported no company headcount';
+    return 'you reported no IT staff';
+  }
+
+  function noPaceReason(v){
+    if(v.live === 0 && v.annual === 0) return 'nothing is live and you reported no projects in a typical year';
+    if(v.live === 0) return 'nothing is live';
+    return 'you reported no projects in a typical year';
+  }
+
   function facts(v, c){
     var out = [];
+
+    /* First, because it describes the department every figure below it is about.
+       It sets the scale and it is not a measure of anything — unrated, and
+       positioned so it does not read as a score sitting among the capacity
+       figures waiting to be compared against something. */
+    out.push(c.itPercent === null
+      ? { figure:'Not computed', label:'The size of your IT department, against the company',
+          note:'this is your permanent IT staff set against your company headcount, and ' + noShareReason(v)
+             + ', so there is no ratio to take' }
+      : { figure:d1(c.itPercent) + '%',
+          label:'The size of your IT department, against the company',
+          note:n0(v.staff) + ' permanent IT staff out of ' + qty(v.companyHeadcount, 'person', 'people')
+             + ' — the department every figure below is about'
+             + (v.contractors ? '. Your ' + qty(v.contractors, 'contractor', 'contractors')
+                  + ' are counted separately and are not in it' : '') });
 
     /* A bare 0.0 standing in for "not computed" is exactly what §1.1 forbids,
        so where there is no BAU capacity the figure is suppressed and the reason
@@ -2252,17 +2376,18 @@ window.submitToSender = function(payload){
           note:n0(v.bauStaff) + ' BAU ' + plural(v.bauStaff,'person','people') + ' across the '
              + bandLabel(v) + ' band you picked, which is why this and everything drawn from it is a range' });
 
-    out.push({ figure: c.turnover === null ? '—' : d1(c.turnover) + '×',
-      label:'Annual portfolio turnover',
-      note: c.turnover === null
-        ? 'turnover needs a live project count to work from, and with nothing live there is no pace to measure'
-        : 'how many full project cycles your portfolio runs through each year' });
-
-    out.push({ figure:d1(c.itPercent) + '%',
-      label:'IT staff as a share of the company',
-      note:n0(v.staff) + ' of ' + qty(v.companyHeadcount, 'person', 'people')
-         + (v.contractors ? ', permanent staff only — your ' + qty(v.contractors, 'contractor', 'contractors')
-              + ' are excluded from this ratio' : '') });
+    /* §4.1. The derivation is stated beside the figure, because the label
+       reads as a measured fact about projects and the number is not one. */
+    out.push(c.typicalDurationMonths === null
+      ? { figure:'Not computed', label:'Typical project duration',
+          note:'this is your live project count set against your annual pace, and ' + noPaceReason(v)
+             + ', so there is no ratio to take' }
+      : { figure:d1(c.typicalDurationMonths) + ' months',
+          label:'Typical project duration',
+          note:'your ' + qty(v.live, 'live project', 'live projects') + ' against '
+             + qty(v.annual, 'project', 'projects') + ' in a typical year, times twelve. It is derived from '
+             + 'that ratio rather than measured from your projects, so it describes the throughput of your '
+             + 'portfolio at a steady pace' });
 
     if(c.ticketFTE !== null){
       /* The proportion is stated against non-PM IT staff, not against bauStaff.
@@ -2298,13 +2423,15 @@ window.submitToSender = function(payload){
     if(v.bauSplitEstimate !== null){
       var change = 100 - v.bauSplitEstimate;
       out.push({ figure:n0(v.bauSplitEstimate) + '/' + n0(change),
-        label:'Your reported BAU/transformation split compared to the cross-industry average',
-        note: c.splitLean === 'level'
-          ? 'your reported split — ' + v.bauSplitEstimate + '% BAU, ' + change + '% transformation — '
-            + 'matches the 67%/33% cross-industry average (Flexera 2023 Tech Spend Pulse)'
-          : 'your reported split — ' + v.bauSplitEstimate + '% BAU, ' + change + '% transformation — '
-            + 'compares to a 67%/33% cross-industry average (Flexera 2023 Tech Spend Pulse), running about '
-            + n0(c.splitDiff) + ' percentage points more ' + c.splitLean + ' than the cross-industry average' });
+        label:'Your reported split, and the closest published figure to it',
+        note:'you reported ' + n0(v.bauSplitEstimate) + '% of your department’s time on run work and '
+           + n0(change) + '% on transformation. The Flexera 2023 Tech Spend Pulse reports a '
+           + BENCH_BAU + '%/' + BENCH_CHANGE
+           + '% run-versus-grow split across ' + BENCH_N + ' organisations, all above '
+           + n0(BENCH_MIN_EMPLOYEES) + ' employees — but that is a split of IT budget rather than of '
+           + 'people’s time, and of organisations larger than most of the departments this check is built '
+           + 'for. We show it because it is the closest published figure we have, and we do not subtract '
+           + 'one from the other' });
     }
 
     return out;
@@ -2702,7 +2829,7 @@ window.submitToSender = function(payload){
           + n0(v.companyHeadcount) + ' in the company, '
           + (v.pms === 0 ? 'with nobody formally running projects, ' : 'with ' + n0(v.pms) + ' project '
              + plural(v.pms,'manager','managers') + ', ')
-          + 'against ' + n0(v.live) + ' live ' + plural(v.live,'project','projects') + ' and around ' + n0(v.annual)
+          + 'against ' + n0(v.live) + ' live ' + plural(v.live,'project','projects') + ' and ' + n0(v.annual)
           + ' in a typical year.';
 
     if(v.contractors){
@@ -2828,7 +2955,12 @@ window.submitToSender = function(payload){
     }
     if(v.bauSplitEstimate !== null){
       src.push(['Run against growth spend',
-        '<em>Flexera 2023 Tech Spend Pulse</em>, Figure 17 (N=506) — 67% run, 33% growth. Published under CC BY 4.0']);
+        '<em>Flexera 2023 Tech Spend Pulse</em>, page 25, <em>Percentage of budget allocated to running the '
+        + 'business vs. growth</em> — respondents’ own estimate: <strong>' + BENCH_BAU + '% run, '
+        + BENCH_CHANGE + '% growth</strong>. Published as a share of IT <strong>budget</strong>, and used '
+        + 'here only as a budget figure. N=' + BENCH_N + ', worldwide, summer 2023, '
+        + 'organisations above ' + n0(BENCH_MIN_EMPLOYEES) + ' employees, nearly half above 10,000. Published '
+        + 'under CC BY 4.0']);
     }
     /* The two sourced components of the loaded cost. Listed wherever a cost
        figure is published, and only there. The 25% overhead is not listed here
@@ -3022,8 +3154,9 @@ window.submitToSender = function(payload){
       suppressed.push('<strong>Your ' + qty(v.contractors, 'contractor', 'contractors') + ' are counted separately '
         + 'from your permanent IT staff.</strong> They are excluded from the live-projects-per-BAU-FTE rating and '
         + 'from the growth ceiling, both of which measure how far your portfolio depends on permanent BAU '
-        + 'capacity; from the run and change derivation, which describes the permanent department; from IT staff '
-        + 'as a share of the company; and from the ProjexaR licence basis, which is your BAU staff on projects '
+        + 'capacity; from the run and change derivation, which describes the permanent department; from the size '
+        + 'of your IT department against the company; and from the ProjexaR licence basis, which is your BAU '
+        + 'staff on projects '
         + 'plus your project managers. They are excluded from the cost figures too: what contractors cost is paid '
         + 'out of budget, and the cost figures here are built only from the permanent staff time your project '
         + 'budgets do not record. They appear as a companion figure beside the BAU capacity rating and nowhere '
@@ -3096,8 +3229,9 @@ window.submitToSender = function(payload){
           spanText(pick(c, 'deliveryPerFTE'), fteFmt)]);
       }
     }
-    if(c.turnover !== null){
-      fx.push(['Annual portfolio turnover', n0(v.annual) + ' ÷ ' + n0(v.live), d1(c.turnover) + '×']);
+    if(c.typicalDurationMonths !== null){
+      fx.push(['Typical project duration', '(' + n0(v.live) + ' ÷ ' + n0(v.annual) + ') × 12',
+               d1(c.typicalDurationMonths) + ' months']);
     }
     if(c.ticketFTE !== null){
       fx.push(['Capacity needed for tickets alone',
@@ -3126,8 +3260,11 @@ window.submitToSender = function(payload){
           spanText(c.runWorkGap, fteFmt) + ' FTE']);
       }
     }
-    fx.push(['IT staff as a share of the company', n0(v.staff) + ' ÷ ' + n0(v.companyHeadcount),
-             d1(c.itPercent) + '%']);
+    fx.push(c.itPercent === null
+      ? ['The size of your IT department, against the company',
+         'not computed — ' + noShareReason(v), 'Not computed']
+      : ['The size of your IT department, against the company',
+         n0(v.staff) + ' ÷ ' + n0(v.companyHeadcount), d1(c.itPercent) + '%']);
 
     /* The growth ceiling arithmetic, shown in full — it is the one figure on the
        report that projects rather than counts, so it should be checkable. */
@@ -3274,12 +3411,27 @@ window.submitToSender = function(payload){
       return '<tr><th>' + esc(x[0]) + '</th><td>' + esc(x[1]) + '</td><td><strong>' + esc(x[2])
            + '</strong></td></tr>'; }).join('');
 
+    /* §4.1. The one figure on this page whose label claims more than its
+       arithmetic does, so the arithmetic is named here as well as beside the
+       figure — and where it could not be taken, this page says why (§1.1). */
+    $('pr-derivations').innerHTML = c.typicalDurationMonths === null
+      ? '<strong>Typical project duration was not computed.</strong> It needs a live project count to divide and '
+        + 'an annual pace to divide by, and ' + noPaceReason(v) + '.'
+      : '<strong>Typical project duration is derived, not measured.</strong> It is your live project count '
+        + 'divided by the number of projects you run in a typical year, times twelve. That describes the '
+        + 'throughput of your portfolio on the assumption of a steady state — it is not the length of any project '
+        + 'you run, and a department part-way through a ramp-up or winding one down gets a figure about its '
+        + 'throughput rather than about its projects.';
+
     /* Both Flexera caveats travel with the figure wherever it is used. */
     $('pr-flexeranote').innerHTML = v.bauSplitEstimate === null ? ''
-      : '<strong>The 67%/33% comparison has two limits.</strong> Flexera’s figure measures <em>spend</em> rather '
-      + 'than effort, and the question you answered was about effort — the two are related but not the same. Its '
-      + 'survey also targets organisations above 2,000 employees, which sits above this tool’s typical '
-      + 'respondent. Treat it as orientation, not a target.';
+      : '<strong>Why we show both figures and not the gap between them.</strong> Flexera’s ' + BENCH_BAU + '%/'
+      + BENCH_CHANGE + '% is a split of IT <em>budget</em>. The figure you gave us is a split of your people’s '
+      + '<em>time</em>. A difference in percentage points between the two would be arithmetic across two '
+      + 'different quantities, so we do not publish one. Its survey also targets organisations above '
+      + n0(BENCH_MIN_EMPLOYEES) + ' employees, nearly half of them above 10,000 — larger than most of the '
+      + 'departments this check is built for, so it is an average drawn from a population that may not include '
+      + 'you. Orientation, not a target.';
 
     $('pr-fxnote').innerHTML = (v.spend !== null && v.currency !== 'GBP')
       ? '<strong>Currency.</strong> ProjexaR is priced in sterling and you gave us your spend in '

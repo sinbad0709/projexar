@@ -50,10 +50,10 @@ raw gap is 9.065 which would round to 9.1, and the page must print 9.0.
 | `harness.mjs` | Loads the HTML, extracts the tool's IIFE, runs it in a `vm` against a DOM stub. Parses the real `<select>` options so `selText()` returns what a respondent read, and freezes `Date` so the baseline does not change at midnight. |
 | `shapes.mjs` | The 603-shape corpus, the three §4 fixtures, and the assertion shapes (boundaries, band straddles, toolset and contractor invariance, suppression rows, singulars, corroboration states, budget branches, loaded-cost edits, legacy band decoding). |
 | `oracle.mjs` | The formulas, written from the spec. Never imports from the page. |
-| `capture.mjs` | Drives one shape through the page's own submit handler, then reads back every node it wrote — screen, printed report and Sender payload. |
+| `capture.mjs` | Drives one shape through the page's own submit handler, then reads back every node it wrote — screen, printed report and Sender payload — plus the static printed-report copy the page does not write. |
 | `baseline.mjs` | Writes the digest baseline. |
 | `check.mjs` | The suite. |
-| `baseline.json` | Blessed at PR2. Re-bless whenever a PR changes output on purpose. |
+| `baseline.json` | Blessed at PR3. Re-bless whenever a PR changes output on purpose. |
 
 ## The corpus
 
@@ -106,3 +106,51 @@ not add a regex or a whitelist to rescue them.
 `pr-inputs` is exempt, and only `pr-inputs`. It is the printed report's verbatim
 echo of the input labels and the options the respondent picked; hedging belongs
 in inputs, and the only way to make it pass would be to misreport their answer.
+
+
+## The static printed copy
+
+The printed report carries copy written straight into the markup: the methodology
+page, the bands statement, *What this does not account for*, the four steps. It is
+output and it goes into the PDF.
+
+PR2 extended the **copy rule** to that layer. The **numbers** were still outside
+the suite until PR3 — eighteen of them, all Cited or Control constants, where an
+edit changed nothing any assertion or any digest could see.
+
+`staticReportText()` reads the block out of the file (comments stripped, cached
+per path) and `capture()` hangs it on `cap.staticReport`, so `allText()` carries
+it. The eighteen are also pinned by value with what each one is, so an edit fails
+with a reason rather than only a changed hash.
+
+`CAPACITY_CHECK_HTML` and the `toolPath` override both reach it, so a baseline
+captured from another commit reads that commit's static copy, not this one's.
+
+## The conservatism guard
+
+PR2 added an assertion that the working-days basis claims no conservatism, and it
+scanned **all** output. PR3 scoped it to the rows that carry the divisor claim —
+`factList`, `pr-facts`, `pr-formulas`, `pr-sources`, split on row boundaries and
+filtered to the ones naming the basis or the window.
+
+The word has a legitimate true use: the red threshold of 7.0 sits above the top of
+the study's confidence interval deliberately, and someone may want to say so. A
+check that fails on true copy is a check that gets switched off — the same
+reasoning that took `about` and `around` off the list above.
+
+Scoped by row rather than by sentence on purpose. The captured nodes are joined
+without terminal punctuation, so splitting the flattened prose on sentence
+boundaries picks up whatever was rendered next and scopes to nothing in
+particular.
+
+## The link preview
+
+`§4.4` is static markup, so those assertions read the file rather than a capture:
+all six `og:` tags plus `twitter:card`, `og:image` absolute, `og:image:alt`
+non-empty, `og:url` equal to the canonical, `og:description` equal to the page
+description — and the asset itself, resolved from `public/` rather than from
+`TOOL_PATH`, checked as a 1200x630 PNG and as the only image in that directory.
+
+Verification of the preview itself is manual and post-deploy. Teams and Slack
+cache OG data hard, so a first-attempt failure is nearly always a stale cache
+rather than broken markup.

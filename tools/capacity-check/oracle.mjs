@@ -97,6 +97,28 @@ export function bandContaining(p) {
   return Math.floor((Math.ceil(n) - 1) / 10) * 10 + 1;
 }
 
+/* §4.1. What the report displays in place of the turnover multiple. Turnover
+   itself is retained — the growth ceiling projects a live-project threshold
+   forward at that pace — but is displayed nowhere.
+
+   It is a derivation, not a measurement: the ratio of live work to annual pace
+   describes portfolio throughput on the assumption of a steady state. The page
+   is required to say so beside the figure. Suppressed at either input zero
+   (§1.1); validation holds annual >= live, so they go absent together. */
+export function typicalDurationMonths(v) {
+  return v.live > 0 && v.annual > 0 ? roundN((v.live / v.annual) * 12, 1) : null;
+}
+
+/* §4.2. Permanent IT staff as a share of company headcount. Contractors are
+   never in the numerator (§3.2), which is why this takes v.staff and nothing
+   is added to it. Suppressed at either input zero (§1.1) — unreachable through
+   the form, which requires both at 1 or above, so the suite asserts it against
+   compute() directly. Not rated: this is context, not a capacity measure. */
+export function itShare(v) {
+  return v.companyHeadcount > 0 && v.staff > 0
+    ? round1((v.staff / v.companyHeadcount) * 100) : null;
+}
+
 /* One endpoint's worth of derived quantities. */
 function at(v, e, shared) {
   const o = {};
@@ -157,6 +179,8 @@ export function evaluate(v) {
   const o = {};
 
   o.turnover = v.live > 0 && v.annual > 0 ? v.annual / v.live : null;
+  o.typicalDurationMonths = typicalDurationMonths(v);
+  o.itShare = itShare(v);
   o.loaded = loadedCost(v.loadedSalary === undefined || v.loadedSalary === null
     ? 56348 : v.loadedSalary);
   o.sums = v.budgetTracking === 'outthedoor' && v.spend !== null && v.spend > 0;

@@ -6,7 +6,8 @@
    corpus shapes against oracle.mjs. A number that disagrees is a failure, never
    a category. Only text differences are categorised. */
 
-import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdtempSync, readdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -17,9 +18,10 @@ import { corpus, FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_LOADED_COST, FIXTURE_S
          suppressionShapes, singularShapes, corroborationShapes, budgetShapes,
          loadedCostShapes, LEGACY_BAND_CASES,
          TOOLSETS, VISIBILITY, BUDGETS, ASSIGNMENT, BANDS } from './shapes.mjs';
-import { capture, allText, numbersIn, SCREEN_NODES, PRINT_NODES } from './capture.mjs';
+import { capture, allText, numbersIn, staticReportText, SCREEN_NODES, PRINT_NODES } from './capture.mjs';
 import { TOOL_PATH, loadTool } from './harness.mjs';
 import { evaluate, roundN, round1, redThreshold, loadedCost, bandContaining,
+         typicalDurationMonths, itShare,
          finding2State, finding3State, finding4State,
          TICKETS_LO, TICKETS_HI, WORKING_DAYS, JITBIT_PER_DAY, HDI_LO, HDI_HI } from './oracle.mjs';
 
@@ -119,6 +121,15 @@ function assertFixture(name, shape, expect) {
     eq(roundN(lo.reportedShare, 1), expect.reportedHi, `${name}: reported share hi`);
   }
 
+  /* §4.1 and §4.2. Typed in by hand from the PR3 brief, like every other
+     figure here, and cross-checked against the oracle in the corpus loop. */
+  eq(c.typicalDurationMonths, expect.duration, `${name}: typical project duration`);
+  eq(c.typicalDurationMonths, typicalDurationMonths(cap.values),
+     `${name}: typical project duration agrees with the oracle`);
+  eq(round1(c.itPercent), expect.itShare, `${name}: IT staff as a share of the company`);
+  eq(round1(c.itPercent), itShare(cap.values),
+     `${name}: IT share agrees with the oracle`);
+
   eq(c.licenceCount, expect.licences, `${name}: licence count, contractors excluded`);
   eq(c.yearly, expect.yearly, `${name}: annual price`);
   eq(c.spendPct === null ? null : c.spendPct.toFixed(2), expect.spendPct, `${name}: share of reported spend`);
@@ -143,6 +154,7 @@ const capA = assertFixture('8.A', FIXTURE_A, {
   ticketLo: 3.0, ticketHi: 5.6, runWork: 32.4, gapLo: 26.8, gapHi: 29.4,
   effortLo: 728000, effortHi: 845000, sums: true,
   fullLo: 1095000, fullHi: 1212000, reportedLo: 30.3, reportedHi: 33.5,
+  duration: 7.2, itShare: 3.8,
   licences: 25, yearly: 2500, spendPct: '0.68', fullPctLo: 0.21, fullPctHi: 0.23,
 });
 
@@ -160,6 +172,7 @@ const capB = assertFixture('8.B', FIXTURE_B, {
   ticketLo: 4.4, ticketHi: 8.2, runWork: 13.4, gapLo: 5.2, gapHi: 9.0,
   effortLo: 656500, effortHi: 715000, sums: false,
   fullLo: null, fullHi: null,
+  duration: 8.0, itShare: 4.0,
   licences: 14, yearly: 1400, spendPct: '0.78',
 });
 
@@ -173,6 +186,7 @@ const capC = assertFixture('8.C', FIXTURE_C, {
   ticketLo: 3.0, ticketHi: 5.6, runWork: 32.4, gapLo: 26.8, gapHi: 29.4,
   effortLo: 728000, effortHi: 845000, sums: true,
   fullLo: 1095000, fullHi: 1212000, reportedLo: 30.3, reportedHi: 33.5,
+  duration: 7.2, itShare: 3.8,
   licences: 25, yearly: 2500, spendPct: '0.68', fullPctLo: 0.21, fullPctHi: 0.23,
 });
 
@@ -370,8 +384,8 @@ section('§3.2 contractors — 8.C must move nothing rated');
     eq(JSON.stringify(cap.computed.derivedRunShare), JSON.stringify(ref.computed.derivedRunShare),
        `${sh.id}: derived run share`);
     eq(cap.computed.corroboration, ref.computed.corroboration, `${sh.id}: corroboration`);
-    /* Rule 5: IT staff as a share of the company excludes them. */
-    eq(cap.computed.itPercent, ref.computed.itPercent, `${sh.id}: IT staff share of company`);
+    /* Rule 5: the size of IT against the company excludes them. */
+    eq(cap.computed.itPercent, ref.computed.itPercent, `${sh.id}: size of IT against the company`);
     /* Rule 6: the licence basis excludes them. */
     eq(cap.computed.licenceCount, ref.computed.licenceCount, `${sh.id}: licence count`);
     eq(cap.computed.yearly, ref.computed.yearly, `${sh.id}: annual price`);
@@ -393,7 +407,7 @@ section('§3.2 contractors — 8.C must move nothing rated');
        '8.C: the BAU-tile exclusion is stated');
     ok(has(c6.print['pr-bandnote'], 'growth ceiling'), '8.C: the ceiling exclusion is stated');
     ok(has(c6.print['pr-bandnote'], 'run and change derivation'), '8.C: the run/change exclusion is stated');
-    ok(has(c6.print['pr-bandnote'], 'IT staff as a share of the company'),
+    ok(has(c6.print['pr-bandnote'], 'the size of your IT department against the company'),
        '8.C: the staff-share exclusion is stated');
     ok(has(c6.print['pr-bandnote'], 'licence basis'), '8.C: the licence-basis exclusion is stated');
     ok(has(c6.print['pr-bandnote'], 'cost figures'), '8.C: the cost exclusion is stated');
@@ -602,10 +616,210 @@ for (const shape of suppressionShapes()) {
        `${shape.id}: the workings say why the cost was not computed`);
   }
   if (shape.id === 'suppress-live-0') eq(cap.sender.headroom, '', `${shape.id}: headroom blank`);
+  /* §4.1. Nothing live and nothing annual is the one way a respondent reaches
+     the duration suppression, since validation holds annual >= live. */
+  if (shape.id === 'suppress-live-0' || shape.id === 'suppress-annual-0') {
+    eq(cap.computed.typicalDurationMonths, null, `${shape.id}: typical project duration suppressed`);
+    ok(has(cap.screen.factList, 'Not computed'), `${shape.id}: the numbers section says not computed`);
+    ok(has(cap.print['pr-derivations'], 'was not computed'),
+       `${shape.id}: the workings page says the duration was not computed`);
+    ok(has(cap.print['pr-derivations'], 'nothing is live'),
+       `${shape.id}: and says why`, cap.print['pr-derivations']);
+    ok(!has(cap.print['pr-formulas'], 'Typical project duration'),
+       `${shape.id}: no duration row on the workings table`);
+  }
   if (shape.id === 'suppress-both-routes') {
     ok(has(cap.screen.ceilingFigure, 'Not enough capacity information'), `${shape.id}: no ceiling, explained`);
     eq(cap.sender.headroom, '', `${shape.id}: headroom blank`);
   }
+}
+
+/* ================================= §4.2 IT share — divide by zero ========== */
+section('§1.1 — the IT-share row, asserted against compute() directly');
+{
+  /* Total company headcount and total IT staff are both required questions with
+     a minimum of 1, so the form cannot reach zero on either. That is the same
+     situation as the blank band above and it is asserted the same way: against
+     compute() rather than through a render that no respondent can produce.
+
+     The guard changes no reachable output. It is here because the formula
+     divides by a respondent-supplied figure, and §1.1's rule is about the
+     formula rather than about which inputs are reachable in today's validation. */
+  const tool = loadTool();
+  const base = { ...FIXTURE_A, bandLo: 31, bandHi: 40, loadedSalary: FIXTURE_SALARY };
+  const CASES = [
+    [0, 45, 'you reported no company headcount'],
+    [1200, 0, 'you reported no IT staff'],
+    [0, 0, 'you reported neither a company headcount nor any IT staff'],
+  ];
+  for (const [companyHeadcount, staff, why] of CASES) {
+    const v = { ...base, companyHeadcount, staff };
+    const c = tool.api.compute(v);
+    const label = `it-share at headcount ${companyHeadcount}, staff ${staff}`;
+    eq(c.itPercent, null, `${label}: suppressed`);
+    eq(c.itPercent, itShare(v), `${label}: agrees with the oracle`);
+    const row = tool.api.facts(v, c)
+      .find((f) => f.label === 'The size of your IT department, against the company');
+    if (ok(!!row, `${label}: the numbers section still carries the row`)) {
+      eq(row.figure, 'Not computed', `${label}: shown as not computed, never 0.0 or blank`);
+      ok(has(row.note, why), `${label}: and says why`, row.note);
+      ok(!badNumbers(row.figure + row.note), `${label}: no NaN in the row`);
+    }
+  }
+  /* And the reachable case is unaffected. */
+  const okv = { ...base };
+  eq(round1(tool.api.compute(okv).itPercent), 3.8, 'it-share at the fixture inputs is unchanged');
+}
+
+/* ============================ the Flexera figure — shown, never subtracted == */
+section('Flexera — both figures published, the difference never');
+{
+  /* Provenance is not commensurability. The 67/33 is correctly classified,
+     correctly attributed and correctly sourced, and subtracting it from the
+     respondent's answer was still wrong: the chart is a split of IT BUDGET
+     ("Percentage of budget allocated to running the business vs. growth",
+     page 25) and the question the tool asks is a split of people's TIME.
+     A caveat stated elsewhere does not repair a subtraction made inline.
+
+     The citation names the page and the chart title, which is what was read in
+     the PDF. It does not name a figure number: the captions are images, so any
+     figure number would be derived, and a derived number printed as a read one
+     is what the Jitbit 480 was. */
+  for (const [name, split] of [['below', 50], ['level', 67], ['above', 72], ['far above', 90]]) {
+    const cap = capture({ id: `flexera-${split}`, ...FIXTURE_A, bauSplitEstimate: split });
+    if (!ok(cap.ok, `flexera ${name}: renders`, cap.error)) continue;
+    const t = allText(cap);
+
+    /* The gap is never computed, so it can never be published. */
+    eq(cap.computed.splitDiff, undefined, `flexera ${name}: no splitDiff on the compute object`);
+    eq(cap.computed.splitLean, undefined, `flexera ${name}: no splitLean on the compute object`);
+    ok(!/percentage points more/i.test(t), `flexera ${name}: no difference in percentage points is published`);
+    ok(!/BAU-heavy|transformation-heavy/i.test(t), `flexera ${name}: no lean is asserted`);
+    const diff = Math.abs(split - 67);
+    if (diff > 0) {
+      ok(!new RegExp(`(^|[^\\d.])${diff} percentage point`).test(t),
+         `flexera ${name}: the ${diff}-point gap does not appear`);
+    }
+
+    /* Both figures are published, side by side. */
+    ok(has(t, `${split}% of your department’s time on run work`),
+       `flexera ${name}: the respondent's own figure is stated as a share of time`);
+    ok(has(t, '67%/33% run-versus-grow split'), `flexera ${name}: Flexera's figure is stated whole`);
+    /* In the unit the source uses, with the population it covers. */
+    ok(has(t, 'split of IT budget rather than of people’s time'),
+       `flexera ${name}: the unit mismatch is stated where the figure is shown`);
+    ok(has(t, '506 organisations, all above 2,000 employees'),
+       `flexera ${name}: the population is stated where the figure is shown`);
+    ok(has(t, 'we do not subtract one from the other'),
+       `flexera ${name}: and the page says it does not subtract them`);
+    /* The citation quotes the unit the source publishes. */
+    /* Read from the flattened text: the row emphasises "budget", so the raw
+       HTML carries a tag in the middle of the sentence. */
+    /* Matched tag-free: the row emphasises "budget", so the flattened text
+       carries a space where the tag was. */
+    ok(has(t, 'Published as a share of IT'), `flexera ${name}: the source row names the unit`);
+    ok(has(t, 'and used here only as a budget figure'),
+       `flexera ${name}: and says the tool holds it to that unit`);
+    /* Cite what was read. The page and the chart title are in the PDF's text
+       layer; the figure number is not, so it is not printed. */
+    ok(has(cap.print['pr-sources'], 'page 25'), `flexera ${name}: the source row cites the page`);
+    ok(has(t, 'Percentage of budget allocated to running the business vs. growth'),
+       `flexera ${name}: and the chart title as published`);
+    ok(!/Figure 17|Fig\. 17/i.test(t), `flexera ${name}: no derived figure number is cited`);
+    ok(has(cap.print['pr-sources'], 'nearly half above 10,000'),
+       `flexera ${name}: and the population it is drawn from`);
+    ok(has(cap.print['pr-flexeranote'], 'arithmetic across two different quantities'),
+       `flexera ${name}: the workings page gives the reason`);
+    ok(copyRuleViolations(allText(cap, { forCopyRule: true })).length === 0,
+       `flexera ${name}: copy rule`);
+  }
+}
+
+/* ======================================== our hedges cut, theirs quoted ===== */
+section('Hedging — ours is cut, the source’s is quoted');
+{
+  const cap = capture({ id: 'hedge', ...FIXTURE_A });
+  const t = allText(cap);
+  /* The respondent gave 75 exactly. "In a typical year" already carries
+     whatever softness the question had; the word double-hedged a figure that is
+     not uncertain to us. */
+  ok(!/and around \d/.test(t), 'the verdict does not hedge the respondent’s own annual figure');
+  ok(has(t, `and ${FIXTURE_A.annual} in a typical year`), 'it states the figure they gave');
+  /* Jitbit's imprecision is Jitbit's. Cutting it would state their figure more
+     precisely than they do — the test is whose uncertainty it is. */
+  ok(has(t, 'across around 1,000 companies'), 'the source’s own imprecision is quoted as published');
+}
+
+/* ==================================== the static printed copy is captured === */
+section('Static printed copy — the eighteen numbers are inside the suite');
+{
+  /* Until PR3 no capture reached the copy written straight into the printed
+     report's markup. Eighteen published numbers sat outside the suite: edit one
+     and nothing caught it. They are in allText() now, so they are in the digest
+     and in the diff — and pinned here as well, so a change fails with a reason
+     rather than only a changed hash. */
+  const staticNums = numbersIn(staticReportText().replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/g, ' '));
+  const WANT = {
+    '9649': 'Colicev: project-month-employee observations',
+    '42': 'Colicev: projects', '580': 'Colicev: employees',
+    '5.16': 'Colicev: point estimate, concurrent projects',
+    '3.57': 'Colicev: confidence interval, lower', '6.19': 'Colicev: confidence interval, upper',
+    '44': 'Colicev: volume', '2': 'Colicev: issue', '610': 'Colicev: first page',
+    '636': 'Colicev: last page', '2023': 'Colicev: year', '10.1002': 'Colicev: DOI prefix',
+    '3443': 'Colicev: DOI suffix', '4.0': 'CC BY licence version',
+    '7.0': 'ProjexaR control: the PM red threshold, named in the bands statement',
+    '170': 'ProjexaR control: ticket window, lower', '320': 'ProjexaR control: ticket window, upper',
+    '25': 'ProjexaR control: overhead uplift, per cent',
+  };
+  eq(staticNums.length, 18, 'the static printed copy publishes eighteen numbers');
+  eq([...new Set(staticNums)].sort().join(','), Object.keys(WANT).sort().join(','),
+     'and they are exactly the eighteen accounted for in the provenance table');
+  /* The capture genuinely carries them: a number only in the static layer must
+     reach allText(), or none of the above is worth anything. */
+  const captured = new Set(numbersIn(allText(capture({ id: 'static', ...FIXTURE_A }))));
+  for (const [num, what] of Object.entries(WANT)) {
+    ok(captured.has(num), `static: ${num} (${what}) reaches the captured multiset`);
+  }
+}
+
+/* ================================= §4.1 typical project duration =========== */
+section('§4.1 — typical project duration replaces the turnover multiple');
+{
+  /* The multiple is gone from display, the duration is in its place at three
+     sites, and the derivation is stated beside the figure. Turnover itself is
+     retained: the growth ceiling still projects a live-project threshold forward
+     at that pace, and the fixtures' ceilings above are what prove it. */
+  for (const [name, shape, months] of [['8.A', FIXTURE_A, '7.2'], ['8.B', FIXTURE_B, '8.0'],
+                                       ['8.C', FIXTURE_C, '7.2']]) {
+    const cap = capture({ id: `duration-${name}`, ...shape });
+    if (!ok(cap.ok, `${name}: renders`, cap.error)) continue;
+    const t = allText(cap);
+    ok(has(cap.screen.factList, `${months} months`),
+       `${name}: the numbers section prints ${months} months`);
+    ok(has(cap.print['pr-facts'], `${months} months`), `${name}: and so does the PDF`);
+    ok(has(cap.print['pr-formulas'], `(${shape.live} ÷ ${shape.annual}) × 12`),
+       `${name}: the workings show the arithmetic`, cap.print['pr-formulas']);
+
+    /* The naming caution. The label reads as a measured fact about projects and
+       the number is not one, so the derivation is stated in both places. */
+    ok(has(cap.screen.factList, 'derived from that ratio rather than measured'),
+       `${name}: the derivation is stated beside the figure`);
+    ok(has(cap.print['pr-derivations'], 'derived, not measured'),
+       `${name}: the workings page carries the naming caution`);
+    ok(has(cap.print['pr-derivations'], 'steady state'),
+       `${name}: and says what the steady-state assumption is`);
+    ok(has(cap.print['pr-derivations'], 'ramp-up'),
+       `${name}: and who gets a figure about throughput rather than projects`);
+
+    /* Nothing displays the multiple any more. */
+    ok(!/turnover/i.test(t), `${name}: the turnover multiple is not displayed anywhere`);
+    ok(!/\d\.\d×/.test(t), `${name}: no bare multiple survives in output`);
+    /* But it is still computed, because the ceiling needs it. */
+    ok(cap.computed.turnover !== null, `${name}: turnover is retained internally`);
+  }
+  /* The tool's own worked example used to print 1.7× here. */
+  const capT = capture({ id: 'duration-nomultiple', ...FIXTURE_A });
+  ok(!/1\.7×/.test(allText(capT)), '8.A: the 1.7× multiple is gone from output');
 }
 
 /* ============================================ legacy URL band decoding ====== */
@@ -665,8 +879,31 @@ section('§3.6 — the ticket divisor is a range, with both anchors named');
     /* No stateable working-days figure produces 480, so it is not quoted. */
     ok(!/\b480\b/.test(t), 'the unattributed 480 is not quoted anywhere in output');
     /* An assumption that reaches no computation must not claim to be
-       conservative, in either direction. It cannot be either. */
-    ok(!/conservative/i.test(t), 'the working-days basis claims no conservatism');
+       conservative, in either direction. It cannot be either.
+
+       §2.5. Scoped to the ticket-divisor block rather than to all output. The
+       word has a legitimate true use elsewhere — the §2.11 red threshold of 7.0
+       sits above the top of the confidence interval deliberately, and someone
+       may reasonably want to say so — and a check that fails on true copy is a
+       check that gets switched off, which is the same reasoning that took
+       `about` and `around` off the copy-rule list. So the scan is the rows that
+       carry the divisor claim, not the report.
+
+       Scoped structurally rather than by sentence. The captured nodes are
+       concatenated without terminal punctuation, so splitting the flattened
+       prose on sentence boundaries drags in whatever was rendered next and
+       scopes to nothing in particular. Rows are what the page actually has. */
+    const divisorRows = [cap.screen.factList, cap.print['pr-facts'],
+                         cap.print['pr-formulas'], cap.print['pr-sources']]
+      .flatMap((html) => String(html).split(/<\/(?:tr|li)>/i))
+      .map((row) => row.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim())
+      .filter((row) => /working[- ]day|tickets per agent|divisor/i.test(row));
+    ok(divisorRows.length >= 4,
+       'the divisor rows are reachable for scanning', `found ${divisorRows.length}`);
+    const claimed = divisorRows.filter((row) => /conservative/i.test(row));
+    ok(claimed.length === 0,
+       'no conservatism is claimed for the working-days basis or the divisor window',
+       claimed.join(' | '));
     ok(has(t, 'changes nothing this report computes'),
        'the page says the working-days basis moves no computed figure');
     /* The characterisation the specification carried was never checked against
@@ -795,6 +1032,8 @@ for (const shape of shapes) {
     [JSON.stringify(c.derivedRunShare), JSON.stringify(o.derivedRunShare), 'derived_run_share'],
     [JSON.stringify(c.ticketFTE), JSON.stringify(o.ticketFte), 'ticket_fte'],
     [JSON.stringify(c.runWorkGap), JSON.stringify(o.runWorkGap), 'run_work_gap'],
+    [c.typicalDurationMonths, o.typicalDurationMonths, 'typical_duration_months'],
+    [c.itPercent === null ? null : round1(c.itPercent), o.itShare, 'it_share'],
   ];
   for (const [got, want, what] of checks) {
     if (got !== want) {
@@ -1081,6 +1320,63 @@ section('Sources — every retained source is attached to a surviving claim');
   ok(!/Zika-Wiktorsson/.test(t), 'publisher spelling Zika-Viktorsson, not Zika-Wiktorsson');
   ok(/24\(5\), 385–394/.test(capAll.print['pr-sources']), 'Zika-Viktorsson volume, issue and pages');
   ok(/44\(2\), 610–636/.test(capAll.print['pr-sources']), 'Colicev volume, issue and pages');
+}
+
+/* ================================================= §4.4 link preview ======== */
+section('§4.4 — the link preview tags, and the one asset they point at');
+{
+  /* Static markup, so this reads the file rather than a capture. The report is
+     rendered client-side and a shared permalink previews from these tags alone;
+     there is no per-result generation and none is wanted. */
+  const html = readFileSync(TOOL_PATH, 'utf8');
+  const meta = (attr, name) => {
+    const m = html.match(new RegExp(`<meta ${attr}="${name}" content="([^"]*)"`, 'i'));
+    return m ? m[1] : null;
+  };
+  const og = (name) => meta('property', name);
+
+  for (const tag of ['og:type', 'og:url', 'og:title', 'og:description', 'og:image', 'og:image:alt']) {
+    ok(og(tag) !== null, `${tag} is present`);
+  }
+  eq(meta('name', 'twitter:card'), 'summary_large_image', 'twitter:card is summary_large_image');
+
+  /* Absolute, because a relative og:image fails on most platforms and fails
+     silently — which is how a relative path survives review. */
+  ok(/^https:\/\//.test(og('og:image') || ''), 'og:image is an absolute URL', og('og:image'));
+  ok((og('og:image:alt') || '').trim().length > 0, 'og:image:alt is non-empty');
+
+  const canonical = (html.match(/<link rel="canonical" href="([^"]*)"/) || [])[1];
+  eq(og('og:url'), canonical, 'og:url is the canonical page, not a per-result URL');
+  eq(og('og:title'), (html.match(/<title>([^<]*)<\/title>/) || [])[1], 'og:title matches the page title');
+  /* Generic by construction: the same string the page already publishes as its
+     description. These tags are identical on every shared URL, permalinks
+     carrying a respondent's own answers included, so a description written
+     about a result would be wrong on all of them. */
+  eq(og('og:description'), meta('name', 'description'),
+     'og:description is the page description, and describes the check rather than a result');
+
+  /* The asset itself. Resolved from the repo rather than from TOOL_PATH, which
+     may point at a copy of the tool taken from another commit. */
+  const PUBLIC = fileURLToPath(new URL('../../public/', import.meta.url));
+  const imagePath = (og('og:image') || '').replace(/^https:\/\/projexar\.com\//, '');
+  ok(imagePath && !imagePath.startsWith('http'), 'og:image is served from projexar.com', og('og:image'));
+  let bytes = null;
+  try { bytes = readFileSync(join(PUBLIC, imagePath)); } catch (e) { bytes = null; }
+  if (ok(bytes !== null, 'the og:image file exists in public/', imagePath)) {
+    ok(bytes.slice(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])),
+       'the og:image is a PNG');
+    const w = bytes.readUInt32BE(16), h = bytes.readUInt32BE(20);
+    eq(`${w}x${h}`, '1200x630', 'the og:image is 1200x630');
+    /* Fetched by crawlers rather than by the page, so this is a ceiling check
+       against the platform limits, not a page-weight budget. */
+    ok(bytes.length < 5 * 1024 * 1024,
+       'the og:image is inside every platform limit', `${Math.round(bytes.length / 1024)}KB`);
+  }
+  /* One new asset, not two. A stray export left beside it would be published. */
+  const dir = fileURLToPath(new URL('../../public/capacity-check/', import.meta.url));
+  const listed = readdirSync(dir).filter((f) => !f.startsWith('.')).sort();
+  ok(listed.length === 2 && listed.includes('index.html') && listed.includes('capacity-check-og.png'),
+     'public/capacity-check/ carries the page and exactly one image', listed.join(', '));
 }
 
 /* ============================================================== §6 Sender === */
