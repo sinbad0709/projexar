@@ -908,19 +908,20 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       </table>
 
       <h2 style="margin-top:12pt">How the bands were set</h2>
-      <p>These bands are ProjexaR's management controls. They are informed by published research but they are not
-        values the research establishes.</p>
+      <p>These bands are ProjexaR's management controls. They are informed by published research but are not values
+        the research establishes.</p>
       <p style="margin-top:6pt">The evidence comes from a longitudinal study of 9,649 project-month-employee
         observations across 42 projects and 580 employees at a single manufacturer, over twenty months. It finds an
         inverted-U relationship between the number of concurrent projects a person carries and how well those
-        projects perform, with a point estimate of 5.16 concurrent projects for the turning point and a confidence
-        interval of 3.57 to 6.19.</p>
-      <p style="margin-top:6pt">Two things follow, and we state both. The study measures new-product-development
-        engineering in a single manufacturer, and it measures performance as schedule timeliness &mdash; a portfolio
-        of IT change projects is a different setting, and a project manager carries coordination and governance load
-        this data does not isolate. Applying it to project management caseload is our step, not the paper's. And our
-        red threshold of 7.0 sits <em>above</em> the top of that confidence interval, deliberately: we would rather
-        understate the problem than manufacture one.</p>
+        projects perform, with a point estimate of 5.16 concurrent projects and a confidence interval of 3.57
+        to 6.19.</p>
+      <p style="margin-top:6pt">Three things follow, and we state all three. The study covers
+        new-product-development engineering, and a portfolio of IT change projects is a different setting. The study
+        records whether an employee held managerial responsibility, but only in a preliminary analysis of how people
+        were allocated to projects &mdash; it plays no part in the model that produces the inverted-U, and the paper
+        does not test whether that curve differs for managers &mdash; so applying this number to project management
+        caseload is our step, not the paper's. And our red threshold of 7.0 sits <em>above</em> the top of that
+        confidence interval, deliberately: we would rather understate the problem than manufacture one.</p>
       <p class="p-note" style="margin-top:6pt">Colicev, A., Hakkarainen, T. &amp; Pedersen, T. (2023). Multi-project
         work and project performance: Friends or foes? <em>Strategic Management Journal</em>, 44(2), 610&ndash;636.
         DOI 10.1002/smj.3443. Open access under CC BY 4.0.</p>
@@ -1175,9 +1176,14 @@ window.submitToSender = function(payload){
      tile displays is what keeps them in agreement: the answer here is 177.
 
      The half-step is +0.05 because the display rounds to one decimal place, so
-     the last count still shown as 7.0 is the last one below 7.05. The epsilon
-     absorbs the floating point error a product of a division carries in, in the
-     same way and for the same reason as ifloor above. */
+     the last count still shown as 7.0 is the last one below 7.05.
+
+     The epsilon is defensive, not a fix for anything observed. It changes no
+     result at any boundary ratio in the fixture set — (7.0 + 0.05) × 20 is
+     exactly 141 in V8, not a hair over. But (cap + 0.05) × d can land just
+     above an integer for divisors outside that set, and a bare Math.ceil would
+     then publish a threshold one too high. Cheap insurance against a case
+     nobody has enumerated; do not read it as evidence of a bug that was. */
   function redThreshold(cap, d){ return Math.ceil((cap + 0.05) * d - 1e-9); }
 
   /* Display text of a <select>, i.e. what the respondent actually read. Anything
@@ -1510,11 +1516,11 @@ window.submitToSender = function(payload){
     /* Suppressed entirely where there are no project managers: no load to
        divide, no threshold to fail. §1.1. */
     if(c.pmLoad !== null){
-      /* Rating and explanation agree. The note used to say the caseload sat
-         inside an acceptable 8–12 ceiling while the tile showed a red badge,
+      /* Rating and explanation agree. The note used to describe the caseload as
+         sitting inside an acceptable ceiling while the tile showed a red badge,
          which is the contradiction this release exists to remove — so the copy
          is rewritten to match the band rather than patched around it. The
-         8–12 convention was never sourced and is retired everywhere. */
+         ceiling it named was never a sourced figure and is not used anywhere. */
       var pmNote = v.live === 0
         ? 'Nothing is live, so no project is currently sitting with anyone.'
         : c.ragPM === 'healthy'

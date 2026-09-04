@@ -14,6 +14,7 @@ import { corpus, FIXTURE_A, FIXTURE_B, boundaryShapes, toolsetInvarianceShapes,
          suppressionShapes, singularShapes, corroborationShapes,
          TOOLSETS, VISIBILITY, BUDGETS, ASSIGNMENT } from './shapes.mjs';
 import { capture, allText, numbersIn } from './capture.mjs';
+import { TOOL_PATH } from './harness.mjs';
 import { evaluate, round1, redThreshold } from './oracle.mjs';
 
 let pass = 0, fail = 0;
@@ -370,6 +371,47 @@ section('Seeded fuzz — 400 shapes across the whole input space');
     if (badPlural) { fuzzFail++; fail++; failures.push(`${shape.id}: "${badPlural[0]}"`); } else pass++;
   }
   console.log(`  fuzz failures ............. ${fuzzFail}`);
+}
+
+/* ============================================= static report copy =========== */
+section('Copy rule — static report and methodology copy');
+{
+  /* The dynamically-rendered nodes are covered above, but the printed report
+     also carries copy written straight into the markup: the methodology page,
+     the bands statement, "What this does not account for", the four steps. All
+     of it is output and all of it goes into the PDF, so the copy rule applies
+     to it exactly as it does to a tile. Missing this is how the bands statement
+     shipped unscanned. */
+  const html = readFileSync(TOOL_PATH, 'utf8');
+  const start = html.indexOf('<div id="printReport">');
+  const end = html.indexOf('</main>', start);
+  ok(start > 0 && end > start, 'printReport block located in the markup');
+  const staticCopy = html.slice(start, end)
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&amp;/g, '&').replace(/&mdash;/g, '—').replace(/&ndash;/g, '–')
+    .replace(/&pound;/g, '£').replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"')
+    .replace(/\s+/g, ' ').trim();
+
+  const violations = copyRuleViolations(staticCopy);
+  ok(violations.length === 0, 'static report copy clears the copy rule', violations.join(', '));
+
+  /* The bands statement, sentence by sentence — all three closing statements
+     are load-bearing and none may be trimmed. */
+  ok(/These bands are ProjexaR's management controls/.test(staticCopy), 'bands statement: opening');
+  ok(/point estimate of 5\.16 concurrent projects and a confidence interval of 3\.57 to 6\.19/.test(staticCopy),
+     'bands statement: figures, with "point estimate" clearing the copy rule');
+  ok(/Three things follow, and we state all three/.test(staticCopy), 'bands statement: three things');
+  ok(/a portfolio of IT change projects is a different setting/.test(staticCopy), 'bands statement: 1 of 3 — setting');
+  ok(/does not test whether that curve differs for managers/.test(staticCopy), 'bands statement: 2 of 3 — managers');
+  ok(/our step, not the paper's/.test(staticCopy), 'bands statement: 2 of 3 — our step');
+  ok(/red threshold of 7\.0 sits above the top of that confidence interval/.test(staticCopy),
+     'bands statement: 3 of 3 — the threshold sits above the interval');
+
+  /* The claim we must not make: the paper does not test the curve by role, so
+     nothing may say it found the inverted-U absent among managers. */
+  ok(!/not find (the |that )?(same )?pattern among managers/i.test(staticCopy),
+     'no claim that the inverted-U was tested and not found for managers');
+  ok(!/8[–-]12/.test(html), 'no 8–12 reference anywhere in the file, comments included');
 }
 
 /* ======================================================= source orphans ===== */
