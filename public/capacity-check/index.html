@@ -176,6 +176,25 @@
   --shadow-focus:0 0 0 3px var(--focus-ring);
 
   --container-narrow:760px; --container-mid:920px; --gutter:24px;
+  --bar-height:10px;       /* ✚ the band track under a rated tile, and the row
+                         its two threshold labels sit in. No system equivalent —
+                         the system has no meter or track component. */
+  --bar-tick-row:16px;     /* ✚ */
+  --midcta-measure:500px;  /* ✚ the single content width inside the conversion
+                         box. Everything in it sits in this column; only the
+                         alignment inside the column changes. In px and not in
+                         ch: max-width in ch resolves against each element's own
+                         font-size, so a ch measure gave the 20px heading, the
+                         16px prose and the 12.5px trial line three different
+                         widths — which is the fault, not the fix. 500px is the
+                         prose measure the box already had, around 52 characters
+                         of body text. */
+  --fact-figure-col:156px; /* ✚ the fixed first column of Your Numbers. Measured
+                         at --text-h3-size against the widest figures the list
+                         can print: "Not computed" is 138px and a three-digit
+                         FTE range 149px, so this leaves room without leaving a
+                         hole. Anything wider wraps inside the column. No system
+                         equivalent. */
   --tile-min:260px;   /* ✚ smallest a RAG tile gets before the grid rewraps; the
                          min() at the use site keeps the track from overflowing a
                          viewport narrower than the track itself */
@@ -296,6 +315,13 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 .btn-primary{ background:var(--surface-brand); color:var(--text-inverse); box-shadow:var(--shadow-brand); }
 .btn-primary:hover{ background:var(--blue-600); transform:translateY(var(--lift-y)); }
 .btn-primary:active{ transform:scale(var(--press-scale)); }
+/* Quiet variant. The download anchor and the trial CTA both want to be
+   buttons, and two primaries on one screen is two primaries. Same geometry as
+   .btn-primary, borrowed from the site chrome's own secondary. */
+.btn-secondary{ background:var(--surface-card); color:var(--text-strong);
+  border-color:var(--border-default); box-shadow:var(--shadow-xs); }
+.btn-secondary:hover{ background:var(--surface-muted); transform:translateY(var(--lift-y)); }
+.btn-secondary:active{ transform:scale(var(--press-scale)); }
 .btn-block{ width:100%; margin-top:var(--space-9); }
 
 /* -------------------------------------------------------------- the report */
@@ -313,6 +339,17 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
    coloured top bar and a solid-fill pill; the pill is what a print-out or a
    colour-blind reader goes by, since it says the verdict in words. */
 .tile-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(var(--tile-min),100%),1fr)); gap:var(--space-4); }
+/* The contractor companion, when there are three tiles and the track fits two.
+   It used to sit alone on a second row with an empty half beside it.
+
+   Three across was the first thing tried and it does not pay: at the narrow
+   column's 760px a third track leaves every tile 243px, under the --tile-min
+   the grid is built on, and both rated labels break across three lines to make
+   room for the one tile that is not rated. Full width costs the rated tiles
+   nothing, closes the gap, and says what the tile is — a companion to the BAU
+   figure above it rather than a third measure beside it. Below the breakpoint
+   the grid is one column already and this changes nothing. */
+.tile-grid .tile.unrated:nth-child(3):last-child{ grid-column:1 / -1; }
 .tile{ background:var(--surface-card); border:var(--border-width) solid var(--border-subtle);
   border-top:var(--rag-bar) solid var(--border-strong); border-radius:var(--radius-card);
   box-shadow:var(--shadow-sm); padding:var(--space-5) var(--space-6) var(--space-6); }
@@ -330,10 +367,44 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 .tile.atrisk .t-value{ color:var(--amber-600); }
 .tile.healthy .t-value{ color:var(--status-healthy-fg); }
 .tile .t-note{ font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line); color:var(--text-muted); }
+/* §5 — the band track. Drawn in the tool's own band colours: the three zones
+   take the tints the RAG statuses already use as backgrounds, and the mark
+   takes the same colour as the figure above it, so mark and figure read as one
+   statement rather than two. Nothing here is a new colour.
+
+   The mark sits above the zones rather than punching through them, because a
+   range that spans a threshold has to be legible as one mark crossing a
+   boundary — not as two segments in different tints. */
+.band-bar{ margin-top:var(--space-4); }
+.bb-track{ position:relative; display:flex; height:var(--bar-height);
+  background:var(--surface-muted); border-radius:var(--radius-pill); overflow:hidden; }
+.bb-zone{ height:100%; }
+.bb-zone.healthy{ background:var(--status-healthy-bg); }
+.bb-zone.atrisk{ background:var(--status-atrisk-bg); }
+/* Takes what the other two leave, so the three tile the track exactly. */
+.bb-zone.over{ flex:1; background:var(--status-over-bg); }
+.bb-mark{ position:absolute; top:0; bottom:0; border-radius:var(--radius-pill);
+  background:var(--border-strong); }
+.bb-mark.over{ background:var(--status-over-fg); }
+.bb-mark.atrisk{ background:var(--amber-600); }
+.bb-mark.healthy{ background:var(--status-healthy-fg); }
+.bb-ticks{ position:relative; height:var(--bar-tick-row); margin-top:var(--space-2); }
+.bb-tick{ position:absolute; top:0; transform:translateX(-50%); white-space:nowrap;
+  font-size:var(--text-caption-size); line-height:var(--text-caption-line);
+  color:var(--text-subtle); font-variant-numeric:tabular-nums; }
+/* A hairline back up to the zone boundary the label names, so the label is
+   attached to a position rather than floating near one. */
+.bb-tick::before{ content:""; position:absolute; left:50%; top:calc(-1 * var(--space-2));
+  width:var(--border-width); height:var(--space-2); background:var(--border-default); }
+
 /* Unrated. The contractor companion carries a figure and no judgement, and the
-   neutral top border is what says so before the chip is read. */
+   neutral top border is what says so before the chip is read. Nothing here
+   draws a band track: it has no thresholds to draw. */
 .tile.unrated{ border-top-color:var(--border-subtle); }
 .tile.unrated .t-value{ color:var(--text-default, inherit); }
+
+/* §6. The in-page anchor to the report, under the tiles it belongs to. */
+.tile-cta{ margin-top:var(--space-6); }
 
 /* Solid fills, never a tint — the pill has to survive being photocopied. */
 .pill{ flex:none; display:inline-flex; align-items:center; font-size:var(--text-eyebrow-size);
@@ -347,7 +418,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 /* Category two — the portfolio growth ceiling callout. Deliberately neither a RAG
    tile nor a plain bullet: it is a projection rather than a measurement, and
    the navy fill is what keeps it from being read as either. */
-.ceiling{ max-width:var(--container-narrow); margin:var(--space-6) auto 0;
+.ceiling{ margin-top:var(--space-6);
   background:var(--surface-accent); border-radius:var(--radius-card);
   box-shadow:var(--shadow-lg); padding:var(--space-8) var(--space-7); }
 .ceiling .h-eyebrow{ font-size:var(--text-eyebrow-size); font-weight:var(--text-eyebrow-weight);
@@ -367,13 +438,20 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
    growth ceiling — and which one leads depends on the answer about budgets.
    Ordering them in the flow rather than in the markup keeps one set of nodes
    for the suite to capture and one set of ids for the print report to read. */
-.hero-area{ display:flex; flex-direction:column; }
+/* The measure lives here, once, so both callouts and the suppression note
+   share a width and a padding. It used to sit on each card with auto inline
+   margins — which in a column flex container cancels the cross-axis stretch
+   and leaves every child shrink-to-fit against its own content. That is why
+   the cost card came out inset on both sides against the ceiling card beside
+   it: two cards, two different content widths, one apparent mistake. */
+.hero-area{ display:flex; flex-direction:column;
+  max-width:var(--container-narrow); margin-inline:auto; }
 .hero-area .secondary{ box-shadow:var(--shadow-md); }
 .hero-area .secondary .h-figure{ font-size:var(--text-h3-size); line-height:var(--text-h3-line); }
 /* The stated reason where a suppressed cost block would have been. Deliberately
    not a callout: there is no figure, and the reader is owed an explanation
    rather than an empty tile. */
-.hero-note{ order:2; max-width:var(--container-narrow); margin:var(--space-4) auto 0;
+.hero-note{ order:2; margin-top:var(--space-4);
   font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line);
   color:var(--text-muted); }
 
@@ -408,17 +486,30 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 /* Category three — informational bullets. No threshold exists for any of
    these, so nothing here is rated and nothing here is coloured. */
 .facts{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--space-3); }
-.fact{ display:flex; align-items:baseline; gap:var(--space-5);
+/* Two columns, and the first is fixed. It used to be a flex row with a 5.5ch
+   minimum on the figure, so "3.8%" and "6.2–8.0 FTE" started their
+   descriptions at different x and the list had no left rail at all. The track
+   is sized to the widest figure the report can print, with room; anything
+   wider wraps inside its own column rather than pushing the description
+   along. Figures stay left-aligned — the rail they make then lines up with
+   the section heading, its lead and the tiles above. */
+.fact{ display:grid; grid-template-columns:var(--fact-figure-col) minmax(0,1fr);
+  align-items:baseline; column-gap:var(--space-5);
   background:var(--surface-card); border:var(--border-width) solid var(--border-subtle);
   border-radius:var(--radius-md); box-shadow:var(--shadow-xs); padding:var(--space-5) var(--space-6); }
-.fact .f-figure{ flex:none; min-width:5.5ch; font-family:var(--font-display);
+.fact .f-figure{ overflow-wrap:anywhere; font-family:var(--font-display);
   font-size:var(--text-h3-size); line-height:var(--text-h3-line); font-weight:var(--weight-extrabold);
   letter-spacing:var(--text-h3-track); color:var(--text-strong); }
 .fact .f-label{ font-size:var(--text-body-size); line-height:var(--text-body-line);
   font-weight:var(--weight-semibold); color:var(--text-strong); }
 .fact .f-note{ font-size:var(--text-body-sm-size); font-weight:var(--weight-regular);
   color:var(--text-muted); }
-@media (max-width:600px){ .fact{ flex-direction:column; gap:var(--space-2); } }
+/* Stacked below the breakpoint, where a fixed track would leave the
+   description four or five words wide. Figure and description then both start
+   at the card's padding edge, so every row still shares an x. */
+@media (max-width:600px){
+  .fact{ grid-template-columns:minmax(0,1fr); row-gap:var(--space-2); }
+}
 
 /* The ticket-volume consistency check. Sits under the bullet it questions, and
    is not RAG-rated — it queries an input rather than judging an output. */
@@ -468,17 +559,29 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 
 /* Mid-page CTA — deliberately lighter than the closing block so it offers a
    route without competing with the primary gate. */
+/* One content width for everything in the box. There used to be three — a
+   heading across the full padding box, prose at 52ch, and the pricing
+   paragraph at 46ch, left-aligned against a left edge that lined up with
+   nothing. Every child now sits in the same centred column; what changes
+   between them is alignment, not width.
+
+   Heading and button centred, prose left-aligned. Centred prose over several
+   lines is harder to read than left-aligned, so the fix is not to centre
+   everything. */
 .midcta{ max-width:var(--container-narrow); margin:var(--space-7) auto 0;
   padding:var(--space-8) var(--space-7);
   background:var(--surface-brand-subtle); border:var(--border-width-strong) solid var(--blue-200);
   border-radius:var(--radius-card); text-align:center; }
+.midcta > *{ max-width:var(--midcta-measure); margin-inline:auto; }
 .midcta h3{ font-size:var(--text-h3-size); line-height:var(--text-h3-line);
   letter-spacing:var(--text-h3-track); font-weight:var(--weight-bold); color:var(--text-strong); }
-.midcta p{ margin:var(--space-3) auto 0; max-width:52ch;
+.midcta p{ margin-top:var(--space-3);
   font-size:var(--text-body-size); line-height:var(--text-body-line); color:var(--text-muted); }
+/* The two prose blocks. Everything else in the box is a heading, a button or a
+   single line under one, and those stay centred with it. */
+.midcta #ctaBody,.midcta .price-note{ text-align:left; }
 .midcta .price-note{ margin-top:var(--space-5); padding-top:var(--space-5);
-  border-top:var(--border-width) solid var(--blue-200); font-size:var(--text-body-sm-size);
-  text-align:left; max-width:46ch; }
+  border-top:var(--border-width) solid var(--blue-200); font-size:var(--text-body-sm-size); }
 .midcta .price-note strong{ color:var(--text-strong); font-weight:var(--weight-bold); }
 .midcta .btn{ margin-top:var(--space-6); }
 .midcta .midcta-sub{ margin-top:var(--space-3); font-size:var(--text-caption-size); color:var(--text-subtle); }
@@ -869,6 +972,13 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <!-- Why a range. This is an argument, not a disclaimer, and it is placed
            directly under the figures it explains rather than in a footnote. -->
       <p class="section-sub" id="rangeNote" style="margin-top:var(--space-5)"></p>
+      <!-- §6. The report download sits at the foot of the page behind the
+           gate, and a reader who stops at the tiles never learns it exists.
+           An in-page anchor to it and nothing else — the gate is still the
+           gate, and this changes neither what is gated nor when. Secondary
+           rather than primary, so it offers a route without competing with
+           the trial CTA below. -->
+      <p class="tile-cta"><a class="btn btn-secondary" href="#getReport">Download the full report &darr;</a></p>
     </div>
 
     <!-- The two callouts, in a flow whose order the tool sets. Where project
@@ -922,6 +1032,37 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <p class="hero-note" id="costCurrencyNote" hidden></p>
     </div>
 
+    <!-- §2.1. The comparison table and the conversion box, moved together to
+         sit directly after the two callouts. They used to close the report,
+         behind every finding, every check and every figure, and most readers
+         never reached them. This is the moment the offer follows from
+         something: the reader has just been shown what the portfolio costs and
+         how far past its pace it is running.
+
+         Two of the six rows cite figures the page expands on further down —
+         ticket demand and the run share. Each row states its own figure inline,
+         so nothing here depends on having read the detail first. -->
+    <div class="section">
+      <h2 class="section-title">What your plans would show instead</h2>
+      <p class="section-sub">Everything above was calculated from your data. The same questions, asked of your actual project plans, answer something rather different.</p>
+      <div class="compare">
+        <div class="compare-head">
+          <div class="c-now">From what you told us</div>
+          <div class="c-next">From your project plans</div>
+        </div>
+        <div id="compareRows"></div>
+      </div>
+    </div>
+
+    <div class="midcta">
+      <h3 id="ctaHead"></h3>
+      <p id="ctaBody"></p>
+      <p class="price-note" id="priceLine"></p>
+      <a class="btn btn-primary" href="/start/" id="trialCta">Start free</a>
+      <p class="midcta-sub">Unlimited 14-day trial</p>
+      <p class="midcta-alt"><a href="#getReport">Or take the full report first &darr;</a></p>
+    </div>
+
     <div class="section">
       <h2 class="section-title">What your answers show</h2>
       <div class="rag-list" id="ragList"></div>
@@ -942,27 +1083,6 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <h2 class="section-title">Your numbers</h2>
       <p class="section-sub">Counted from what you told us. Nothing on this list is rated against a threshold &mdash; these are the figures your position is built from.</p>
       <ul class="facts" id="factList"></ul>
-    </div>
-
-    <div class="section">
-      <h2 class="section-title">What your answers can show you</h2>
-      <p class="section-sub">Everything above was calculated from your data. The same questions, asked of your actual project plans, answer something rather different.</p>
-      <div class="compare">
-        <div class="compare-head">
-          <div class="c-now">From what you told us</div>
-          <div class="c-next">From your project plans</div>
-        </div>
-        <div id="compareRows"></div>
-      </div>
-    </div>
-
-    <div class="midcta">
-      <h3 id="ctaHead"></h3>
-      <p id="ctaBody"></p>
-      <p class="price-note" id="priceLine"></p>
-      <a class="btn btn-primary" href="/start/" id="trialCta">Start free</a>
-      <p class="midcta-sub">Two projects free, forever. No time limit.</p>
-      <p class="midcta-alt"><a href="#getReport">Or take the full report first &darr;</a></p>
     </div>
 
     <div class="closing" id="getReport">
@@ -2142,6 +2262,61 @@ window.submitToSender = function(payload){
   }
 
   /* ---- RAG tiles ---- */
+
+  /* ---- The band track under a rated tile (§5) ----
+     A rated tile publishes a figure and a verdict word, and between them the
+     reader still has to hold two thresholds in their head to know how close
+     they are to the next one. The track draws the band instead: the three
+     zones tinted, the respondent's value or range marked on it to scale, and
+     the two thresholds labelled underneath.
+
+     Built from the displayed, rounded values — the same ones the tile prints
+     and the same ones ragPM and ragFTE band — so the mark cannot land in a
+     zone the pill beside it contradicts. Reading the raw float here is how a
+     caseload of 5.04, shown as 5.0 and rated Healthy on that 5.0, would draw
+     itself a hair into the Watch zone beside a tile saying Healthy.
+
+     The scale runs to 1.25x the high endpoint, floored at a hard minimum per
+     metric, so the At risk zone is always a zone rather than a sliver at the
+     end. A track that stopped at the red threshold would say nothing about how
+     far past it a portfolio has gone, which is the one thing a reader in the
+     red wants to know.
+
+     There is no track on the contractor tile. A band track implies thresholds
+     and that tile has none, so drawing one would assert a rating that does not
+     exist (§3.2).
+
+     Known limit: the two tick labels are centred on their true positions, and
+     on a portfolio far enough past the red threshold the scale compresses
+     until they touch. Nudging them apart would put a label somewhere other
+     than the value it names, which is worse than a tight pair of labels on a
+     load nobody should be running. */
+  var BAR_HEADROOM = 1.25;
+  var BAR_MIN_MARK = 1.2;         /* % — so a point value still renders as a mark */
+  var BAR_SCALE_MIN = { pm:12, fte:14 };
+
+  function bandBar(lo, hi, band, hardMin, rag, valueText){
+    var max = Math.max(hardMin, hi * BAR_HEADROOM);
+    var pct = function(x){ return roundN(x / max * 100, 2); };
+    var left = pct(lo);
+    return {
+      /* Zone widths. The At risk zone takes whatever is left rather than a
+         third rounded percentage, so the three always tile the track exactly. */
+      healthy:pct(band.watch),
+      atrisk:roundN(pct(band.red) - pct(band.watch), 2),
+      /* Tick positions and their labels. Both come off the band constants, so
+         a threshold cannot be drawn in one place and labelled with another. */
+      t1:pct(band.watch), t2:pct(band.red),
+      t1Label:d1(band.watch), t2Label:d1(band.red),
+      /* The mark. A single value is a range whose ends coincide, and the
+         minimum width is what keeps it from rendering as nothing at all. */
+      left:left, width:Math.max(BAR_MIN_MARK, roundN(pct(hi) - left, 2)),
+      rag:rag,
+      label:valueText + ' on a band that runs healthy to ' + d1(band.watch)
+          + ', watch to ' + d1(band.red) + ', and at risk above ' + d1(band.red) + '.'
+    };
+  }
+
   function tiles(v, c){
     var out = [];
 
@@ -2165,8 +2340,13 @@ window.submitToSender = function(payload){
               + 'reacting to projects rather than planning them, and a clash between two of a single PM’s own '
               + 'projects is unlikely to be caught before it has already cost time';
 
+      var pmValue = d1(c.pmLoad);
       out.push({ key:'pm', rag:c.ragPM, status:STATUS_WORD[c.ragPM],
-                 label:METRIC_PM, value:d1(c.pmLoad), note:pmNote });
+                 label:METRIC_PM, value:pmValue, note:pmNote,
+                 /* One figure, not a range: the caseload divides by the PM
+                    count, and no band endpoint reaches it. */
+                 bar:bandBar(round1(c.pmLoad), round1(c.pmLoad), BAND_PM,
+                             BAR_SCALE_MIN.pm, c.ragPM, pmValue) });
     }
 
     /* Suppressed where no BAU staff were reported against project work. There
@@ -2181,8 +2361,14 @@ window.submitToSender = function(payload){
       var fteStatus  = ragSpan(c.at[E_LO].ragFTE, c.at[E_HI].ragFTE);
       var straddles  = c.at[E_LO].ragFTE !== c.at[E_HI].ragFTE;
 
+      /* Marked across the whole band, on the displayed endpoints in ascending
+         order — the same two numbers the tile prints. */
+      var ratioSpan = span(pick(c, 'projectsPerFTE'), 1);
+
       out.push({
         key:'fte', rag:c.ragFTE, status:fteStatus, label:METRIC_FTE, value:ratioRange,
+        bar:bandBar(ratioSpan[0], ratioSpan[1], BAND_FTE,
+                    BAR_SCALE_MIN.fte, c.ragFTE, ratioRange),
         tip:'Your BAU staff contribute ' + fteRange + ' full-time-equivalent people’s worth of time '
           + 'to project work, and that is currently spread across ' + qty(v.live, 'live project', 'live projects')
           + ' — ' + ratioRange + ' projects for each of those full-time-equivalents, depending on where in the '
@@ -3172,6 +3358,32 @@ window.submitToSender = function(payload){
          + 'all of them.';
   }
 
+  /* The band track's markup (§5). Percentages are data rather than design
+     values, so they are the one thing written inline; every colour, height and
+     radius is a token in the stylesheet.
+
+     role="img" with a written label, and the internals hidden: the zones and
+     the mark are a picture, and a screen reader reading out four positioned
+     spans would get noise. The tick labels go with them — read on their own,
+     "5.0 7.0" says nothing — so the label carries the thresholds in words.
+
+     The At risk zone takes no width. It fills what the other two leave, so the
+     three tile the track exactly whatever the rounding did. */
+  function bandBarHtml(b){
+    if(!b) return '';
+    return '<div class="band-bar" role="img" aria-label="' + esc(b.label) + '">'
+         + '<div class="bb-track" aria-hidden="true">'
+         + '<span class="bb-zone healthy" style="width:' + b.healthy + '%"></span>'
+         + '<span class="bb-zone atrisk" style="width:' + b.atrisk + '%"></span>'
+         + '<span class="bb-zone over"></span>'
+         + '<span class="bb-mark ' + b.rag + '" style="left:' + b.left + '%;width:' + b.width + '%"></span>'
+         + '</div>'
+         + '<div class="bb-ticks" aria-hidden="true">'
+         + '<span class="bb-tick" style="left:' + b.t1 + '%">' + esc(b.t1Label) + '</span>'
+         + '<span class="bb-tick" style="left:' + b.t2 + '%">' + esc(b.t2Label) + '</span>'
+         + '</div></div>';
+  }
+
   /* ================= Render ================= */
   function render(v, c){
     $('positionLead').innerHTML = positionLead(v, c);
@@ -3188,6 +3400,7 @@ window.submitToSender = function(payload){
            + '<div class="t-top"><p class="t-label">' + esc(t.label) + tip + '</p>'
            + '<span class="pill ' + t.rag + '">' + esc(t.status) + '</span></div>'
            + '<p class="t-value">' + esc(t.value) + '</p>'
+           + bandBarHtml(t.bar)
            + '<p class="t-note">' + esc(t.note) + '</p></div>';
     }).join('');
 
@@ -3938,7 +4151,9 @@ window.submitToSender = function(payload){
                         STATUS_WORD:STATUS_WORD,
                         TICKETS_PER_AGENT_LO:TICKETS_PER_AGENT_LO, TICKETS_PER_AGENT_HI:TICKETS_PER_AGENT_HI,
                         ASHE_MEDIAN:ASHE_MEDIAN, ASHE_YEAR:ASHE_YEAR,
-                        BAND_PM:BAND_PM, BAND_FTE:BAND_FTE };
+                        BAND_PM:BAND_PM, BAND_FTE:BAND_FTE,
+                        bandBar:bandBar, BAR_SCALE_MIN:BAR_SCALE_MIN,
+                        BAR_HEADROOM:BAR_HEADROOM, BAR_MIN_MARK:BAR_MIN_MARK };
 })();
 </script>
 </body>

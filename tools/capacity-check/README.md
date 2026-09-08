@@ -53,7 +53,7 @@ raw gap is 9.065 which would round to 9.1, and the page must print 9.0.
 | `capture.mjs` | Drives one shape through the page's own submit handler, then reads back every node it wrote — screen, printed report and Sender payload — plus the static printed-report copy the page does not write. |
 | `baseline.mjs` | Writes the digest baseline. |
 | `check.mjs` | The suite. |
-| `baseline.json` | Blessed at PR4. Re-bless whenever a PR changes output on purpose. |
+| `baseline.json` | Blessed at PR5. Re-bless whenever a PR changes output on purpose. |
 
 ## The corpus
 
@@ -224,6 +224,63 @@ Scoped by row rather than by sentence on purpose. The captured nodes are joined
 without terminal punctuation, so splitting the flattened prose on sentence
 boundaries picks up whatever was rendered next and scopes to nothing in
 particular.
+
+## What the digest does not hash
+
+PR5 added the §5 band track under each rated tile — three tinted zones, a mark,
+and the two band thresholds labelled underneath. It is output, so `allText()`
+carries it and the copy rule scans it. The **digest** takes it out, through
+`stripBandBars()`, and hashes a second pair alongside the first:
+
+| Field | What it hashes |
+|---|---|
+| `text`, `numbers` | everything the page rendered, track included |
+| `textExBar`, `numbersExBar` | the same, with the track subtrees removed |
+
+The categorised diff reads the `ExBar` pair, because that is the only
+like-for-like comparison available: a capture taken from a commit before PR5 has
+no track at all, so leaving the tick labels in makes all 603 shapes read as a
+numeric change and buries the one thing the diff exists to catch. On a pre-PR5
+capture the two pairs are identical, which is what makes them comparable. The
+line **"of the unchanged, gained a §5 band track"** counts the shapes that are
+identical without the track and differ with it — the track and nothing else.
+
+Nothing is taken on trust in exchange. `assertBars()` pins every track by value
+on every shape: the zone widths, both tick positions, both tick labels, the
+mark's left edge and width, its colour against the tile's own rating, the zone
+the adverse endpoint falls in against the pill beside it, and the accessible
+label. The geometry is typed into `check.mjs` from the specification, never read
+off the page — the same rule `oracle.mjs` follows. A track drawn to the raw
+float instead of the displayed figure fails, and so does a threshold drawn in
+one place and labelled with another.
+
+## The branches the corpus holds still
+
+Every corpus shape reports in sterling, carries no contractors and holds the
+process profile fixed. That is deliberate, and it is also how three defects
+reached production in this release. §5 therefore has its own section that runs
+the track assertions over the contractor, suppression, boundary and straddle
+shapes, and **fails if any branch is unreached** rather than reporting a count:
+
+the scale floored at its hard minimum and the scale set by 1.25x the high
+endpoint · a point value and a two-ended range · all three mark colours · an
+unrated tile beside a rated one · each rated tile suppressed on its own.
+
+## What the digest cannot see at all
+
+All three of PR5's copy strings — the renamed section, the trial line and the
+download button — live in static markup outside every captured node, and so does
+the section order. `SCREEN_NODES` is a fixed list joined in its own order, so a
+reorder is invisible to every hash in this file. The PR5 sections read the
+markup directly instead: document order as a list, the three strings by value,
+the old strings asserted absent, and the download anchor resolved to an element
+that exists.
+
+The §4 alignment fixes are read the same way, out of the stylesheet. Three of
+them are assertions that something is *absent* — no width on `.ceiling`, no auto
+inline margins on it, no width of its own on the pricing paragraph — because
+each is a fault that comes back the moment someone adds a width to the rule that
+looks like it wants one.
 
 ## The link preview
 

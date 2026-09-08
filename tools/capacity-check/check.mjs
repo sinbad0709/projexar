@@ -28,6 +28,9 @@ import { evaluate, roundN, round1, redThreshold, loadedCost, bandContaining,
 
 let pass = 0, fail = 0;
 const failures = [];
+/* Counted across two callers — the 603-shape corpus loop and the PR5 §5
+   section — so both live up here with the function that increments them. */
+let contradictions = 0, barFaults = 0;
 
 function ok(cond, label, detail = '') {
   if (cond) { pass++; return true; }
@@ -41,6 +44,147 @@ function section(name) { console.log(`\n── ${name}`); }
 
 /* Rendered text contains a phrase, with the en dash the tool uses. */
 function has(hay, needle) { return String(hay).includes(needle); }
+
+/* ------------------------------------------- PR5 §5 — the band track ----- */
+/* The geometry, typed in from the specification rather than read off the page,
+   for the same reason oracle.mjs exists: a suite that reads its expected values
+   out of the implementation cannot catch the implementation being wrong.
+
+   scale_max   = max(hard_min, high_endpoint x 1.25)
+   zones       = 0..t1 healthy, t1..t2 watch, t2..scale_max at risk
+   mark        = left lo/scale_max, width (hi-lo)/scale_max, floor 1.2%
+   ticks       = t1 and t2, centred on their positions */
+const BAR = { HEADROOM: 1.25, MIN_MARK: 1.2, T1_PM: 5.0, T2_PM: 7.0, MIN_PM: 12,
+              T1_FTE: 5.0, T2_FTE: 10.0, MIN_FTE: 14 };
+
+/* The Watch zone is the difference of the two rounded positions, not the
+   rounding of the difference. The three zones have to tile the track exactly,
+   so each one has to start where the last ended — taking (t2 - t1) / scale_max
+   on its own leaves a hundredth-of-a-percent seam at the boundary. */
+
+function expectedBar(lo, hi, t1, t2, hardMin) {
+  const max = Math.max(hardMin, hi * BAR.HEADROOM);
+  const pct = (x) => roundN((x / max) * 100, 2);
+  const left = pct(lo);
+  return {
+    healthy: pct(t1), atrisk: roundN(pct(t2) - pct(t1), 2),
+    t1: pct(t1), t2: pct(t2),
+    left, width: Math.max(BAR.MIN_MARK, roundN(pct(hi) - left, 2)),
+  };
+}
+
+/* The zone a value lands in, by the same comparison ragPM and ragFTE make. */
+function zoneOf(x, t1, t2) { return x > t2 ? 'over' : (x > t1 ? 'atrisk' : 'healthy'); }
+
+/* Split the rendered tile grid into tiles, and pull each one's band track
+   apart. Reads the markup rather than the tool's own objects, so a bar that is
+   computed correctly and rendered wrongly still fails. */
+function tilesOf(html) {
+  return String(html).split('<div class="tile ').slice(1).map((chunk) => {
+    const bar = (chunk.match(/<div class="band-bar"[\s\S]*?<\/div><\/div>/) || [])[0] || null;
+    const num = (re) => { const m = bar && bar.match(re); return m ? Number(m[1]) : null; };
+    return {
+      rag: chunk.slice(0, chunk.indexOf('"')),
+      label: (chunk.match(/<p class="t-label">([\s\S]*?)(?: <span class="tip"|<\/p>)/) || [])[1] || '',
+      value: (chunk.match(/<p class="t-value">([^<]*)<\/p>/) || [])[1] || '',
+      bar: bar && {
+        healthy: num(/bb-zone healthy" style="width:([\d.]+)%/),
+        atrisk: num(/bb-zone atrisk" style="width:([\d.]+)%/),
+        /* The At risk zone carries no width — it fills what the other two
+           leave. Its presence is asserted, its width is not a number. */
+        hasOver: /<span class="bb-zone over"><\/span>/.test(bar),
+        markRag: ((bar.match(/bb-mark ([a-z]+)"/) || [])[1]) || '',
+        left: num(/bb-mark [a-z]+" style="left:([\d.]+)%/),
+        width: num(/bb-mark [a-z]+" style="left:[\d.]+%;width:([\d.]+)%/),
+        ticks: [...bar.matchAll(/<span class="bb-tick" style="left:([\d.]+)%">([^<]+)<\/span>/g)]
+          .map((m) => ({ at: Number(m[1]), label: m[2] })),
+        aria: (bar.match(/aria-label="([^"]*)"/) || [])[1] || '',
+        hidden: (bar.match(/aria-hidden="true"/g) || []).length,
+      },
+    };
+  });
+}
+
+/* The endpoints the tile printed, off the tile's own figure. The bar has to be
+   drawn to the number beside it — not to the raw float behind it. */
+function shownSpan(value) {
+  const parts = String(value).split('–').map((s) => Number(s.trim()));
+  if (parts.some((n) => !Number.isFinite(n))) return null;
+  return parts.length === 1 ? [parts[0], parts[0]] : [Math.min(...parts), Math.max(...parts)];
+}
+
+/* §5. Every rated tile carries a band track, no unrated tile carries one, and
+   every track is drawn to the figure printed above it. A mark landing in a
+   zone the pill beside it contradicts is the same class of fault as a rating
+   contradicting a threshold, so it is counted the same way. */
+function assertBars(id, tileGrid) {
+  for (const t of tilesOf(tileGrid)) {
+    const isPm = t.label.startsWith('Concurrent projects per PM');
+    const isBau = t.label.startsWith('Live projects per effective BAU FTE');
+
+    if (t.rag === 'unrated') {
+      /* No track on the contractor companion. It has no thresholds, and one
+         drawn there would assert a rating that does not exist (§3.2). */
+      if (t.bar) { fail++; barFaults++; failures.push(`${id}: the unrated tile carries a band track`); }
+      else pass++;
+      continue;
+    }
+    if (!isPm && !isBau) {
+      fail++; barFaults++; failures.push(`${id}: unrecognised tile "${t.label}"`); continue;
+    }
+    if (!t.bar) {
+      fail++; barFaults++; failures.push(`${id}: ${isPm ? 'PM' : 'BAU'} tile has no band track`); continue;
+    }
+
+    const t1 = isPm ? BAR.T1_PM : BAR.T1_FTE;
+    const t2 = isPm ? BAR.T2_PM : BAR.T2_FTE;
+    const hardMin = isPm ? BAR.MIN_PM : BAR.MIN_FTE;
+    const shown = shownSpan(t.value);
+    if (!shown) {
+      fail++; barFaults++; failures.push(`${id}: cannot read the tile figure "${t.value}"`); continue;
+    }
+
+    const want = expectedBar(shown[0], shown[1], t1, t2, hardMin);
+    const got = t.bar;
+    const geometry = got.healthy === want.healthy && got.atrisk === want.atrisk
+      && got.left === want.left && got.width === want.width && got.hasOver;
+    if (!geometry) {
+      fail++; barFaults++;
+      failures.push(`${id}: ${isPm ? 'PM' : 'BAU'} track geometry — want ${JSON.stringify(want)}, `
+        + `got ${JSON.stringify(got)}`);
+    } else pass++;
+
+    /* Two ticks, at the thresholds, labelled with the threshold values. A
+       threshold drawn in one place and labelled with another is what this
+       pins. */
+    const wantTicks = [{ at: want.t1, label: t1.toFixed(1) }, { at: want.t2, label: t2.toFixed(1) }];
+    if (JSON.stringify(got.ticks) !== JSON.stringify(wantTicks)) {
+      fail++; barFaults++;
+      failures.push(`${id}: ${isPm ? 'PM' : 'BAU'} ticks — want ${JSON.stringify(wantTicks)}, `
+        + `got ${JSON.stringify(got.ticks)}`);
+    } else pass++;
+
+    /* The mark's colour is the tile's rating, and the rating is taken on the
+       adverse endpoint — the higher ratio, at the top of the printed span. The
+       zone that endpoint falls in has to be the zone the pill names. */
+    if (got.markRag !== t.rag || zoneOf(shown[1], t1, t2) !== t.rag) {
+      fail++; contradictions++; barFaults++;
+      failures.push(`${id}: ${isPm ? 'PM' : 'BAU'} track marks ${got.markRag} at ${t.value}, `
+        + `tile rates ${t.rag}`);
+    } else pass++;
+
+    /* The picture is hidden from assistive technology and the label carries
+       the same thresholds in words, so the track is not read out as four
+       positioned spans and two bare decimals. */
+    if (got.hidden !== 2 || !got.aria.startsWith(t.value)
+        || !got.aria.includes(`healthy to ${t1.toFixed(1)}`)
+        || !got.aria.includes(`watch to ${t2.toFixed(1)}`)
+        || !got.aria.includes(`at risk above ${t2.toFixed(1)}`)) {
+      fail++; barFaults++;
+      failures.push(`${id}: ${isPm ? 'PM' : 'BAU'} track label — "${got.aria}"`);
+    } else pass++;
+  }
+}
 
 /* ------------------------------------------------------------ §5 copy rule */
 const BANNED = ['approximately', 'roughly', 'estimated', 'very likely', 'significantly higher'];
@@ -1334,7 +1478,7 @@ for (const shape of singularShapes()) {
 section('603-shape corpus — oracle agreement, copy rule, no NaN, no midpoints');
 const shapes = corpus();
 const after = {};
-let oracleMismatch = 0, copyViolations = 0, nanShapes = 0, healthyShapes = 0, contradictions = 0;
+let oracleMismatch = 0, copyViolations = 0, nanShapes = 0, healthyShapes = 0;
 let healthyFindingReports = 0;
 
 for (const shape of shapes) {
@@ -1417,6 +1561,8 @@ for (const shape of shapes) {
     } else pass++;
   }
 
+  assertBars(shape.id, cap.screen.tileGrid);
+
   /* Two views of the same render: the copy rule reads the claim-making output
      only, while the diff hashes everything the page produced. */
   const copyText = allText(cap, { forCopyRule: true });
@@ -1470,10 +1616,15 @@ for (const shape of shapes) {
   }
 
   if (o.ragPM === 'Healthy' || o.ragBAU === 'Healthy') healthyShapes++;
-  after[shape.id] = { text: sha(text), numbers: sha(numbersIn(text).join('|')) };
+  const bare = allText(cap, { exBar: true });
+  after[shape.id] = {
+    text: sha(text), numbers: sha(numbersIn(text).join('|')),
+    textExBar: sha(bare), numbersExBar: sha(numbersIn(bare).join('|')),
+  };
 }
 
 console.log(`  rating/threshold contradictions ... ${contradictions}`);
+console.log(`  §5 band-track faults ...... ${barFaults}`);
 console.log(`  oracle mismatches ......... ${oracleMismatch}`);
 console.log(`  copy-rule violations ...... ${copyViolations}`);
 console.log(`  NaN / Infinity shapes ..... ${nanShapes}`);
@@ -1749,6 +1900,155 @@ section('§4.4 — the link preview tags, and the one asset they point at');
      'public/capacity-check/ carries the page and exactly one image', listed.join(', '));
 }
 
+/* ============================================ PR5 §5 band-track branches ==== */
+section('§5 — the band track, on every branch the corpus holds still');
+{
+  /* §0.3. The corpus reports in sterling with no contractors and holds the
+     process profile still, which is exactly how three defects reached
+     production in this release. These are the branches it does not take, and
+     every one of them is a side of a conditional this PR touches.
+
+     Measured, not assumed: the sets below reach the scale floor and the 1.25x
+     headroom, a point value and a two-ended range, all three mark colours, an
+     unrated tile beside a rated one, and each rated tile suppressed on its
+     own. */
+  const branches = [...contractorShapes(), ...suppressionShapes().filter((x) => !x.rejects),
+                    ...boundaryShapes(), ...straddleShapes()];
+  const seen = { floor: 0, headroom: 0, point: 0, range: 0, unrated: 0,
+                 healthy: 0, atrisk: 0, over: 0, noPm: 0, noBau: 0 };
+
+  for (const shape of branches) {
+    const cap = capture(shape);
+    if (!ok(cap.ok, `${shape.id}: renders`, cap.error || '')) continue;
+    assertBars(shape.id, cap.screen.tileGrid);
+
+    const rendered = tilesOf(cap.screen.tileGrid);
+    if (!rendered.some((t) => t.label.startsWith('Concurrent projects per PM'))) seen.noPm++;
+    if (!rendered.some((t) => t.label.startsWith('Live projects per effective BAU FTE'))) seen.noBau++;
+    for (const t of rendered) {
+      if (t.rag === 'unrated') { seen.unrated++; continue; }
+      if (!t.bar) continue;
+      const isPm = t.label.startsWith('Concurrent projects per PM');
+      const shown = shownSpan(t.value);
+      seen[shown[1] * BAR.HEADROOM > (isPm ? BAR.MIN_PM : BAR.MIN_FTE) ? 'headroom' : 'floor']++;
+      seen[shown[0] === shown[1] ? 'point' : 'range']++;
+      seen[t.rag]++;
+    }
+  }
+
+  /* A branch nothing reaches is a branch nothing checks. This fails rather
+     than reporting a count, because the count is the whole point. */
+  for (const [name, n] of Object.entries(seen)) {
+    ok(n > 0, `§5: a shape reaches the "${name}" branch`, `reached ${n} times`);
+  }
+
+  /* A point value still renders as a visible mark. The BAU tile at
+     contractors-0 prints one figure only where both endpoints round the same;
+     the PM tile always does, so it is the case that is always there. */
+  const pointBar = tilesOf(capture({ id: 'bar-point', ...FIXTURE_A }).screen.tileGrid)
+    .find((t) => t.label.startsWith('Concurrent projects per PM')).bar;
+  eq(pointBar.width, BAR.MIN_MARK, 'a point value renders at the minimum mark width');
+  eq(pointBar.left, 75, '9.0 on a scale floored at 12 marks at 75%');
+  eq(JSON.stringify(pointBar.ticks),
+     JSON.stringify([{ at: 41.67, label: '5.0' }, { at: 58.33, label: '7.0' }]),
+     'the PM ticks sit at 5/12 and 7/12 of the track');
+
+  /* The contractor tile: a figure, a chip that is not a rating, and no track.
+     Asserted here rather than only inside assertBars, because the tile is the
+     one this PR could most easily have drawn a band on. */
+  const withContractors = tilesOf(capture({ id: 'bar-unrated', ...FIXTURE_C }).screen.tileGrid);
+  eq(withContractors.length, 3, 'six contractors put a third tile on the grid');
+  const third = withContractors[2];
+  eq(third.rag, 'unrated', 'the third tile is the unrated one');
+  eq(third.bar, null, 'the unrated tile carries no band track');
+  eq(withContractors.filter((t) => t.bar).length, 2, 'two tracks on the grid, not three');
+}
+
+/* ================================================ PR5 §2 section order ====== */
+section('§2 — the promoted block sits after the growth ceiling, and is renamed');
+{
+  const html = readFileSync(TOOL_PATH, 'utf8');
+  const report = html.slice(html.indexOf('<section id="report"'), html.indexOf('<div id="printReport">'));
+
+  /* Document order, read off the markup. The screen capture cannot see this:
+     SCREEN_NODES is a fixed list and allText() joins it in its own order, so a
+     reorder is invisible to every digest in this file. */
+  const order = [...report.matchAll(/<(?:h2 class="section-title"|div class="(hero-area|midcta|closing)")[^>]*>([^<]*)/g)]
+    .map((m) => m[1] || m[2].trim())
+    .filter(Boolean);
+  eq(JSON.stringify(order), JSON.stringify([
+    'Your capacity position',
+    'hero-area',
+    'What your plans would show instead',
+    'midcta',
+    'What your answers show',
+    'Checks on your answers',
+    'Your numbers',
+    'closing',
+  ]), '§2.1 — the comparison table and the conversion box moved up together');
+
+  /* §2.2. Only the promoted section is renamed. */
+  ok(!has(report, 'What your answers can show you'), '§2.2 — the old name is gone');
+  ok(has(report, '<h2 class="section-title">What your answers show</h2>'),
+     '§2.2 — the findings section keeps the name it had');
+
+  /* §3. Three copy strings, and all three live in static markup outside every
+     captured node — so without these the text diff cannot see them at all. */
+  ok(has(report, '<p class="midcta-sub">Unlimited 14-day trial</p>'), '§3.2 — the trial line');
+  ok(!has(html, 'Two projects free, forever'), '§3.2 — the old trial line is gone');
+  ok(has(report, '>Download the full report &darr;</a>'), '§3.3 — the download button label');
+
+  /* §6. The anchor resolves to an element that exists, on this page. */
+  const href = (report.match(/<p class="tile-cta"><a [^>]*href="#([^"]+)"/) || [])[1];
+  eq(href, 'getReport', '§6 — the download button anchors to the report section');
+  ok(has(html, `id="${href}"`), '§6 — the anchor target exists in the markup');
+  /* And it is where the spec puts it: in the first block of output tiles. */
+  const firstBlock = report.slice(0, report.indexOf('<div class="hero-area"'));
+  ok(has(firstBlock, 'class="tile-cta"'), '§6 — it sits in the first block of output tiles');
+}
+
+/* ================================================== PR5 §4 alignment ======== */
+section('§4 — one width for the navy cards, the numbers grid and the CTA box');
+{
+  const css = readFileSync(TOOL_PATH, 'utf8');
+
+  /* §4.1. The measure belongs to the container. Auto inline margins on a flex
+     item cancel the cross-axis stretch, which is what left each .ceiling
+     shrink-to-fit against its own content and the two cards different widths.
+     Asserting the absence is the point: this is a fault that comes back. */
+  ok(/\.hero-area\{[^}]*max-width:var\(--container-narrow\)/.test(css),
+     '§4.1 — the width sits on .hero-area');
+  const ceiling = (css.match(/\n\.ceiling\{[^}]*\}/) || [''])[0];
+  ok(!/max-width/.test(ceiling), '§4.1 — .ceiling carries no width of its own');
+  ok(!/margin:[^;]*auto/.test(ceiling), '§4.1 — and no auto inline margins to cancel the stretch');
+  ok(/\.ceiling\{[\s\S]*?padding:var\(--space-8\) var\(--space-7\)/.test(css),
+     '§4.1 — one padding, on the one rule both cards match');
+
+  /* §4.2. A fixed first column, so every description starts at the same x —
+     and a stacked one below the breakpoint, where a fixed track would leave
+     the description a few words wide. */
+  ok(/\.fact\{[^}]*grid-template-columns:var\(--fact-figure-col\) minmax\(0,1fr\)/.test(css),
+     '§4.2 — Your Numbers is a two-column grid with a fixed first column');
+  ok(/--fact-figure-col:\d+px/.test(css), '§4.2 — the track width is a token');
+  ok(/@media \(max-width:600px\)\{\s*\.fact\{ grid-template-columns:minmax\(0,1fr\)/.test(css),
+     '§4.2 — and it stacks at the mobile breakpoint');
+
+  /* §4.3. One content width inside the conversion box; heading and button
+     centred, prose left-aligned. */
+  ok(/\.midcta > \*\{ max-width:var\(--midcta-measure\); margin-inline:auto; \}/.test(css),
+     '§4.3 — one content width for every child of the box');
+  ok(/\.midcta #ctaBody,\.midcta \.price-note\{ text-align:left; \}/.test(css),
+     '§4.3 — the two prose blocks are left-aligned');
+  /* Anchored on the line start: ".midcta .price-note{" is also a substring of
+     the shared text-align rule above it, and matching that one instead would
+     make this assertion pass on any width at all. */
+  const priceNote = (css.match(/\n\.midcta \.price-note\{[^}]*\}/) || [''])[0];
+  ok(!/max-width/.test(priceNote), '§4.3 — the pricing paragraph carries no width of its own');
+  const midctaP = (css.match(/\n\.midcta p\{[^}]*\}/) || [''])[0];
+  ok(!/max-width/.test(midctaP), '§4.3 — and neither does the prose rule');
+  ok(/\.midcta\{[^}]*text-align:center/.test(css), '§4.3 — heading and button stay centred');
+}
+
 /* ============================================================== §6 Sender === */
 section('§6 Sender — no new fields, and the RAG values read the adverse endpoint');
 {
@@ -1774,14 +2074,23 @@ const beforePath = process.argv[2];
 if (beforePath) {
   section('Categorised text diff against the supplied baseline');
   const before = JSON.parse(readFileSync(beforePath, 'utf8')).shapes;
-  let copyOnly = 0, numeric = 0, unchanged = 0, unexpected = 0;
+  let copyOnly = 0, numeric = 0, unchanged = 0, unexpected = 0, barOnly = 0;
   const unexpectedIds = [];
   for (const shape of shapes) {
     const b = before[shape.id], a = after[shape.id];
     if (!b || !a) { unexpected++; unexpectedIds.push(`${shape.id} (missing capture)`); continue; }
-    if (b.text === a.text) { unchanged++; continue; }
-    if (b.numbers === a.numbers) copyOnly++;
-    else numeric++;
+    /* The comparison that carries the PR5 invariant. A baseline written before
+       the §5 track has textExBar === text, so this is a like-for-like read of
+       everything that existed on both commits. */
+    const bBare = b.textExBar || b.text, bBareNums = b.numbersExBar || b.numbers;
+    if (bBare !== a.textExBar) {
+      if (bBareNums === a.numbersExBar) copyOnly++; else numeric++;
+      continue;
+    }
+    unchanged++;
+    /* Unchanged everywhere else, and different once the track is put back:
+       that is the band track and nothing else. */
+    if (b.text !== a.text) barOnly++;
   }
   /* Unexpected means: a number the oracle did not account for, banned copy, or
      a NaN. Numeric change alone is not unexpected — this PR changes numbers on
@@ -1790,6 +2099,7 @@ if (beforePath) {
   console.log(`  unchanged ................. ${unchanged}`);
   console.log(`  expected copy change ...... ${copyOnly}   (text differs, every number identical)`);
   console.log(`  expected numeric change ... ${numeric}   (asserted against the oracle)`);
+  console.log(`  of the unchanged, gained a §5 band track ... ${barOnly}`);
   console.log(`  UNEXPECTED ................ ${unexpected}`);
   if (unexpectedIds.length) console.log('   ', unexpectedIds.join('\n    '));
 }
