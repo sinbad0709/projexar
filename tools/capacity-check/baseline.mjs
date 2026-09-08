@@ -28,9 +28,15 @@ for (const shape of shapes) {
   const cap = capture(shape);
   if (!cap.ok) { failed++; record[shape.id] = { error: cap.error }; continue; }
   const text = allText(cap);
+  /* The same blob with the §5 band track removed. On a pre-PR5 commit there is
+     no track and the two pairs are identical, which is what makes them
+     comparable across the release. */
+  const bare = allText(cap, { exBar: true });
   record[shape.id] = {
     text: sha(text),
     numbers: sha(numbersIn(text).join('|')),
+    textExBar: sha(bare),
+    numbersExBar: sha(numbersIn(bare).join('|')),
     ragPM: cap.computed.ragPM,
     ragFTE: cap.computed.ragFTE,
     headroom: cap.sender ? cap.sender.headroom : null,

@@ -125,6 +125,23 @@ export function capture(shape, { toolPath } = {}) {
   return result;
 }
 
+/* The §5 band track. Generated markup rather than prose: three tinted zones, a
+   mark, and the two band thresholds labelled underneath, every value of it
+   derived from the band constants and from the figure the tile already prints.
+
+   allText() carries it by default, so the copy rule scans it like any other
+   output. The digest needs it out. A capture taken from a commit before PR5
+   has no track at all, so leaving the labels in makes every rated shape read as
+   a numeric change and buries the one thing the digest exists to catch: a
+   computed figure that moved in a layout release. The track is pinned by value
+   instead — every zone width, tick position, tick label and mark, on every
+   corpus shape, against the band constants and the tile's own figure. */
+const BAND_BAR = /<div class="band-bar"[\s\S]*?<\/div><\/div>/g;
+
+export function stripBandBars(html) {
+  return String(html).replace(BAND_BAR, ' ');
+}
+
 /* All rendered text as one blob, tags stripped — what the copy-rule check and
    the text diff both read. */
 /* `pr-inputs` is the printed report's verbatim echo of what the respondent
@@ -137,9 +154,9 @@ export function capture(shape, { toolPath } = {}) {
    from nothing else. */
 const COPY_EXEMPT = new Set(['pr-inputs']);
 
-export function allText(cap, { forCopyRule = false } = {}) {
+export function allText(cap, { forCopyRule = false, exBar = false } = {}) {
   const parts = [];
-  for (const id of SCREEN_NODES) parts.push(cap.screen[id] || '');
+  for (const id of SCREEN_NODES) parts.push(exBar ? stripBandBars(cap.screen[id] || '') : (cap.screen[id] || ''));
   for (const id of PRINT_NODES) {
     if (forCopyRule && COPY_EXEMPT.has(id)) continue;
     parts.push(cap.print[id] || '');
