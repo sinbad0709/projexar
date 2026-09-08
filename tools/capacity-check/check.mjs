@@ -13,15 +13,16 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const sha = (v) => createHash('sha256').update(String(v)).digest('hex').slice(0, 16);
-import { corpus, FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_LOADED_COST, FIXTURE_SALARY,
+import { corpus, FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_D, FIXTURE_E, FIXTURE_F,
+         FIXTURE_LOADED_COST, FIXTURE_SALARY,
          boundaryShapes, straddleShapes, toolsetInvarianceShapes, contractorShapes,
          suppressionShapes, singularShapes, corroborationShapes, budgetShapes,
-         loadedCostShapes, LEGACY_BAND_CASES,
+         loadedCostShapes, currencyShapes, LEGACY_BAND_CASES, CURRENCIES,
          TOOLSETS, VISIBILITY, BUDGETS, ASSIGNMENT, BANDS } from './shapes.mjs';
 import { capture, allText, numbersIn, staticReportText, SCREEN_NODES, PRINT_NODES } from './capture.mjs';
 import { TOOL_PATH, loadTool } from './harness.mjs';
 import { evaluate, roundN, round1, redThreshold, loadedCost, bandContaining,
-         typicalDurationMonths, itShare,
+         typicalDurationMonths, itShare, pricesCosts, COST_CURRENCY,
          finding2State, finding3State, finding4State,
          TICKETS_LO, TICKETS_HI, WORKING_DAYS, JITBIT_PER_DAY, HDI_LO, HDI_HI } from './oracle.mjs';
 
@@ -111,8 +112,11 @@ function assertFixture(name, shape, expect) {
   eq(c.runWorkGap[0], expect.gapLo, `${name}: run-work gap lo, from displayed values`);
   eq(c.runWorkGap[1], expect.gapHi, `${name}: run-work gap hi, from displayed values`);
 
-  eq(Math.round(lo.internalEffortCost), expect.effortLo, `${name}: internal effort cost lo`);
-  eq(Math.round(hi.internalEffortCost), expect.effortHi, `${name}: internal effort cost hi`);
+  /* null rather than 0 where the cost block is suppressed. Math.round(null) is
+     0, which would let a suppressed figure pass as a computed one. */
+  const money = (x) => (x === null ? null : Math.round(x));
+  eq(money(lo.internalEffortCost), expect.effortLo, `${name}: internal effort cost lo`);
+  eq(money(hi.internalEffortCost), expect.effortHi, `${name}: internal effort cost hi`);
   eq(c.sums, expect.sums, `${name}: summing path`);
   eq(lo.fullPortfolioCost, expect.fullLo, `${name}: full portfolio cost lo`);
   eq(hi.fullPortfolioCost, expect.fullHi, `${name}: full portfolio cost hi`);
@@ -184,6 +188,56 @@ const capC = assertFixture('8.C', FIXTURE_C, {
   sustainable: 58, binding: 'Concurrent projects per PM', headroom: -17,
   derivedRunLo: 71.1, derivedRunHi: 75.1, corroboration: 'healthy',
   ticketLo: 3.0, ticketHi: 5.6, runWork: 32.4, gapLo: 26.8, gapHi: 29.4,
+  effortLo: 728000, effortHi: 845000, sums: true,
+  fullLo: 1095000, fullHi: 1212000, reportedLo: 30.3, reportedHi: 33.5,
+  duration: 7.2, itShare: 3.8,
+  licences: 25, yearly: 2500, spendPct: '0.68', fullPctLo: 0.21, fullPctHi: 0.23,
+});
+
+/* Fixture 8.D — 8.A reported in dollars. Every rated figure, every FTE, the
+   growth ceiling and the licence count are 8.A's, typed in again rather than
+   read back from capA, so a change in 8.A cannot silently drag 8.D with it.
+   What differs is the cost block, which is gone, and the share of reported
+   spend, which crossed two currencies and is gone with it. */
+const capD = assertFixture('8.D', FIXTURE_D, {
+  bauFteLo: 6.2, bauFteHi: 8.0, ipfLo: 11.2, ipfHi: 13.0,
+  pmConcurrent: 9.0, ragPM: 'At risk', perFteLo: 5.6, perFteHi: 7.3, ragBAU: 'Watch',
+  pmRedLive: 36, pmRedAnnual: 59,
+  bauRedLiveLo: 63, bauRedLiveHi: 81, bauRedAnnualLo: 104, bauRedAnnualHi: 134,
+  sustainable: 58, binding: 'Concurrent projects per PM', headroom: -17,
+  derivedRunLo: 71.1, derivedRunHi: 75.1, corroboration: 'healthy',
+  ticketLo: 3.0, ticketHi: 5.6, runWork: 32.4, gapLo: 26.8, gapHi: 29.4,
+  effortLo: null, effortHi: null, sums: true,
+  fullLo: null, fullHi: null,
+  duration: 7.2, itShare: 3.8,
+  licences: 25, yearly: 2500, spendPct: null,
+});
+
+/* Fixtures 8.E and 8.F — 8.A with only the run share moved, one either side of
+   the corroboration window of 68.1 to 78.1. Run work and the non-ticket gap
+   move with the run share; nothing else does. */
+const capE = assertFixture('8.E', FIXTURE_E, {
+  bauFteLo: 6.2, bauFteHi: 8.0, ipfLo: 11.2, ipfHi: 13.0,
+  pmConcurrent: 9.0, ragPM: 'At risk', perFteLo: 5.6, perFteHi: 7.3, ragBAU: 'Watch',
+  pmRedLive: 36, pmRedAnnual: 59,
+  bauRedLiveLo: 63, bauRedLiveHi: 81, bauRedAnnualLo: 104, bauRedAnnualHi: 134,
+  sustainable: 58, binding: 'Concurrent projects per PM', headroom: -17,
+  derivedRunLo: 71.1, derivedRunHi: 75.1, corroboration: 'watch',
+  ticketLo: 3.0, ticketHi: 5.6, runWork: 36.9, gapLo: 31.3, gapHi: 33.9,
+  effortLo: 728000, effortHi: 845000, sums: true,
+  fullLo: 1095000, fullHi: 1212000, reportedLo: 30.3, reportedHi: 33.5,
+  duration: 7.2, itShare: 3.8,
+  licences: 25, yearly: 2500, spendPct: '0.68', fullPctLo: 0.21, fullPctHi: 0.23,
+});
+
+const capF = assertFixture('8.F', FIXTURE_F, {
+  bauFteLo: 6.2, bauFteHi: 8.0, ipfLo: 11.2, ipfHi: 13.0,
+  pmConcurrent: 9.0, ragPM: 'At risk', perFteLo: 5.6, perFteHi: 7.3, ragBAU: 'Watch',
+  pmRedLive: 36, pmRedAnnual: 59,
+  bauRedLiveLo: 63, bauRedLiveHi: 81, bauRedAnnualLo: 104, bauRedAnnualHi: 134,
+  sustainable: 58, binding: 'Concurrent projects per PM', headroom: -17,
+  derivedRunLo: 71.1, derivedRunHi: 75.1, corroboration: 'note',
+  ticketLo: 3.0, ticketHi: 5.6, runWork: 27.0, gapLo: 21.4, gapHi: 24.0,
   effortLo: 728000, effortHi: 845000, sums: true,
   fullLo: 1095000, fullHi: 1212000, reportedLo: 30.3, reportedHi: 33.5,
   duration: 7.2, itShare: 3.8,
@@ -297,6 +351,227 @@ section('§3.1 — the full-cost tile renders before the email gate, unobscured'
     ok(!/sign up|enter your email|unlock/i.test(cap.screen.costNote + cap.screen.costFigure),
        `${cap.id}: nothing asks for an email to see the figure`);
   }
+}
+
+/* ======================================== §1 the currency gate ============== */
+section('§1 — the cost block runs on sterling only, and says so otherwise');
+{
+  /* Six options in the markup, and exactly one of them gates. Read out of the
+     real <select> rather than restated here, so an option added to the form
+     without a decision about it fails this rather than shipping unpriced. */
+  const tool = loadTool();
+  const options = tool.selects.currency.map(([value]) => value);
+  eq(options.join(','), CURRENCIES.join(','), 'the six currency options are the six the suite knows about');
+  eq(options.filter((o) => pricesCosts({ currency: o })).join(','), COST_CURRENCY,
+     'exactly one option gates the cost block, and it is GBP');
+
+  /* 8.D must match 8.A on every rated figure. Asserted node by node rather than
+     figure by figure: anything the gate touched beyond the cost block shows up
+     here even if no named assertion covers it. */
+  if (capA.ok && capD.ok) {
+    const RATED = ['positionLead', 'tileGrid', 'rangeNote', 'ceilingEyebrow', 'ceilingFigure', 'ceilingNote'];
+    for (const id of RATED) {
+      eq(capD.screen[id], capA.screen[id], `8.D: ${id} is identical to 8.A`);
+    }
+    eq(capD.print['pr-tiles'], capA.print['pr-tiles'], '8.D: the printed capacity table is identical to 8.A');
+    /* The four findings keep their ratings. One body changes: the out-the-door
+       finding pointed at a cost tile the gate removed, and a sentence naming a
+       figure that is no longer on the page is exactly the fault this PR is
+       for. Ratings are compared, and the replacement is asserted below. */
+    const ratings = (cap) => (cap.print['pr-cards'].match(/<span class="p-rag">([^<]+)<\/span>/g) || [])
+      .map((m) => m.replace(/<[^>]*>/g, '')).join(',');
+    eq(ratings(capD), ratings(capA), '8.D: the four finding ratings are identical to 8.A');
+    ok(!has(capD.print['pr-cards'], 'The tile above puts a number on the difference'),
+       '8.D: no finding points at the removed cost tile');
+    ok(has(capD.print['pr-cards'], 'We have not put a number on that difference'),
+       '8.D: and the finding says so instead');
+    ok(has(capA.print['pr-cards'], 'The tile above puts a number on the difference'),
+       '8.A: the sterling report still points at its cost tile');
+    ok(has(capA.print['pr-inputs'], 'Median IT salary the cost figures use'),
+       '8.A: the sterling report still says the salary was used');
+    eq(capD.sender.rag_pm, capA.sender.rag_pm, '8.D: PM rating unmoved');
+    eq(capD.sender.rag_bau, capA.sender.rag_bau, '8.D: BAU rating unmoved');
+    eq(capD.sender.headroom, capA.sender.headroom, '8.D: growth ceiling unmoved');
+    eq(capD.sender.licence_count, capA.sender.licence_count, '8.D: licence count unmoved');
+    eq(capD.sender.effective_fte, capA.sender.effective_fte, '8.D: effective FTE unmoved');
+  }
+
+  for (const shape of currencyShapes()) {
+    const cap = capture(shape);
+    if (!ok(cap.ok, `${shape.id}: renders`, cap.error)) continue;
+    const c = cap.computed;
+    const t = allText(cap);
+    const o = evaluate(cap.values);
+    eq(c.priceCosts, shape.prices, `${shape.id}: the gate agrees with the oracle`);
+    eq(o.priceCosts, shape.prices, `${shape.id}: the oracle gates on the same answer`);
+
+    if (shape.prices) {
+      ok(c.at[0].internalEffortCost !== null, `${shape.id}: the cost block runs`);
+      eq(cap.hero.costExclusionsHidden, false,
+         `${shape.id}: the cost-exclusions paragraph is shown where cost figures are`);
+      ok(c.spendPct !== null, `${shape.id}: the share of reported spend is published`);
+      eq(cap.hero.currencyNoteHidden, true, `${shape.id}: no suppression reason is shown`);
+      continue;
+    }
+
+    /* Every cost figure, and every ratio that would cross the two currencies. */
+    eq(c.at[0].internalEffortCost, null, `${shape.id}: no internal effort cost`);
+    eq(c.at[1].internalEffortCost, null, `${shape.id}: no internal effort cost at the other endpoint`);
+    eq(c.at[0].fullPortfolioCost, null, `${shape.id}: no full portfolio cost`);
+    eq(c.at[1].fullPortfolioCost, null, `${shape.id}: no full portfolio cost at the other endpoint`);
+    eq(c.at[0].reportedShare, null, `${shape.id}: no reported share of full cost`);
+    eq(c.at[1].reportedShare, null, `${shape.id}: no reported share at the other endpoint`);
+    eq(c.spendPct, null, `${shape.id}: no ProjexaR share of reported spend`);
+    eq(c.fullCostPct, null, `${shape.id}: no ProjexaR share of full cost`);
+    /* The oracle, independently. */
+    eq(o.at[0].internalEffortCost, null, `${shape.id}: the oracle suppresses the cost too`);
+    eq(o.spendPct, null, `${shape.id}: the oracle suppresses the share of spend too`);
+
+    /* The hero falls back through the non-summing path, and the block is gone
+       from both renderings rather than merely emptied. */
+    eq(cap.hero.costHidden, true, `${shape.id}: the cost tile does not render`);
+    eq(cap.hero.ceilingOrder, '0', `${shape.id}: the growth ceiling leads`);
+    eq(cap.print['pr-herohead'], 'Portfolio growth ceiling', `${shape.id}: the printed report leads on the ceiling`);
+    eq(cap.print['pr-secondhead'], '', `${shape.id}: no second callout in print`);
+
+    /* The reason, in both renderings. */
+    eq(cap.hero.currencyNoteHidden, false, `${shape.id}: the reason is shown on screen`);
+    ok(has(cap.screen.costCurrencyNote, 'UK data'), `${shape.id}: the reason names the benchmark`);
+    ok(has(cap.screen.costCurrencyNote, 'full-time equivalents'),
+       `${shape.id}: the reason says where the effort went instead`);
+    /* Their spend is not suppressed. On screen the reason line is the only
+       place it survives once the cost block is gone, so it has to carry it, in
+       the currency they chose rather than converted into ours. */
+    ok(has(cap.screen.costCurrencyNote, '367,000'),
+       `${shape.id}: the reason carries their reported spend`, cap.screen.costCurrencyNote);
+    ok(!/£367,000/.test(cap.screen.costCurrencyNote),
+       `${shape.id}: and does not restate it in sterling`);
+    ok(has(cap.print['pr-bandnote'], 'our salary benchmark is UK data'),
+       `${shape.id}: the printed report states the reason too`);
+    ok(has(cap.print['pr-fxnote'], 'why no cost figure appears'),
+       `${shape.id}: the workings page states the reason`);
+    ok(has(cap.print['pr-formulas'], 'built on a UK salary survey'),
+       `${shape.id}: the workings table says why the cost was not computed`);
+    /* The effort survives as FTE, which is what the reason points the reader at. */
+    ok(has(cap.print['pr-formulas'], 'Internal project FTE'),
+       `${shape.id}: the internal project FTE still publishes`);
+
+    /* Their spend, in their own currency, still appears as they entered it. */
+    ok(has(cap.print['pr-inputs'], String(FIXTURE_A.spend).replace(/\B(?=(\d{3})+$)/g, ',')),
+       `${shape.id}: their reported spend is still echoed back`);
+    /* Nothing may claim a figure was used in a calculation the report did not
+       run. The salary row's label does exactly that, so it changes with the
+       gate rather than sitting over a suppressed block. */
+    ok(!has(cap.print['pr-inputs'], 'Median IT salary the cost figures use'),
+       `${shape.id}: no row claims a salary the cost figures used`);
+    ok(has(cap.print['pr-inputs'], 'because this report computes no cost figure'),
+       `${shape.id}: the salary row says why it was not used`);
+    /* The static paragraph about what the cost figures exclude describes a
+       calculation that did not run. */
+    eq(cap.hero.costExclusionsHidden, true,
+       `${shape.id}: the cost-exclusions paragraph is not shown`);
+    /* And the price note must not point at a page the price is not on. */
+    ok(!/quoted in sterling above/.test(cap.print['pr-fxnote']),
+       `${shape.id}: the currency note makes no wrong positional claim`);
+
+    /* No sterling figure anywhere that would have been a cost. The price is the
+       one sterling figure that survives, so it is excluded by name. */
+    const price = allText(cap).includes('£2,500 a year');
+    ok(price, `${shape.id}: the ProjexaR price still publishes in sterling`);
+    ok(!/of your project budget/.test(t), `${shape.id}: no share-of-spend percentage`);
+    ok(!/full portfolio cost/i.test(t), `${shape.id}: no full portfolio cost claim`);
+    ok(!/£728,000|£845,000|£1\.10m|£1\.21m/.test(t), `${shape.id}: no cost figure survives`);
+  }
+}
+
+/* ================================= new copy carries no em-dash aside ======== */
+section('§0 — copy written in this PR carries no em-dash aside');
+{
+  /* Scoped to the surfaces this PR wrote whole, because that is the only scope
+     a mechanical check can be honest about. The §3, §4 and §5 additions extend
+     sentences that already carry em-dashes from earlier releases, so a node
+     scan would fail on copy this PR did not write. Those three are reviewed,
+     and PR6 takes the rest of the report.
+
+     Both dash characters, because an en dash between clauses is the same aside
+     wearing different punctuation. The en dash's legitimate use is between the
+     ends of a range, which is digit-to-digit, so those are excluded by shape. */
+  const NEW_SURFACES = [
+    ['costCurrencyNote', (cap) => cap.screen.costCurrencyNote],
+    ['pr-fxnote', (cap) => cap.print['pr-fxnote']],
+  ];
+  const asideDash = (text) => String(text)
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/(\d)\s*[–—]\s*(\d)/g, '$1 to $2')   /* a range is not an aside */
+    .match(/[–—]/g);
+
+  for (const shape of currencyShapes()) {
+    const cap = capture(shape);
+    if (!cap.ok) continue;
+    for (const [id, read] of NEW_SURFACES) {
+      const found = asideDash(read(cap));
+      ok(!found, `${shape.id}: ${id} carries no em-dash aside`, found ? read(cap) : '');
+    }
+  }
+  /* And the two wholly new sentences that live inside older nodes. */
+  const cap = capture({ id: 'newcopy', ...FIXTURE_D });
+  const bandnote = String(cap.print['pr-bandnote']);
+  const currencyRow = bandnote.split('<strong>')
+    .find((part) => /our salary benchmark is UK data/.test(part)) || '';
+  ok(!asideDash(currencyRow), 'the printed currency suppression note carries no em-dash aside', currencyRow);
+}
+
+/* The two suppressions together. Where there is no BAU capacity the cost block
+   was already gone for a stated reason, so the currency line would be a second
+   reason for the same absence — and its closing clause, that the effort appears
+   as full-time equivalents, would not be true. The printed report still carries
+   the currency statement, because the share of reported spend is suppressed by
+   currency and by nothing else. */
+section('§1 — the currency gate and the no-BAU suppression together');
+{
+  const cap = capture({ id: 'usd-nobau', ...FIXTURE_A, currency: 'USD', bauStaff: 0 });
+  if (ok(cap.ok, 'usd-nobau: renders', cap.error)) {
+    eq(cap.computed.priceCosts, false, 'usd-nobau: the gate is closed');
+    eq(cap.computed.spendPct, null, 'usd-nobau: no cross-currency ratio');
+    eq(cap.hero.currencyNoteHidden, true,
+       'usd-nobau: the screen gives one reason, not two for the same absence');
+    ok(has(cap.print['pr-bandnote'], 'No BAU staff were reported against project work'),
+       'usd-nobau: the printed report states the BAU reason');
+    ok(has(cap.print['pr-bandnote'], 'our salary benchmark is UK data'),
+       'usd-nobau: and the currency reason, which the share of spend needs');
+    ok(!/NaN|Infinity|undefined/.test(allText(cap)), 'usd-nobau: nothing broken');
+  }
+}
+
+/* ============================ §2 the ticket-rate comparison is gone ========= */
+section('§2 — tickets per employee and the 0.41–1.38 range are gone');
+{
+  /* Removed from compute(), not merely from the output. A figure left on the
+     compute object is an invitation to publish it again — the same reasoning
+     that keeps a Flexera splitDiff off it. */
+  const probes = [FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_D, FIXTURE_E, FIXTURE_F,
+    { ...FIXTURE_A, ticketsPerMonth: 1 },        /* far below the old floor */
+    { ...FIXTURE_A, ticketsPerMonth: 100000 },   /* far above the old ceiling */
+    { ...FIXTURE_A, ticketsPerMonth: null },
+    /* The smallest headcount validation allows against 45 IT staff — the
+       denominator the removed ratio used, at its most extreme. */
+    { ...FIXTURE_A, companyHeadcount: 45 }];
+  for (const shape of probes) {
+    const cap = capture({ id: 'ticketrate', ...shape });
+    if (!ok(cap.ok, 'ticket-rate probe renders', cap.error)) continue;
+    const c = cap.computed;
+    eq(c.impliedRate, undefined, 'tickets_per_employee is undefined on compute()');
+    eq(c.rateOutside, undefined, 'the outside-the-range flag is undefined on compute()');
+    const t = allText(cap);
+    ok(!/0\.41|1\.38/.test(t), 'neither end of the removed range appears in output');
+    ok(!/tickets per employee/i.test(t), 'the tickets-per-employee phrase is gone');
+    ok(!/found across sectors/i.test(t), 'the sector comparison sentence is gone');
+    ok(!/second look at your ticket figure/i.test(t), 'the consistency callout is gone');
+  }
+  /* And out of the file altogether, so no constant survives to be re-read. */
+  const src = readFileSync(TOOL_PATH, 'utf8').replace(/\/\*[\s\S]*?\*\//g, ' ');
+  ok(!/TICKET_RATE_LO|TICKET_RATE_HI/.test(src), 'the range constants are deleted from the source');
+  ok(!/impliedRate|rateOutside/.test(src), 'the derived figure is deleted from the source');
 }
 
 /* ================================================= §5 boundary shapes ======= */
@@ -556,12 +831,51 @@ for (const shape of corroborationShapes()) {
   ok(!has(cap.screen.ragList, 'about the same department'),
      `${shape.id}: corroboration is not in the findings list`);
   ok(has(cap.screen.checkList, 'run work'), `${shape.id}: the checks block renders`);
+  /* §5. Both kinds of uncertainty, and the two denominators, stated once. */
+  ok(has(cap.screen.checkList, 'not the same kind of estimate'),
+     `${shape.id}: the run-work gap names the two kinds of uncertainty`);
+  ok(has(cap.screen.checkList, 'carries our judgement rather than yours'),
+     `${shape.id}: and says which side of it is ours`);
+  ok(has(cap.screen.checkList, 'quoted against different populations'),
+     `${shape.id}: the two denominators are made explicit`);
+  ok(has(cap.screen.checkList, 'the subtraction itself is unaffected'),
+     `${shape.id}: and the subtraction is said to hold anyway`);
+  /* §3 and the branch swap. Below the window is the note: we derive less change
+     effort than they reported, which is what delivery staff with no BAU role
+     would produce, and which this check cannot see. Above it is the Watch: we
+     derive more, and the assumption most likely to have caused that is named
+     first. Each branch must describe the direction it actually found. */
   if (shape.expect === 'note') {
+    ok(cap.values.bauSplitEstimate < cap.computed.corroborationLo,
+       `${shape.id}: the note branch is the one below the window`);
     ok(has(cap.screen.checkList, '>Note<'), `${shape.id}: rendered as a note, not a rating`);
+    ok(has(cap.screen.checkList, 'derive less change effort'),
+       `${shape.id}: says we derive less, which is what the figures show`);
     ok(has(cap.screen.checkList, 'what we would expect'), `${shape.id}: says why the gap is expected`);
+    ok(has(cap.screen.checkList, 'without also holding a BAU role'),
+       `${shape.id}: names the staff this check cannot see`);
   }
   if (shape.expect === 'Watch') {
-    ok(has(cap.screen.checkList, 'worth revisiting'), `${shape.id}: names the input to revisit`);
+    ok(cap.values.bauSplitEstimate > cap.computed.corroborationHi,
+       `${shape.id}: the Watch branch is the one above the window`);
+    ok(has(cap.screen.checkList, 'derive more change effort'),
+       `${shape.id}: says we derive more, which is what the figures show`);
+    ok(has(cap.screen.checkList, 'BAU headcount and time band'), `${shape.id}: names the input to revisit`);
+    /* §3. The assumption is named first, before the input to revisit, so a
+       probable false positive reads as a prompt rather than a flag. */
+    if (cap.values.pms > 0) {
+      const body = cap.screen.checkList.replace(/<[^>]*>/g, ' ');
+      ok(has(body, 'also carry run work') || has(body, 'also carries run work'),
+         `${shape.id}: the Watch branch names PM run work`);
+      ok(body.indexOf('run work.') < body.indexOf('BAU headcount and time band'),
+         `${shape.id}: it names PM run work before the input to revisit`);
+      ok(has(body, 'full-time equivalent of change work'),
+         `${shape.id}: and states the assumption that produced it`);
+    } else {
+      ok(!/also carry run work|also carries run work/.test(cap.screen.checkList),
+         `${shape.id}: with no PMs the PM explanation is not offered`);
+      ok(has(cap.screen.checkList, 'no project managers'), `${shape.id}: says so instead`);
+    }
   }
   /* Run-work composition is stated and carries no rating. */
   ok(has(cap.screen.checkList, '>Stated<'), `${shape.id}: run-work composition is stated, not rated`);
@@ -576,6 +890,15 @@ for (const shape of corroborationShapes()) {
   eq(chips.length, 2, `${shape.id}: two checks`);
   const findings = cap.print['pr-cards'].match(/<span class="p-rag">([^<]+)<\/span>/g);
   eq(findings.length, 4, `${shape.id}: still exactly four findings`);
+}
+
+/* ================================ §3 the corroboration assumption =========== */
+section('§3 — the derivation states what it assumes, on every branch');
+for (const shape of corroborationShapes()) {
+  const cap = capture(shape);
+  if (!cap.ok) continue;
+  ok(has(cap.print['pr-formulas'], 'counting each project manager as a full-time equivalent of change work'),
+     `${shape.id}: the assumption is stated beside the derivation, not only where it flags`);
 }
 
 /* ================================================ §1.1 suppression rows ===== */
@@ -611,6 +934,8 @@ for (const shape of suppressionShapes()) {
     ok(!has(cap.screen.tileGrid, 'Live projects per effective BAU FTE'), `${shape.id}: BAU tile suppressed`);
     eq(cap.computed.at[0].internalEffortCost, null, `${shape.id}: full cost suppressed with the BAU tile`);
     eq(cap.hero.costHidden, true, `${shape.id}: the cost tile does not render`);
+    eq(cap.hero.costExclusionsHidden, true,
+       `${shape.id}: nor the paragraph about what those figures exclude`);
     ok(has(cap.print['pr-formulas'], 'Not computed'), `${shape.id}: workings say not computed`);
     ok(has(cap.print['pr-formulas'], 'needs BAU staff on project work and a time band to cost'),
        `${shape.id}: the workings say why the cost was not computed`);
@@ -910,6 +1235,27 @@ section('§3.6 — the ticket divisor is a range, with both anchors named');
        the source, and the source does not support it. */
     ok(!/tier-1|tier 1|high-throughput remote/i.test(t),
        'Jitbit’s figure is not characterised as high-throughput remote tier-1');
+
+    /* §4. Both anchors are quoted correctly and neither measures what the
+       respondent was asked for, so the page has to say so. Two published
+       figures for two different functions, printed side by side without this,
+       read as agreement about one thing. */
+    ok(has(t, 'measure different functions'),
+       'the page says the two anchors do not measure the same thing');
+    ok(has(cap.print['pr-sources'], 'desktop support technicians, whose throughput is held back by travel'),
+       'and says what the lower anchor actually counts');
+    ok(has(cap.print['pr-sources'], 'internal IT and customer support together, worked remotely'),
+       'and what the upper anchor actually counts');
+    ok(has(t, 'neither one measures an internal IT service desk')
+       || has(t, 'Neither is a direct match for service desk tickets in an internal IT department'),
+       'and that neither matches the figure we ask the respondent for');
+    ok(has(cap.print['pr-sources'], 'They do not confirm it'),
+       'the anchors bracket the window rather than validate it');
+    /* Anchored judgement beats bare judgement only where the anchors are honest
+       about what they are, so the window is still declared as ours in the same
+       breath. */
+    ok(has(cap.print['pr-sources'], 'ProjexaR’s judgement'),
+       'and the window is still declared as ProjexaR’s judgement beside them');
   }
 }
 
@@ -1034,6 +1380,12 @@ for (const shape of shapes) {
     [JSON.stringify(c.runWorkGap), JSON.stringify(o.runWorkGap), 'run_work_gap'],
     [c.typicalDurationMonths, o.typicalDurationMonths, 'typical_duration_months'],
     [c.itPercent === null ? null : round1(c.itPercent), o.itShare, 'it_share'],
+    [c.priceCosts, o.priceCosts, 'currency gate'],
+    /* §2. Undefined, not null: the figure is gone from compute() rather than
+       computed and suppressed. */
+    [c.impliedRate, undefined, 'tickets_per_employee is undefined'],
+    [c.corroboration === null ? null : c.corroboration,
+      o.corroboration === null ? null : o.corroboration.toLowerCase(), 'corroboration branch'],
   ];
   for (const [got, want, what] of checks) {
     if (got !== want) {
@@ -1281,9 +1633,19 @@ section('Sources — every retained source is attached to a surviving claim');
       'the ticket FTE range'],
     ['The divisor we apply, in both units', (cap) => cap.computed.ticketFTE !== null,
       'the ticket FTE range'],
-    ['Tickets per employee per month by sector', (cap) => cap.computed.rateOutside,
-      'the ticket-rate consistency check'],
+    /* §4. Travels with the anchors it qualifies, so a report that names them
+       cannot omit what they do not measure. */
+    ['What the two anchors do not tell you', (cap) => cap.computed.ticketFTE !== null,
+      'the ticket FTE range'],
+    /* "Tickets per employee per month by sector" is gone. §2 removed the claim
+       it supported, so leaving the source listed would orphan it. HDI/MetricNet
+       is not orphaned by that removal: it is cited independently, above, for
+       the 87 to 133 desktop support figures, which is a different claim from a
+       different edition and is quoted as published. */
     ['Run against growth spend', (cap) => cap.values.bauSplitEstimate !== null, 'the BAU/change split figure'],
+    /* §1. Both salary sources are attached to the cost figures, so the currency
+       gate takes them off the page along with what they supported. A UK salary
+       survey cited beside no UK figure is an orphan. */
     ['Median IT salary', (cap) => cap.computed.at[0].internalEffortCost !== null, 'the cost figures'],
     ['Employer National Insurance', (cap) => cap.computed.at[0].internalEffortCost !== null, 'the cost figures'],
     ['Spreadsheet error rates', (cap) => cap.values.toolset === 'excel', 'the spreadsheet mechanism in finding 2'],
@@ -1294,7 +1656,7 @@ section('Sources — every retained source is attached to a surviving claim');
     ['Microsoft Planner', (cap) => cap.values.toolset === 'planner', 'the Planner mechanism in finding 2'],
   ];
   const seen = new Set();
-  const probes = [FIXTURE_A, FIXTURE_B, FIXTURE_C,
+  const probes = [FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_D, FIXTURE_E, FIXTURE_F,
     { ...FIXTURE_A, toolset: 'excel' }, { ...FIXTURE_A, toolset: 'msproject' },
     { ...FIXTURE_A, toolset: 'planner' }, { ...FIXTURE_A, ticketsPerMonth: 50 },
     { ...FIXTURE_A, pms: 0 }, { ...FIXTURE_A, bauSplitEstimate: null },
@@ -1317,6 +1679,14 @@ section('Sources — every retained source is attached to a surviving claim');
   const capAll = capture({ id: 'bar', ...FIXTURE_A });
   const t = allText(capAll);
   ok(!/Bendoly|Delisle/.test(t), 'no barred citation appears');
+  /* §2. The removal takes one claim off the page and must not take its
+     publisher with it: HDI/MetricNet is cited independently for the 87 to 133
+     desktop support figures, which is what keeps it from being orphaned. */
+  ok(has(capAll.print['pr-sources'], 'HDI/MetricNet'),
+     'HDI/MetricNet survives the removal, cited for the lower anchor');
+  ok(has(capAll.print['pr-sources'], `${HDI_LO} to ${HDI_HI}`),
+     'and for the figures it actually publishes');
+  ok(!/Rumburg, 2012/.test(t), 'the 2012 edition is no longer cited for anything');
   ok(!/Zika-Wiktorsson/.test(t), 'publisher spelling Zika-Viktorsson, not Zika-Wiktorsson');
   ok(/24\(5\), 385–394/.test(capAll.print['pr-sources']), 'Zika-Viktorsson volume, issue and pages');
   ok(/44\(2\), 610–636/.test(capAll.print['pr-sources']), 'Colicev volume, issue and pages');

@@ -38,6 +38,9 @@ export function staticReportText(path = TOOL_PATH) {
 export const SCREEN_NODES = [
   'positionLead', 'tileGrid', 'rangeNote',
   'costEyebrow', 'costFigure', 'costNote', 'loadedSalaryParts',
+  /* The stated reason where a suppressed cost block would have been. Empty on
+     every sterling shape, which is what makes it worth capturing. */
+  'costCurrencyNote',
   'ceilingEyebrow', 'ceilingFigure', 'ceilingNote',
   'factList', 'ragList', 'checkList', 'compareRows', 'ctaHead', 'ctaBody', 'priceLine',
   'closingVerdict',
@@ -47,7 +50,7 @@ export const PRINT_NODES = [
   'pr-herohead', 'pr-figure', 'pr-ceiling',
   'pr-secondhead', 'pr-secondfigure', 'pr-secondnote',
   'pr-verdict', 'pr-tiles', 'pr-bandnote', 'pr-facts',
-  'pr-checkblock', 'pr-inputs', 'pr-formulas', 'pr-derivations', 'pr-flexeranote', 'pr-fxnote',
+  'pr-inputs', 'pr-formulas', 'pr-derivations', 'pr-flexeranote', 'pr-fxnote',
   'pr-cards', 'pr-checks', 'pr-compare', 'pr-sources', 'pr-price',
 ];
 
@@ -112,6 +115,10 @@ export function capture(shape, { toolPath } = {}) {
     ceilingOrder: tool.node('growthCeiling').style.order,
     costClass: tool.node('fullCostTile').className,
     ceilingClass: tool.node('growthCeiling').className,
+    currencyNoteHidden: tool.node('costCurrencyNote').hidden,
+    /* Static copy the page hides rather than writes, so allText() carries it
+       from the file either way and only this records whether it was shown. */
+    costExclusionsHidden: tool.node('pr-costexclusions').hidden,
   };
   result.permalink = tool.api.permalink(v);
   result.ok = true;
