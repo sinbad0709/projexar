@@ -53,7 +53,7 @@ raw gap is 9.065 which would round to 9.1, and the page must print 9.0.
 | `capture.mjs` | Drives one shape through the page's own submit handler, then reads back every node it wrote — screen, printed report and Sender payload — plus the static printed-report copy the page does not write. |
 | `baseline.mjs` | Writes the digest baseline. |
 | `check.mjs` | The suite. |
-| `baseline.json` | Blessed at PR5. Re-bless whenever a PR changes output on purpose. |
+| `baseline.json` | Blessed at PR6. Re-bless whenever a PR changes output on purpose. |
 
 ## The corpus
 
@@ -281,6 +281,61 @@ them are assertions that something is *absent* — no width on `.ceiling`, no au
 inline margins on it, no width of its own on the pricing paragraph — because
 each is a fault that comes back the moment someone adds a width to the rule that
 looks like it wants one.
+
+## Dashes
+
+PR6 removed every em-dash from output text. The two rules are asserted together
+and neither is safe alone:
+
+- **No em-dash appears in any rendered node, on any shape.** Scanned over the
+  output rather than over the file, because a dash in a comment is not copy and
+  a dash on a branch no fixture reaches is exactly what a file-level grep
+  misses.
+- **Every en-dash in output sits between two figures.** The en-dash is not
+  punctuation here: it is the range marker in every figure the blended band
+  produces, and one regex loose enough to strip the first would take out the
+  second and break every figure on the page silently. The test is a digit
+  within three characters on each side, which no prose use would satisfy.
+  `31–40%` and `6.2–8.0` are also pinned by value.
+
+A lost range en-dash used to abort the run inside the §5 band-track section
+rather than report: `shownSpan()` returns null on a figure it cannot read, and
+its caller did not check. It fails with a reason now, so the dash assertions
+stay legible instead of arriving as a stack trace.
+
+The one em-dash pair PR6 did **not** remove as prose is in the bands statement,
+which §6 of that spec puts out of bounds: not one word. It was changed to
+brackets instead — every word in its original order, only the punctuation
+touched — which is the only reading under which "no em-dashes in output" and
+"nothing in §6 is reworded" can both hold. Reverting that one pair restores the
+block byte-for-byte, and nothing else depends on it.
+
+## Your numbers stands on its own
+
+One row of the numbers list used to open "Of ongoing capacity" and finish its
+sentence only if you had already read the figure in the column beside it. In the
+**printed** table the figure sits *between* the label and the description, so
+the sentence could not be reassembled there at all, and a screen reader got a
+fragment either way.
+
+The assertion reads the printed table, where label, figure and description are
+three separate cells with nothing joining them, and checks the shape rather than
+the wording: no label opens with a preposition or a bare pronoun, every
+description opens as a sentence does and closes with a full stop. The ticket row
+is named explicitly, because it is the one the section exists for.
+
+## Why the numeric diff is order-sensitive, and why that is right
+
+`numbersIn()` produces an ordered list, so the digest catches a figure that
+moves position as well as one that changes value. PR6 hit this three times: a
+clause reordered for readability moved a range after the headcount it was
+apposed to, and moving the ticket proportion out of its label moved it past the
+figure column in the printed table.
+
+None of them changed a number. All of them were rewritten to keep figure order,
+and that is the right call rather than sorting the comparison: a report that
+printed the low endpoint where the high one belongs is precisely the class of
+fault this suite exists to catch, and a sorted multiset cannot see it.
 
 ## The link preview
 

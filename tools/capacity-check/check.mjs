@@ -637,6 +637,11 @@ section('§0 — copy written in this PR carries no em-dash aside');
      scan would fail on copy this PR did not write. Those three are reviewed,
      and PR6 takes the rest of the report.
 
+     PR6 did take it: "PR6 §1.1" below scans every rendered node on every
+     shape and allows no em-dash anywhere. This section is kept because it is
+     stricter on these two nodes than that one is, catching an en dash used as
+     an aside rather than as a range marker.
+
      Both dash characters, because an en dash between clauses is the same aside
      wearing different punctuation. The en dash's legitimate use is between the
      ends of a range, which is digit-to-digit, so those are excluded by shape. */
@@ -975,15 +980,35 @@ for (const shape of corroborationShapes()) {
   ok(!has(cap.screen.ragList, 'about the same department'),
      `${shape.id}: corroboration is not in the findings list`);
   ok(has(cap.screen.checkList, 'run work'), `${shape.id}: the checks block renders`);
-  /* §5. Both kinds of uncertainty, and the two denominators, stated once. */
-  ok(has(cap.screen.checkList, 'not the same kind of estimate'),
-     `${shape.id}: the run-work gap names the two kinds of uncertainty`);
-  ok(has(cap.screen.checkList, 'carries our judgement rather than yours'),
-     `${shape.id}: and says which side of it is ours`);
-  ok(has(cap.screen.checkList, 'quoted against different populations'),
-     `${shape.id}: the two denominators are made explicit`);
-  ok(has(cap.screen.checkList, 'the subtraction itself is unaffected'),
-     `${shape.id}: and the subtraction is said to hold anyway`);
+  /* §5, as PR6 §3 relocated it. Both qualifications are still made, in full,
+     and neither may go missing: what changed is where. Removing either leaves
+     the statement in the checks block true, so both sit on the workings page
+     and the check itself says they exist. Asserted in the new home AND absent
+     from the old one, so a later edit cannot quietly restore the inline essay
+     or drop the qualification on its way out. */
+  if (cap.computed.runWorkGap !== null) {
+    const wk = cap.print['pr-derivations'];
+    ok(has(wk, 'different kinds of estimate'),
+       `${shape.id}: the workings name the two kinds of uncertainty`);
+    ok(has(wk, 'carries our judgement rather than yours'),
+       `${shape.id}: and say which side of it is ours`);
+    ok(has(wk, 'both sides are counts of full-time equivalents'),
+       `${shape.id}: and that the subtraction holds anyway`);
+    ok(has(cap.screen.checkList, 'the workings page sets both out'),
+       `${shape.id}: and the check says the qualifications exist`);
+    ok(!has(cap.screen.checkList, 'not the same kind of estimate'),
+       `${shape.id}: the qualification is not also made inline`);
+    if (cap.computed.ticketFtePercent !== null) {
+      ok(has(wk, 'quoted against different populations'),
+         `${shape.id}: the two denominators are made explicit in the workings`);
+      ok(!has(cap.screen.checkList, 'different populations'),
+         `${shape.id}: and not beside the sentence they read as contradicting`);
+      /* PR6 §5.2. It pointed forward: Your numbers renders after the checks on
+         screen and on a different page in print, so "above" was never true. */
+      ok(!/ticket percentage above/.test(allText(cap)),
+         `${shape.id}: nothing points at the ticket percentage by position`);
+    }
+  }
   /* §3 and the branch swap. Below the window is the note: we derive less change
      effort than they reported, which is what delivery staff with no BAU role
      would produce, and which this check cannot see. Above it is the Watch: we
@@ -1179,8 +1204,15 @@ section('Flexera — both figures published, the difference never');
        `flexera ${name}: the unit mismatch is stated where the figure is shown`);
     ok(has(t, '506 organisations, all above 2,000 employees'),
        `flexera ${name}: the population is stated where the figure is shown`);
-    ok(has(t, 'we do not subtract one from the other'),
-       `flexera ${name}: and the page says it does not subtract them`);
+    /* PR6 §1.4 cut the sentence that explained our process beside the figure.
+       The reason no gap is published is made once, on the workings page, and
+       every guard against actually publishing one is above. */
+    ok(has(cap.print['pr-flexeranote'], 'so we do not publish one'),
+       `flexera ${name}: the workings say why no gap is published`);
+    ok(!has(t, 'we do not subtract one from the other'),
+       `flexera ${name}: and the inline note no longer explains our process`);
+    ok(!has(t, 'We show it because it is the closest published figure'),
+       `flexera ${name}: nor why we show it`);
     /* The citation quotes the unit the source publishes. */
     /* Read from the flattened text: the row emphasises "budget", so the raw
        HTML carries a tag in the middle of the sentence. */
@@ -1271,8 +1303,8 @@ section('§4.1 — typical project duration replaces the turnover multiple');
 
     /* The naming caution. The label reads as a measured fact about projects and
        the number is not one, so the derivation is stated in both places. */
-    ok(has(cap.screen.factList, 'derived from that ratio rather than measured'),
-       `${name}: the derivation is stated beside the figure`);
+    ok(has(cap.screen.factList, 'Derived from that ratio rather than measured'),
+       `${name}: the derivation is stated beside the figure, in short form`);
     ok(has(cap.print['pr-derivations'], 'derived, not measured'),
        `${name}: the workings page carries the naming caution`);
     ok(has(cap.print['pr-derivations'], 'steady state'),
@@ -1743,8 +1775,17 @@ section('Copy rule — static report and methodology copy');
   /* §3.5 — the range explanation is an argument, and it is not buried. */
   ok(/That is why these figures are ranges/.test(staticCopy),
      'the blended-average paragraph carries the band and range treatment');
-  ok(/the width of these ranges is the measure of how much a department-wide average leaves unsaid/
-       .test(staticCopy), 'the range explanation is made as an argument, not a disclaimer');
+  ok(/[Tt]he width of these ranges is the measure of how much a department-wide average leaves unsaid/
+       .test(staticCopy), 'the range explanation still says what the width of a range measures');
+  /* PR6 §4. The reorder put "What your plans would show instead" four sections
+     ahead of this paragraph, arguing the same thing in a table: that a range is
+     the case for holding what each person is actually committed to. Made twice
+     it is the first repetition an audit picks up, so it is made once, where the
+     reader meets it first, and cut here. */
+  ok(!/argument for holding what each person is actually committed to/.test(staticCopy),
+     'PR6 §4 — the band paragraph no longer argues the promoted section’s case');
+  ok(!/We never publish the middle/.test(staticCopy),
+     'PR6 §1.4 — and no longer explains our own process');
   /* §3.4 — the exclusions are named in the static copy too. */
   ok(/Contractors and outsourced staff are excluded/.test(staticCopy),
      'the cost exclusions name contractors');
@@ -1760,6 +1801,121 @@ section('Copy rule — static report and methodology copy');
     .replace(/<!--[\s\S]*?-->/g, ' ');
   ok(!/pays for itself|payback period|breaks? even|break-even|return on investment/i.test(codeOnly),
      'no ROI, breakeven or payback framing anywhere in the file');
+}
+
+/* ======================================= PR6 §1.1 — dashes in output ======== */
+section('PR6 §1.1 — no em-dash in output, every range en-dash intact');
+{
+  /* Two assertions that have to be made together. The em-dash was the release's
+     most common copy fault and stripping it is mechanical; the en-dash is not
+     punctuation at all here but the range marker in every figure the blended
+     band produces, and one regex loose enough to catch the first would take out
+     the second and silently break every figure on the page. So: em-dashes are
+     asserted absent, en-dashes are asserted present AND asserted to be doing
+     the job they are there for, which is sitting between two numbers.
+
+     Run over the rendered output of every shape the suite knows, not over the
+     file: a dash in a code comment is not copy, and a dash reachable only on a
+     branch no fixture renders is exactly what a file-level grep misses. */
+  const shapes = [
+    ...corpus(), ...boundaryShapes(), ...straddleShapes(), ...contractorShapes(),
+    ...suppressionShapes(), ...singularShapes(), ...corroborationShapes(),
+    ...currencyShapes(), ...budgetShapes(), ...loadedCostShapes(),
+    { id: '8.A', ...FIXTURE_A }, { id: '8.B', ...FIXTURE_B }, { id: '8.C', ...FIXTURE_C },
+    { id: '8.D', ...FIXTURE_D }, { id: '8.E', ...FIXTURE_E }, { id: '8.F', ...FIXTURE_F },
+  ];
+  const emSites = [];
+  /* An en-dash that is not between two digits is not a range marker, and is
+     the shape a careless em-dash replacement takes. */
+  const looseEn = [];
+  let ranges = 0, scanned = 0;
+  for (const shape of shapes) {
+    let cap;
+    try { cap = capture(shape); } catch { continue; }
+    if (!cap.ok) continue;
+    scanned++;
+    const t = allText(cap);
+    for (let i = t.indexOf('—'); i >= 0; i = t.indexOf('—', i + 1)) {
+      if (emSites.length < 6) emSites.push(`${shape.id}: ...${t.slice(Math.max(0, i - 70), i + 70)}...`);
+    }
+    for (let i = t.indexOf('–'); i >= 0; i = t.indexOf('–', i + 1)) {
+      /* A range marker has a figure on each side of it. The endpoints carry
+         units, so "14%–18%" and "£1.10m–£1.21m" put a % or an m against the
+         dash rather than a digit: the test is a digit within three characters
+         on each side, which no prose use of an en-dash would satisfy. */
+      const near = (str) => /\d/.test(str);
+      if (near(t.slice(Math.max(0, i - 3), i)) && near(t.slice(i + 1, i + 4))) ranges++;
+      else if (looseEn.length < 6) looseEn.push(`${shape.id}: ...${t.slice(Math.max(0, i - 70), i + 70)}...`);
+    }
+  }
+  ok(scanned > 600, `every shape rendered for the dash scan (${scanned})`);
+  ok(emSites.length === 0, 'no em-dash appears anywhere in rendered output', emSites.join('\n     '));
+  ok(looseEn.length === 0, 'every en-dash in output sits between two figures', looseEn.join('\n     '));
+  ok(ranges > 0, `range en-dashes survive (${ranges} across the scan)`);
+
+  /* The one place a dash is load-bearing and could be lost to a global edit:
+     the band label and the money span both print a range. Pinned by value. */
+  const a = capture({ id: 'dash-fixture', ...FIXTURE_A });
+  ok(has(allText(a), '31–40%'), 'the band label still prints as a range');
+  ok(has(allText(a), '6.2–8.0'), 'and so does an effective-FTE figure');
+
+  /* The static printed copy is output too, and the file is where its dashes
+     live. Comments stripped: the note explaining the rule is not the copy. */
+  const staticOut = staticReportText().replace(/<[^>]*>/g, ' ')
+    .replace(/&mdash;/g, '—').replace(/&ndash;/g, '–');
+  ok(!staticOut.includes('—'), 'and none in the static printed copy either');
+  ok(staticOut.includes('170–320'), 'while its own range survives');
+}
+
+/* ==================================== PR6 §1.2 — Your numbers stands alone == */
+section('PR6 §1.2 — every Your numbers description is a sentence of its own');
+{
+  /* One row used to open "Of ongoing capacity" and finish its sentence only if
+     you had already read the figure in the column beside it. That is a fragment
+     to a screen reader, and in the printed report the figure sits BETWEEN the
+     label and the description, so the sentence could not be reassembled at all.
+
+     The rule: read the description with the figure column removed and it must
+     still be a sentence. Checked structurally rather than by eye — a label that
+     opens with a preposition, or a description that opens lower-case, is one
+     that leans on its neighbour. */
+  const OPENERS = /^(of|is|and|but|which|that|the same|these|those|it |they )\b/i;
+  const rows = [];
+  for (const shape of [{ id: '8.A', ...FIXTURE_A }, { id: '8.B', ...FIXTURE_B },
+                       { id: '8.D', ...FIXTURE_D }, { id: '8.E', ...FIXTURE_E },
+                       ...suppressionShapes(), ...contractorShapes(), ...singularShapes()]) {
+    let cap;
+    try { cap = capture(shape); } catch { continue; }
+    if (!cap.ok) continue;
+    /* Read out of the printed table, where label, figure and description are
+       three separate cells and nothing joins them. */
+    const cells = [...cap.print['pr-facts'].matchAll(
+      /<tr><th[^>]*>([\s\S]*?)<\/th><td[^>]*><strong>([\s\S]*?)<\/strong><\/td><td>([\s\S]*?)<\/td><\/tr>/g)];
+    ok(cells.length > 0, `${shape.id}: the numbers table renders rows`);
+    for (const [, label, figure, note] of cells) {
+      const L = label.replace(/<[^>]*>/g, '').trim();
+      const N = note.replace(/<[^>]*>/g, '').trim();
+      rows.push({ id: shape.id, L, N, figure });
+    }
+  }
+  const badLabel = rows.filter((r) => OPENERS.test(r.L));
+  const badOpen  = rows.filter((r) => !/^[A-Z£0-9]/.test(r.N));
+  const badEnd   = rows.filter((r) => !/[.]$/.test(r.N));
+  ok(badLabel.length === 0, 'no label opens mid-sentence',
+     badLabel.slice(0, 4).map((r) => `${r.id}: "${r.L}"`).join('\n     '));
+  ok(badOpen.length === 0, 'every description opens as a sentence does',
+     badOpen.slice(0, 4).map((r) => `${r.id}: "${r.N.slice(0, 80)}"`).join('\n     '));
+  ok(badEnd.length === 0, 'and closes as one does',
+     badEnd.slice(0, 4).map((r) => `${r.id}: "...${r.N.slice(-60)}"`).join('\n     '));
+  ok(rows.length > 40, `rows checked (${rows.length})`);
+
+  /* The row this section exists for, named so a regression is legible. */
+  const ticket = rows.find((r) => /ticket volume/.test(r.L));
+  ok(!!ticket, 'the ticket row is among them');
+  if (ticket) {
+    ok(!/^Of\b/.test(ticket.L), 'the ticket label no longer opens "Of"');
+    ok(!ticket.L.includes('—'), 'and carries no em-dash aside');
+  }
 }
 
 /* ======================================================= source orphans ===== */
@@ -1778,9 +1934,9 @@ section('Sources — every retained source is attached to a surviving claim');
       'the concurrent-projects tile'],
     ['Project overload in multi-project settings', (cap) => cap.computed.pmLoad !== null,
       'the concurrent-projects tile'],
-    ['Lower anchor — published per month', (cap) => cap.computed.ticketFTE !== null,
+    ['Lower anchor, published per month', (cap) => cap.computed.ticketFTE !== null,
       'the ticket FTE range'],
-    ['Upper anchor — published per day', (cap) => cap.computed.ticketFTE !== null,
+    ['Upper anchor, published per day', (cap) => cap.computed.ticketFTE !== null,
       'the ticket FTE range'],
     ['The divisor we apply, in both units', (cap) => cap.computed.ticketFTE !== null,
       'the ticket FTE range'],
@@ -1930,6 +2086,13 @@ section('§5 — the band track, on every branch the corpus holds still');
       if (!t.bar) continue;
       const isPm = t.label.startsWith('Concurrent projects per PM');
       const shown = shownSpan(t.value);
+      /* shownSpan returns null on a figure it cannot read as a number or a
+         range, which is what a lost range en-dash produces: "6.2-8.0" is one
+         unparseable part rather than two. Reported rather than thrown, so the
+         run reaches its own failure list and the dash assertions above are
+         legible instead of buried in a stack trace. */
+      if (!ok(shown !== null, `${shape.id}: the ${isPm ? 'PM' : 'BAU'} tile figure reads as a figure or a range`,
+              String(t.value))) continue;
       seen[shown[1] * BAR.HEADROOM > (isPm ? BAR.MIN_PM : BAR.MIN_FTE) ? 'headroom' : 'floor']++;
       seen[shown[0] === shown[1] ? 'point' : 'range']++;
       seen[t.rag]++;
@@ -1996,7 +2159,11 @@ section('§2 — the promoted block sits after the growth ceiling, and is rename
      captured node — so without these the text diff cannot see them at all. */
   ok(has(report, '<p class="midcta-sub">Unlimited 14-day trial</p>'), '§3.2 — the trial line');
   ok(!has(html, 'Two projects free, forever'), '§3.2 — the old trial line is gone');
-  ok(has(report, '>Download the full report &darr;</a>'), '§3.3 — the download button label');
+  /* §5.3 of PR6 settled the three routes to the report on one verb. The old
+     label is asserted absent so the vocabulary cannot drift back apart. */
+  ok(has(report, '>Get the full report &darr;</a>'), '§3.3 — the report button label');
+  ok(!has(html, 'Download the full report'), 'PR6 §5.3 — the old download vocabulary is gone');
+  ok(!has(html, 'Or take the full report first'), 'PR6 §5.3 — and so is the third label');
 
   /* §6. The anchor resolves to an element that exists, on this page. */
   const href = (report.match(/<p class="tile-cta"><a [^>]*href="#([^"]+)"/) || [])[1];
