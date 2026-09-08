@@ -48,12 +48,12 @@ raw gap is 9.065 which would round to 9.1, and the page must print 9.0.
 | File | What it does |
 |---|---|
 | `harness.mjs` | Loads the HTML, extracts the tool's IIFE, runs it in a `vm` against a DOM stub. Parses the real `<select>` options so `selText()` returns what a respondent read, and freezes `Date` so the baseline does not change at midnight. |
-| `shapes.mjs` | The 603-shape corpus, the three §4 fixtures, and the assertion shapes (boundaries, band straddles, toolset and contractor invariance, suppression rows, singulars, corroboration states, budget branches, loaded-cost edits, legacy band decoding). |
+| `shapes.mjs` | The 603-shape corpus, the six §4 fixtures, and the assertion shapes (boundaries, band straddles, toolset and contractor invariance, suppression rows, singulars, corroboration states, currency options, budget branches, loaded-cost edits, legacy band decoding). |
 | `oracle.mjs` | The formulas, written from the spec. Never imports from the page. |
 | `capture.mjs` | Drives one shape through the page's own submit handler, then reads back every node it wrote — screen, printed report and Sender payload — plus the static printed-report copy the page does not write. |
 | `baseline.mjs` | Writes the digest baseline. |
 | `check.mjs` | The suite. |
-| `baseline.json` | Blessed at PR3. Re-bless whenever a PR changes output on purpose. |
+| `baseline.json` | Blessed at PR4. Re-bless whenever a PR changes output on purpose. |
 
 ## The corpus
 
@@ -70,6 +70,72 @@ A and B hold the arithmetic still and move the wording; C does the reverse. A
 seeded 400-shape fuzz pass reaches the combinations the corpus fixes — blank
 optional answers, every currency, every band, contractors, edited loaded costs,
 zero PMs against zero BAU staff.
+
+Every corpus shape reports in sterling. That is deliberate — the corpus exists to
+hold one thing still while another moves — but it is also how the currency bug
+survived three releases, so the currency branches are covered by fixture 8.D and
+by `currencyShapes()`, one per option, rather than by the corpus.
+
+## Why there are six fixtures
+
+Three of them were added in PR4, and each covers a branch that had never been a
+fixture:
+
+| Fixture | What it is | What it was hiding |
+|---|---|---|
+| 8.D | 8.A reported in USD | Every fixture was sterling, so a cost block that added dollars to pounds and labelled the sum £ passed everything. |
+| 8.E | 8.A with an 82% run share | Above the corroboration window. |
+| 8.F | 8.A with a 60% run share | Below it. Every fixture sat inside the window, so the §2.9 branches were never rendered by a fixture and shipped inverted from PR1 to PR3. |
+
+That is the third time the same shape of blindness has cost this release a
+defect. The contractor routing was invisible while every fixture carried zero
+contractors, which is what 8.C exists to fix. The lesson is the same each time: a
+fixture set that covers only the representative case cannot see the branches, and
+the corpus does not rescue it, because the corpus holds the same values still.
+
+## The corroboration branches, and which side flags
+
+`stated_run` is compared against the derived run range with ±3 points applied
+outward from each endpoint. **Above** the window is the Watch; **below** it is
+the note that carries no rating. From PR1 to PR3 it read the other way round.
+
+The asymmetry exists because the derivation counts only project managers and BAU
+staff on projects, so a department delivering projects with staff who hold no BAU
+role is invisible to it and its change share comes out understated. Through
+`100 − x` an understated change share is an **overstated run share**, which puts
+the derived window above the truth and the respondent's stated figure below it.
+Below is therefore the side the asymmetry protects. The spec's own condition table
+has this inverted, and its two prose descriptions of those conditions are
+arithmetically false, which is where the error came from.
+
+The consequence was not cosmetic. The tool printed a stated change share of 47%
+beside a derived 24.9%–28.9% and headed the block "we derive more change effort
+than you reported", and it rated the one case the asymmetry was built to excuse.
+
+Above the window stays a Watch. A department whose project managers also carry
+run work has its change share overstated and lands there, which is an expected
+bias rather than a fault — so the Watch copy names it first, before the input to
+revisit, and the workings state the assumption beside the derivation on every
+branch rather than only where it flags.
+
+## The currency gate
+
+The cost calculation runs on GBP and on nothing else, and the reason is country
+rather than currency. Every cost figure is built on ONS ASHE, a UK survey, so it
+prices a UK department. An exchange rate would not repair that — the salaries
+would still belong to the wrong labour market — and it would be a figure that
+goes stale and needs a source. The currency selector is the only signal the tool
+has about where the department is, so it is the one that gates.
+
+On any other currency the whole block goes: the internal effort cost, the full
+portfolio cost, the reported share of it, and ProjexaR's price as a share of
+reported spend, which crosses the two currencies exactly as the others do. The
+hero falls back to the growth ceiling through the path the non-summing branch
+already had. What survives is their spend in their own currency, the effective
+FTE figures, and the ProjexaR price in sterling with no percentage beside it.
+
+The suite asserts the six options out of the real `<select>`, so an option added
+to the form without a decision about it fails rather than shipping unpriced.
 
 ## Why the fixtures carry an odd-looking salary
 
@@ -91,6 +157,22 @@ git show main:public/capacity-check/index.html > /tmp/old.html
 CAPACITY_CHECK_HTML=/tmp/old.html node tools/capacity-check/baseline.mjs /tmp/before.json
 node tools/capacity-check/check.mjs /tmp/before.json
 ```
+
+## What a suppression takes with it
+
+A figure that stops being computed takes more with it than its own line. PR4
+found four things pointing at cost figures a non-sterling report does not have:
+the out-the-door finding's "the tile above puts a number on the difference", the
+inputs row labelled "median IT salary the cost figures use", the workings-page
+note claiming the price was "quoted in sterling above", and the static paragraph
+headed "What the cost figures exclude". Each is asserted absent on a suppressed
+report and present on a sterling one.
+
+The static paragraph is the awkward one. `staticReportText()` reads it out of the
+file, so `allText()` carries it whether or not the page showed it, and hiding it
+changes nothing the text diff can see. `capture()` records `costExclusionsHidden`
+for that reason. A suppression the suite cannot observe is a suppression that
+will come back.
 
 ## The copy rule
 

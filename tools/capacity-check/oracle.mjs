@@ -33,6 +33,13 @@ export function bandBAU(ratio) {
 
 export const CORROBORATION_TOLERANCE = 3;
 
+/* The 0.41 to 1.38 tickets-per-employee range is deliberately absent. It
+   compared a benchmark whose denominator is seats supported against a figure
+   whose denominator is company headcount, described desktop support where our
+   numerator is service desk, and was spliced from a 2012 floor and a 2019
+   ceiling that neither edition published. §2 removes the comparison rather than
+   caveating it, and asserts the derived figure is undefined on every shape. */
+
 /* §3.6. Two published anchors, and the window between them is ProjexaR's.
 
    The anchors are published in different units — HDI/MetricNet per technician
@@ -44,6 +51,15 @@ export const TICKETS_LO = 170, TICKETS_HI = 320;
 export const WORKING_DAYS = 21;
 export const JITBIT_PER_DAY = 21;
 export const HDI_LO = 87, HDI_HI = 133;
+
+/* The cost calculation runs on one currency only. The loaded cost is built on
+   ONS ASHE, a UK survey, so it prices a UK department. Pricing a department's
+   effort at UK salaries is wrong whichever currency they report in, and an
+   exchange rate does not repair it — the salaries would still belong to the
+   wrong labour market. The currency selector is the only signal the tool has
+   about where the department is, so it is the one that gates. */
+export const COST_CURRENCY = 'GBP';
+export function pricesCosts(v) { return v.currency === COST_CURRENCY; }
 
 /* §3.3. Employer NI verified against gov.uk for 2026/27; the overhead is
    ProjexaR's declared judgement. */
@@ -161,7 +177,7 @@ function at(v, e, shared) {
   /* §3.1. Suppressed with the BAU tile; summed only on an explicit
      out-the-door answer. §2.2: the sum uses the rounded, displayed internal
      figure, so a reader adding the two printed numbers gets the printed total. */
-  if (o.bauSuppressed) {
+  if (o.bauSuppressed || !shared.priceCosts) {
     o.internalEffortCost = null; o.fullPortfolioCost = null; o.reportedShare = null;
   } else {
     o.internalEffortCost = o.internalProjectFte * shared.loaded.total;
@@ -184,6 +200,7 @@ export function evaluate(v) {
   o.loaded = loadedCost(v.loadedSalary === undefined || v.loadedSalary === null
     ? 56348 : v.loadedSalary);
   o.sums = v.budgetTracking === 'outthedoor' && v.spend !== null && v.spend > 0;
+  o.priceCosts = pricesCosts(v);
 
   /* Band-independent. Concurrent projects per PM does not move with the band. */
   o.pmSuppressed = v.pms === 0;
@@ -196,6 +213,7 @@ export function evaluate(v) {
 
   const shared = {
     turnover: o.turnover, loaded: o.loaded, sums: o.sums, pmRedAnnual: o.pmRedAnnual,
+    priceCosts: o.priceCosts,
   };
   o.at = [at(v, E_LO, shared), at(v, E_HI, shared)];
   o.adv = o.at[E_LO];
@@ -225,7 +243,20 @@ export function evaluate(v) {
        round1(round1(o.runWorkFte) - round1(o.ticketFte[0]))];
 
   /* §2.9, against the endpoints of the derived range with the tolerance applied
-     outward from each. Asymmetric: above the window is a note, not a fault. */
+     outward from each. Asymmetric, and BELOW the window is the note.
+
+     The spec's own condition table has this the other way round, and its two
+     prose descriptions of those conditions are arithmetically false. The
+     derivation is blind to delivery staff who hold no BAU role, so it
+     understates the change share — which through 100 − x OVERstates the run
+     share, putting the derived window above the truth and the respondent's
+     stated figure below it. That is the case the asymmetry exists to protect,
+     so that is the side that carries no rating.
+
+     Above the window is the Watch. A department whose project managers also
+     carry run work has its change share overstated and lands there, which is an
+     expected bias rather than a fault, so §3 requires the Watch copy to name it
+     first rather than merely flag. */
   if (o.at[E_LO].derivedRunShare === null) {
     o.derivedRunShare = null; o.derivedChangeShare = null; o.corroboration = null;
   } else {
@@ -235,14 +266,17 @@ export function evaluate(v) {
     o.derivedChangeShare = changes;
     const lo = round1(runs[0] - CORROBORATION_TOLERANCE);
     const hi = round1(runs[1] + CORROBORATION_TOLERANCE);
-    o.corroboration = v.bauSplitEstimate < lo ? 'Watch' : v.bauSplitEstimate > hi ? 'note' : 'Healthy';
+    o.corroboration = v.bauSplitEstimate > hi ? 'Watch' : v.bauSplitEstimate < lo ? 'note' : 'Healthy';
   }
 
   /* §3.7. Twelve months for the price of ten — the annual plan, paid upfront.
      Contractors are not licensed; the basis is BAU staff on projects plus PMs. */
   o.licenceCount = v.bauStaff + v.pms;
   o.yearly = o.licenceCount * 100;
-  o.spendPct = v.spend !== null && v.spend > 0 ? (o.yearly / v.spend) * 100 : null;
+  /* A sterling price over a spend reported in another currency is a ratio
+     across two currencies. It goes with the rest of the cost block; the price
+     itself still publishes, in sterling, without a percentage. */
+  o.spendPct = o.priceCosts && v.spend !== null && v.spend > 0 ? (o.yearly / v.spend) * 100 : null;
   o.fullCostPct = o.at[E_LO].fullPortfolioCost === null ? null
     : [(o.yearly / o.at[E_LO].fullPortfolioCost) * 100, (o.yearly / o.at[E_HI].fullPortfolioCost) * 100];
 

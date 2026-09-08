@@ -370,6 +370,12 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 .hero-area{ display:flex; flex-direction:column; }
 .hero-area .secondary{ box-shadow:var(--shadow-md); }
 .hero-area .secondary .h-figure{ font-size:var(--text-h3-size); line-height:var(--text-h3-line); }
+/* The stated reason where a suppressed cost block would have been. Deliberately
+   not a callout: there is no figure, and the reader is owed an explanation
+   rather than an empty tile. */
+.hero-note{ order:2; max-width:var(--container-narrow); margin:var(--space-4) auto 0;
+  font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line);
+  color:var(--text-muted); }
 
 /* The loaded-cost control sits inside the cost callout, on the figure it
    drives. Input furniture on a dark ground, so it borrows the callout's
@@ -416,11 +422,6 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 
 /* The ticket-volume consistency check. Sits under the bullet it questions, and
    is not RAG-rated — it queries an input rather than judging an output. */
-.checknote{ list-style:none; margin-top:calc(-1 * var(--space-1)); padding:var(--space-5) var(--space-6);
-  background:var(--surface-brand-subtle); border:var(--border-width) solid var(--blue-100);
-  border-left:var(--rag-bar) solid var(--blue-300); border-radius:var(--radius-md);
-  font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line); color:var(--text-body); }
-.checknote strong{ color:var(--text-strong); }
 
 /* Cards. Native details/summary, so they are keyboard-operable and printable
    without any script deciding whether they are open. */
@@ -912,6 +913,13 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
         <p class="h-figure" id="ceilingFigure"></p>
         <p class="h-note" id="ceilingNote"></p>
       </div>
+
+      <!-- Where the cost block would have been, when the reported currency is
+           not sterling. A line of prose rather than a tile: there is no figure
+           to show, and a tile with a reason where a number belongs reads as a
+           number that failed to load. Ordered last so it sits under whichever
+           callout leads. -->
+      <p class="hero-note" id="costCurrencyNote" hidden></p>
     </div>
 
     <div class="section">
@@ -1046,7 +1054,6 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <p>None of these is rated against a threshold. They are the quantities the two rated measures above are
         calculated from, plus context on the department they sit in.</p>
       <table class="p-table"><tbody id="pr-facts"></tbody></table>
-      <div id="pr-checkblock"></div>
       <h2 style="margin-top:12pt">Your figures, as you entered them</h2>
       <table class="p-table"><tbody id="pr-inputs"></tbody></table>
     </section>
@@ -1059,7 +1066,11 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
         Insurance rate. Two of the numbers we apply are ours rather than anyone's published figure &mdash; the
         170&ndash;320 tickets-per-agent window and the 25% overhead uplift &mdash; and both are labelled as our
         judgement wherever they appear. Everything else below is your own arithmetic.</p>
-      <p style="margin-top:6pt"><strong>What the cost figures exclude.</strong> They count your permanent project
+      <!-- Static, but it describes figures the report does not always contain.
+           Where no cost figure was computed there is nothing for it to be about,
+           so renderPrint hides it rather than leaving a paragraph about the
+           exclusions of a calculation that did not run. -->
+      <p style="margin-top:6pt" id="pr-costexclusions"><strong>What the cost figures exclude.</strong> They count your permanent project
         managers and the effective BAU capacity behind your projects, and nothing else. Contractors and outsourced
         staff are excluded: what they cost is paid out of budget, and these figures exist to put a number on the
         internal staff time your project budgets do not record. Anyone who works on projects without also holding a
@@ -1260,6 +1271,26 @@ window.submitToSender = function(payload){
   var PRICE_MONTH = 10, PRICE_YEAR = 100;
   var CURRENCY = { GBP:'£', USD:'$', EUR:'€', AUD:'A$', NZD:'NZ$', CAD:'C$' };
 
+  /* The same six options, named rather than coded, for the one line of copy
+     that has to say which one the respondent picked.
+
+     The cost calculation runs only on GBP, and the reason is country rather
+     than currency. Every cost figure in this report is built on ONS ASHE, which
+     is a UK survey. Pricing a department's effort at UK salaries is wrong
+     whichever currency they report in, and an exchange rate would not repair it
+     because the salaries themselves belong to the wrong labour market. It would
+     also be a figure that goes stale, needs a source and fails this tool's own
+     standards inside a month.
+
+     The currency selector is the only signal this tool has about where the
+     department is, so it is the one that gates. Where it is not GBP the whole
+     cost block is suppressed, the reason is stated in plain words, and the
+     effort is published as full-time equivalents instead. */
+  var CURRENCY_NAME = { GBP:'pounds sterling', USD:'US dollars', EUR:'euros',
+                        AUD:'Australian dollars', NZD:'New Zealand dollars',
+                        CAD:'Canadian dollars' };
+  var COST_CURRENCY = 'GBP';
+
   /* Tickets one service desk agent handles in a month. A single divisor was
      false precision of exactly the kind the banded time input exists to remove,
      so §3.6 replaces it with a window between two published anchors and the
@@ -1350,10 +1381,30 @@ window.submitToSender = function(payload){
   var ASHE_GROUPING = 'SOC 2020 group 213, Information Technology Professionals';
   var NI_RATE = 0.15, NI_THRESHOLD = 5000, OVERHEAD_RATE = 0.25;
 
-  /* Tickets per employee per month observed across sectors. Used only to tell a
-     respondent that their own figure looks unusual, never to correct it.
-     Sources: HDI (Rumburg, 2012); MetricNet (2019, rev. 2023). */
-  var TICKET_RATE_LO = 0.41, TICKET_RATE_HI = 1.38;
+  /* The tickets-per-employee comparison is gone, and so is the 0.41 to 1.38
+     range it was read against. It failed three ways and each on its own was
+     enough.
+
+     Denominator. The published range counts seats supported. Ours counted
+     company headcount. Those are not the same population.
+
+     Function. The published figures describe desktop support. Our numerator was
+     service desk tickets.
+
+     Provenance. The range was spliced from a 2012 floor and a 2019 ceiling, and
+     neither edition ever published 0.41 to 1.38. That is the same fault as the
+     unattributed 480 divisor PR2 removed, reached the same way, so it is
+     removed the same way rather than restated with a caveat.
+
+     The 2012 article is also a caution about citing this publisher loosely: its
+     prose and its own Figure 2 do not agree on the sector high. Wherever either
+     edition is cited again, name whether the figure was read from a table or
+     from the prose. The surviving HDI/MetricNet citation below is for the 87 to
+     133 desktop support figures only, which is a different claim and is quoted
+     as published.
+
+     Our own tickets-per-employee figure went with it. It set the scale for
+     nothing else in the report and existed only to be compared. */
 
   /* Cross-industry split between running the business and growth. Flexera 2023
      Tech Spend Pulse, page 25, published under CC BY 4.0.
@@ -1699,8 +1750,13 @@ window.submitToSender = function(payload){
     /* ---- Full cost (§3.1) ----
        Suppressed with the BAU tile: with no BAU capacity there is no blended
        band to cost, and internal_project_fte falls back to the PM count alone,
-       which is not what this figure claims to measure. §1.1. */
-    if(a.noBauCapacity){
+       which is not what this figure claims to measure. §1.1.
+
+       Suppressed again where the reported currency is not sterling. The loaded
+       cost is built on a UK salary survey, so it prices a UK department. Where
+       the respondent reports in another currency we do not know their salaries
+       and we do not convert. See COST_CURRENCY. */
+    if(a.noBauCapacity || !shared.priceCosts){
       a.internalEffortCost = null; a.fullPortfolioCost = null; a.reportedShare = null;
     }else{
       a.internalEffortCost = a.internalProjectFte * shared.loaded.total;
@@ -1753,7 +1809,15 @@ window.submitToSender = function(payload){
        to add the internal cost to. */
     c.sums = v.budgetTracking === 'outthedoor' && v.spend !== null && v.spend > 0;
 
-    var shared = { turnover:c.turnover, loaded:c.loaded, sums:c.sums };
+    /* Whether any cost figure may be computed at all. The loaded cost is UK
+       data and the currency is the only signal we have about where the
+       department is, so a non-sterling answer suppresses the whole cost block
+       rather than converting into it. Nothing else in the report reads this:
+       every FTE figure, every ratio, every rating and the growth ceiling are
+       arithmetic on the respondent's own numbers and are unaffected. */
+    c.priceCosts = v.currency === COST_CURRENCY;
+
+    var shared = { turnover:c.turnover, loaded:c.loaded, sums:c.sums, priceCosts:c.priceCosts };
     c.at = endpoints(computeAt(v, E_LO, shared), computeAt(v, E_HI, shared));
 
     /* Every rating reads the adverse endpoint. Where the two endpoints rate
@@ -1794,10 +1858,6 @@ window.submitToSender = function(payload){
                  : [round1(round1(c.runWorkFte) - round1(c.ticketFTE[1])),
                     round1(round1(c.runWorkFte) - round1(c.ticketFTE[0]))];
 
-    c.impliedRate = v.ticketsPerMonth === null ? null : v.ticketsPerMonth / v.companyHeadcount;
-    c.rateOutside = c.impliedRate === null ? false
-                  : (c.impliedRate < TICKET_RATE_LO || c.impliedRate > TICKET_RATE_HI);
-
     /* Permanent IT staff only. Contractors are counted separately and are not
        part of this ratio; the workings page says so.
 
@@ -1821,7 +1881,13 @@ window.submitToSender = function(payload){
     /* §3.7. The annual plan is twelve months for the price of ten, so the
        annual cost is licences × £100, not licences × £10 × 12. The published
        prices were always right; only this workings row was wrong. */
-    c.spendPct = (v.spend !== null && v.spend > 0) ? (c.yearly / v.spend) * 100 : null;
+    /* Suppressed on a non-sterling answer along with the rest of the cost
+       block. A sterling price over a dollar spend is a ratio across two
+       currencies, and a caveat stated elsewhere does not repair an arithmetic
+       operation made inline — the same fault as subtracting a spend split from
+       a time split. The price itself still publishes, in sterling, without a
+       percentage. */
+    c.spendPct = (c.priceCosts && v.spend !== null && v.spend > 0) ? (c.yearly / v.spend) * 100 : null;
 
     /* ProjexaR against the full portfolio cost, as a range. A midpoint here
        would breach §2.1 exactly as it would anywhere else. */
@@ -1857,8 +1923,25 @@ window.submitToSender = function(payload){
        delivering projects with staff who hold no BAU role is invisible to it
        and its change share comes out understated. Reading that as a fault would
        publish a confident wrong finding, which is the class of error this
-       release exists to remove. Above the window is therefore a note carrying
-       no rating; only below it is a Watch. */
+       release exists to remove.
+
+       Which side of the window that lands on is the part PR1 got wrong, and it
+       shipped wrong through PR3. An understated change share is an overstated
+       RUN share, so the derived run window sits above the truth and the stated
+       figure falls BELOW it. Below the window is therefore the note carrying no
+       rating, and above it is the Watch. The comparison here read the other way
+       round for three releases, which put the one case the asymmetry exists to
+       protect into the branch that flags, and printed two titles that the
+       figures beside them contradicted: a report showing a stated change share
+       of 47% against a derived 24.9% to 28.9% was headed "we derive more change
+       effort than you reported".
+
+       The other direction is a Watch and stays one. A department whose project
+       managers also carry run work has its change share overstated, its run
+       share understated, and its stated figure lands above the window. That is
+       an expected bias rather than a fault, so §3 names it first in the Watch
+       copy — a probable false positive that says what most likely caused it is
+       a useful prompt, where a bare flag is not. */
     if(c.at[0].derivedRunShare === null){
       c.derivedChangeShare = null; c.derivedRunShare = null; c.corroboration = null;
     }else{
@@ -1866,8 +1949,8 @@ window.submitToSender = function(payload){
       c.derivedRunShare    = span([c.at[0].derivedRunShare,    c.at[1].derivedRunShare],    1);
       c.corroborationLo    = round1(c.derivedRunShare[0] - CORROBORATION_TOLERANCE);
       c.corroborationHi    = round1(c.derivedRunShare[1] + CORROBORATION_TOLERANCE);
-      c.corroboration = v.bauSplitEstimate < c.corroborationLo ? 'watch'
-                      : (v.bauSplitEstimate > c.corroborationHi ? 'note' : 'healthy');
+      c.corroboration = v.bauSplitEstimate > c.corroborationHi ? 'watch'
+                      : (v.bauSplitEstimate < c.corroborationLo ? 'note' : 'healthy');
     }
 
     /* There is deliberately no splitDiff here. The reported figure and the
@@ -2270,11 +2353,43 @@ window.submitToSender = function(payload){
     return s[1] >= 1e6 ? spanText(r, gbpBig, 0) : spanText(r, gbp, 0);
   }
 
+  /* Why no cost figure was produced, where the reported currency is not
+     sterling. One plain line, in place of the block. It states what they chose,
+     what our benchmark is, what we therefore did not do, and where the effort
+     went instead.
+
+     Written for a reader who came for the cost figure and did not get it, so it
+     gives the reason rather than the rule. Empty on a sterling answer, and
+     empty where there was no cost to suppress in the first place — a department
+     with no BAU staff on projects gets its own reason from §1.1 and does not
+     need two. */
+  function costCurrencyCopy(v, c){
+    if(c.priceCosts || c.noBauCapacity) return '';
+    var name = CURRENCY_NAME[v.currency] || v.currency;
+    /* Their spend is not suppressed and the line says so by carrying it, in the
+       currency they chose. On screen this is the only place it appears once the
+       cost block is gone; the printed report echoes it again in the inputs. */
+    var opening = v.spend !== null
+      ? 'You reported your project spend as <strong>' + CURRENCY[v.currency] + n0(v.spend)
+        + '</strong> in ' + name + '.'
+      : 'You chose ' + name + ' as the currency for your project spend.';
+    return opening + ' Our salary benchmark is UK data, so we do not price your internal effort'
+         + (v.spend !== null ? ' and we do not add it to your spend.' : '.')
+         + ' Your project effort is shown in this report as full-time equivalents.';
+  }
+
   function fullCostCopy(v, c){
     /* Suppressed with the BAU tile. With no BAU staff on project work there is
        no blended band to cost, and internal_project_fte falls back to the PM
        count alone — which is not what this figure claims to measure. §1.1. */
     if(c.noBauCapacity) return null;
+
+    /* Suppressed on a non-sterling answer. The whole block goes: the internal
+       effort cost, the full portfolio cost and the reported share. The hero
+       falls back to the growth ceiling through the same path the non-summing
+       branch already uses, and costCurrencyCopy() states the reason where the
+       block would have been. */
+    if(!c.priceCosts) return null;
 
     var effort  = moneySpan(pick(c, 'internalEffortCost'));
     var fteSpan = spanText(pick(c, 'internalProjectFte'), fteFmt);
@@ -2405,19 +2520,9 @@ window.submitToSender = function(payload){
            + TICKETS_PER_AGENT_HI + ' tickets per agent per month — ' + d1(TICKETS_PER_AGENT_LO / WORKING_DAYS)
            + ' to ' + d1(TICKETS_PER_AGENT_HI / WORKING_DAYS) + ' a day across the ' + WORKING_DAYS
            + '-working-day month we assume. That window is one ProjexaR sets between two published figures, not a '
-           + 'published figure itself' });
-
-      /* Consistency check. Queries the input rather than rating the output, and
-         sits directly beneath the bullet it questions. */
-      if(c.rateOutside){
-        var low = c.impliedRate < TICKET_RATE_LO;
-        out.push({ check:true, text:
-            'Your reported ticket volume works out to ' + n2(c.impliedRate) + ' tickets per employee '
-          + 'per month, ' + (low ? 'lower' : 'higher') + ' than the 0.41–1.38 range found across sectors in published '
-          + 'research. This may reflect a ' + (low ? 'smaller' : 'broader') + ' support scope, tickets logged outside '
-          + 'this count, or simply a ' + (low ? 'lighter' : 'heavier') + '-than-typical load — worth a second look if '
-          + 'the figure was a best guess rather than pulled from your service desk tooling.' });
-      }
+           + 'published figure itself. The two published figures measure different functions from each other, '
+           + 'and neither one measures an internal IT service desk, so they bracket our window rather than '
+           + 'confirm it' });
     }
 
     if(v.bauSplitEstimate !== null){
@@ -2675,7 +2780,18 @@ window.submitToSender = function(payload){
            + 'project costs on your portfolio can be compared without first asking how each was built.' }
     };
     if(v.budgetTracking && COST_FINDING[v.budgetTracking]){
-      out.push(Object.assign({key:'cost'}, COST_FINDING[v.budgetTracking]));
+      var cf = Object.assign({key:'cost'}, COST_FINDING[v.budgetTracking]);
+      /* The out-the-door body points the reader at the cost tile. Where the
+         currency gate removed that tile there is nothing above to point at, so
+         the sentence is replaced rather than left dangling. The finding's
+         rating does not move: what your budgets record is a reporting practice
+         and has nothing to do with which currency you record it in. */
+      if(v.budgetTracking === 'outthedoor' && !c.priceCosts){
+        cf.body = cf.body.replace('The tile above puts a number on the difference.',
+          'We have not put a number on that difference. Our salary benchmark is UK data and you reported in '
+          + (CURRENCY_NAME[v.currency] || v.currency) + ', so this report prices no internal time.');
+      }
+      out.push(cf);
     }
 
     return out;
@@ -2717,12 +2833,29 @@ window.submitToSender = function(payload){
              + 'invisible to it. Where that is the case the gap is expected and there is nothing to correct. We '
              + 'state it rather than rate it.' });
       }else{
+        /* §3. The Watch branch names the modelling assumption first, because
+           the assumption is the most likely cause of the gap it is reporting.
+           The derivation counts every project manager as a full-time equivalent
+           of change work. Where project managers also carry run work, derived
+           change comes out too high and derived run too low, which is exactly
+           the direction that lands here. Saying so turns a probable false
+           positive into a prompt the reader can act on.
+
+           Guarded on the PM count. With no project managers the assumption
+           cannot bite, and the only answer left to revisit is the BAU one. */
+        var pmFirst = v.pms > 0
+          ? 'The most likely reason is that your project ' + plural(v.pms,'manager','managers')
+            + ' also ' + (v.pms === 1 ? 'carries' : 'carry') + ' run work. This check counts every project '
+            + 'manager as a full-time equivalent of change work. Where they spend part of the week on run '
+            + 'work instead, we derive too much change effort and too little run. If that is not what is '
+            + 'happening here, the other answer worth revisiting is your BAU headcount and time band. '
+          : 'You reported no project managers, so the whole of the derived change effort is your BAU staff '
+            + 'on project work. The answer worth revisiting is your BAU headcount and time band. ';
         out.push({ key:'corroboration', rag:'atrisk',
           title:'We derive more change effort than you reported',
-          body:'You told us ' + v.bauSplitEstimate + '% of IT effort goes to run work, but the staff you named '
-             + 'imply ' + derived + ' — we derive more change effort than your split accounts for. One of the two '
-             + 'answers is worth revisiting: either the run and change split, or the BAU headcount and time band. '
-             + 'Both your effective BAU FTE and the growth ceiling derived from it depend on the second.' });
+          body:'You told us ' + v.bauSplitEstimate + '% of IT effort goes to run work. The staff you named '
+             + 'imply ' + derived + '. ' + pmFirst
+             + 'Your effective BAU FTE and the growth ceiling both depend on it.' });
       }
     }
 
@@ -2735,6 +2868,21 @@ window.submitToSender = function(payload){
     if(c.runWorkGap !== null){
       var ticket = spanText(c.ticketFTE, fteFmt);
       var gap    = spanText(c.runWorkGap, fteFmt);
+      /* §5. The subtraction is sound: both sides are FTE of the permanent
+         department, so the arithmetic holds. What the copy did not say is that
+         the two sides are different kinds of estimate, and that the report
+         quotes them against two different populations. Both are said here. */
+      var kinds = 'The two figures are not the same kind of estimate. The run share is your own account of '
+                + 'how your department spends its time. The ticket figure is your ticket volume divided by a '
+                + 'window we set, so it carries our judgement rather than yours.';
+      /* Written without repeating either headcount. Both are already on the
+         page, and §6 asks that this copy introduce no number to the report's
+         multiset that the report did not already carry. */
+      var denoms = c.ticketFtePercent === null ? ''
+        : ' They are also quoted against different populations. Your run share is taken across all your IT '
+          + 'staff. The ticket percentage above is taken across your non-PM staff, because the service desk '
+          + 'draws on the wider pool rather than only on the BAU staff named on projects. Both figures '
+          + 'subtracted here are counts of people, so the subtraction itself is unaffected.';
       out.push({ key:'runwork', stated:true,
         title:'Ticket work accounts for ' + ticket + ' FTE of the ' + d1(c.runWorkFte)
             + ' FTE you reported on run work',
@@ -2744,7 +2892,8 @@ window.submitToSender = function(payload){
            + 'composition, not a deficiency — two readings fit it and both are worth having. Either ticket logging '
            + 'is incomplete, or run work in your organisation genuinely is not ticket-shaped: infrastructure, '
            + 'incident response, vendor management, compliance. Which of the two it is changes what you would do '
-           + 'about it. What does not change is that this is the same population your projects draw from.' });
+           + 'about it. ' + kinds + denoms
+           + ' What does not change is that this is the same population your projects draw from.' });
     }
 
     return out;
@@ -2888,7 +3037,6 @@ window.submitToSender = function(payload){
          ? ', and <strong>' + spanText(c.fullCostPct, function(x){ return pct2(x); }, 2)
            + '</strong> of the full portfolio cost above.'
          : '.';
-      if(v.currency !== 'GBP') s += ' (ProjexaR is priced in sterling; the comparison is made without conversion.)';
     }
     return s;
   }
@@ -2948,10 +3096,18 @@ window.submitToSender = function(payload){
         + 'report computes — ticket capacity is worked from the monthly window directly — so if you read a '
         + 'working month differently, redo the daily comparison at your own figure and every number in this '
         + 'report stands as it is']);
-    }
-    if(c.rateOutside){
-      src.push(['Tickets per employee per month by sector',
-        'HDI (Rumburg, 2012) and MetricNet (2019, rev. 2023) — 0.41 to 1.38']);
+      /* §4. The anchors bracket the window; they do not validate it. Both are
+         quoted correctly and neither measures what this tool asks the
+         respondent for, so the page says so beside them. Without this, two
+         figures published for two different functions read as agreement about
+         one. */
+      src.push(['What the two anchors do not tell you',
+        'The anchors measure different functions from each other. HDI/MetricNet counts desktop support '
+        + 'technicians, whose throughput is held back by travel between desks. Jitbit\u2019s figure covers '
+        + 'internal IT and customer support together, worked remotely. Neither is a direct match for '
+        + 'service desk tickets in an internal IT department, which is the figure we asked you for. They '
+        + 'bracket our window. They do not confirm it, and our window is <strong>ProjexaR\u2019s '
+        + 'judgement</strong> whether or not you accept either of them']);
     }
     if(v.bauSplitEstimate !== null){
       src.push(['Run against growth spend',
@@ -3064,8 +3220,14 @@ window.submitToSender = function(payload){
       $('loadedSalaryParts').innerHTML = loadedCostControl(v, c);
     }
 
+    /* Where the cost block was suppressed on currency, the reason takes its
+       place. §1.1's rule for a suppressed figure is that the page says why, and
+       this is the largest suppression the report can make. */
+    var cn = costCurrencyCopy(v, c);
+    $('costCurrencyNote').innerHTML = cn;
+    $('costCurrencyNote').hidden = !cn;
+
     $('factList').innerHTML = facts(v, c).map(function(f){
-      if(f.check) return '<li class="checknote">' + esc(f.text) + '</li>';
       return '<li class="fact"><p class="f-figure">' + esc(f.figure) + '</p>'
            + '<p class="f-label">' + esc(f.label)
            + ' <span class="f-note">— ' + esc(f.note) + '</span></p></li>';
@@ -3148,6 +3310,18 @@ window.submitToSender = function(payload){
         + 'corroboration nor the cost of internal project time could be computed. The last of those needs a '
         + 'blended time band to cost, and without BAU staff on projects there is none.');
     }
+    /* The currency gate, stated in the same place as every other suppression.
+       Second in the list, because it removes more of the report than anything
+       above it. */
+    if(!c.priceCosts){
+      suppressed.push('<strong>You reported in ' + esc(CURRENCY_NAME[v.currency] || v.currency)
+        + ', and our salary benchmark is UK data.</strong> No cost figure is shown anywhere in this '
+        + 'report. That covers the cost of your internal project time, the full cost of your portfolio, '
+        + 'your reported spend as a share of it, and the ProjexaR price as a share of your spend. We do '
+        + 'not convert between currencies, because a converted figure would still price your people at '
+        + 'another country\u2019s salaries. Your project effort appears throughout as full-time '
+        + 'equivalents, and your reported spend appears as you entered it.');
+    }
     /* Where contractors were reported, the routing is stated once here rather
        than repeated beside every figure they are absent from. */
     if(v.contractors){
@@ -3164,17 +3338,12 @@ window.submitToSender = function(payload){
     }
     $('pr-bandnote').innerHTML = suppressed.join(' ');
 
-    /* The consistency check is a bullet on screen and a callout in print, so it
-       does not get lost inside a table of figures. */
-    var f = facts(v, c), check = null;
-    $('pr-facts').innerHTML = f.filter(function(x){ if(x.check){ check = x; return false; } return true; })
-      .map(function(x){
-        return '<tr><th style="width:52%">' + esc(x.label) + '</th><td style="width:14%"><strong>' + esc(x.figure)
-             + '</strong></td><td>' + esc(x.note) + '</td></tr>';
-      }).join('');
-    $('pr-checkblock').innerHTML = check
-      ? '<div class="p-callout"><p><strong>Worth a second look at your ticket figure.</strong> ' + esc(check.text)
-        + '</p></div>' : '';
+    /* One row per figure. The ticket-rate consistency check used to render as a
+       callout beneath this table; §2 removed the check and the callout with it. */
+    $('pr-facts').innerHTML = facts(v, c).map(function(x){
+      return '<tr><th style="width:52%">' + esc(x.label) + '</th><td style="width:14%"><strong>' + esc(x.figure)
+           + '</strong></td><td>' + esc(x.note) + '</td></tr>';
+    }).join('');
 
     var rows = [
       ['Total company headcount', n0(v.companyHeadcount)],
@@ -3190,8 +3359,14 @@ window.submitToSender = function(payload){
       ['Service desk tickets each month', v.ticketsPerMonth === null ? 'Not given' : n0(v.ticketsPerMonth)],
       ['Share of IT effort spent on BAU or run work',
         v.bauSplitEstimate === null ? 'Not given' : v.bauSplitEstimate + '%'],
-      ['Median IT salary the cost figures use',
-        gbp(v.loadedSalary) + (v.loadedSalary === ASHE_MEDIAN ? ' (the sourced default)' : ' (your figure)')],
+      /* The label claims the figure is used. Where the currency gate removed
+         every cost figure it is not, so the row says what it is instead of
+         naming calculations the report did not run. */
+      c.priceCosts
+        ? ['Median IT salary the cost figures use',
+           gbp(v.loadedSalary) + (v.loadedSalary === ASHE_MEDIAN ? ' (the sourced default)' : ' (your figure)')]
+        : ['Median IT salary held against your answers',
+           gbp(v.loadedSalary) + ' (not used, because this report computes no cost figure)'],
       ['What projects are planned in', selText('toolset')],
       ['Live view of demand and availability', selText('resourceVisibility')],
       ['Internal BAU time in project budgets', selText('budgetTracking')],
@@ -3246,8 +3421,6 @@ window.submitToSender = function(payload){
           + ' a day at the ' + WORKING_DAYS + '-working-day month we assume, against HDI/MetricNet’s 87 to 133 a '
           + 'month and Jitbit’s ' + JITBIT_PER_DAY + ' a day',
         TICKETS_PER_AGENT_LO + ' to ' + TICKETS_PER_AGENT_HI + ' a month — ProjexaR’s control']);
-      fx.push(['Tickets per employee per month', n0(v.ticketsPerMonth) + ' ÷ ' + n0(v.companyHeadcount),
-               n2(c.impliedRate)]);
     }
     /* Run-work composition. The gap is taken off the displayed figures, so the
        subtraction printed here is the one a reader can do on the page. */
@@ -3332,8 +3505,12 @@ window.submitToSender = function(payload){
     /* The corroboration derivation, shown so the reader can check the two
        answers against each other themselves. */
     if(c.corroboration !== null){
+      /* §3. The assumption, beside the arithmetic that rests on it rather than
+         only in the branch that flags. A reader whose check came back Healthy
+         should be able to see what was assumed to get there. */
       fx.push(['Change effort implied by the staff you named',
-        '(' + n0(v.pms) + ' + ' + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ') ÷ ' + n0(v.staff),
+        '(' + n0(v.pms) + ' + ' + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ') ÷ ' + n0(v.staff)
+          + ', counting each project manager as a full-time equivalent of change work',
         spanText(c.derivedChangeShare, pctFmt) + '']);
       fx.push(['Run effort implied by the same figures',
         '100% − ' + spanText(c.derivedChangeShare, pctFmt), spanText(c.derivedRunShare, pctFmt)]);
@@ -3352,9 +3529,19 @@ window.submitToSender = function(payload){
        All three components of the loaded cost, with the two sourced ones and
        the one that is ProjexaR's judgement distinguished in the "how" column. */
     var L = c.loaded;
-    if(c.at[E_LO].internalEffortCost === null){
+    if(c.noBauCapacity){
       fx.push(['Cost of the internal time on your projects',
         'needs BAU staff on project work and a time band to cost, and you reported no BAU staff', 'Not computed']);
+    }else if(!c.priceCosts){
+      /* The FTE row still publishes. It is the quantity the suppressed cost was
+         built from, it is arithmetic on the respondent's own numbers, and the
+         reason line above points the reader at it. */
+      fx.push(['Internal project FTE — permanent staff only',
+        n0(v.pms) + ' project managers + ' + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' effective BAU FTE',
+        spanText(pick(c, 'internalProjectFte'), fteFmt) + ' FTE']);
+      fx.push(['Cost of the internal time on your projects',
+        'our loaded cost per head is built on a UK salary survey, and you reported in '
+          + (CURRENCY_NAME[v.currency] || v.currency), 'Not computed']);
     }else{
       fx.push(['Median IT salary',
         v.loadedSalary === ASHE_MEDIAN
@@ -3433,9 +3620,27 @@ window.submitToSender = function(payload){
       + 'departments this check is built for, so it is an average drawn from a population that may not include '
       + 'you. Orientation, not a target.';
 
-    $('pr-fxnote').innerHTML = (v.spend !== null && v.currency !== 'GBP')
-      ? '<strong>Currency.</strong> ProjexaR is priced in sterling and you gave us your spend in '
-        + esc(v.currency) + '. The percentage-of-spend figure compares the two directly, without conversion.' : '';
+    /* Nothing is said about what the cost figures exclude where there are no
+       cost figures. Both suppressions reach this: no BAU staff on project work,
+       and a reported currency our salary benchmark does not cover. */
+    $('pr-costexclusions').hidden = c.at[E_LO].internalEffortCost === null;
+
+    /* The currency statement, on the page that carries the arithmetic. It used
+       to say that the percentage-of-spend figure compared two currencies
+       directly and without conversion. That was a caveat sitting beside an
+       arithmetic operation it did not repair, which is the fault this release
+       exists to remove, so the operation is gone and this says what happens
+       instead. */
+    $('pr-fxnote').innerHTML = c.priceCosts ? ''
+      : '<strong>Currency, and why no cost figure appears.</strong> You reported in '
+        + esc(CURRENCY_NAME[v.currency] || v.currency) + '. Every cost figure this report can produce is '
+        + 'built on ONS ASHE, a UK survey of UK salaries, so it prices a UK department. Converting your '
+        + 'spend into sterling would not fix that, because the salaries would still belong to the wrong '
+        + 'labour market, and an exchange rate is a figure that goes stale. So we do not price your '
+        + 'internal effort, we do not add it to your spend, and we do not express the ProjexaR price as a '
+        + 'share of your spend. The ProjexaR price is still quoted, in sterling, without a percentage. Your '
+        + 'effort is quoted as full-time equivalents, and every other figure in this report is arithmetic on '
+        + 'your own numbers and is unaffected.';
 
     $('pr-cards').innerHTML = cards(v, c).map(function(card){
       return '<tr><td><span class="p-rag">' + esc(card.status || STATUS_WORD[card.rag]) + '</span></td>'

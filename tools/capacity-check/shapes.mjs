@@ -59,6 +59,31 @@ export const FIXTURE_B = {
    to 8.A's; any divergence means a routing rule has leaked. */
 export const FIXTURE_C = { ...FIXTURE_A, contractors: 6 };
 
+/* Fixture 8.D — 8.A reported in dollars, and nothing else changed. Every rated
+   figure, every FTE, the growth ceiling and the licence count must be identical
+   to 8.A's. What must go is the whole cost block and every ratio that crosses
+   the two currencies, including ProjexaR's price as a share of reported spend.
+
+   The currency bug was invisible for three releases for one reason: every
+   fixture was sterling. Same shape of blindness as the contractor routing,
+   which was invisible while every fixture carried zero contractors. A fixture
+   set that covers only the representative case cannot see the branches. */
+export const FIXTURE_D = { ...FIXTURE_A, currency: 'USD' };
+
+/* Fixtures 8.E and 8.F — 8.A with only the run share moved, so the two
+   non-Healthy corroboration branches are pinned by a fixture rather than
+   reached only by an assertion shape.
+
+   §2.9's derived run share for 8.A is 71.1% to 75.1%, so with the ±3 tolerance
+   the window is 68.1 to 78.1. The branch assignment shipped inverted from PR1
+   to PR3 and no fixture ever left the Healthy branch, which is why nobody saw
+   it. These two make each branch a fixture with figures typed in by hand.
+
+   Everything else matches 8.A except the reported run work and the non-ticket
+   gap, both of which move because the run share moved. */
+export const FIXTURE_E = { ...FIXTURE_A, bauSplitEstimate: 82 };
+export const FIXTURE_F = { ...FIXTURE_A, bauSplitEstimate: 60 };
+
 function processCombos() {
   const out = [];
   for (const toolset of TOOLSETS)
@@ -233,13 +258,37 @@ export function singularShapes() {
 }
 
 /* Corroboration, all three outcomes in their new home. The derived run share
-   for 8.A is 71.1% to 75.1%, so the window is 68.1 to 78.1. */
+   for 8.A is 71.1% to 75.1%, so the window is 68.1 to 78.1.
+
+   Above the window is the Watch and below it is the note. The derivation is
+   blind to delivery staff who hold no BAU role, so it understates the change
+   share — and through 100 − x that OVERstates the run share, which puts the
+   derived window above the truth and the respondent's stated figure below it.
+   Below is therefore the side the asymmetry protects. It read the other way
+   round from PR1 to PR3. */
 export function corroborationShapes() {
   return [
     { id: 'corrob-healthy', expect: 'Healthy', ...BASE, bauSplitEstimate: 72 },
-    { id: 'corrob-note', expect: 'note', ...BASE, bauSplitEstimate: 90 },
-    { id: 'corrob-watch', expect: 'Watch', ...BASE, bauSplitEstimate: 50 },
+    /* Above the window: we derive more change effort than they reported. The
+       expected cause is project managers who also carry run work. */
+    { id: 'corrob-watch', expect: 'Watch', ...BASE, bauSplitEstimate: 90 },
+    /* Below the window: we derive less. The expected cause is delivery staff
+       with no BAU role, whom this check cannot see. Stated, never rated. */
+    { id: 'corrob-note', expect: 'note', ...BASE, bauSplitEstimate: 50 },
+    /* No project managers, above the window. The PM explanation cannot apply,
+       so the Watch copy must not offer it. */
+    { id: 'corrob-watch-nopm', expect: 'Watch', ...BASE, pms: 0, bauSplitEstimate: 95 },
   ];
+}
+
+/* One shape per currency option. The cost block runs on GBP and is suppressed
+   on the other five, with the reason stated and no cross-currency ratio left
+   anywhere in the report. */
+export const CURRENCIES = ['GBP', 'USD', 'EUR', 'AUD', 'NZD', 'CAD'];
+export function currencyShapes() {
+  return CURRENCIES.map((currency) => ({
+    id: `currency-${currency}`, prices: currency === 'GBP', ...BASE, currency,
+  }));
 }
 
 /* Budgets carrying internal staff time: the non-summing path, the hero swap and
