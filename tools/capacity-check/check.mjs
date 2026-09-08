@@ -1918,6 +1918,77 @@ section('PR6 §1.2 — every Your numbers description is a sentence of its own')
   }
 }
 
+/* ================================== PR6 — counts stated in static copy ====== */
+section('PR6 — every count stated in prose matches what the report renders');
+{
+  /* "Four external figures appear in this report" was wrong on any report where
+     the respondent skipped an optional question, and PR6 deleted the count
+     rather than making it dynamic. Three other places still state a count.
+
+     The four steps are the case where a count is legitimate: they are static
+     markup, four <li> with no id, nothing in the script writes to them or
+     hides them, and no branch can produce a fifth or drop one. So the count
+     stays — and is pinned here, because a count that is true today is exactly
+     what "Four external figures" was, and the way it goes wrong is somebody
+     adding a step and not reading the prose around it. */
+  const html = readFileSync(TOOL_PATH, 'utf8');
+  const steps = html.slice(html.indexOf('<ol class="p-steps">'), html.indexOf('</ol>', html.indexOf('<ol class="p-steps">')));
+  const n = (steps.match(/<li>/g) || []).length;
+  eq(n, 4, 'the printed report lists four steps');
+  ok(/<h2>Four steps, no software required<\/h2>/.test(html), 'and the heading says four');
+  ok(/If you do these four things in a spreadsheet/.test(html), 'and the note below them says four');
+  ok(/four things you can do about it that involve buying nothing/.test(html),
+     'and the gate blurb promising four is describing those four');
+  /* Nothing in the script reaches them, which is what makes the count safe. */
+  const script = html.slice(html.indexOf('<script>', html.indexOf('</main>')));
+  ok(!/p-steps/.test(script), 'no script writes to the steps list');
+
+  /* The count PR6 deleted stays deleted, and the unconditional sentence stays. */
+  ok(!/Four external figures/.test(html), 'the external-figure count is gone');
+  ok(/Every external figure is named where it is used/.test(html),
+     'and the sentence that replaced it holds whatever the respondent skipped');
+}
+
+/* ============================= PR6 — planned commitment, never hours ======== */
+section('PR6 §7 — the tool holds committed time and never claims to track it');
+{
+  /* The standing constraint: ProjexaR holds planned commitment, and no output
+     may read as a claim that it measures where time actually went. The
+     comparison table is the risk, because its right-hand column describes what
+     a project plan would return and it now runs near the top of the report,
+     where a skimmer meets it before the column header has done any work. */
+  const TRACKING = [
+    /where it actually go(es|ne)/i,
+    /where the time (actually )?went/i,
+    /actual hours/i,
+    /time(-| )tracking/i,
+    /hours (logged|recorded|tracked)/i,
+    /timesheet/i,
+  ];
+  const shapes = [
+    { id: '8.A', ...FIXTURE_A }, { id: '8.B', ...FIXTURE_B }, { id: '8.D', ...FIXTURE_D },
+    { id: '8.E', ...FIXTURE_E }, { id: '8.F', ...FIXTURE_F },
+    ...suppressionShapes(), ...budgetShapes(), ...corroborationShapes(),
+  ];
+  let scanned = 0;
+  for (const shape of shapes) {
+    let cap;
+    try { cap = capture(shape); } catch { continue; }
+    if (!cap.ok) continue;
+    scanned++;
+    const t = allText(cap);
+    for (const re of TRACKING) {
+      ok(!re.test(t), `${shape.id}: output makes no claim to track hours (${re.source})`,
+         (t.match(re) || [''])[0]);
+    }
+  }
+  ok(scanned > 10, `shapes scanned for tracking claims (${scanned})`);
+  /* And the row this exists for says what the product actually holds. */
+  const a = capture({ id: 'commitment', ...FIXTURE_A });
+  ok(has(allText(a), 'Where it is committed: by person, by project, by week'),
+     'the comparison row names committed time');
+}
+
 /* ======================================================= source orphans ===== */
 section('Sources — every retained source is attached to a surviving claim');
 {

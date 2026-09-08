@@ -303,12 +303,37 @@ rather than report: `shownSpan()` returns null on a figure it cannot read, and
 its caller did not check. It fails with a reason now, so the dash assertions
 stay legible instead of arriving as a stack trace.
 
-The one em-dash pair PR6 did **not** remove as prose is in the bands statement,
-which §6 of that spec puts out of bounds: not one word. It was changed to
-brackets instead — every word in its original order, only the punctuation
-touched — which is the only reading under which "no em-dashes in output" and
-"nothing in §6 is reworded" can both hold. Reverting that one pair restores the
-block byte-for-byte, and nothing else depends on it.
+The bands statement is out of bounds under §6 of that spec: not one word. Its
+two em-dashes became two sentence boundaries. Every word is unchanged and in its
+original order, and the only additions are the full stops and the capitals they
+force — which is the reading under which "no em-dashes in output" and "nothing
+in §6 is reworded" both hold. Sentences rather than brackets: the clause between
+the dashes is the honest limit of what the evidence covers, and brackets
+de-emphasise the thing that has to carry weight.
+
+## Counts stated in prose
+
+"Four external figures appear in this report" was wrong on any report where the
+respondent skipped an optional question. PR6 deleted the count rather than
+making it dynamic, because "Every external figure is named where it is used" is
+true unconditionally.
+
+The four steps are the case where a count is legitimate: static markup, four
+`<li>` with no id, nothing in the script writing to them or hiding them, so no
+branch can produce a fifth or drop one. That count stays, and is now pinned —
+the count and all three sentences that state it, plus an assertion that no
+script reaches the list. A count that is true today is exactly what the external
+figures count was, and the way it goes wrong is somebody adding an item and not
+reading the prose around it.
+
+## Planned commitment, never hours
+
+The tool holds committed time and does not track where time went. `PR6 §7`
+scans every rendered node for the phrasings that break it — "where it actually
+goes", "actual hours", "hours logged", "timesheet" and the rest. The comparison
+table is the exposure: its right-hand column describes what a project plan would
+return, and since PR5 moved that section near the top of the report a skimmer
+reads it before the column header has done any work.
 
 ## Your numbers stands on its own
 

@@ -1206,12 +1206,14 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       </table>
       <p class="p-note" style="margin-top:6pt" id="pr-derivations"></p>
 
-      <!-- PR6 §6 puts this statement out of bounds: not one word. The two
-           em-dashes here are the only punctuation touched in it. Every word,
-           in its original order, is unchanged; the parenthetical the dashes
-           marked is now marked by brackets, which is what §1.1 asks for. If
-           even that is unwanted, reverting this pair restores the block
-           byte-for-byte and nothing else in the release depends on it. -->
+      <!-- PR6 §6 puts this statement out of bounds: not one word. Its two
+           em-dashes are the only punctuation touched in it, and they are now
+           two sentence boundaries. Every word is unchanged and in its original
+           order; the only additions are the full stops and the capitals they
+           force on "It" and "So". Sentences rather than brackets because the
+           clause between the dashes is the honest limit of what the evidence
+           covers, and brackets de-emphasise exactly the thing that has to
+           carry weight. -->
       <h2 style="margin-top:12pt">How the bands were set</h2>
       <p>These bands are ProjexaR's management controls. They are informed by published research but are not values
         the research establishes.</p>
@@ -1222,8 +1224,8 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
         to 6.19.</p>
       <p style="margin-top:6pt">Three things follow, and we state all three. The study covers
         new-product-development engineering, and a portfolio of IT change projects is a different setting.
-        Managerial responsibility appears in it only as a check on how people were allocated to projects (it
-        plays no part in the model that produces the inverted-U), so applying this number to project management
+        Managerial responsibility appears in it only as a check on how people were allocated to projects. It
+        plays no part in the model that produces the inverted-U. So applying this number to project management
         caseload is our step, not the paper's. The paper does test whether a leadership role (project leader, chief
         project engineer, project supervisor) changes the benefit of multi-project work, and finds it does not; that
         category is not the project manager, and the paper never models project management caseload as such. And our
@@ -2801,8 +2803,8 @@ window.submitToSender = function(payload){
     msproject:'Microsoft Project is built around one file and one owner. It forecasts resource demand inside a '
         + 'single project, but not across several concurrent ones without the enterprise-tier service (Microsoft '
         + 'Learn). Unless a shared resource pool is deliberately configured, each file holds its own resource data '
-        + 'and the company-wide view is assembled by hand. If Project Online is part of your setup, it retires on '
-        + '30 September 2026 with no automatic migration path published.',
+        + 'and the company-wide view is assembled by hand. If Project Online is part of your setup, Microsoft has '
+        + 'set its retirement for 30 September 2026, with no automatic migration path published.',
     planner:'You plan in Microsoft Planner, which is built for tasks and boards rather than portfolio-level '
         + 'capacity, with the advanced capacity and reporting features behind a premium tier (Microsoft Support). '
         + 'Boards are not natively linked to a resourcing system, so a conclusion drawn from one board can miss '
@@ -3176,7 +3178,10 @@ window.submitToSender = function(payload){
     if(v.bauSplitEstimate !== null){
       rows.push({
         now:'You estimate ' + v.bauSplitEstimate + '% of department effort goes to BAU.',
-        next:'Where it actually goes: by person, by project, by week.' });
+        /* Never "where it actually goes". The tool holds planned commitment
+           and does not track hours, and this row is read early enough now that
+           the column header cannot be relied on to disambiguate it. */
+        next:'Where it is committed: by person, by project, by week.' });
     }
 
     return rows;
