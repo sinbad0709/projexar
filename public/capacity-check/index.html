@@ -653,6 +653,12 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   #printReport{ display:block; }
   .page{ break-after:page; } .page:last-child{ break-after:auto; }
   .page h1{ font-size:20pt; margin-bottom:8pt; }
+  /* PR8 §2.1. The cover carries a title and one line and nothing else, so it
+     is set down the page rather than up against the top margin. It takes no
+     running header: a running header on a title page repeats the title. */
+  .p-cover{ padding-top:44mm; }
+  .p-cover h1{ font-size:26pt; line-height:1.15; margin-bottom:14pt; max-width:22em; text-wrap:balance; }
+  .p-cover .p-cover-line{ font-size:11pt; color:var(--ink-500); max-width:30em; text-wrap:pretty; }
   .page h2{ font-size:12.5pt; margin-bottom:5pt; }
   .p-head{ display:flex; justify-content:space-between; border-bottom:1pt solid var(--ink-300);
     padding-bottom:4pt; margin-bottom:12pt; font-size:8.5pt;
@@ -674,6 +680,20 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
     letter-spacing:var(--text-eyebrow-track); color:var(--ink-500); margin-bottom:2pt; }
   .p-lead{ font-size:10.5pt; font-weight:var(--weight-semibold); margin-bottom:5pt; }
   .p-figure{ font-size:26pt; font-weight:var(--weight-extrabold); letter-spacing:-.02em; }
+  /* PR8 §2.8. Seven forced sections put every page break under the browser's
+     control inside a section, and rasterising the result found the classic
+     fault: a tall table row split across a break, leaving a page carrying a
+     repeated header and three lines of a sentence on 88% white.
+
+     A row is the unit here. Every row in this report is one finding, one check
+     or one figure with its workings, and half of one on each of two pages is
+     unreadable in both places. Headings, captions and the big figures keep the
+     thing they introduce, so nothing ends a page announcing something that
+     starts on the next one. */
+  .p-table tr{ break-inside:avoid; }
+  .page h1,.page h2,.p-caption,.p-lead,.p-figure{ break-after:avoid; }
+  .p-callout p,.p-steps li{ break-inside:avoid; }
+  p{ orphans:2; widows:2; }
   .p-table{ width:100%; border-collapse:collapse; font-size:9pt; margin-top:5pt; }
   .p-table th,.p-table td{ text-align:left; padding:4pt 6pt; border-bottom:.5pt solid var(--ink-200); vertical-align:top; }
   .p-table thead th{ background:var(--ink-50); }
@@ -1157,7 +1177,12 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
     </div>
 
     <div class="closing" id="getReport">
-      <h2>What you told us</h2>
+      <!-- PR8 §6. Was "What you told us", which names a verdict rather than a
+           set of figures and collided with "Your numbers" two blocks up. The
+           print report carries the same heading, and PR5's rename landed on one
+           side only, so both are changed here and the suite asserts the old
+           name is gone from the whole file. -->
+      <h2>Where you stand</h2>
       <p class="verdict" id="closingVerdict"></p>
       <div class="gate" id="gate">
         <h3>Get the full report</h3>
@@ -1212,58 +1237,40 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   </section>
 
   <div id="printReport">
-    <section class="page">
-      <div class="p-head"><span>ProjexaR Capacity Check</span><span class="sep">: </span><span id="pr-date"></span></div>
+    <!-- PR8 §2 — seven sections, in this order: cover, provenance, executive
+         summary, findings, the four steps, workings and sources, ProjexaR.
+
+         The order is the audit's and the reason for it is that this document is
+         forwarded. A reader who did not fill the form in meets it cold, so it
+         answers where the numbers came from before it says what they mean, and
+         it says what they mean before it says who we are. Nothing is added and
+         nothing is dropped; every block below was somewhere in the previous six
+         pages.
+
+         No ask appears anywhere in the body (§0.14). The sender's reason for
+         forwarding varies — awareness, a resourcing case, sign-off, putting a
+         known risk on the record — and a document that presumes one is wrong
+         for the other three. -->
+
+    <!-- 1. The cover. Title and one line, and the line is the whole point of
+         it: it puts the estimates on the person who gave them rather than on
+         us, which is what makes the document safe for them to forward.
+
+         No organisation name is invented. The tool does not collect one and an
+         email domain is not a company name. Written by coverAttribution(),
+         which runs at render and again at the gate, because both name fields
+         are optional and neither is entered until after renderPrint has run. -->
+    <section class="page p-cover">
       <h1>Your project capacity, and what is left of it</h1>
-      <!-- The two callouts, hero first. Which one leads is set in JS from the
-           budgets answer, so the printed report and the screen agree on which
-           figure the report is about. Ids are stable across the swap. -->
-      <div class="p-block">
-        <h2 id="pr-herohead">Portfolio growth ceiling</h2>
-        <div class="p-figure" id="pr-figure"></div>
-        <p id="pr-ceiling"></p>
-      </div>
-      <div class="p-block" id="pr-secondblock">
-        <h2 id="pr-secondhead"></h2>
-        <div class="p-figure" id="pr-secondfigure"></div>
-        <p id="pr-secondnote"></p>
-      </div>
-      <div class="p-block"><h2>What you told us</h2><p id="pr-verdict"></p></div>
-      <div class="p-block">
-        <h2>Your capacity position</h2>
-        <table class="p-table">
-          <thead><tr><th style="width:44%">Measure</th><th style="width:14%">Yours</th><th>Rating</th></tr></thead>
-          <tbody id="pr-tiles"></tbody>
-        </table>
-        <p class="p-note" id="pr-bandnote"></p>
-      </div>
+      <p class="p-cover-line" id="pr-attrib"></p>
     </section>
 
+    <!-- 2. Provenance, page one. It used to be at the back. The receiving
+         reader's first thought is where the numbers came from, and answering it
+         before they ask is stronger than letting them assume a vendor invented
+         them. -->
     <section class="page">
-      <div class="p-head"><span>Your numbers</span><span class="sep">: </span><span>ProjexaR Capacity Check</span></div>
-      <!-- PR7 item 4. Five headings across two consecutive spreads all named
-           figures: "Your numbers", "The figures your position is built from",
-           "Your figures, as you entered them", "How the numbers were worked
-           out", "Every figure is arithmetic on something you supplied". A
-           reader cannot tell from any of them which table they are looking at.
-
-           The running header keeps the page's name and the two tables take
-           captions instead of headings, so the distinction the reader needs —
-           what we worked out, against what you typed — carries the whole
-           weight, in four words each. -->
-      <p>None of these is rated against a threshold. They are the quantities the two rated measures above are
-        calculated from, plus context on the department they sit in.</p>
-      <p class="p-caption">From your answers</p>
-      <table class="p-table"><tbody id="pr-facts"></tbody></table>
-      <p class="p-caption" style="margin-top:12pt">As you entered them</p>
-      <table class="p-table"><tbody id="pr-inputs"></tbody></table>
-    </section>
-
-    <section class="page">
-      <div class="p-head"><span>How the numbers were worked out</span><span class="sep">: </span><span>ProjexaR Capacity Check</span></div>
-      <!-- PR7 item 4. Was an <h2>, which made it the fourth figures-heading in
-           two spreads. It is a lead sentence and now reads as one; the running
-           header above already names the page. -->
+      <div class="p-head"><span>Where the numbers come from</span><span class="sep">: </span><span>ProjexaR Capacity Check</span></div>
       <p class="p-lead">Every figure here is arithmetic on something you supplied.</p>
       <!-- The count of external figures was wrong on any report where the
            respondent skipped an optional question, and making it dynamic would
@@ -1272,71 +1279,74 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <p>Every external figure is named where it is used: a tickets-per-technician window, a cross-industry split
         between run and change work, a median IT salary, and an employer National Insurance rate. Two of the numbers
         we apply are ours rather than anyone's published figure, the 170&ndash;320 tickets-per-technician window and the
-        25% overhead uplift, and both are labelled as our judgement wherever they appear. Everything else below is
-        your own arithmetic.</p>
-      <!-- Static, but it describes figures the report does not always contain.
-           Where no cost figure was computed there is nothing for it to be about,
-           so renderPrint hides it rather than leaving a paragraph about the
-           exclusions of a calculation that did not run. -->
-      <p style="margin-top:6pt" id="pr-costexclusions"><strong>What the cost figures exclude.</strong> They count your permanent project
-        managers and the effective BAU capacity behind your projects, and nothing else. Contractors and outsourced
-        staff are excluded: what they cost is paid out of budget, and these figures exist to put a number on the
-        internal staff time your project budgets do not record. Anyone who works on projects without also holding a
-        BAU role is excluded too. We do not count them, because we did not ask who they are. The internal figure is a
-        floor, not a total.</p>
-      <table class="p-table">
-        <thead><tr><th style="width:38%">Figure</th><th style="width:32%">How</th><th>Result</th></tr></thead>
-        <tbody id="pr-formulas"></tbody>
-      </table>
-      <p class="p-note" style="margin-top:6pt" id="pr-derivations"></p>
+        25% overhead uplift, and both are labelled as our judgement wherever they appear. Everything else in this
+        report is your own arithmetic.</p>
+      <!-- PR8 §2.2. The range posture belongs on the provenance page rather
+           than in the findings: it is a statement about how every figure in the
+           document was produced, not about any one of them. The second sentence
+           used to close the "That is why these figures are ranges" paragraph in
+           the caveat block; it has moved here rather than being repeated, so it
+           is still said once and is now said where it applies to everything
+           below it. The qualification it sat with stays where it was. -->
+      <p style="margin-top:6pt">Every figure drawn from a banded answer is shown as a range and rated on the less
+        favourable end. Where we could have picked a single flattering number, we did not.</p>
+    </section>
 
-      <!-- PR6 §6 puts this statement out of bounds: not one word. Its two
-           em-dashes are the only punctuation touched in it, and they are now
-           two sentence boundaries. Every word is unchanged and in its original
-           order; the only additions are the full stops and the capitals they
-           force on "It" and "So". Sentences rather than brackets because the
-           clause between the dashes is the honest limit of what the evidence
-           covers, and brackets de-emphasise exactly the thing that has to
-           carry weight. -->
-      <h2 style="margin-top:12pt">How the bands were set</h2>
-      <!-- PR7 §3.1. The statement used to live here as static markup, inside
-           #printReport, which is display:none outside @media print. A reader on
-           screen never saw the justification for the rating they were being
-           shown. It now renders into both reports from one string in
-           bandsStatement(), so the two cannot drift the way a section name did
-           between the web and print reports in PR5. -->
-      <div id="pr-bands"></div>
+    <!-- 3. The executive summary. Three figures, money first, in a fixed order:
+         the full portfolio cost, the gap to the sustainable pace, and the
+         internal staff cost carried inside the staff budget.
 
-      <h2 style="margin-top:12pt">What this does not account for</h2>
-      <div class="p-callout">
-        <p><strong>Effective FTE is a blended average, not a roster.</strong> Twenty people at a third of their time
-          and seven people at full time both come to a similar number of full-time equivalents, and they behave
-          nothing alike. A blend tells you how much capacity exists; it does not tell you whether it is available in
-          the weeks a plan needs it.</p>
-        <p style="margin-top:6pt"><strong>That is why these figures are ranges.</strong> We ask for the blended
-          share of time as a ten-point band rather than a single percentage, and every figure drawn from it is
-          computed at both ends of that band and shown as a range. Where a range crosses one of our thresholds we
-          rate it on the less favourable end and name both states. Where we could have picked a single flattering
-          number, we did not. The width of these ranges is the measure of how
-          much a department-wide average leaves unsaid.</p>
-        <p style="margin-top:6pt"><strong>Project shape varies and this does not capture it.</strong> Projects have a
-          cadence: a subject-matter expert may be needed full time in discovery, part time in build, and not at all
-          until go-live. A figure taken today is a snapshot of a moving picture.</p>
-        <p style="margin-top:6pt"><strong>Both rated thresholds are ProjexaR management controls.</strong> They
-          measure different things deliberately: oversight capacity against delivery capacity. How the
-          concurrent-projects band was set, and what the research behind it does and does not establish, is set out
-          under <em>How the bands were set</em> above.</p>
-        <p style="margin-top:6pt"><strong>The growth ceiling assumes nothing else changes.</strong> It projects your
-          current pace forward at your current staffing. Adding people, reallocating time or changing how fast
-          projects run would all move it.</p>
-        <p style="margin-top:6pt" id="pr-flexeranote"></p>
-        <p style="margin-top:6pt" id="pr-fxnote"></p>
+         No capacity ratio appears here. The ratios are the mechanism, and the
+         mechanism is the findings section's job.
+
+         All three are computed in execSummary() from the same objects the
+         screen renders from. None is written as a constant, and where one could
+         not be computed the slot says why. -->
+    <section class="page">
+      <div class="p-head"><span>In summary</span><span class="sep">: </span><span>ProjexaR Capacity Check</span></div>
+      <div class="p-block">
+        <h2 id="pr-sum1head"></h2>
+        <div class="p-figure" id="pr-sum1figure"></div>
+        <p id="pr-sum1note"></p>
+      </div>
+      <div class="p-block">
+        <h2 id="pr-sum2head"></h2>
+        <div class="p-figure" id="pr-sum2figure"></div>
+        <p id="pr-sum2note"></p>
+      </div>
+      <div class="p-block">
+        <h2 id="pr-sum3head"></h2>
+        <div class="p-figure" id="pr-sum3figure"></div>
+        <p id="pr-sum3note"></p>
       </div>
     </section>
 
+    <!-- 4. The findings. Unchanged in substance. The bands statement and the
+         Colicev citation now sit immediately under the table that uses the
+         threshold, rather than in an appendix three pages away: a reader who
+         has just been shown a rating is the reader who wants to know where the
+         band came from. PR7 single-sourced the statement through
+         bandsStatement(), so this is a placement change and not a text one. -->
     <section class="page">
       <div class="p-head"><span>What your answers show</span><span class="sep">: </span><span>ProjexaR Capacity Check</span></div>
-      <h2>Four findings, read against what you told us</h2>
+      <div class="p-block"><h2>Where you stand</h2><p id="pr-verdict"></p></div>
+      <div class="p-block">
+        <h2>Your capacity position</h2>
+        <table class="p-table">
+          <thead><tr><th style="width:44%">Measure</th><th style="width:14%">Yours</th><th>Rating</th></tr></thead>
+          <tbody id="pr-tiles"></tbody>
+        </table>
+        <p class="p-note" id="pr-bandnote"></p>
+      </div>
+
+      <!-- PR6 §6 puts this statement out of bounds: not one word. PR7 §3.1
+           moved it out of static markup and into bandsStatement(), so the web
+           report and this one cannot carry different versions of it the way a
+           section name did between them in PR5. -->
+      <h2 style="margin-top:12pt">How the bands were set</h2>
+      <div id="pr-bands"></div>
+
+      <h2 style="margin-top:12pt">Four findings, read against what you told us</h2>
       <table class="p-table">
         <thead><tr><th style="width:14%">Rating</th><th>Finding</th></tr></thead>
         <tbody id="pr-cards"></tbody>
@@ -1352,9 +1362,16 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       </table>
     </section>
 
+    <!-- 5. The four steps, and the limit of the aggregate they answer.
+
+         The steps are unchanged, down to the wording. The comparison table sits
+         above them because it is the argument the steps follow from: an average
+         sizes a problem and cannot be acted on, so here is what to do with the
+         plans you already have. It is the same block that used to stand as its
+         own page and no cell of it has changed. -->
     <section class="page">
-      <div class="p-head"><span>What your plans would show instead</span><span class="sep">: </span><span>ProjexaR Capacity Check</span></div>
-      <h2>The limit of an aggregate</h2>
+      <div class="p-head"><span>What to do next</span><span class="sep">: </span><span>ProjexaR Capacity Check</span></div>
+      <h2>What your plans would show instead</h2>
       <p>Every figure in this report was calculated from your data. Aggregates are useful for sizing a problem and
         useless for acting on one: an average tells you the portfolio is stretched but never which person is carrying
         it. The same questions asked of your actual project plans return a different class of answer.</p>
@@ -1362,13 +1379,14 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
         <thead><tr><th style="width:50%">From what you told us</th><th>From your project plans</th></tr></thead>
         <tbody id="pr-compare"></tbody>
       </table>
-      <p class="p-note">Nothing in the right-hand column requires a new system to be built. It requires the plans you
-        already have to be read together rather than one at a time.</p>
-    </section>
+      <!-- PR8 §4, epigram 1 of 2. This closed on "It requires the plans you
+           already have to be read together rather than one at a time." — a
+           reversal-shaped restatement of the sentence in front of it, carrying
+           no limitation of its own. The claim that matters, that none of this
+           needs a system built, is the one that stays. -->
+      <p class="p-note">Nothing in the right-hand column requires a new system to be built.</p>
 
-    <section class="page">
-      <div class="p-head"><span>What to do next</span><span class="sep">: </span><span>ProjexaR Capacity Check</span></div>
-      <h2>Four steps, no software required</h2>
+      <h2 style="margin-top:12pt">Four steps, no software required</h2>
       <ol class="p-steps">
         <li><strong>List the BAU people currently named on project work.</strong> Names, not a percentage. This is the
           population every one of your project plans quietly depends on.</li>
@@ -1380,15 +1398,104 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
         <li><strong>Agree what triggers a renegotiation.</strong> A major incident, a phase gate, a leaver. The failure
           mode is rarely the original agreement. It is the replan that never formally happens.</li>
       </ol>
-      <p class="p-note">If you do these four things in a spreadsheet and they hold, you do not need us. Most teams find
-        the problem is not the arithmetic. It is keeping it current once the portfolio starts moving.</p>
+      <!-- PR8 §4, epigram 2 of 2. This closed on "Most teams find the problem is
+           not the arithmetic. It is keeping it current once the portfolio starts
+           moving." Two sentences of reversal carrying no limitation, and read
+           straight after "you do not need us" they take the concession back —
+           which is an ask, and §0.14 keeps asks out of the body. The concession
+           stands on its own. -->
+      <p class="p-note">If you do these four things in a spreadsheet and they hold, you do not need us.</p>
+    </section>
+
+    <!-- 6. Workings and sources. Every published figure, the arithmetic behind
+         it, what you entered, what the report does not account for, and every
+         source a claim rests on. Unchanged in content: the provenance passage
+         that used to open this page has moved to page two, where it is the
+         page, and nothing else has left. -->
+    <section class="page">
+      <div class="p-head"><span>Your numbers, and how they were worked out</span><span class="sep">: </span><span>ProjexaR Capacity Check</span></div>
+      <!-- PR7 item 4. Five headings across two consecutive spreads all named
+           figures: "Your numbers", "The figures your position is built from",
+           "Your figures, as you entered them", "How the numbers were worked
+           out", "Every figure is arithmetic on something you supplied". A
+           reader cannot tell from any of them which table they are looking at.
+
+           The running header keeps the page's name and the two tables take
+           captions instead of headings, so the distinction the reader needs —
+           what we worked out, against what you typed — carries the whole
+           weight, in four words each. -->
+      <p>None of these is rated against a threshold. They are the quantities the two rated measures are
+        calculated from, plus context on the department they sit in.</p>
+      <p class="p-caption">From your answers</p>
+      <table class="p-table"><tbody id="pr-facts"></tbody></table>
+      <p class="p-caption" style="margin-top:12pt">As you entered them</p>
+      <table class="p-table"><tbody id="pr-inputs"></tbody></table>
+
+      <!-- Static, but it describes figures the report does not always contain.
+           Where no cost figure was computed there is nothing for it to be about,
+           so renderPrint hides it rather than leaving a paragraph about the
+           exclusions of a calculation that did not run.
+
+           PR6 §3 puts this caveat inline, because it changes what the number
+           counts. PR8 leaves it where PR6 put it. -->
+      <p style="margin-top:12pt" id="pr-costexclusions"><strong>What the cost figures exclude.</strong> They count your permanent project
+        managers and the effective BAU capacity behind your projects, and nothing else. Contractors and outsourced
+        staff are excluded: what they cost is paid out of budget, and these figures exist to put a number on the
+        internal staff time your project budgets do not record. Anyone who works on projects without also holding a
+        BAU role is excluded too. We do not count them, because we did not ask who they are. The internal figure is a
+        floor, not a total.</p>
+      <table class="p-table">
+        <thead><tr><th style="width:38%">Figure</th><th style="width:32%">How</th><th>Result</th></tr></thead>
+        <tbody id="pr-formulas"></tbody>
+      </table>
+      <p class="p-note" style="margin-top:6pt" id="pr-derivations"></p>
+
+      <h2 style="margin-top:12pt">What this does not account for</h2>
+      <div class="p-callout">
+        <p><strong>Effective FTE is a blended average, not a roster.</strong> Twenty people at a third of their time
+          and seven people at full time both come to a similar number of full-time equivalents, and they behave
+          nothing alike. A blend tells you how much capacity exists; it does not tell you whether it is available in
+          the weeks a plan needs it.</p>
+        <!-- PR8 §2.2. This paragraph closed on "Where we could have picked a
+             single flattering number, we did not." That sentence is the range
+             posture rather than a qualification of the mechanism, and it now
+             opens the report on page two instead of closing a caveat on page
+             six. Removing it leaves every qualification here intact and the
+             paragraph true: the PR6 §3 test asks whether the sentence's absence
+             makes what remains false or misleading, and it does not. -->
+        <p style="margin-top:6pt"><strong>That is why these figures are ranges.</strong> We ask for the blended
+          share of time as a ten-point band rather than a single percentage, and every figure drawn from it is
+          computed at both ends of that band and shown as a range. Where a range crosses one of our thresholds we
+          rate it on the less favourable end and name both states. The width of these ranges is the measure of how
+          much a department-wide average leaves unsaid.</p>
+        <p style="margin-top:6pt"><strong>Project shape varies and this does not capture it.</strong> Projects have a
+          cadence: a subject-matter expert may be needed full time in discovery, part time in build, and not at all
+          until go-live. A figure taken today is a snapshot of a moving picture.</p>
+        <p style="margin-top:6pt"><strong>Both rated thresholds are ProjexaR management controls.</strong> They
+          measure different things deliberately: oversight capacity against delivery capacity. How the
+          concurrent-projects band was set, and what the research behind it does and does not establish, is set out
+          under <em>How the bands were set</em> above.</p>
+        <p style="margin-top:6pt"><strong>The growth ceiling assumes nothing else changes.</strong> It projects your
+          current pace forward at your current staffing. Adding people, reallocating time or changing how fast
+          projects run would all move it.</p>
+        <p style="margin-top:6pt" id="pr-flexeranote"></p>
+        <p style="margin-top:6pt" id="pr-fxnote"></p>
+      </div>
 
       <h2 style="margin-top:12pt">Sources</h2>
       <table class="p-table"><tbody id="pr-sources"></tbody></table>
       <p class="p-note">Sources are listed only where a claim in your report draws on one. Everything else is
         arithmetic on your own figures.</p>
+    </section>
 
-      <h2 style="margin-top:12pt">See this on your own plans</h2>
+    <!-- 7. ProjexaR, last, one page. What it does and what it costs, at this
+         organisation's resource count. No trial call to action, no urgency
+         line, no delegated-authority framing: PR7 §8.2 rejected that and PR8
+         §2.7 keeps it rejected. This is the only place in the report that says
+         anything about the product. -->
+    <section class="page">
+      <div class="p-head"><span>See this on your own plans</span><span class="sep">: </span><span>ProjexaR Capacity Check</span></div>
+      <h2>See this on your own plans</h2>
       <p>This report works from a blended average. ProjexaR works from your actual projects and your actual people,
         with each person's operational commitment set and owned by their line manager, so when it changes every
         plan that depends on it changes with it.</p>
@@ -2703,6 +2810,16 @@ window.submitToSender = function(payload){
                  + 'anyone who works on projects without a BAU role. We do not count them, because we did not ask '
                  + 'who they are.';
 
+    /* PR8 §2.3. The printed executive summary carries the full portfolio cost
+       and the internal staff cost as two figures of its own, so the pieces this
+       note is assembled from are returned alongside it. Every string below is
+       the one that already shipped and every figure is the same computation;
+       nothing here is a second source for a number. */
+    var headRate = gbp(c.loaded.total);
+    var fteLine = 'The ' + fteSpan + ' effective full-time equivalents behind your projects, at '
+                + headRate + ' a head.';
+    var ledger = 'That sits in the staff budget rather than the project budget.';
+
     if(!c.sums){
       /* Any answer other than an explicit out-the-door one. Summing regardless
          would double-count for every respondent whose budgets already carry
@@ -2713,13 +2830,16 @@ window.submitToSender = function(payload){
         : 'Your answer on budgets was not "out-the-door spend only", so we have not added this to your reported '
           + 'spend. Where budgets already carry internal staff time, adding it again would count it twice.';
       return { state:'part', eyebrow:COST_EYEBROW_PART, figure:effort,
-        note:'The ' + fteSpan + ' effective full-time equivalents behind your projects, at '
-           + gbp(c.loaded.total) + ' a head. ' + why + excludes };
+        effort:effort, fteLine:fteLine, ledger:ledger, why:why, excludes:excludes,
+        note:fteLine + ' ' + why + excludes };
     }
 
     var full = moneySpan(pick(c, 'fullPortfolioCost'));
     var share = spanText(pick(c, 'reportedShare'), pctFmt);
     return { state:'full', eyebrow:COST_EYEBROW_FULL, figure:full,
+      effort:effort, fteLine:fteLine, ledger:ledger, why:'', excludes:excludes,
+      spendLine:'Your project budgets record <strong>' + CURRENCY[v.currency] + n0(v.spend) + '</strong> a year.',
+      shareLine:'Your reported figure is <strong>' + share + '</strong> of what the portfolio costs.',
       /* §2. One compound sentence carrying two em-dash asides became four
          plain ones. Same figures, same exclusions, same claim. */
       note:'Your project budgets record <strong>' + CURRENCY[v.currency] + n0(v.spend) + '</strong> a year. The '
@@ -3029,12 +3149,18 @@ window.submitToSender = function(payload){
            + 'remembering to refresh it.' });
     }else{
       /* The title already names what is missing, so the lead counts rather
-         than restating it (§4). */
+         than restating it (§4).
+
+         PR8 §3.1. At three hits the count is not a count any more: the title
+         says there is no single current view and "all three are missing" says
+         it again in different words. It goes on that branch and stays on the
+         other two, where one or two of three is information the title cannot
+         carry. */
       var lead = hits.length === 3
-        ? 'All three of the things that would give you one current view are missing.'
+        ? ''
         : (hits.length === 2
-            ? 'Two of the three things that would give you one current view are missing.'
-            : 'One of the three things that would give you one current view is missing.');
+            ? 'Two of the three things that would give you one current view are missing. '
+            : 'One of the three things that would give you one current view is missing. ');
       /* §0.11. This used to assert that reconciling by hand is where two
          projects double-book the same person. It is a fair mechanism and a
          claim about a department nobody here has seen, so it becomes the
@@ -3043,13 +3169,21 @@ window.submitToSender = function(payload){
         ? ' Each of your project managers is carrying ' + qty1(c.pmLoad, 'concurrent project', 'concurrent projects')
           + '. Where two of those need the same person in the same week, reconciling by hand is what has to catch it.'
         : '';
+      /* PR8 §3.1. This ran to five sequential claims in one paragraph: the
+         count, the three conditions, the caseload inference and a closing
+         generalisation. The three conditions are the finding and they stay.
+         The close — "Each of these is fixable on its own, but they compound:
+         the fewer of them hold, the more of your capacity picture depends on
+         somebody remembering something" — asserted nothing the three
+         conditions had not already shown and qualified nothing, which is what
+         made it cuttable under §6.4's rule. The count and the conditional
+         caseload stay: one is arithmetic and the other is the finding's single
+         asserted inference under §0.11, already made conditional in PR7. */
       out.push({ key:'visibility', rag:hits.length === 3 ? 'over' : 'atrisk',
         title:hits.length === 3
           ? 'There is no single current view of demand and availability'
           : 'Your view of demand and availability is not single and current',
-        body:lead + ' ' + hits.join(' ') + caseload
-           + ' Each of these is fixable on its own, but they compound: the fewer of them hold, the more of your '
-           + 'capacity picture depends on somebody remembering something.' });
+        body:lead + hits.join(' ') + caseload });
     }
 
     /* ---- Finding 3 — line-manager commitments against a lagging picture ----
@@ -3243,13 +3377,24 @@ window.submitToSender = function(payload){
       out.push({ key:'runwork', stated:true,
         title:'Ticket work accounts for ' + ticket + ' FTE of the ' + d1(c.runWorkFte)
             + ' FTE you reported on run work',
+        /* PR8 §3.2. This ran to 111 words to say one thing: ticket volume
+           explains part of the run FTE, so either logging is incomplete or the
+           run work is not ticket-shaped. The arithmetic stays, because it is
+           the finding. What went was the scaffolding around it — "that is a
+           statement about composition, not a deficiency", "two readings fit it
+           and both are worth having", "which of the two it is changes what you
+           would do about it" — three sentences announcing a two-way reading
+           that the sentence stating the two-way reading already makes plain.
+
+           The two things that are not scaffolding stay: the qualifier pointer,
+           which is a PR6 §3 caveat pointing at where it is set out, and the
+           closing sentence about the population, which PR6 kept deliberately
+           as the point the block exists to make. */
         body:'Your ' + v.bauSplitEstimate + '% run share across ' + qty(v.staff, 'person', 'people')
-           + ' in IT comes to ' + d1(c.runWorkFte) + ' FTE. Your ticket volume accounts for ' + ticket + ' of it, '
-           + 'which leaves ' + gap + ' FTE of run work that is not ticket-shaped. That is a statement about '
-           + 'composition, not a deficiency. Two readings fit it and both are worth having. Either ticket logging '
-           + 'is incomplete, or run work in your organisation genuinely is not ticket-shaped: infrastructure, '
-           + 'incident response, vendor management, compliance. Which of the two it is changes what you would do '
-           + 'about it. ' + qualifiers
+           + ' in IT comes to ' + d1(c.runWorkFte) + ' FTE, and your ticket volume accounts for ' + ticket
+           + ' of it. The remaining ' + gap + ' FTE is composition, not a deficiency: either ticket logging is '
+           + 'incomplete, or run work in your organisation genuinely is not ticket-shaped, which is '
+           + 'infrastructure, incident response, vendor management and compliance. ' + qualifiers
            + ' What does not change is that this is the same population your projects draw from.' });
     }
 
@@ -3731,26 +3876,101 @@ window.submitToSender = function(payload){
          + 'them.</p>';
   }
 
+  /* ---- The printed executive summary (PR8 §2.3) ----
+     Three figures, money first, in a fixed order: the full portfolio cost, the
+     gap to the sustainable pace, and the internal staff cost carried inside the
+     staff budget. The screen still leads on whichever of the two the budgets
+     answer makes the report about; the printed summary does not swap, because a
+     forwarded document is read by someone who has not seen the screen and the
+     order has to be the same one every time.
+
+     No capacity ratio appears here. The ratios are the mechanism and the
+     mechanism is the findings section's job.
+
+     Every figure is computed. Where one could not be, the slot states the
+     reason rather than leaving a blank for the reader to interpret (§1.1), and
+     the reason is the same string the screen gives for the same suppression.
+     Nothing in this function is a second source for a number: each figure and
+     each sentence comes from growthCeilingCopy() or fullCostCopy(). */
+  function execSummary(v, c, hc, fc){
+    var currencyReason = costCurrencyCopy(v, c);
+    var noBau = 'No BAU staff were reported against project work, so there is no blended time band to cost and '
+              + 'no internal project effort to put a figure on.';
+
+    /* 1. The full portfolio cost.
+
+       Where it was not computed the slot does not carry its heading either. A
+       heading reading "The full cost of your portfolio" above the words "Not
+       computed" still puts the claim on the page, and on the non-summing path
+       there is no full portfolio cost to claim — adding the internal time to a
+       budget that may already carry it would count it twice. The slot names
+       what is absent instead, and the note gives the same reason the screen
+       gives for the same suppression. */
+    var one;
+    if(fc && fc.state === 'full'){
+      one = { head:fc.eyebrow, figure:fc.figure,
+              note:fc.spendLine + ' The people doing the work cost a further <strong>' + fc.effort
+                 + '</strong>. ' + fc.shareLine };
+    }else{
+      one = { head:'What your portfolio costs in total', figure:'Not computed',
+              note: c.noBauCapacity ? noBau : (!c.priceCosts ? currencyReason : fc.why) };
+    }
+
+    /* 2. The gap to the sustainable pace. */
+    var two = { head:hc.eyebrow, figure:hc.figure, note:hc.note };
+
+    /* 3. The internal staff cost, which is the part of the first figure the
+       project budgets do not carry. */
+    var three;
+    if(fc){
+      three = { head:COST_EYEBROW_PART, figure:fc.effort,
+                note:fc.fteLine + ' ' + fc.ledger + fc.excludes };
+    }else{
+      three = { head:COST_EYEBROW_PART, figure:'Not computed',
+                note: c.noBauCapacity ? noBau : currencyReason };
+    }
+
+    return [one, two, three];
+  }
+
+  /* ---- The cover line (PR8 §2.1) ----
+     The attribution is the reason the cover reads this way: it puts the
+     estimates on the person who gave them rather than on us, which is what
+     makes the document safe for them to forward. No organisation name is
+     invented — the tool does not collect one and an email domain is not a
+     company name.
+
+     Both name fields are optional (§1.2 of the brief), so both branches ship.
+     The name is entered at the gate, which is below the report and runs after
+     renderPrint, so this is called twice: once at render, where the fields are
+     normally empty, and again from the gate before the print view opens. One
+     function, so the two cannot drift. */
+  function reportDate(){
+    return new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  }
+
+  function coverAttribution(){
+    var name = [$('fname').value.trim(), $('lname').value.trim()].filter(Boolean).join(' ');
+    var when = reportDate();
+    $('pr-attrib').textContent = name
+      ? 'Prepared from estimates provided by ' + name + ', ' + when + '. A directional check, not an audit.'
+      : 'Prepared from estimates provided on ' + when + '. A directional check, not an audit.';
+  }
+
   function renderPrint(v, c, hc, fc){
     $('pr-bands').innerHTML = bandsStatement('p-note');
-    $('pr-date').textContent = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+    coverAttribution();
 
-    /* Hero first, secondary below it, so the printed report opens on the same
-       figure the screen led with. */
-    var costLeads = !!fc && fc.state === 'full';
-    var lead   = costLeads ? fc : hc;
-    var second = costLeads ? hc : fc;
-
-    $('pr-herohead').textContent = lead.eyebrow;
-    $('pr-figure').textContent   = lead.figure;
-    /* The note is written to follow straight on from the figure, so it takes no
-       prefix here — page 1 carries the heading instead. */
-    $('pr-ceiling').innerHTML    = lead.note;
-
-    $('pr-secondblock').hidden = !second;
-    $('pr-secondhead').textContent   = second ? second.eyebrow : '';
-    $('pr-secondfigure').textContent = second ? second.figure : '';
-    $('pr-secondnote').innerHTML     = second ? second.note : '';
+    /* PR8 §2.3. Three slots, fixed order, money first. The lead-and-second
+       swap the printed report used to mirror off the screen is gone: it made
+       page one different from one respondent to the next, and the reader this
+       document is written for has not seen the screen it was mirroring. */
+    var summary = execSummary(v, c, hc, fc);
+    for(var i = 0; i < 3; i++){
+      $('pr-sum' + (i + 1) + 'head').textContent   = summary[i].head;
+      $('pr-sum' + (i + 1) + 'figure').textContent = summary[i].figure;
+      $('pr-sum' + (i + 1) + 'note').innerHTML     = summary[i].note;
+    }
 
     $('pr-verdict').innerHTML = verdict(v, c);
 
@@ -4171,8 +4391,12 @@ window.submitToSender = function(payload){
          + 'projects is a managed resource.' : '');
     if(c.spendPct !== null){
       pp += ' That is ' + pct2(c.spendPct) + ' of the annual IT project spend you gave us';
+      /* PR8 §2. This used to read "on page 1", which was true of the old six-page
+         order and is not true of the new one. It was never safe: the printed
+         page count varies with the shape and nothing in the tool knows what it
+         will be. Naming the section instead is true at any length. */
       pp += c.fullCostPct !== null
-        ? ', and ' + spanText(c.fullCostPct, pct2, 2) + ' of the full portfolio cost on page 1.'
+        ? ', and ' + spanText(c.fullCostPct, pct2, 2) + ' of the full portfolio cost in the summary.'
         : '.';
     }
     $('pr-price').textContent = pp;
@@ -4374,6 +4598,13 @@ window.submitToSender = function(payload){
        checkbox are both inside #gate and both gone once it is swapped out. */
     payload.turnstile_token = turnstileToken();
     payload.ack = $('ack').checked;
+
+    /* PR8 §2.1. The cover attributes the estimates to the person who gave
+       them, and this is the first point at which their name exists — the fields
+       are below the report and renderPrint ran before the visitor reached them.
+       Written through the same function renderPrint calls, so the two branches
+       cannot drift, and written before openReport() rather than after. */
+    coverAttribution();
 
     /* Analytics keeps the raw codes so these props stay groupable and match the
        other events — the labels are for the email, not the funnel. */

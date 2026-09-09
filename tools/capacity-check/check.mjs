@@ -19,7 +19,8 @@ import { corpus, FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_D, FIXTURE_E, FIXTURE_
          suppressionShapes, singularShapes, corroborationShapes, budgetShapes,
          loadedCostShapes, currencyShapes, LEGACY_BAND_CASES, CURRENCIES,
          TOOLSETS, VISIBILITY, BUDGETS, ASSIGNMENT, BANDS } from './shapes.mjs';
-import { capture, allText, numbersIn, staticReportText, SCREEN_NODES, PRINT_NODES } from './capture.mjs';
+import { capture, allText, renderedText, numbersIn, staticReportText, staticWebText,
+         SCREEN_NODES, PRINT_NODES } from './capture.mjs';
 import { TOOL_PATH, loadTool } from './harness.mjs';
 import { evaluate, roundN, round1, redThreshold, loadedCost, bandContaining,
          typicalDurationMonths, itShare, pricesCosts, COST_CURRENCY,
@@ -42,7 +43,71 @@ function eq(actual, expected, label) {
 }
 function section(name) { console.log(`\n── ${name}`); }
 
-/* Rendered text contains a phrase, with the en dash the tool uses. */
+/* Rendered text contains a phrase, with the en dash the tool uses.
+
+   ---------------------------------------------------------------------------
+   PR8 §5 — the slice audit, and the standing rule that came out of it.
+
+   `has` is scope-neutral. What matters is what is passed as `hay`, and PR7
+   found the shape of defect this whole class produces: the assertion meant to
+   catch a stale section name read `has(report, …)`, where `report` is the WEB
+   slice, so it asserted the old name was gone from the half of the file PR5
+   edited and was structurally blind to the half PR5 missed. The name survived
+   in the print report's running header for two releases.
+
+   THE RULE: a claim about the file is asserted against the file. A slice is
+   used only where the claim is genuinely about that slice, and then it is said
+   here why.
+
+   The audit covered every assertion reading a slice of the file. 76 audited,
+   10 re-scoped, 30 left slice-scoped:
+
+     re-scoped to both halves or to the whole file
+       - the static copy-rule scan, which read the printed report only. There
+         has never been a staticWebText(); there is now, and allText() carries
+         it, so the 603-shape copy rule, the em-dash rule and the en-dash rule
+         all see the web report's static prose for the first time.
+       - the em-dash scan on static copy, same reason.
+       - the two "old heading is gone" assertions, which read `printCopy`.
+       - `positionSection`, which sliced to end of file and settled its question
+         against a literal run of whitespace.
+       - two assertions re-scoped the OTHER way, from allText() to the render:
+         "this shape makes no full-cost claim" is a claim about what one shape
+         renders, and #fullCostTile carries its heading in the markup on every
+         shape. Widening the copy scan is what exposed them.
+
+   WHAT THE RE-SCOPING FOUND ON LANDING: nothing. The 1,594 characters of web
+   report prose that had never been scanned were already clean on every rule now
+   pointed at them — no banned hedge, no ROI framing, no em-dash, no loose
+   en-dash, no page cross-reference, no NaN. That is recorded because a suite
+   that goes green after a re-scope is consistent with two very different facts,
+   and this is the one that happened. What the widened scope caught was a guard,
+   not a violation: the full-cost claim assertion had been passing vacuously,
+   because the DOM stub starts nodes empty and render() never writes that node
+   on the shapes the assertion was about, while the real page carries the string
+   in the markup and hides it. Nothing asserted that it was hidden. Now
+   something does.
+
+   The boundary is <section id="report">, not the top of the page. The form
+   above it says "Estimated total IT staff", master §5 allows a hedge in an
+   input label, and a rule that fails on correct copy is a rule somebody turns
+   off — the same reason pr-inputs is exempt from the copy scan.
+
+     left slice-scoped, with the reason
+       - the §7.5 second-CTA block (7): every one is about the web page's
+         structure and ordering. The printed report has no CTA at all, and
+         "exactly one conversion panel" over the whole file is a different and
+         weaker claim. Its absence from the print report is now asserted
+         directly, under §0.14.
+       - the web presence checks (4): the trial line, the report button, the
+         section name, the tile CTA. Each names an element that exists only on
+         the web page. Every corresponding ABSENCE claim reads the whole file.
+       - the print-report structure checks (17): headings, running headers,
+         captions, section order, the product page. These are claims about the
+         printed document as a document.
+       - `steps` and `script` (2): the four-step count, and the fact that no
+         script writes to the list, which is what makes the count safe.
+   --------------------------------------------------------------------------- */
 function has(hay, needle) { return String(hay).includes(needle); }
 
 /* ------------------------------------------- PR5 §5 — the band track ----- */
@@ -435,7 +500,11 @@ if (capB.ok) {
   ok(has(t, '£656,500–£715,000'), '8.B: internal effort cost prints as £656,500–£715,000');
   ok(has(capB.screen.costEyebrow, 'What the internal time on your projects costs'),
      '8.B: the non-summing path does not claim a full portfolio cost', capB.screen.costEyebrow);
-  ok(!/full cost of your portfolio/i.test(t), '8.B: no full-cost claim on the non-summing path');
+  /* PR8 §5. Read off the render, not off allText(): #fullCostTile carries its
+     heading in the markup and is hidden where no cost was computed, so the file
+     contains the string on every shape and only the render can answer this. */
+  ok(!/full cost of your portfolio/i.test(renderedText(capB)),
+     '8.B: no full-cost claim on the non-summing path');
 }
 
 
@@ -459,7 +528,12 @@ if (capB.ok) {
   eq(capB.hero.costOrder, '1', '8.B: the cost block drops to second');
   ok(/secondary/.test(capB.hero.costClass), '8.B: the cost block is styled as secondary');
   ok(!/secondary/.test(capB.hero.ceilingClass), '8.B: the ceiling is not');
-  eq(capB.print['pr-herohead'], 'Portfolio growth ceiling', '8.B: printed report leads on the ceiling');
+  /* PR8 §2.3. The printed summary no longer mirrors the screen's hero swap:
+     slot 1 is the full portfolio cost on every shape, slot 2 the ceiling gap,
+     slot 3 the internal staff cost. On 8.B the portfolio cost does not sum, so
+     slot 1 states the reason and the ceiling keeps slot 2. */
+  eq(capB.print['pr-sum1figure'], 'Not computed', '8.B: no full portfolio cost to summarise');
+  eq(capB.print['pr-sum2head'], 'Portfolio growth ceiling', '8.B: the ceiling holds slot 2');
 }
 
 section('Fixture 8.A — negative headroom in prose, and the full-cost hero');
@@ -475,7 +549,8 @@ if (capA.ok) {
   eq(capA.hero.ceilingOrder, '1', '8.A: the growth ceiling drops to second');
   ok(/secondary/.test(capA.hero.ceilingClass), '8.A: the ceiling is styled as secondary');
   ok(!/secondary/.test(capA.hero.costClass), '8.A: the cost tile is not');
-  eq(capA.print['pr-herohead'], 'The full cost of your portfolio', '8.A: printed report leads on full cost');
+  eq(capA.print['pr-sum1head'], 'The full cost of your portfolio', '8.A: the printed summary opens on full cost');
+  eq(capA.print['pr-sum2head'], 'Portfolio growth ceiling', '8.A: the ceiling gap is second');
   const findings = capA.print['pr-cards'].match(/<span class="p-rag">([^<]+)<\/span>/g)
     .map((m) => m.replace(/<[^>]*>/g, ''));
   eq(findings.length, 4, '8.A: exactly four findings');
@@ -584,8 +659,9 @@ section('§1 — the cost block runs on sterling only, and says so otherwise');
        from both renderings rather than merely emptied. */
     eq(cap.hero.costHidden, true, `${shape.id}: the cost tile does not render`);
     eq(cap.hero.ceilingOrder, '0', `${shape.id}: the growth ceiling leads`);
-    eq(cap.print['pr-herohead'], 'Portfolio growth ceiling', `${shape.id}: the printed report leads on the ceiling`);
-    eq(cap.print['pr-secondhead'], '', `${shape.id}: no second callout in print`);
+    eq(cap.print['pr-sum1figure'], 'Not computed', `${shape.id}: no full portfolio cost in the printed summary`);
+    eq(cap.print['pr-sum3figure'], 'Not computed', `${shape.id}: and no internal staff cost either`);
+    eq(cap.print['pr-sum2head'], 'Portfolio growth ceiling', `${shape.id}: the ceiling gap holds slot 2`);
 
     /* The reason, in both renderings. */
     eq(cap.hero.currencyNoteHidden, false, `${shape.id}: the reason is shown on screen`);
@@ -930,7 +1006,11 @@ for (const shape of budgetShapes()) {
   } else {
     eq(cap.computed.at[0].fullPortfolioCost, null, `${shape.id}: nothing is summed`);
     eq(cap.hero.ceilingOrder, '0', `${shape.id}: the growth ceiling stays hero`);
-    ok(!has(allText(cap), 'full cost of your portfolio'), `${shape.id}: no full-cost claim`);
+    ok(!has(renderedText(cap), 'full cost of your portfolio'), `${shape.id}: no full-cost claim`);
+    /* The heading lives in the markup, so the render either hides the tile or
+       overwrites it. Both are answers; a third state is not. */
+    ok(cap.hero.costHidden || !has(cap.screen.costEyebrow, 'full cost of your portfolio'),
+       `${shape.id}: the tile carrying that heading is hidden or relabelled`, cap.screen.costEyebrow);
     ok(has(cap.print['pr-formulas'], 'Not summed'), `${shape.id}: the workings say it was not summed`);
   }
   /* Finding 4 tracks the same input and never reaches At risk. */
@@ -1799,6 +1879,13 @@ section('Copy rule — static report and methodology copy');
   const start = html.indexOf('<div id="printReport">');
   const end = html.indexOf('</main>', start);
   ok(start > 0 && end > start, 'printReport block located in the markup');
+  /* PR8 §5. This scan read the print report's static markup and nothing else,
+     which is a guard scoped to the half of the file the change touched. The web
+     report carries static prose of its own — the section subheads, the gate
+     blurb, the conversion panel, the disclaimer — and no copy rule has ever
+     been applied to it. Both halves now. */
+  const webStart = html.indexOf('<section id="report"');
+  ok(webStart > 0 && webStart < start, 'web report block located in the markup');
   const flatten = (s) => s
     .replace(/<[^>]*>/g, ' ')
     .replace(/&amp;/g, '&').replace(/&mdash;/g, '—').replace(/&ndash;/g, '–')
@@ -1813,9 +1900,14 @@ section('Copy rule — static report and methodology copy');
      of this scan — which is exactly how it shipped unscanned once before. */
   const bandsCopy = flatten(loadTool().api.bandsStatement(''));
   const staticCopy = flatten(html.slice(start, end)) + ' ' + bandsCopy;
+  const staticWebCopy = flatten(html.slice(webStart, start));
+  /* Everything below that asserts a sentence is present stays scoped to the
+     printed report, because that is where those sentences live. The RULE, which
+     is a claim about output rather than about a page, runs over both. */
+  const staticBoth = staticCopy + ' ' + staticWebCopy;
 
-  const violations = copyRuleViolations(staticCopy);
-  ok(violations.length === 0, 'static report copy clears the copy rule', violations.join(', '));
+  const violations = copyRuleViolations(staticBoth);
+  ok(violations.length === 0, 'static copy in BOTH reports clears the copy rule', violations.join(', '));
 
   /* The bands statement, sentence by sentence — all three closing statements
      are load-bearing and none may be trimmed.
@@ -2009,9 +2101,14 @@ section('PR6 §1.1 — no em-dash in output, every range en-dash intact');
 
   /* The static printed copy is output too, and the file is where its dashes
      live. Comments stripped: the note explaining the rule is not the copy. */
-  const staticOut = staticReportText().replace(/<[^>]*>/g, ' ')
+  const flat = (s) => String(s).replace(/<[^>]*>/g, ' ')
     .replace(/&mdash;/g, '—').replace(/&ndash;/g, '–');
+  const staticOut = flat(staticReportText());
+  /* PR8 §5. The em-dash rule is a rule about output, and the web report is
+     output. This read the printed half only. */
+  const staticWebOut = flat(staticWebText());
   ok(!staticOut.includes('—'), 'and none in the static printed copy either');
+  ok(!staticWebOut.includes('—'), 'and none in the static web copy either');
   ok(staticOut.includes('170–320'), 'while its own range survives');
 }
 
@@ -2083,7 +2180,7 @@ section('PR6 — every count stated in prose matches what the report renders');
   const steps = html.slice(html.indexOf('<ol class="p-steps">'), html.indexOf('</ol>', html.indexOf('<ol class="p-steps">')));
   const n = (steps.match(/<li>/g) || []).length;
   eq(n, 4, 'the printed report lists four steps');
-  ok(/<h2>Four steps, no software required<\/h2>/.test(html), 'and the heading says four');
+  ok(/<h2[^>]*>Four steps, no software required<\/h2>/.test(html), 'and the heading says four');
   ok(/If you do these four things in a spreadsheet/.test(html), 'and the note below them says four');
   ok(/four things you can do about it that involve buying nothing/.test(html),
      'and the gate blurb promising four is describing those four');
@@ -2215,10 +2312,17 @@ section('PR7 item 4 — headings that name figures, counted');
      'item 4 — the derived table is captioned');
   ok(/As you entered them<\/p>/.test(printBlock), 'item 4 — and the input table is captioned');
   /* Comments stripped: the note explaining this change quotes the old headings
-     by name, which is the point of it. What must be gone is the rendered ones. */
-  const printCopy = printBlock.replace(/<!--[\s\S]*?-->/g, ' ');
-  ok(!/The figures your position is built from/.test(printCopy), 'item 4 — the old heading is gone');
-  ok(!/Your figures, as you entered them/.test(printCopy), 'item 4 — and so is its near-twin');
+     by name, which is the point of it. What must be gone is the rendered ones.
+
+     PR8 §5. Scoped to the print block, these asserted the old headings were
+     gone from the half of the file PR7 edited. An old heading coming back on
+     the web side is the same defect and this could not see it. The scope is the
+     whole file, comments stripped once for both. */
+  const fileCopy = html.replace(/<!--[\s\S]*?-->/g, ' ');
+  ok(!/The figures your position is built from/.test(fileCopy),
+     'item 4 — the old heading is gone from the WHOLE file');
+  ok(!/Your figures, as you entered them/.test(fileCopy),
+     'item 4 — and so is its near-twin, on both sides');
   ok(!/<h2[^>]*>Every figure is arithmetic/.test(printBlock),
      'item 4 — the workings lead is a sentence, not a heading');
   ok(/Every figure here is arithmetic on something you supplied\./.test(printBlock),
@@ -2538,9 +2642,15 @@ section('PR7 §3.1 — the bands statement reaches the reader on screen, from on
      '§3.1 — the web container sits outside #printReport, so it is not display:none');
 
   /* And it sits with the tiles it explains, not somewhere a reader has to hunt. */
-  const positionSection = html.slice(html.indexOf('<h2 class="section-title">Your capacity position</h2>'));
-  ok(positionSection.indexOf('id="bandsStatement"') < positionSection.indexOf('</div>\n\n    <!--'),
-     '§3.1 — and inside the section that publishes the ratings');
+  /* PR8 §5. This sliced to end of file, so it ran through the print report and
+     the whole tool script, and it settled the question with an indexOf against
+     a literal run of whitespace and a comment opener. Bounded at the print
+     block, and read off the section's own closing tag. */
+  const posAt = html.indexOf('<h2 class="section-title">Your capacity position</h2>');
+  const nextSection = html.indexOf('<h2 class="section-title">', posAt + 1);
+  const positionSection = html.slice(posAt, nextSection > 0 && nextSection < printStart ? nextSection : printStart);
+  ok(positionSection.includes('id="bandsStatement"'),
+     '§3.1 — and inside the section that publishes the ratings, which ends before the next one starts');
 }
 
 /* ================================================== dated copy, tenseless ==== */
@@ -2866,6 +2976,13 @@ section('§2 — the promoted block sits after the growth ceiling, and is rename
   const printStart = html.indexOf('<div id="printReport">');
   const printBlock = html.slice(printStart, html.indexOf('</main>', printStart));
 
+  /* PR8 §0.14. The offer is a web-page element and the printed report is
+     ask-agnostic, so this is one of the few claims that is genuinely about one
+     half — and it is asserted in both directions rather than left as a presence
+     check that a copy pasted into the print report would still pass. */
+  ok(!has(printBlock, 'Unlimited 14-day trial'), '§0.14 — the trial line stays off the printed report');
+  ok(!has(printBlock, 'Start free'), '§0.14 — and so does the trial action');
+
   /* PR7 item 3 — the running headers extract as text, with a separator.
 
      Every .p-head holds two halves. Strip the tags, as copying out of the PDF
@@ -2980,6 +3097,289 @@ section('§6 Sender — no new fields, and the RAG values read the adverse endpo
     eq(cap.sender.projects_per_fte, round1(o.at[0].bauRatio), 'projects_per_fte likewise');
     ok(Number.isFinite(cap.sender.effective_fte), 'effective_fte is finite');
     ok(Number.isFinite(cap.sender.headroom), 'headroom is a signed integer');
+  }
+}
+
+/* ================================================ PR8 §2 — the forwardable == */
+section('PR8 §2 — the printed report, in the order a forwarded document is read');
+{
+  const html = readFileSync(TOOL_PATH, 'utf8');
+  const printStart = html.indexOf('<div id="printReport">');
+  const printBlock = html.slice(printStart, html.indexOf('</main>', printStart));
+  const sections = printBlock.split('<section class="page').slice(1);
+
+  /* §2 — seven sections, asserted BY POSITION rather than by presence. A
+     presence check passes on a document whose pages are in any order at all,
+     and the order is most of what this section changed: provenance before the
+     summary, the summary before the findings, the product last. Each section is
+     identified by the first thing in it that names it — the running header
+     where there is one, and the cover by the fact that it has none. */
+  eq(sections.length, 7, '§2 — seven sections in the printed report');
+  const nameOf = (sec) => {
+    const head = sec.match(/<div class="p-head"><span>([^<]+)<\/span>/);
+    return head ? head[1].trim() : '(cover)';
+  };
+  eq(JSON.stringify(sections.map(nameOf)), JSON.stringify([
+    '(cover)',
+    'Where the numbers come from',
+    'In summary',
+    'What your answers show',
+    'What to do next',
+    'Your numbers, and how they were worked out',
+    'See this on your own plans',
+  ]), '§2 — and they are in this order, read off the document');
+
+  /* §2.1 — the cover carries a title and one line and nothing else. No figure,
+     no rating, no ProjexaR claim. The date is the only number on it. */
+  const cover = sections[0];
+  ok(/^ p-cover"/.test(cover), '§2.1 — the first section is the cover');
+  ok(!/<div class="p-head">/.test(cover), '§2.1 — and carries no running header');
+  eq((cover.match(/<h1>/g) || []).length, 1, '§2.1 — one title');
+  eq((cover.match(/<p /g) || []).length, 1, '§2.1 — and one line under it');
+  ok(!/p-figure|p-table|p-rag/.test(cover), '§2.1 — no figure, no table and no rating on the cover');
+  ok(!/ProjexaR/.test(cover.replace(/<!--[\s\S]*?-->/g, ' ')),
+     '§2.1 — and no ProjexaR claim');
+
+  /* PR8 §6 — the rename. "What you told us" named a verdict rather than a set
+     of figures and collided with "Your numbers" two blocks up. It appeared
+     twice, once on each side, and PR5's rename landing on one side only is the
+     defect §5 exists for — so both sides are asserted, and the old name is
+     asserted gone from the whole file rather than from either half. */
+  ok(/<h2>Where you stand<\/h2>/.test(printBlock), '§6 — the printed report carries the new name');
+  ok(/<h2>Where you stand<\/h2>/.test(html.slice(0, printStart)), '§6 — and so does the web report');
+  eq((html.replace(/<!--[\s\S]*?-->/g, ' ').match(/Where you stand/g) || []).length, 2,
+     '§6 — twice in the file, which is once on each side');
+  ok(!has(html, 'What you told us<'), '§6 — and the old name is gone from the WHOLE file');
+
+  /* §2.5 — the four steps are unchanged, down to the wording. */
+  const stepsBlock = printBlock.slice(printBlock.indexOf('<ol class="p-steps">'),
+                                      printBlock.indexOf('</ol>', printBlock.indexOf('<ol class="p-steps">')));
+  eq((stepsBlock.match(/<li>/g) || []).length, 4, '§2.5 — still four steps');
+
+  /* §2.7 — the product page is last and it is the only place in the report that
+     says what ProjexaR does or what it costs.
+
+     The word itself cannot be the test. The running headers carry the
+     document's own name on every page, the bands statement names ProjexaR as
+     the author of its own controls (PR6 §6, not one word of it may move), and
+     the licence-basis sentence names it because PR7 §4.1 put contractors in
+     that basis. What must appear once is the CLAIM: the price, and the
+     statement of what the product does. */
+  const productClaims = sections.map((sec, i) => ({
+    i, priced: /id="pr-price"/.test(sec),
+    pitch: /ProjexaR works from your actual projects/.test(sec),
+  })).filter((x) => x.priced || x.pitch);
+  eq(productClaims.length, 1, '§2.7 — the product claim appears in exactly one section');
+  eq(productClaims[0].i, 6, '§2.7 — and that section is the last one');
+
+  /* §2.7 and §0.14 — no ask, anywhere in the body. */
+  const printCopy = printBlock.replace(/<!--[\s\S]*?-->/g, ' ');
+  for (const ask of ['Start free', 'Unlimited 14-day trial', 'Get the full report', 'free trial',
+                     'book a', 'get in touch', 'talk to us', 'contact us']) {
+    ok(!new RegExp(ask, 'i').test(printCopy), `§0.14 — no ask in the printed report: "${ask}"`);
+  }
+
+  /* §2.4 — the bands statement and the citation sit in the findings section,
+     at the point the threshold is used, rather than in an appendix. */
+  const findings = sections[3];
+  ok(/id="pr-bands"/.test(findings), '§2.4 — the bands statement renders inside the findings');
+  ok(findings.indexOf('id="pr-tiles"') < findings.indexOf('id="pr-bands"'),
+     '§2.4 — and after the table that applies the threshold, not before it');
+  ok(/id="pr-cards"/.test(findings) && /id="pr-checks"/.test(findings),
+     '§2.4 — the findings and the checks are in the same section');
+
+  /* §2.2 — provenance, and the range posture, on page one of the body. */
+  const prov = sections[1];
+  ok(/Every figure here is arithmetic on something you supplied\./.test(prov),
+     '§2.2 — the provenance passage leads the section');
+  ok(/Every external figure is named where it is used/.test(prov),
+     '§2.2 — and names where the external figures come from');
+  ok(/Every figure drawn from a banded answer is shown as a range and rated on the less\s+favourable end\./.test(prov.replace(/\s+/g, ' ')),
+     '§2.2 — the range posture, first sentence');
+  ok(/Where we could have picked a single flattering number, we did not\./.test(prov),
+     '§2.2 — and the second');
+  /* It is said once. It used to close the caveat paragraph six pages later. */
+  eq((printCopy.match(/Where we could have picked a single flattering number/g) || []).length, 1,
+     '§2.2 — and it is said once in the report, not twice');
+
+  /* PR8 §2. No output copy names a physical page. The printed report is seven
+     sections and eleven to thirteen pages depending on the shape, nothing in
+     the tool knows which, and "on page 1" was a cross-reference that the
+     reorder made false and that was never safe to make. Sections have names;
+     pages do not.
+
+     Read over the RENDERED output as well as the static markup — the sentence
+     that carried this fault lives in pr-price, which the page writes at render
+     time, so a scan of the static block alone would have passed on the file
+     that shipped it. That is the §5 mistake, made once more while writing the
+     guard against it. */
+  const PAGE_REF = /\bon page \d|\bpages? \d+ (?:of|and)\b|\boverleaf\b/i;
+  ok(!PAGE_REF.test(printCopy), '§2 — no static copy cross-references a page number');
+  for (const fx of [FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_D, FIXTURE_E, FIXTURE_F, FIXTURE_G]) {
+    const c = capture({ id: 'pageref', ...fx });
+    if (c.ok) ok(!PAGE_REF.test(renderedText(c)), '§2 — nor does anything the report renders');
+  }
+
+  /* §2.6 — the workings keep every table and every source. */
+  const workings = sections[5];
+  for (const id of ['pr-facts', 'pr-inputs', 'pr-formulas', 'pr-derivations', 'pr-sources',
+                    'pr-costexclusions', 'pr-flexeranote', 'pr-fxnote']) {
+    ok(new RegExp(`id="${id}"`).test(workings), `§2.6 — the workings still carry ${id}`);
+  }
+
+  /* PR8 §4 — the two protected epigrams survive, and the two cut ones are gone.
+     Asserted over the whole file: an epigram restored on either side is the
+     same regression, and §5 is the reason this is not scoped to one half. */
+  /* Whitespace-normalised: these sentences are wrapped across source lines in
+     the markup and across string concatenations in the script, and a guard that
+     only matches the one-line form is a guard that stops working the next time
+     the line reflows. */
+  const fileCopy = html
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    /* Script and stylesheet comments too. The notes explaining these cuts quote
+       the sentences they cut, which is the point of them, and a guard that
+       fails on its own explanation is a guard somebody deletes. */
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/'\s*\n\s*\+ '/g, '').replace(/\s+/g, ' ');
+  ok(/The internal figure is a floor, not a total\./.test(fileCopy),
+     '§4 — the protected epigram about the floor is still there');
+  ok(/which ledger it lands in/.test(fileCopy),
+     '§4 — and so is the one about which ledger it lands in');
+  ok(!/read together rather than one at a time/.test(fileCopy),
+     '§4 — the first cut epigram is gone');
+  ok(!/keeping it current once the portfolio starts moving/.test(fileCopy),
+     '§4 — and so is the second');
+  /* Neither cut took a limitation with it: the claim each one sat on stays. */
+  ok(/Nothing in the right-hand column requires a new system to be built\./.test(fileCopy),
+     '§4 — the claim the first epigram closed is still made');
+  ok(/If you do these four things in a spreadsheet and they hold, you do not need us\./.test(fileCopy),
+     '§4 — and so is the concession the second one closed');
+
+  /* PR8 §3 — the two cuts, asserted as absences of the exact strings. */
+  ok(!/they compound: the fewer of them hold/.test(fileCopy),
+     '§3.1 — the closing generalisation on the no-single-current-view finding is gone');
+  ok(!/Two readings fit it and both are worth having/.test(fileCopy),
+     '§3.2 — and the scaffolding around the ticket composition');
+  ok(!/Which of the two it is changes what you would do/.test(fileCopy), '§3.2 — all of it');
+  /* And neither cut took the limitation with it. */
+  ok(/composition, not a deficiency/.test(fileCopy), '§3.2 — the limitation stays');
+}
+
+/* ============================================== PR8 §2.1 — the cover line === */
+section('PR8 §2.1 — the cover attributes the estimates, and invents nothing');
+{
+  const named = capture({ id: 'cover-named', ...FIXTURE_A, }, { name: 'Jane Okonjo' });
+  const anon = capture({ id: 'cover-anon', ...FIXTURE_A }, { name: null });
+  if (named.ok && anon.ok) {
+    /* Both branches are reachable: both name fields are optional and the gate
+       validates the email and the consent box only. */
+    ok(has(named.coverAfterGate, 'Prepared from estimates provided by Jane Okonjo, '),
+       '§2.1 — with a name, the cover attributes the estimates to them', named.coverAfterGate);
+    ok(/A directional check, not an audit\.$/.test(named.coverAfterGate),
+       '§2.1 — and closes on what the document is');
+    ok(/^Prepared from estimates provided on \d/.test(anon.coverAfterGate),
+       '§2.1 — with no name, it attributes them to the date alone', anon.coverAfterGate);
+    ok(!has(anon.coverAfterGate, 'provided by'), '§2.1 — and says "by" nobody');
+
+    /* Do not invent an organisation name. The gate collects a company field and
+       sends it to Sender; the cover must not read it, because the respondent's
+       own typing is not a verified organisation and the report is a document
+       they forward inside it. */
+    ok(!has(named.coverAfterGate, 'Example Ltd'),
+       '§2.1 — the company field does not reach the cover');
+    ok(!has(named.coverAfterGate, 'reader@example.com') && !has(named.coverAfterGate, 'example.com'),
+       '§2.1 — and neither does the email domain');
+
+    /* Before the gate the name does not exist yet, so the render produces the
+       no-name line rather than a blank or the word "undefined". */
+    ok(/^Prepared from estimates provided on \d/.test(named.coverBeforeGate),
+       '§2.1 — the line is complete before the gate runs, on the no-name branch',
+       named.coverBeforeGate);
+    ok(!/undefined|null|\[name\]|, \./.test(named.coverBeforeGate + anon.coverAfterGate),
+       '§2.1 — neither branch leaves a placeholder on the page');
+  }
+}
+
+/* ========================================== PR8 §2.3 — executive summary ==== */
+section('PR8 §2.3 — three figures, money first, computed, agreeing with the findings');
+{
+  const cap = capture({ id: 'exec', ...FIXTURE_A });
+  if (cap.ok) {
+    /* Three slots, and the order is fixed: full portfolio cost, the gap to the
+       sustainable pace, the internal staff cost. Money first. */
+    eq(cap.print['pr-sum1head'], 'The full cost of your portfolio', '§2.3 — slot 1 is the portfolio cost');
+    eq(cap.print['pr-sum2head'], 'Portfolio growth ceiling', '§2.3 — slot 2 is the growth-ceiling gap');
+    eq(cap.print['pr-sum3head'], 'What the internal time on your projects costs',
+       '§2.3 — slot 3 is the internal staff cost');
+
+    /* No capacity ratio on this page. They are the mechanism and the mechanism
+       belongs to the findings. */
+    /* No capacity ratio is PUBLISHED here. Master §2.6 still requires the
+       ceiling note to name which of the two measures binds first, and that
+       names a mechanism rather than printing a figure — what must not appear is
+       either rated value, or a rating word, on the page a reader reads
+       standing up. */
+    const summary = ['pr-sum1', 'pr-sum2', 'pr-sum3']
+      .map((k) => `${cap.print[k + 'head']} ${cap.print[k + 'figure']} ${cap.print[k + 'note']}`)
+      .join(' ').replace(/<[^>]*>/g, ' ');
+    const ratios = tilesOf(cap.screen.tileGrid).filter((t) => t.bar).map((t) => t.value);
+    ok(ratios.length > 0, '§2.3 — the shape publishes rated ratios somewhere, so this is a real test');
+    for (const r of ratios) {
+      ok(!has(summary, r), `§2.3 — the rated value ${r} does not appear in the summary`);
+    }
+    for (const w of ['Healthy', 'Watch', 'At risk']) {
+      ok(!has(summary, w), `§2.3 — and neither does the rating word "${w}"`);
+    }
+
+    /* Every figure is computed, and each agrees with its appearance further in.
+       A range is one figure and carries both ends. */
+    /* Every figure is computed, and each agrees with the same figure where the
+       report publishes it again. Compared as rendered strings: the summary
+       prints the portfolio cost the way the report prints it everywhere else,
+       and a figure that agrees to the penny but disagrees on the page is still
+       two figures to the reader. */
+    eq(cap.print['pr-sum1figure'], cap.screen.costFigure,
+       '§2.3 — the portfolio cost is the same figure the cost block publishes');
+    eq(cap.print['pr-sum2figure'], cap.screen.ceilingFigure,
+       '§2.3 — the growth-ceiling gap is the same figure the ceiling block publishes');
+    ok(has(cap.print['pr-sum1note'], cap.print['pr-sum3figure']),
+       '§2.3 — and the internal staff cost is the same figure the portfolio cost is built from',
+       cap.print['pr-sum3figure']);
+
+    /* And each appears in the workings, to the endpoint, so a reader can check
+       the arithmetic behind every figure on the summary page. */
+    const c = cap.computed;
+    const money = (lo, hi) => (lo === hi ? [lo] : [lo, hi]);
+    const workings = cap.print['pr-formulas'].replace(/<[^>]*>/g, ' ').replace(/,/g, '');
+    for (const n of money(c.at[0].fullPortfolioCost, c.at[1].fullPortfolioCost)) {
+      ok(has(workings, String(Math.round(n))), `§2.3 — portfolio cost endpoint ${n} is in the workings`);
+    }
+    for (const n of money(c.at[0].internalEffortCost, c.at[1].internalEffortCost)) {
+      ok(has(workings, String(Math.round(n))), `§2.3 — internal cost endpoint ${n} is in the workings`);
+    }
+
+    /* None of the three is written as a constant. Different inputs, different
+       summary — on all three slots, not merely on the blob. */
+    const other = capture({ id: 'exec-other', ...FIXTURE_A, live: FIXTURE_A.live + 3,
+                            spend: FIXTURE_A.spend + 250000, bauStaff: FIXTURE_A.bauStaff + 4 });
+    if (other.ok) {
+      ok(other.print['pr-sum1figure'] !== cap.print['pr-sum1figure'],
+         '§2.3 — different inputs move the portfolio cost');
+      ok(other.print['pr-sum2figure'] !== cap.print['pr-sum2figure'],
+         '§2.3 — and the growth-ceiling gap');
+      ok(other.print['pr-sum3figure'] !== cap.print['pr-sum3figure'],
+         '§2.3 — and the internal staff cost');
+    }
+  }
+
+  /* A suppressed slot states the reason and does not carry the heading of a
+     figure the report does not have. */
+  const usd = capture({ id: 'exec-usd', ...FIXTURE_A, currency: 'USD' });
+  if (usd.ok) {
+    eq(usd.print['pr-sum1figure'], 'Not computed', '§2.3 — a suppressed slot says so');
+    ok(has(usd.print['pr-sum1note'], 'UK data'), '§2.3 — and gives the same reason the screen gives');
+    ok(!has(usd.print['pr-sum1head'], 'full cost of your portfolio'),
+       '§2.3 — without claiming the figure in its heading');
   }
 }
 
