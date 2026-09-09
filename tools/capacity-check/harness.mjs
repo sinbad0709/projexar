@@ -63,7 +63,12 @@ function decodeEntities(s) {
     .replace(/&pound;/g, '£').replace(/&ndash;/g, '–').replace(/&mdash;/g, '—');
 }
 
-function makeNode(id, selectOptions) {
+/* PR9 §3.1. focus() was a no-op, so "the gate moves focus to the failing
+   field" was a claim the suite had no way to read. It records now: `focused`
+   is the tool-wide log, in call order, and an assertion reads the last entry
+   after firing a rejected submission. Still a no-op in every other respect —
+   nothing in the page depends on focus having moved. */
+function makeNode(id, selectOptions, focused) {
   const node = {
     id,
     value: '',
@@ -79,7 +84,7 @@ function makeNode(id, selectOptions) {
     addEventListener(type, fn) { (this._handlers[type] ||= []).push(fn); },
     removeAttribute() {},
     setAttribute() {},
-    focus() {},
+    focus() { if (focused) focused.push(id); },
     scrollIntoView() {},
     querySelector() { return null; },
     classList: { add() {}, remove() {}, toggle() {} },
@@ -102,9 +107,10 @@ export function loadTool(path = TOOL_PATH) {
   const source = extractScript(html);
   const selects = extractSelects(html);
   const nodes = new Map();
+  const focused = [];
 
   const getNode = (id) => {
-    if (!nodes.has(id)) nodes.set(id, makeNode(id, selects[id]));
+    if (!nodes.has(id)) nodes.set(id, makeNode(id, selects[id], focused));
     return nodes.get(id);
   };
 
@@ -145,6 +151,7 @@ export function loadTool(path = TOOL_PATH) {
     selects,
     sender,
     events,
+    focused,
     /* Fire a handler the page registered on one of its own nodes. */
     fire(id, type, evt = { preventDefault() {} }) {
       const hs = getNode(id)._handlers[type] || [];

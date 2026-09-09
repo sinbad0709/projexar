@@ -7,7 +7,7 @@
    a category. Only text differences are categorised. */
 
 import { readFileSync, writeFileSync, mkdtempSync, readdirSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -1792,9 +1792,14 @@ for (const shape of shapes) {
   }
 
   if (o.ragPM === 'Healthy' || o.ragBAU === 'Healthy') healthyShapes++;
-  const bare = allText(cap, { exBar: true });
+  /* PR9 §4. The digest pair excludes the covering note and the two link
+     surfaces. Both hashes take exDigest, so the "gained a §5 band track" count
+     still means what it says: the pair differs by the track and by nothing
+     else. The copy rule above reads them with no exclusion at all. */
+  const digest = allText(cap, { exDigest: true });
+  const bare = allText(cap, { exBar: true, exDigest: true });
   after[shape.id] = {
-    text: sha(text), numbers: sha(numbersIn(text).join('|')),
+    text: sha(digest), numbers: sha(numbersIn(digest).join('|')),
     textExBar: sha(bare), numbersExBar: sha(numbersIn(bare).join('|')),
   };
 }
@@ -3381,6 +3386,374 @@ section('PR8 §2.3 — three figures, money first, computed, agreeing with the f
     ok(!has(usd.print['pr-sum1head'], 'full cost of your portfolio'),
        '§2.3 — without claiming the figure in its heading');
   }
+}
+
+/* ================================ PR9 §4.1 — the covering note ============== */
+section('PR9 §4.1 — the covering note carries the report’s own figures');
+{
+  /* The point of the note is that it is forwarded, and every figure in it is a
+     figure the reader can check against the document it arrives with. So each
+     one is asserted equal to its counterpart INSIDE the report, on every
+     fixture, rather than assumed equal because the same object produced both.
+     "Written from fc" is how it is built; "equals what the report published" is
+     what has to be true. */
+  const FIXTURES = [['8.A', FIXTURE_A], ['8.B', FIXTURE_B], ['8.C', FIXTURE_C], ['8.D', FIXTURE_D],
+                    ['8.E', FIXTURE_E], ['8.F', FIXTURE_F], ['8.G', FIXTURE_G]];
+  for (const [name, shape] of FIXTURES) {
+    const cap = capture({ id: `note-${name}`, ...shape });
+    if (!ok(cap.ok, `${name}: renders`, cap.error)) continue;
+    const note = String(cap.screen.coverNote || '');
+    ok(note.length > 0, `${name}: a covering note is written`);
+
+    /* 1. The reported spend, as the printed inputs table gives it. */
+    if (shape.spend !== null && shape.spend !== undefined) {
+      const spend = String(cap.print['pr-inputs'].match(/<td>([^<]*\d[^<]*)<\/td>/g)
+        .map((m) => m.replace(/<[^>]*>/g, ''))
+        .find((x) => /^[^\d]*367,000$|^[^\d]*180,000$/.test(x)) || '');
+      ok(spend !== '', `${name}: the report prints the reported spend`);
+      ok(has(note, spend), `${name}: the note carries the same spend the report prints`, `${spend} | ${note}`);
+    }
+
+    /* 2. The internal staff cost. The printed executive summary's third slot is
+       the counterpart, and it is a figure the reader sees on page three. */
+    const internal = String(cap.print['pr-sum3figure'] || '');
+    if (internal && internal !== 'Not computed') {
+      ok(has(note, internal),
+         `${name}: the note carries the internal cost the report publishes (${internal})`, note);
+    } else {
+      ok(!/staff time behind the same work/.test(note),
+         `${name}: no internal-cost sentence where the report computed none`, note);
+    }
+
+    /* 3. The gap to the sustainable pace. The counterpart is the second
+       executive-summary slot, which is the growth ceiling's own figure. Both
+       state the same count of projects; the note states it in the sender's
+       first person, so the COUNT is what is compared, not the sentence. */
+    const ceiling = String(cap.print['pr-sum2figure'] || '');
+    const gapNums = (ceiling.match(/\d[\d,]*/g) || []);
+    const noteGap = note.match(/(?:We are running|Our band spans|We have room for)[^.]*\./);
+    if (gapNums.length && /running|Room to grow|band spans/.test(ceiling)) {
+      ok(!!noteGap, `${name}: the note carries a sentence about the pace`, note);
+      if (noteGap) {
+        const noteNums = (noteGap[0].match(/\d[\d,]*/g) || []);
+        eq(noteNums.join(','), gapNums.join(','),
+           `${name}: and the same figures the growth ceiling publishes`);
+      }
+    }
+  }
+
+  /* Named nowhere, asked for nothing. Both across the whole corpus, because a
+     branch nothing renders is exactly what a fixture sweep misses. */
+  let notes = 0, product = 0, ask = 0, dashes = 0, banned = 0;
+  const ASK = /\b(book a|get in touch|contact us|sign up|start a trial|free trial|talk to us|arrange a)\b/i;
+  for (const shape of corpus()) {
+    const cap = capture(shape);
+    if (!cap.ok) continue;
+    const note = String(cap.screen.coverNote || '');
+    if (!note) continue;
+    notes++;
+    if (/ProjexaR/i.test(note)) product++;
+    if (ASK.test(note)) ask++;
+    if (copyRuleViolations(note).length) banned++;
+    /* Both dash characters. Em-dashes are barred outright; an en-dash is
+       allowed only where it is doing the job it is there for, between the ends
+       of a range. The endpoints carry units, so "£1.10m–£1.21m" puts an m
+       against the dash rather than a digit: the same test the PR6 scan makes,
+       a digit within three characters on each side. */
+    if (note.includes('—')) { dashes++; continue; }
+    for (let i = note.indexOf('–'); i >= 0; i = note.indexOf('–', i + 1)) {
+      const near = (str) => /\d/.test(str);
+      if (!(near(note.slice(Math.max(0, i - 3), i)) && near(note.slice(i + 1, i + 4)))) { dashes++; break; }
+    }
+  }
+  ok(notes === 603, `a covering note renders on every corpus shape (${notes})`);
+  eq(product, 0, 'no covering note names the product');
+  eq(ask, 0, 'no covering note makes an ask');
+  eq(banned, 0, 'no covering note carries a banned hedge or a price comparison');
+  eq(dashes, 0, 'no covering note carries a dash aside');
+
+  /* PR9 §5 — the note is inside the scope of the rules, not in a third blind
+     spot. PR8 re-scoped the copy rule and both dash rules to read the web
+     report as well as the printed one; a surface those rules do not reach is
+     the same defect wearing a new name. The test is that the note's own text is
+     genuinely in the blob those rules read. */
+  const cap = capture({ id: 'note-scope', ...FIXTURE_A });
+  const scanned = allText(cap);
+  const forCopy = allText(cap, { forCopyRule: true });
+  ok(has(scanned, String(cap.screen.coverNote)), 'the covering note reaches allText()');
+  ok(has(forCopy, String(cap.screen.coverNote)), 'and it reaches the blob the copy rule reads');
+  ok(has(scanned, String(cap.print['pr-link'] || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+      .slice(0, 40)), 'and so does the printed result link');
+  /* And out of the digest, which is the one comparison they are excluded from. */
+  ok(!has(allText(cap, { exDigest: true }), String(cap.screen.coverNote)),
+     'while the digest blob excludes it');
+}
+
+/* ================================ PR9 §4.2 — the result link =============== */
+section('PR9 §4.2 — the link is issued with the report, printed in it, and round-trips');
+{
+  const cap = capture({ id: 'link', ...FIXTURE_A });
+  const link = cap.permalink;
+
+  /* On the confirmation screen, beside the note. */
+  eq(cap.screen.noteLink, link, 'the saved link is issued on the confirmation screen');
+  /* And in the printed report, as an anchor rather than as text: printed to PDF
+     it stays clickable, which is the only reason it is worth printing. */
+  const printed = String(cap.print['pr-link'] || '');
+  ok(has(printed, `href="${link.replace(/&/g, '&amp;')}"`),
+     'the printed report carries the link as an anchor', printed);
+  ok(has(printed, 'produced from the answers this address carries'),
+     'and says what it is for');
+  /* One URL, from one function. The Sender payload, the screen and the PDF
+     cannot disagree because there is nothing for them to disagree with. */
+  eq(cap.sender.permalink, link, 'and the Sender payload carries the same URL');
+
+  /* The precondition PR7 §7.4 set: the link must not drop an input. Reopened
+     through the tool's own PARAMS mapping, every answer comes back and
+     compute() returns an identical object. */
+  const PARAMS = { companyHeadcount: 'ch', staff: 'st', pms: 'm', live: 'l', annual: 'a', spend: 'sp',
+    currency: 'cu', bauStaff: 'bs', bauPercent2: 'bp', contractors: 'ct', ticketsPerMonth: 'tk',
+    bauSplitEstimate: 'sx', loadedSalary: 'lc', toolset: 'tl', resourceVisibility: 'rv',
+    budgetTracking: 'bt', assignmentKnowledge: 'ak' };
+  const q = new URLSearchParams(link.split('?')[1]);
+  eq([...q.keys()].sort().join(','), Object.values(PARAMS).sort().join(','),
+     'the link carries every input the tool reads, and no more');
+  const reopened = loadTool();
+  for (const [id, key] of Object.entries(PARAMS)) {
+    const val = q.get(key);
+    if (val !== null) reopened.node(id).value = val;
+  }
+  const back = reopened.api.readAndValidate();
+  ok(back.ok, 'the reopened link validates');
+  eq(JSON.stringify(back.values), JSON.stringify(cap.values), 'every answer comes back unchanged');
+  eq(JSON.stringify(reopened.api.compute(back.values)), JSON.stringify(cap.computed),
+     'and compute() returns an identical object');
+}
+
+/* ================================ PR9 §3.1 — focus on a rejected gate ====== */
+section('PR9 §3.1 — a rejected gate moves focus to the first failing field');
+{
+  /* The harness recorded focus() as a no-op until this PR, so this is a claim
+     the suite could not previously read at all. Three shapes: a bad address, an
+     unticked box, and both wrong at once — the last is what fixes the ORDER,
+     which is the part of "first failing field" that can silently regress. */
+  const CASES = [
+    ['a rejected email', { email: 'not-an-address', ack: true }, 'email'],
+    ['an unticked consent box', { email: 'reader@example.com', ack: false }, 'ack'],
+    ['both wrong at once', { email: 'nope', ack: false }, 'email'],
+  ];
+  for (const [what, entry, want] of CASES) {
+    const tool = loadTool();
+    for (const [k, v] of Object.entries(FIXTURE_A)) tool.node(k).value = String(v);
+    tool.fire('calcForm', 'submit');
+    tool.focused.length = 0;
+    tool.node('email').value = entry.email;
+    tool.node('ack').checked = entry.ack;
+    tool.fire('gateBtn', 'click');
+    eq(tool.focused[0], want, `${what}: focus moves to #${want}`);
+    eq(tool.sender.length, 0, `${what}: and nothing is posted to Sender`);
+  }
+
+  /* And an accepted submission moves focus nowhere and does post. */
+  const tool = loadTool();
+  for (const [k, v] of Object.entries(FIXTURE_A)) tool.node(k).value = String(v);
+  tool.fire('calcForm', 'submit');
+  tool.focused.length = 0;
+  tool.node('email').value = 'reader@example.com';
+  tool.node('ack').checked = true;
+  tool.fire('gateBtn', 'click');
+  eq(tool.focused.length, 0, 'an accepted gate moves focus nowhere');
+  eq(tool.sender.length, 1, 'and posts once');
+  ok(tool.node('noteBlock').hidden === false, 'and reveals the covering note');
+
+  /* §3.2, the client half. The Worker-side cap is the control and is asserted
+     separately; these are the attributes that stop a paste overflowing a field
+     whose end the respondent cannot see. */
+  const html = readFileSync(TOOL_PATH, 'utf8');
+  for (const [id, max] of [['email', 254], ['fname', 100], ['lname', 100], ['company', 200]]) {
+    const tag = (html.match(new RegExp(`<input[^>]*id="${id}"[^>]*>`)) || [''])[0];
+    ok(has(tag, `maxlength="${max}"`), `#${id} carries maxlength="${max}"`, tag);
+  }
+  /* §3.1's other half: the message is associated with the control, not merely
+     placed near it. */
+  ok(/<span class="error" id="email-error">/.test(html), 'the gate’s error slot names itself');
+  ok(/<input type="checkbox" id="ack" aria-describedby="ackError">/.test(html),
+     'and the consent box points at its own message');
+  ok(/<p id="ackError" role="alert">/.test(html), 'which announces when it appears');
+}
+
+/* ============================== PR9 §2, §3.2, §3.3 — the Worker ============ */
+section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comment');
+{
+  const WORKER = fileURLToPath(new URL('../../src/worker.js', import.meta.url));
+  const src = readFileSync(WORKER, 'utf8');
+
+  /* §3.3. The comment at worker.js:225 described the PM-tile toolset escalation
+     that PR1 removed, which is how the next reader learns something false about
+     the system. Master §0.8 is the rule it contradicted. */
+  ok(!/the tool escalates an amber PM tile to red/.test(src),
+     '§3.3 — the comment no longer states that the tool escalates on toolset');
+  /* Flattened first: the sentence wraps across comment lines, and a regex
+     written against one particular wrap is a regex that fails on a reflow. */
+  const flatSrc = src.replace(/\n\s*\/\/ ?/g, ' ');
+  ok(/PR1 removed the escalation/.test(flatSrc),
+     '§3.3 — and it records that the behaviour is gone rather than deleting the paragraph');
+  ok(/no toolset input reaches rag_pm/.test(flatSrc),
+     '§3.3 — restating master §0.8 where the field it governs is assembled');
+
+  /* §2. One verification path in this Worker, not two: the same helper, the
+     same secret binding and the same caller IP on both endpoints. */
+  eq((src.match(/await verifyTurnstile\(/g) || []).length, 2,
+     '§2 — both endpoints verify through the one helper');
+  eq((src.match(/env\.TURNSTILE_SECRET/g) || []).length, 2, '§2 — off the same secret binding');
+  ok(/return false;\s*\n\s*const body = new FormData\(\)/.test(src)
+     || /if \(!token \|\| !secret\) return false;/.test(src),
+     '§2 — verification fails closed on an absent token or secret');
+}
+
+/* The Worker itself, run. `cloudflare:email` does not resolve outside the
+   Workers runtime, so the module is loaded with that one import replaced by a
+   local stub — nothing on the capacity-report path touches it. Everything else
+   is the shipped file, byte for byte.
+
+   The Turnstile verification endpoint is MOCKED. It has to be: a real token is
+   issued to a browser by Cloudflare and cannot be minted here, which is why §2
+   says the last step before merge is manual and names it. What is asserted
+   below is the Worker's own behaviour on each of the two answers the real
+   endpoint can give. */
+{
+  const dir = mkdtempSync(join(tmpdir(), 'cc-worker-'));
+  const WORKER = fileURLToPath(new URL('../../src/worker.js', import.meta.url));
+  const stub = 'class EmailMessage { constructor(from, to, raw) { this.from = from; this.to = to; this.raw = raw; } }';
+  const path = join(dir, 'worker.mjs');
+  writeFileSync(path, readFileSync(WORKER, 'utf8')
+    .replace('import { EmailMessage } from "cloudflare:email";', stub));
+  const worker = (await import(pathToFileURL(path).href)).default;
+
+  const env = {
+    TURNSTILE_SECRET: 'test-secret',
+    SENDER_API_TOKEN: 'test-token',
+    SENDER_GROUP_ID: 'test-group',
+    ASSETS: { fetch: async () => new Response('assets') },
+  };
+
+  const realFetch = globalThis.fetch;
+  let verifies = true;
+  let calls = [];
+  globalThis.fetch = async (url, init) => {
+    const href = String(url);
+    calls.push({ url: href, init });
+    if (href.includes('challenges.cloudflare.com')) {
+      return new Response(JSON.stringify({ success: verifies }), { status: 200 });
+    }
+    return new Response(JSON.stringify({ id: 'sub_1' }), { status: 200 });
+  };
+
+  const base = capture({ id: 'worker', ...FIXTURE_A }).sender;
+  const post = async (payload) => {
+    calls = [];
+    const res = await worker.fetch(new Request('https://projexar.com/api/capacity-report', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload),
+    }), env);
+    return { res, sender: calls.filter((c) => c.url.includes('api.sender.net')) };
+  };
+  const good = { ...base, turnstile_token: 'a-token' };
+
+  section('PR9 §2 — Turnstile fails closed, and no Sender post is made');
+  {
+    verifies = false;
+    const a = await post(good);
+    eq(a.res.status, 403, 'a failed verification answers 403');
+    eq(a.sender.length, 0, 'and nothing reaches Sender');
+    eq(JSON.stringify(await a.res.clone().json()), '{"ok":false}', 'and the body says so');
+
+    /* An absent token is the blocked-widget case, and it must take the same
+       route: a control that waves through on its own failure is decoration. */
+    verifies = true;
+    const b = await post({ ...base, turnstile_token: '' });
+    eq(b.res.status, 403, 'an absent token answers 403 too');
+    eq(b.sender.length, 0, 'and nothing reaches Sender');
+
+    const c = await post(good);
+    eq(c.res.status, 200, 'a passing verification answers 200');
+    eq(c.sender.length, 1, 'and posts to Sender exactly once');
+    const body = JSON.parse(c.sender[0].init.body);
+    eq(Object.keys(body).sort().join(','), 'email,fields,firstname,groups,lastname',
+       'with the subscriber shape unchanged');
+
+    /* §0.15. The Sender field contract is byte-identical: the same fifteen
+       placeholders, none added, none removed, none renamed. */
+    const FIELDS = ['{{company}}', '{{it_staff}}', '{{bau_staff}}', '{{licence_count}}',
+      '{{effective_fte}}', '{{pm_load}}', '{{projects_per_fte}}', '{{rag_pm}}', '{{rag_bau}}',
+      '{{headroom}}', '{{toolset}}', '{{budget_tracking}}', '{{report_permalink}}',
+      '{{report_consent}}', '{{report_requested_at}}'];
+    eq(Object.keys(body.fields).sort().join(','), FIELDS.slice().sort().join(','),
+       '§0.15 — the custom-field set gains nothing and loses nothing');
+    eq(body.fields['{{report_permalink}}'], base.permalink, 'and the permalink survives the origin check');
+    ok(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(body.fields['{{report_requested_at}}']),
+       'the timestamp is in the format Sender documents, not ISO 8601');
+  }
+
+  section('PR9 §3.2 — oversize is rejected by the Worker, never truncated');
+  {
+    verifies = true;
+    /* Every capped field, one at a time, one character over. Rejection is 400
+       and — the part that matters — no Sender post at all: a truncating cap
+       would answer 200 and write a subscriber whose address does not exist. */
+    const CAPS = {
+      email: 254, firstname: 100, lastname: 100, company: 200, name: 200,
+      it_staff: 64, bau_staff: 64, licence_count: 64, effective_fte: 64, pm_load: 64,
+      projects_per_fte: 64, rag_pm: 64, rag_bau: 64, headroom: 64, toolset: 64,
+      budget_tracking: 64, turnstile_token: 2048,
+    };
+    for (const [field, max] of Object.entries(CAPS)) {
+      /* An oversize email still has to be a valid address, or it would be
+         turned away by the format check above the caps and this would assert
+         nothing about the cap. */
+      const over = field === 'email'
+        ? `${'a'.repeat(max - 16)}@very-long-example.com`
+        : 'x'.repeat(max + 1);
+      const r = await post({ ...good, [field]: over });
+      eq(r.res.status, 400, `${field}: one character over the cap is rejected`);
+      eq(r.sender.length, 0, `${field}: and nothing is sent to Sender`);
+
+      const at = field === 'email'
+        ? `${'a'.repeat(max - 22)}@very-long-example.com`
+        : 'x'.repeat(max);
+      const ok200 = await post({ ...good, [field]: at });
+      eq(ok200.res.status, 200, `${field}: exactly at the cap is accepted`);
+      eq(ok200.sender.length, 1, `${field}: and reaches Sender whole`);
+      if (ok200.sender.length) {
+        const sent = JSON.parse(ok200.sender[0].init.body);
+        const seen = field === 'email' || field === 'firstname' || field === 'lastname'
+          ? sent[field] : (field === 'name' ? at : sent.fields[`{{${field}}}`]);
+        if (field !== 'name' && field !== 'turnstile_token') {
+          eq(String(seen).length, at.length, `${field}: the value is not truncated on the way through`);
+        }
+      }
+    }
+
+    /* An object where a string belongs. Inside every cap by String() length,
+       and "[object Object]" is not a value any of these fields can hold. */
+    const obj = await post({ ...good, toolset: { evil: true } });
+    eq(obj.res.status, 400, 'a nested object is rejected rather than stringified into the record');
+    eq(obj.sender.length, 0, 'and nothing is sent');
+
+    /* The permalink keeps its own rule: blanked, not rejected. The subscriber
+       record and the consent still matter; only the link is lost. */
+    const foreign = await post({ ...good, permalink: 'https://projexar.com.evil.com/x' });
+    eq(foreign.res.status, 200, 'a foreign permalink does not reject the submission');
+    eq(JSON.parse(foreign.sender[0].init.body).fields['{{report_permalink}}'], '',
+       'and is blanked instead');
+    const longLink = await post({ ...good, permalink: `https://projexar.com/${'x'.repeat(2100)}` });
+    eq(longLink.res.status, 200, 'an oversize permalink does not reject it either');
+    eq(JSON.parse(longLink.sender[0].init.body).fields['{{report_permalink}}'], '',
+       'and takes the same remedy as a foreign one');
+  }
+
+  globalThis.fetch = realFetch;
 }
 
 /* ================================================= categorised text diff ==== */

@@ -27,11 +27,15 @@ let failed = 0;
 for (const shape of shapes) {
   const cap = capture(shape);
   if (!cap.ok) { failed++; record[shape.id] = { error: cap.error }; continue; }
-  const text = allText(cap);
+  /* PR9 §4. exDigest keeps the covering note and the two link surfaces out of
+     the comparison — they carry no figure that is not already inside the
+     report, and the link carries the raw answers. Both are read by the copy
+     rule and the dash rules with no exclusion; this is the digest only. */
+  const text = allText(cap, { exDigest: true });
   /* The same blob with the §5 band track removed. On a pre-PR5 commit there is
      no track and the two pairs are identical, which is what makes them
      comparable across the release. */
-  const bare = allText(cap, { exBar: true });
+  const bare = allText(cap, { exBar: true, exDigest: true });
   record[shape.id] = {
     text: sha(text),
     numbers: sha(numbersIn(text).join('|')),

@@ -48,6 +48,68 @@ const GATE_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const LIMITS = { name: 200, email: 254, company: 200, message: 5000 };
 
 /**
+ * The same control for the Capacity Check gate, which had none.
+ *
+ * The gate's own maxlength attributes mirror the first three of these. Those
+ * are the convenience: they stop a paste from overflowing a field whose end the
+ * respondent cannot see. This table is the control, because an attribute is
+ * advice to a browser and this endpoint is reachable without one.
+ *
+ * Oversize is REJECTED, never truncated. A truncated email address is a lead
+ * that fails silently — the subscriber is written, the report is templated, and
+ * it goes to an address that does not exist. The respondent is told nothing,
+ * because the endpoint is fire-and-forget; they simply never receive it. A
+ * rejection at least leaves a 400 in the logs against a real address.
+ *
+ *   email 254        RFC 5321's maximum path length, and the number
+ *                    /api/contact already uses. One cap for an email address in
+ *                    this Worker, not two.
+ *   firstname 100    The gate splits one name across two fields. 100 each keeps
+ *   lastname  100    the pair at /api/contact's 200 for a whole name.
+ *   company   200    The same field and the same cap as /api/contact.
+ *
+ * The rest are not typed by anyone: the tool computes them and the browser
+ * posts them, which means a crafted request can put anything in them. The
+ * longest legitimate value any of them takes across the tool's whole shape
+ * corpus is 41 characters, a dropdown's own words. 64 leaves room for a longer
+ * option without leaving a hole.
+ *
+ * `permalink` is absent deliberately and handled below, on the rule that
+ * already governs it. `turnstile_token` is a control input rather than a field:
+ * a Cloudflare token runs to a few hundred characters, and 2048 stops an
+ * unbounded body being relayed to the siteverify endpoint.
+ */
+const REPORT_LIMITS = {
+  email: 254, firstname: 100, lastname: 100, company: 200,
+  name: 200,
+  it_staff: 64, bau_staff: 64, licence_count: 64, effective_fte: 64, pm_load: 64,
+  projects_per_fte: 64, rag_pm: 64, rag_bau: 64, headroom: 64, toolset: 64,
+  budget_tracking: 64,
+  turnstile_token: 2048,
+};
+
+/** A permalink is not typed by anyone either, but it is a URL and 2048 is what a URL gets. */
+const PERMALINK_MAX = 2048;
+
+/**
+ * Every capped field, measured as the string it will be sent as.
+ *
+ * Returns the name of the first field that fails, or null. An object or array
+ * value fails too: `String({})` is "[object Object]", which is inside every cap
+ * above and is not a value any of these fields can legitimately hold, so a
+ * length check on its own would wave it through into the subscriber record.
+ */
+function oversizeField(body) {
+  for (const [name, max] of Object.entries(REPORT_LIMITS)) {
+    const value = body[name];
+    if (value === undefined || value === null) continue;
+    if (typeof value === "object") return name;
+    if (String(value).length > max) return name;
+  }
+  return null;
+}
+
+/**
  * The contact form is on more than one page, and each one wants the visitor
  * back where they started rather than on /contact. A form declares which page
  * it is with a hidden `source` field; this maps that to a path and a subject
@@ -165,6 +227,14 @@ async function handleCapacityReport(request, env) {
     return json({ ok: false }, 400);
   }
 
+  // Length caps, before the token is spent verifying and before anything
+  // reaches Sender. Rejected rather than truncated: see REPORT_LIMITS.
+  const oversize = oversizeField(body);
+  if (oversize) {
+    console.warn("capacity report field rejected as oversize:", oversize);
+    return json({ ok: false }, 400);
+  }
+
   // Turnstile, before anything reaches Sender. This endpoint writes to the
   // subscriber list, so an unprotected POST pollutes it and burns free-tier
   // allowance. Same check, same secret binding and same helper as
@@ -188,11 +258,17 @@ async function handleCapacityReport(request, env) {
   // in it and the template would render our own domain's link to it. Blank
   // anything that is not ours rather than rejecting: the subscriber record and
   // the consent still matter, only the link is lost.
+  //
+  // Length joins that rule rather than the one above it. An oversize permalink
+  // is the same class of defect as a foreign one — a value nobody typed, from a
+  // request nobody made through the page — and it takes the same remedy, for
+  // the same reason. The tool's own links run to about 180 characters.
   if (
     typeof body.permalink !== "string" ||
+    body.permalink.length > PERMALINK_MAX ||
     !body.permalink.startsWith(`${ORIGIN}/`)
   ) {
-    console.warn("capacity report permalink rejected:", body.permalink);
+    console.warn("capacity report permalink rejected");
     body.permalink = "";
   }
 
@@ -220,13 +296,18 @@ async function handleCapacityReport(request, env) {
   // it already exists in Sender and renaming it would break the account. Same
   // number, same arithmetic — only the label the visitor reads has changed.
   //
-  // rag_pm carries the UNESCALATED capacity RAG state and must keep doing so.
-  // From v5.1 the tool escalates an amber PM tile to red where the toolset
-  // offers no cross-project resourcing view, but that escalated value is not
-  // sent: the escalation is a tooling signal, and Sender already receives
-  // `toolset`. Keeping the capacity metric clean means segments stay
-  // comparable, and a segment wanting the compound condition can express it as
-  // rag_pm + toolset rather than needing a new field.
+  // rag_pm is the band value from the capacity model and nothing else.
+  //
+  // This paragraph used to describe a PM-tile escalation driven by the toolset
+  // answer, and to say the escalated value was withheld from this field. PR1
+  // removed the escalation. There is no escalated value left to withhold, and
+  // no toolset input reaches rag_pm, rag_bau or any other rating anywhere in
+  // the tool. The claim is not restated here in its own words on purpose: a
+  // reader grepping for it should find it nowhere in this file.
+  //
+  // What has not changed is what a segment can express. Sender still receives
+  // `toolset` alongside both ratings, so a segment wanting the compound
+  // condition writes it as rag_pm + toolset and still needs no new field.
   //
   // budget_tracking drives a 'cost-blind' tag applied Sender-side for any
   // value other than 'tracked'. It cuts across all three segments rather
