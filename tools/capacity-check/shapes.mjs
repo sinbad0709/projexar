@@ -59,6 +59,21 @@ export const FIXTURE_B = {
    to 8.A's; any divergence means a routing rule has leaked. */
 export const FIXTURE_C = { ...FIXTURE_A, contractors: 6 };
 
+/* Fixture 8.G — 8.A with two contractors. PR7 §10.
+
+   8.C already carries six, so this is not about reaching the contractor branch.
+   It is the gate on §4.1: the brief proposes moving contractors INTO the licence
+   basis, which would make this the one fixture in the suite where a figure
+   moves. §4.1 was not approved, so the expected licence basis here is 25 — the
+   same as 8.A — and the whole fixture is an equality check.
+
+   If §4.1 is later approved, this fixture is where it shows up: licenceCount
+   becomes 27 and the monthly quote £270, and NOTHING else may move. A second
+   moving figure means contractors have leaked into a route §3.2 excludes them
+   from. Two rather than six because a small count makes an off-by-one in the
+   basis visible: 25 against 27 reads differently from 25 against 31. */
+export const FIXTURE_G = { ...FIXTURE_A, contractors: 2 };
+
 /* Fixture 8.D — 8.A reported in dollars, and nothing else changed. Every rated
    figure, every FTE, the growth ceiling and the licence count must be identical
    to 8.A's. What must go is the whole cost block and every ratio that crosses
@@ -213,6 +228,7 @@ export function contractorShapes() {
   return [
     { id: 'contractors-0', ...FIXTURE_A },
     { id: 'contractors-6', ...FIXTURE_C },
+    { id: 'contractors-2', ...FIXTURE_G },
     { id: 'contractors-40', ...FIXTURE_A, contractors: 40 },
   ];
 }

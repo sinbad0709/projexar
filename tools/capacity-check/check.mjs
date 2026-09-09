@@ -13,7 +13,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const sha = (v) => createHash('sha256').update(String(v)).digest('hex').slice(0, 16);
-import { corpus, FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_D, FIXTURE_E, FIXTURE_F,
+import { corpus, FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_D, FIXTURE_E, FIXTURE_F, FIXTURE_G,
          FIXTURE_LOADED_COST, FIXTURE_SALARY,
          boundaryShapes, straddleShapes, toolsetInvarianceShapes, contractorShapes,
          suppressionShapes, singularShapes, corroborationShapes, budgetShapes,
@@ -335,7 +335,16 @@ const capC = assertFixture('8.C', FIXTURE_C, {
   effortLo: 728000, effortHi: 845000, sums: true,
   fullLo: 1095000, fullHi: 1212000, reportedLo: 30.3, reportedHi: 33.5,
   duration: 7.2, itShare: 3.8,
-  licences: 25, yearly: 2500, spendPct: '0.68', fullPctLo: 0.21, fullPctHi: 0.23,
+  /* §4.1, PR7. 8.C is 8.A with six contractors, so approving §4.1 moves its
+     licence quote: 20 BAU + 5 PMs + 6 contractors = 31, and everything priced
+     off that basis moves with it.
+
+     The PR7 brief said §4.1 had "no numeric impact on fixtures 8.A to 8.F, all
+     of which set contractors to zero". 8.C sets six. These five figures are the
+     counter-example, and they are the only figures in 8.A to 8.F that move —
+     every rated quantity, every FTE, the growth ceiling and the cost block are
+     unchanged, which is what 8.C existed to prove in the first place. */
+  licences: 31, yearly: 3100, spendPct: '0.84', fullPctLo: 0.26, fullPctHi: 0.28,
 });
 
 /* Fixture 8.D — 8.A reported in dollars. Every rated figure, every FTE, the
@@ -810,9 +819,18 @@ section('§3.2 contractors — 8.C must move nothing rated');
     eq(cap.computed.corroboration, ref.computed.corroboration, `${sh.id}: corroboration`);
     /* Rule 5: the size of IT against the company excludes them. */
     eq(cap.computed.itPercent, ref.computed.itPercent, `${sh.id}: size of IT against the company`);
-    /* Rule 6: the licence basis excludes them. */
-    eq(cap.computed.licenceCount, ref.computed.licenceCount, `${sh.id}: licence count`);
-    eq(cap.computed.yearly, ref.computed.yearly, `${sh.id}: annual price`);
+    /* Rule 6, INVERTED by §4.1 in PR7. The licence basis is the one route
+       contractors take. A managed resource is a person with capacity recorded
+       in the system, and a contractor on project work has capacity recorded;
+       quoting the permanent-only count understates the price in a report whose
+       thesis is that the reader is undercounting.
+
+       Asserted as arithmetic rather than as a literal, so the rule is visible:
+       the basis is exactly the permanent basis plus the contractors, on every
+       count from 0 to 40. */
+    eq(cap.computed.licenceCount, ref.computed.licenceCount + sh.contractors,
+       `${sh.id}: licence count includes the contractors and nothing else`);
+    eq(cap.computed.yearly, cap.computed.licenceCount * 100, `${sh.id}: annual price follows the basis`);
     /* internal_project_fte stays permanent-only. */
     eq(cap.computed.at[0].internalProjectFte, ref.computed.at[0].internalProjectFte,
        `${sh.id}: internal_project_fte is permanent-only`);
@@ -994,8 +1012,18 @@ for (const shape of corroborationShapes()) {
        `${shape.id}: and say which side of it is ours`);
     ok(has(wk, 'both sides are counts of full-time equivalents'),
        `${shape.id}: and that the subtraction holds anyway`);
-    ok(has(cap.screen.checkList, 'the workings page sets both out'),
-       `${shape.id}: and the check says the qualifications exist`);
+    /* PR7 §3.5. It used to say "the workings page sets both out". The workings
+       page is pr-derivations, inside #printReport, so on screen the pointer
+       pointed at nothing. It points at the full report now, and the count is
+       computed rather than fixed — the second qualification only renders where
+       a ticket proportion was published. */
+    const qualCount = cap.computed.ticketFtePercent !== null ? 2 : 1;
+    ok(has(cap.screen.checkList, qualCount === 2
+             ? 'Two things qualify the comparison, and the full report sets both out.'
+             : 'One thing qualifies the comparison, and the full report sets it out.'),
+       `${shape.id}: the check names how many qualifications exist, and points somewhere reachable`);
+    ok(!has(cap.screen.checkList, 'the workings page sets'),
+       `${shape.id}: and no longer points at a page a screen reader does not have`);
     ok(!has(cap.screen.checkList, 'not the same kind of estimate'),
        `${shape.id}: the qualification is not also made inline`);
     if (cap.computed.ticketFtePercent !== null) {
@@ -1017,7 +1045,13 @@ for (const shape of corroborationShapes()) {
   if (shape.expect === 'note') {
     ok(cap.values.bauSplitEstimate < cap.computed.corroborationLo,
        `${shape.id}: the note branch is the one below the window`);
-    ok(has(cap.screen.checkList, '>Note<'), `${shape.id}: rendered as a note, not a rating`);
+    /* PR7 item 6. This used to assert the pill word '>Note<'. Both unrated
+       states — the run-work observation and this one — lost their pills, for
+       the same reason: a word in the pill position reads as a point on the
+       scale. The state is asserted structurally now. */
+    ok(has(cap.screen.checkList, 'is-observation'),
+       `${shape.id}: rendered as an observation, not a rating`);
+    ok(!has(cap.screen.checkList, '>Note<'), `${shape.id}: and carries no severity word`);
     ok(has(cap.screen.checkList, 'derive less change effort'),
        `${shape.id}: says we derive less, which is what the figures show`);
     ok(has(cap.screen.checkList, 'what we would expect'), `${shape.id}: says why the gap is expected`);
@@ -1046,17 +1080,39 @@ for (const shape of corroborationShapes()) {
       ok(has(cap.screen.checkList, 'no project managers'), `${shape.id}: says so instead`);
     }
   }
-  /* Run-work composition is stated and carries no rating. */
-  ok(has(cap.screen.checkList, '>Stated<'), `${shape.id}: run-work composition is stated, not rated`);
+  /* Run-work composition is stated and carries no rating.
+
+     PR7 item 6. It used to carry a pill reading "Stated", which is how this was
+     asserted — '>Stated<'. The pill is gone: in the same shape and position as
+     Healthy, Watch and At risk it read as a fourth severity, and an independent
+     reader reported it that way. What replaces the assertion is stronger. The
+     block must be present, must be marked as an observation, and must carry NO
+     pill at all, because the failure mode is a fourth badge word appearing
+     where the old one was. */
+  ok(has(cap.screen.checkList, 'is-observation'),
+     `${shape.id}: run-work composition is set apart as an observation`);
+  ok(!has(cap.screen.checkList, '>Stated<'), `${shape.id}: and carries no severity word`);
   ok(has(cap.screen.checkList, 'composition, not a deficiency'),
      `${shape.id}: framed as composition rather than deficiency`);
   ok(has(cap.screen.checkList, 'not ticket-shaped'), `${shape.id}: gives the second reading`);
   ok(has(cap.screen.checkList, 'same population your projects draw from'),
      `${shape.id}: closes on what matters`);
-  /* Exactly two entries in the block, and four findings beside it. */
-  const chips = cap.screen.checkList.match(/<span class="pill [^"]*">([^<]+)<\/span>/g)
+  /* Two entries in the block, one rated and one not, and four findings beside
+     it. The rated one is the only pill, so a fourth badge word cannot creep
+     back in without failing here. */
+  const chips = (cap.screen.checkList.match(/<span class="pill [^"]*">([^<]+)<\/span>/g) || [])
     .map((m) => m.replace(/<[^>]*>/g, ''));
-  eq(chips.length, 2, `${shape.id}: two checks`);
+  /* At most one pill: the corroboration check when it carries a state. On the
+     branch below the window it carries none, so both entries are observations
+     and there is no pill at all. What must never happen is a pill on an
+     unrated entry, which is what the count below enforces together with the
+     status-word check. */
+  ok(chips.length <= 1, `${shape.id}: no unrated check carries a pill`, chips.join(','));
+  const items = cap.screen.checkList.match(/<div class="check-item/g) || [];
+  eq(items.length, 2, `${shape.id}: two checks`);
+  const STATUS = ['Healthy', 'Watch', 'At risk'];
+  ok(chips.every((w) => STATUS.includes(w)),
+     `${shape.id}: and the only badge words are master §3.8's three`, chips.join(','));
   const findings = cap.print['pr-cards'].match(/<span class="p-rag">([^<]+)<\/span>/g);
   eq(findings.length, 4, `${shape.id}: still exactly four findings`);
 }
@@ -1259,7 +1315,15 @@ section('Static printed copy — the eighteen numbers are inside the suite');
      and nothing caught it. They are in allText() now, so they are in the digest
      and in the diff — and pinned here as well, so a change fails with a reason
      rather than only a changed hash. */
-  const staticNums = numbersIn(staticReportText().replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/g, ' '));
+  /* PR7 §3.1. Fifteen of the eighteen live in the bands statement, which is no
+     longer static markup — it renders into the web report and the printed
+     report from one string so the two cannot drift. The numbers are unchanged
+     and still published; this reads them from where they now are. Keeping the
+     count at eighteen is the point: it is what fails if a citation figure is
+     quietly dropped in the move. */
+  const staticNums = numbersIn(
+    (staticReportText() + loadTool().api.bandsStatement(''))
+      .replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/g, ' '));
   const WANT = {
     '9649': 'Colicev: project-month-employee observations',
     '42': 'Colicev: projects', '580': 'Colicev: employees',
@@ -1364,7 +1428,7 @@ section('§3.6 — the ticket divisor is a range, with both anchors named');
     const perDayHi = round1(TICKETS_HI / WORKING_DAYS);
     ok(has(t, `${WORKING_DAYS}-working-day month`),
        'the working-days basis for the conversion is stated');
-    ok(has(t, `${perDayLo.toFixed(1)} to ${perDayHi.toFixed(1)} per agent per day`),
+    ok(has(t, `${perDayLo.toFixed(1)} to ${perDayHi.toFixed(1)} per technician per day`),
        'the control is stated in days as well as months', cap.print['pr-sources']);
     ok(has(cap.print['pr-formulas'], `${perDayLo.toFixed(1)} to ${perDayHi.toFixed(1)} a day`),
        'the workings page carries the daily figure too, not just the sources page');
@@ -1735,41 +1799,91 @@ section('Copy rule — static report and methodology copy');
   const start = html.indexOf('<div id="printReport">');
   const end = html.indexOf('</main>', start);
   ok(start > 0 && end > start, 'printReport block located in the markup');
-  const staticCopy = html.slice(start, end)
+  const flatten = (s) => s
     .replace(/<[^>]*>/g, ' ')
     .replace(/&amp;/g, '&').replace(/&mdash;/g, '—').replace(/&ndash;/g, '–')
     .replace(/&pound;/g, '£').replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"')
+    .replace(/\u2019/g, "'")
     .replace(/\s+/g, ' ').trim();
+
+  /* PR7 §3.1 moved the bands statement out of static markup and into
+     bandsStatement(), so it can be rendered into the web report and the printed
+     report from one string. It is still report copy and still has to clear
+     every rule below, so it is flattened back in here rather than dropping out
+     of this scan — which is exactly how it shipped unscanned once before. */
+  const bandsCopy = flatten(loadTool().api.bandsStatement(''));
+  const staticCopy = flatten(html.slice(start, end)) + ' ' + bandsCopy;
 
   const violations = copyRuleViolations(staticCopy);
   ok(violations.length === 0, 'static report copy clears the copy rule', violations.join(', '));
 
   /* The bands statement, sentence by sentence — all three closing statements
-     are load-bearing and none may be trimmed. */
+     are load-bearing and none may be trimmed.
+
+     The three are numbered in the prose from PR7. An independent reader counted
+     four, because the leadership-role sentence reads as its own item rather
+     than as the elaboration of item 2 that it is. The suite had encoded that
+     grouping in its own labels and the page had not, so the labels were the
+     only place the intended reading existed. First/Second/Third put it on the
+     page, where the reader is. */
   ok(/These bands are ProjexaR's management controls/.test(staticCopy), 'bands statement: opening');
   ok(/point estimate of 5\.16 concurrent projects and a confidence interval of 3\.57 to 6\.19/.test(staticCopy),
      'bands statement: figures, with "point estimate" clearing the copy rule');
   ok(/Three things follow, and we state all three/.test(staticCopy), 'bands statement: three things');
+  ok(/First, the study covers/.test(staticCopy), 'bands statement: item 1 is numbered');
   ok(/a portfolio of IT change projects is a different setting/.test(staticCopy), 'bands statement: 1 of 3 — setting');
-  ok(/Managerial responsibility appears in it only as a check on how people were allocated to projects/
-       .test(staticCopy), 'bands statement: 2 of 3 — managerial responsibility is an allocation check');
+  ok(/Second, managerial responsibility appears in it only as a check on how people were allocated to projects/
+       .test(staticCopy), 'bands statement: 2 of 3 — managerial responsibility is an allocation check, numbered');
   ok(/our step, not the paper's/.test(staticCopy), 'bands statement: 2 of 3 — our step');
   ok(/leadership role \(project leader, chief project engineer, project supervisor\) changes the benefit of multi-project work, and finds it does not/
        .test(staticCopy), 'bands statement: Table S10 — leadership role tested as a moderator, and does not moderate');
   ok(/never models project management caseload as such/.test(staticCopy),
      'bands statement: what the leadership-role test does not cover');
-  ok(/red threshold of 7\.0 sits above the top of that confidence interval/.test(staticCopy),
-     'bands statement: 3 of 3 — the threshold sits above the interval');
+  ok(/Third, our\s+red threshold of 7\.0 sits above the top of that confidence interval/.test(staticCopy),
+     'bands statement: 3 of 3 — the threshold sits above the interval, numbered');
+  /* Exactly three ordinals, so a fourth item cannot be added without either
+     numbering it or breaking this. */
+  ok(!/\bFourth,/.test(staticCopy), 'bands statement: no fourth numbered item');
 
-  /* Two claims we must not make. The first inverts the paper: the -.507 result
+  /* Three claims we must not make. The first inverts the paper: the -.507 result
      is an allocation check with MPW as the dependent variable, not a finding
      that the inverted-U fails for managers. The second is an asserted absence
      contradicted by Table S10, which does test leadership role as a moderator
-     of the performance curve. */
+     of the performance curve.
+
+     The third is PR7 §2, and it is the one that had shipped. The bands arrived
+     already set on 3 September, attributed to the research as "supported by"
+     rather than derived from it. The deck settles it: slide 9 sets 5.0 and 7.0
+     as proposed management controls on complexity, phase and dependency
+     grounds, and across all 29 XML parts it never mentions a confidence
+     interval, a turning point, or any intent to sit above one. So the claim
+     that 7.0 was placed above the interval *deliberately*, to understate rather
+     than manufacture, was an assertion about our own reasoning that no source
+     supports. The fact stays and the reader draws the inference; 7.0 > 6.19 is
+     visible without being told what it was for. */
   ok(!/not find (the |that )?(same )?pattern among managers/i.test(staticCopy),
      'no claim that the inverted-U was tested and not found for managers');
   ok(!/does not test whether that curve differs for managers/i.test(staticCopy),
      'no asserted absence about testing the curve by role — Table S10 tests leadership role');
+  ok(!/understate the problem than manufacture one/i.test(html),
+     'no claim that 7.0 was set above the interval deliberately — the deck establishes no such intent');
+  /* Scoped to the claim the register actually bars: intent about how a band
+     VALUE was chosen. Two unrelated uses of "deliberately" survive and should —
+     one says the two tiles measure different things by construction, the other
+     that the composition check carries no rating on purpose. Neither is a
+     provenance claim, so a bare word ban would be a false positive that taught
+     the next reader to route around the check. Sentence-scoped instead: no
+     sentence naming a band value may also assert why it was placed there. */
+  {
+    const INTENT = /deliberate|on purpose|we would rather|chose to|conservativ|erring|err on/i;
+    const BAND_VALUE = /\b(5\.0|7\.0|10\.0|5\.16|3\.57|6\.19)\b/;
+    const offenders = staticCopy
+      .split(/(?<=[.?!])\s+/)
+      .filter((s) => BAND_VALUE.test(s) && INTENT.test(s));
+    ok(offenders.length === 0,
+       'no sentence states both a band value and an intent about how it was set',
+       offenders.join(' | '));
+  }
   ok(!/8[–-]12/.test(html), 'no 8–12 reference anywhere in the file, comments included');
 
   /* §3.5 — the range explanation is an argument, and it is not buried. */
@@ -1777,6 +1891,40 @@ section('Copy rule — static report and methodology copy');
      'the blended-average paragraph carries the band and range treatment');
   ok(/[Tt]he width of these ranges is the measure of how much a department-wide average leaves unsaid/
        .test(staticCopy), 'the range explanation still says what the width of a range measures');
+  /* §3.2 — which band the study is behind, and which it is not.
+
+     The audit's strongest single finding: the BAU band of 5.0 and 10.0 has no
+     derivation anywhere, carries the same visual weight as the PM band and sits
+     beside a DOI. It inherited credibility it had not earned. The deck confirms
+     the absence — it is entirely about PM concurrent projects, and mentions
+     neither 10.0 nor any per-FTE quantity.
+
+     The negation matters as much as the assertion. A sentence written to be
+     honest about the BAU bands must not be the sentence that quietly gives them
+     a basis, so nothing may claim the two sets share one. */
+  ok(/The study informs the bands on concurrent projects per project manager/.test(staticCopy),
+     '§3.2 — the scoping sentence names which band the study informs');
+  ok(/bands on\s+live projects per effective BAU FTE are ProjexaR's controls/.test(staticCopy),
+     '§3.2 — and says what the BAU bands are');
+  ok(/No published study sits behind them/.test(staticCopy),
+     '§3.2 — and that no study sits behind them');
+  {
+    const SHARED = /(both|two) (sets of )?bands (are|share|rest|were)[^.]*\b(same|research|study|evidence|basis|method|posture)\b/i;
+    ok(!SHARED.test(staticCopy),
+       '§3.2 — nothing claims the two sets of bands share a basis, a method or a posture',
+       (staticCopy.match(SHARED) || [''])[0]);
+  }
+
+  /* PR7 addendum §2.1. The audit called "we would rather understate the problem
+     than manufacture one" the strongest trust line on the property. It was
+     deleted from the bands statement because no source establishes the intent
+     it asserted about a threshold. The posture itself is true and is evidenced
+     all through the release — ranges rated on the adverse end, midpoints
+     barred, the corroboration check made asymmetric — so it moves here, beside
+     the mechanism a reader can check, and makes no claim about a number's
+     provenance. */
+  ok(/Where we could have picked a single flattering number, we did not/.test(staticCopy),
+     'the posture is stated where it is verifiable, in the range explanation');
   /* PR6 §4. The reorder put "What your plans would show instead" four sections
      ahead of this paragraph, arguing the same thing in a table: that a range is
      the case for holding what each person is actually committed to. Made twice
@@ -1987,6 +2135,468 @@ section('PR6 §7 — the tool holds committed time and never claims to track it'
   const a = capture({ id: 'commitment', ...FIXTURE_A });
   ok(has(allText(a), 'Where it is committed: by person, by project, by week'),
      'the comparison row names committed time');
+}
+
+/* ================================================== the second route ========= */
+section('PR7 §7.5 — one more route to the trial, additive and unpriced');
+{
+  /* §8.4 rejects MOVING the panel: PR5 placed it four days ago for a stated
+     reason and one reader's report is not grounds for thrash. The observation
+     behind the request is accepted instead — the panel lands where the problem
+     still feels too large for a trial to touch — and answered by adding a door
+     rather than moving one.
+
+     Three constraints, each of which is a way this could go wrong: the panel
+     must be untouched, the new route must not be a second panel, and the offer
+     must be described in the panel's own words. Two different descriptions of
+     one offer is the contradiction already open on /start, reproduced inside a
+     single page. */
+  const html = readFileSync(TOOL_PATH, 'utf8');
+  const report = html.slice(html.indexOf('<section id="report"'), html.indexOf('<div id="printReport">'));
+
+  ok(/<p class="checks-cta"><a href="\/start\/" class="cta-inline">Start free<\/a>/.test(report),
+     '§7.5 — the second route exists and points at /start/');
+  /* Same offer wording as the panel, exactly. */
+  const panelSub = (report.match(/<p class="midcta-sub">([^<]+)<\/p>/) || [])[1];
+  const ctaSub = (report.match(/<span class="checks-cta-sub">([^<]+)<\/span>/) || [])[1];
+  eq(ctaSub, panelSub, '§7.5 — the offer is described in the panel\'s own words, exactly');
+  const panelBtn = (report.match(/id="trialCta">([^<]+)<\/a>/) || [])[1];
+  const ctaBtn = (report.match(/class="cta-inline">([^<]+)<\/a>/) || [])[1];
+  eq(ctaBtn, panelBtn, '§7.5 — and so is the action');
+
+  /* Not a second panel, and no price beside it. */
+  eq((report.match(/class="midcta"/g) || []).length, 1, '§7.5 — still exactly one conversion panel');
+  const ctaBlock = report.slice(report.indexOf('<p class="checks-cta">'),
+                                report.indexOf('<p class="checks-cta">') + 400);
+  ok(!/£|priceLine|a month|a year/.test(ctaBlock),
+     '§7.5 — no price beside the second route; the price is stated once, in the panel');
+
+  /* It sits after the checks block — the point at which the reader has been
+     shown something a spreadsheet could not do — and below the panel. */
+  ok(report.indexOf('<p class="checks-cta">') > report.indexOf('id="checkList"'),
+     '§7.5 — it sits after the checks');
+  ok(report.indexOf('<p class="checks-cta">') > report.indexOf('class="midcta"'),
+     '§7.5 — and lower on the page than the existing panel, which has not moved');
+}
+
+/* ==================================================== headings that name ===== */
+section('PR7 item 4 — headings that name figures, counted');
+{
+  /* Eight headings named figures, numbers or workings, five of them across two
+     consecutive print spreads. A reader landing on the Your numbers page met
+     "Your numbers", then "The figures your position is built from", then "Your
+     figures, as you entered them", and could not tell from any of them which
+     table was which — the distinction that matters is what we worked out
+     against what they typed, and no heading carried it.
+
+     Three headings survive. The two tables take captions. This counts them, so
+     a fourth cannot be added without the count failing. */
+  const html = readFileSync(TOOL_PATH, 'utf8');
+  const printStart = html.indexOf('<div id="printReport">');
+  const printBlock = html.slice(printStart, html.indexOf('</main>', printStart));
+
+  const FIGURE_WORDS = /\b(figures?|numbers?|workings?)\b/i;
+  const headings = [...printBlock.matchAll(/<h2[^>]*>([^<]+)<\/h2>/g)].map((m) => m[1].trim());
+  const figureHeadings = headings.filter((h) => FIGURE_WORDS.test(h));
+  const runningHeads = [...printBlock.matchAll(/<div class="p-head"><span>([^<]+)<\/span>/g)]
+    .map((m) => m[1].trim()).filter((h) => FIGURE_WORDS.test(h));
+
+  /* Two running headers name the pages, and "Your capacity position" is not a
+     figures heading. What must not come back is a stack of h2s all saying the
+     same thing. */
+  eq(figureHeadings.length, 0,
+     'item 4 — no <h2> in the print report names figures; the running headers do that',
+     figureHeadings.join(' | '));
+  eq(runningHeads.length, 2,
+     'item 4 — exactly two running headers name the figures pages', runningHeads.join(' | '));
+
+  /* The captions carry the distinction the headings could not. */
+  ok(/<p class="p-caption">From your answers<\/p>/.test(printBlock),
+     'item 4 — the derived table is captioned');
+  ok(/As you entered them<\/p>/.test(printBlock), 'item 4 — and the input table is captioned');
+  /* Comments stripped: the note explaining this change quotes the old headings
+     by name, which is the point of it. What must be gone is the rendered ones. */
+  const printCopy = printBlock.replace(/<!--[\s\S]*?-->/g, ' ');
+  ok(!/The figures your position is built from/.test(printCopy), 'item 4 — the old heading is gone');
+  ok(!/Your figures, as you entered them/.test(printCopy), 'item 4 — and so is its near-twin');
+  ok(!/<h2[^>]*>Every figure is arithmetic/.test(printBlock),
+     'item 4 — the workings lead is a sentence, not a heading');
+  ok(/Every figure here is arithmetic on something you supplied\./.test(printBlock),
+     'item 4 — and it is still said');
+}
+
+/* =========================================== the spec matches what ships ==== */
+section('PR7 §1.4 — master §2.11 and the shipped bands statement are the same words');
+{
+  /* This is the guard for the failure that cost this release a halted PR.
+
+     PR1 changed the bands statement on the page — added a third item, then the
+     Table S10 sentence — and nobody updated master §2.11. Five days later a
+     brief written from the specification described a statement that had not
+     shipped for five days, and a stop condition fired on the difference. The
+     specification is in the repository now, so the two can be compared, and
+     anything that edits one without the other fails here.
+
+     Compared on normalised text: markdown emphasis, HTML tags, entities and
+     whitespace all collapse, because the two carry the same sentences in
+     different markup and only the sentences are the contract. */
+  const SPEC = join(fileURLToPath(new URL('.', import.meta.url)), '..', '..', 'claude', 'capacity-check-change-spec-sep-2026.md');
+  let spec = null;
+  try { spec = readFileSync(SPEC, 'utf8'); } catch { /* not checked out */ }
+  if (!spec) {
+    ok(true, '§1.4 — specification not present in this checkout, comparison skipped');
+  } else {
+    const norm = (t) => t
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&ndash;/g, '–').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ')
+      .replace(/[*_>]/g, ' ')
+      .replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"')
+      .replace(/\s+/g, ' ').trim();
+
+    /* The statement in the spec is the blockquote beginning "These bands are". */
+    const from = spec.indexOf('> These bands are ProjexaR');
+    ok(from > 0, '§1.4 — master §2.11 carries the statement');
+    const end = spec.indexOf('\n\n', spec.indexOf('confidence interval.', from));
+    const specText = norm(spec.slice(from, end));
+    const shipped = norm(loadTool().api.bandsStatement(''));
+
+    /* Prefix, not equality: §2.11 prescribes the statement, and the page wraps
+       it with the §2.12 citation and the §3.2 scoping sentence, neither of
+       which belongs to §2.11. Every word §2.11 does specify must match, in
+       order, which is what actually drifted. */
+    ok(shipped.startsWith(specText),
+       '§1.4 — the page carries master §2.11 word for word',
+       shipped.startsWith(specText) ? '' : (() => {
+         let i = 0; while (i < specText.length && specText[i] === shipped[i]) i++;
+         return `\n   diverges at ${i}\n   spec:    ...${specText.slice(Math.max(0, i - 80), i + 120)}` +
+                `\n   shipped: ...${shipped.slice(Math.max(0, i - 80), i + 120)}`;
+       })());
+    /* And what the page adds is only the citation and the §3.2 sentence. */
+    const extra = shipped.slice(specText.length).trim();
+    ok(/^Colicev, A\., Hakkarainen/.test(extra),
+       '§1.4 — what the page adds after it starts with the citation');
+    ok(/No published study sits behind them\.$/.test(extra),
+       '§1.4 — and ends with the §3.2 scoping sentence');
+
+    /* And the intent clause is gone from both, not just from the page. */
+    ok(!/deliberately: we would rather understate/.test(specText),
+       '§1.4 — the withdrawn intent clause is gone from the specification too');
+    /* The register records it as withdrawn rather than silently dropping it. */
+    ok(/WITHDRAWN 9 Sep/.test(spec), '§1.4 — and §11 records the withdrawal');
+    ok(!/UNVERIFIED\s+— one read only/.test(spec),
+       '§1.4 — the stale Table S10 register row is gone');
+  }
+}
+
+/* ================================================== fixture 8.G, §4.1 ======== */
+section('Fixture 8.G — two contractors, and exactly one figure is allowed to move');
+{
+  /* §10. 8.C already reaches the contractor branch at six, so 8.G is not about
+     coverage. It is the gate on §4.1, which proposes moving contractors into the
+     licence basis and would make this the one place in the suite where a number
+     moves.
+
+     §4.1 was NOT approved, so the licence basis stays BAU staff on projects plus
+     project managers, exactly as master §3.2 row six specifies, and every figure
+     here equals 8.A's. Asserted as equalities rather than as literals so that if
+     §4.1 is approved later, the diff is one line and every other row of this
+     block fails loudly if contractors leak anywhere else. */
+  const ref = capture({ id: '8.A-ref', ...FIXTURE_A });
+  const g = capture({ id: '8.G', ...FIXTURE_G });
+  if (ok(g.ok, '8.G: renders', g.error)) {
+    const R = ref.computed, G = g.computed;
+    eq(G.at[0].bauEffectiveFte, R.at[0].bauEffectiveFte, '8.G: effective BAU FTE');
+    eq(G.at[0].projectsPerFTE, R.at[0].projectsPerFTE, '8.G: BAU tile ratio');
+    eq(g.sender.rag_bau, ref.sender.rag_bau, '8.G: BAU tile rating');
+    eq(G.ceiling.value, R.ceiling.value, '8.G: growth ceiling');
+    eq(G.at[0].internalEffortCost, R.at[0].internalEffortCost, '8.G: internal effort cost');
+    eq(G.at[0].fullPortfolioCost, R.at[0].fullPortfolioCost, '8.G: full portfolio cost');
+    eq(JSON.stringify(G.derivedRunShare), JSON.stringify(R.derivedRunShare), '8.G: derived run and change share');
+    eq(G.itPercent, R.itPercent, '8.G: IT staff share');
+    eq(G.at[0].internalProjectFte, R.at[0].internalProjectFte, '8.G: internal_project_fte stays permanent-only');
+
+    /* The licence quote — the one figure §4.1 moves, and the reason this
+       fixture exists. §4.1 was approved, so the basis is 20 BAU + 5 PMs + 2
+       contractors = 27, not 25. Typed in by hand rather than derived from the
+       inputs, so an arithmetic change in the basis has to be re-stated here
+       deliberately instead of silently agreeing with itself. */
+    eq(G.licenceCount, 27, '8.G: licence basis is 27 — BAU staff, PMs and contractors');
+    eq(G.licenceCount, R.licenceCount + 2, '8.G: which is 8.A\'s basis plus the two contractors');
+    eq(G.monthly, 270, '8.G: £270 a month');
+    eq(G.yearly, 2700, '8.G: £2,700 a year on the annual plan');
+    /* Recomputed from the basis actually used, not carried over from 8.A. */
+    eq(roundN(G.spendPct, 2), 0.74, '8.G: share of reported spend recomputes from 27');
+    ok(G.spendPct !== R.spendPct, '8.G: and is not 8.A\'s share');
+    eq(roundN((G.yearly / FIXTURE_G.spend) * 100, 2), roundN(G.spendPct, 2),
+       '8.G: the share is the annual price over the reported spend, and nothing else');
+
+    /* And the one thing that IS different: the unrated figure, with §4.2's
+       sentence beside it. */
+    ok(G.at[0].deliveryPerFTE !== null, '8.G: the contractor-inclusive figure is computed');
+    ok(R.at[0].deliveryPerFTE === null, '8.G: and 8.A has none, which is what makes it the difference');
+    const t = allText(g);
+    ok(/Live projects per delivery FTE, including contractors/.test(t), '8.G: rendered');
+    ok(/Unrated/.test(t), '8.G: and unrated');
+    ok(/This figure adds your contractors and carries no rating/.test(t), '8.G: with the §4.2 sentence');
+    ok(/Your 2 contractors added to/.test(t), '8.G: naming the two contractors, in the plural');
+
+    /* The whole point, stated as one assertion: the published number multiset
+       gains the contractor figures and loses nothing. */
+    const bag = (x) => { const m = new Map(); for (const n of numbersIn(allText(x))) m.set(n, (m.get(n) || 0) + 1); return m; };
+    const A = bag(ref), B = bag(g);
+    const lost = [...A.entries()].filter(([k, v]) => v > (B.get(k) || 0)).map(([k]) => k);
+    /* Exactly two groups of tokens legitimately stop being published, and
+       naming them is the whole assertion — anything else in this list is
+       contractors leaking into a route §3.2 excludes them from.
+
+       "0" is the contractor input 8.A echoes in "Your figures, as you entered
+       them"; 8.G echoes "2" there instead. The rest are the licence quote and
+       everything priced off it, which §4.1 moves on purpose: 25 people, £250 a
+       month, £2,500 a year, 0.68% of reported spend, and the two endpoints of
+       the share of full portfolio cost. */
+    const EXPECTED_LOST = ['0', '0.21', '0.23', '0.68', '2500', '25', '250'];
+    eq(JSON.stringify([...lost].sort()), JSON.stringify([...EXPECTED_LOST].sort()),
+       '8.G: the only figures 8.A published and 8.G does not are the contractor echo and the licence quote');
+    /* And the replacements are there, so this cannot pass by the quote having
+       been dropped rather than recomputed. */
+    const t8g = allText(g);
+    for (const n of ['27', '270', '2,700', '0.74']) {
+      ok(t8g.includes(n), `8.G: publishes ${n}`);
+    }
+    ok(/Contractors and outsourced staff working on projects/.test(allText(g)),
+       '8.G: and that echo is the input table row, which renders at every count');
+  }
+}
+
+/* ============================================= the qualification pointer ===== */
+section('PR7 §3.5 — the pointer points somewhere the reader can actually go');
+{
+  /* The run-work check told the reader that two things qualify the comparison
+     and that "the workings page sets both out". The workings page is
+     pr-derivations, which lives inside #printReport — display:none outside
+     @media print, and behind the email gate on top of that. On screen the
+     sentence pointed at nothing.
+
+     The caveats stay where PR6 §3 put them. Naming them here instead was the
+     other option in the brief and it is the wrong one: the second is that the
+     figures are quoted against different populations, and PR6 moved that
+     sentence out of this block precisely because it sat beside "this is the
+     same population your projects draw from" and read as a contradiction.
+
+     The count is the second half. It was the literal word "Two" over a list
+     whose length depends on whether a ticket proportion was published. */
+  const two = capture({ id: '§3.5-two', ...FIXTURE_A });
+  ok(two.computed.ticketFtePercent !== null, '§3.5 — the two-qualification branch is reached');
+  ok(has(two.screen.checkList, 'Two things qualify the comparison, and the full report sets both out.'),
+     '§3.5 — two qualifications, counted and pointed at the report');
+
+  /* Every IT person is a project manager, so nonPmStaff is 0, the ticket
+     proportion suppresses and only one qualification is left. No fixture
+     reached this branch, which is why a hardcoded "Two" survived. */
+  const one = capture({ id: '§3.5-one', ...FIXTURE_A, staff: 5, pms: 5, bauStaff: 0 });
+  ok(one.ok, '§3.5 — the one-qualification shape renders', one.error);
+  ok(one.computed.ticketFtePercent === null, '§3.5 — and it does suppress the ticket proportion');
+  ok(one.computed.runWorkGap !== null, '§3.5 — while still publishing the run-work check');
+  ok(has(one.screen.checkList, 'One thing qualifies the comparison, and the full report sets it out.'),
+     '§3.5 — one qualification, in the singular');
+  ok(!has(one.screen.checkList, 'Two things qualify'),
+     '§3.5 — and the plural does not render where only one qualification exists');
+
+  for (const cap of [two, one]) {
+    ok(!has(cap.screen.checkList, 'workings page'),
+       '§3.5 — no on-screen pointer at a page the screen does not have');
+  }
+}
+
+/* ================================================ the contractor figure ====== */
+section('PR7 §4.2 — the unrated contractor figure says why it is unrated');
+{
+  /* The audit argued contractors belong inside rated delivery capacity, which
+     §8.1 rejects: the growth ceiling's divisor has to be the tile's divisor, so
+     moving contractors into the tile projects the portfolio forward on transient
+     capacity. But the reader who made that argument had a contractor-inclusive
+     figure on the page in front of them and appears not to have seen it. That is
+     a finding about the page.
+
+     Stated as what we exclude, never as what the respondent's budget contains —
+     the audit's own wording asserted contractors were "already paid out of
+     budget", which is in the unverified column. */
+  const cap = capture({ id: '§4.2', ...FIXTURE_C });
+  const t = allText(cap);
+  ok(/The rated figure measures how far the portfolio leans on permanent BAU capacity/.test(t),
+     '§4.2 — what the rated figure measures');
+  ok(/This figure adds your contractors and carries no rating, because the bands are set against permanent capacity/
+       .test(t), '§4.2 — and why the one beside it carries no rating');
+  ok(!/already paid out of budget/i.test(t),
+     '§4.2 — and it never states what the respondent\'s budget contains');
+
+  /* Absent where there are no contractors to explain. */
+  const none = allText(capture({ id: '§4.2-zero', ...FIXTURE_A }));
+  ok(!/This figure adds your contractors/.test(none),
+     '§4.2 — the sentence does not render where no contractors were reported');
+}
+
+/* ================================================== who makes the choice ===== */
+section('PR7 §0.11 and §0.12 — we make the judgements, and we assert one thing at a time');
+{
+  /* §0.12. The report is an artefact and never the actor in a decision. "The
+     check never counted them" attributes to software a choice a person made,
+     and it reads as evasion the moment a reader notices — the whole point of
+     the page is that somebody stands behind the numbers. Where an exclusion is
+     stated, we state it as ours and give the reason.
+
+     Scanned as a pattern, because the phrasing has three variants in the file
+     already and would grow more. */
+  const shapes = [
+    { id: '8.A', ...FIXTURE_A }, { id: '8.B', ...FIXTURE_B }, { id: '8.E', ...FIXTURE_E },
+    { id: '8.F', ...FIXTURE_F }, ...suppressionShapes(),
+  ];
+  const ARTEFACT_AS_ACTOR =
+    /\b(the |this )?(check|report|tool|calculation)\s+(never|has not|does not|did not|cannot|will not)\s+(count|counted|include|included|ask|asked|consider|considered|decide|decided|choose|chose)\b/i;
+  let scanned = 0;
+  for (const shape of shapes) {
+    let cap;
+    try { cap = capture(shape); } catch { continue; }
+    if (!cap.ok) continue;
+    scanned++;
+    const t = allText(cap);
+    ok(!ARTEFACT_AS_ACTOR.test(t),
+       `${shape.id}: the report never stands in for the person who made a choice`,
+       (t.match(ARTEFACT_AS_ACTOR) || [''])[0]);
+  }
+  ok(scanned > 5, `shapes scanned for §0.12 (${scanned})`);
+
+  /* And the positive form, on the shape where the exclusion is stated. */
+  const a = allText(capture({ id: 'excl', ...FIXTURE_A }));
+  ok(/We do not count them, because we did not ask who they are/.test(a),
+     '§0.12 — the exclusion is stated as ours, with the reason');
+
+  /* §0.11. At most one asserted inference per finding; the rest are conditional.
+     "If that is happening, this is where it shows up" reads as expertise. Four
+     assertions in a row about a department nobody has seen reads as a script,
+     and an independent reader said so.
+
+     There is no mechanical test for "asserted inference", so this pins the four
+     the audit named. Three became conditionals and one was kept. The negations
+     are what stop them drifting back, which is the failure mode: each of these
+     was written by someone reaching for a stronger sentence. */
+  const REVERTED = [
+    [/almost certainly booked across several plans/i, 'the BAU finding asserts how people are booked'],
+    [/quietly double-book the same person/i, 'the visibility finding asserts a double-booking'],
+    [/decisions get made against a picture already out of date/i, 'the stale-assignment detail asserts a consequence'],
+    [/every resourcing conflict[^.]*stays invisible/i, 'the no-visibility detail asserts every conflict'],
+  ];
+  for (const [re, why] of REVERTED) {
+    ok(!re.test(a), `§0.11 — ${why}`, (a.match(re) || [''])[0]);
+  }
+  /* And the conditionals are actually there, so this cannot pass by the copy
+     having been deleted rather than rewritten. */
+  ok(/Where those people are booked across several plans, nothing here shows the overlap/.test(a),
+     '§0.11 — the BAU finding states the condition');
+  ok(/Where a decision is taken without that check/.test(a),
+     '§0.11 — the stale-assignment detail states the condition');
+  ok(/Where two of those need the same person in the same week/.test(a),
+     '§0.11 — the caseload clause states the condition');
+  /* The one assertion each finding keeps. */
+  ok(/is where delays start/.test(a), '§0.11 — the BAU finding keeps its one assertion');
+}
+
+/* ==================================================== the bands on screen ==== */
+section('PR7 §3.1 — the bands statement reaches the reader on screen, from one source');
+{
+  /* pr-derivations and the caveat layer sit inside #printReport, which is
+     display:none outside @media print. Everything in there is behind the email
+     gate as well. So the justification for a red pill was reachable only by a
+     reader who handed over an address and opened a PDF, while the pill itself
+     was free. A reader deciding whether to believe a rating needs the reason
+     beside the rating.
+
+     One string feeds both reports. That is not tidiness: PR5 renamed a section
+     on screen and not in the printed report, both versions shipped, and an
+     independent reader quoted the stale one back at us. Two copies of a
+     paragraph this load-bearing would be the same defect waiting to happen. */
+  const cap = capture({ id: 'bands-web', ...FIXTURE_A });
+  const web = cap.screen.bandsStatement || '';
+  const print = cap.print['pr-bands'] || '';
+  ok(web.length > 500, 'the bands statement renders into the web report', String(web.length));
+  ok(print.length > 500, 'and into the printed report', String(print.length));
+
+  const text = (h) => h.replace(/<[^>]+>/g, ' ').replace(/&ndash;/g, '–').replace(/&amp;/g, '&')
+    .replace(/\s+/g, ' ').trim();
+  /* The screen copy carries an h3 the printed page gets from its own markup, so
+     compare the statement itself: the printed text must be a suffix of what the
+     screen renders, with nothing added, dropped or reworded between them. */
+  ok(text(web).endsWith(text(print)),
+     '§3.1 — the two reports carry the same statement, word for word');
+  ok(text(web).replace(text(print), '').trim() === 'How the bands were set',
+     '§3.1 — and the only thing the screen adds is its own heading');
+
+  /* It is on screen, which means outside the gated block. */
+  const html = readFileSync(TOOL_PATH, 'utf8');
+  const printStart = html.indexOf('<div id="printReport">');
+  ok(html.indexOf('id="bandsStatement"') < printStart,
+     '§3.1 — the web container sits outside #printReport, so it is not display:none');
+
+  /* And it sits with the tiles it explains, not somewhere a reader has to hunt. */
+  const positionSection = html.slice(html.indexOf('<h2 class="section-title">Your capacity position</h2>'));
+  ok(positionSection.indexOf('id="bandsStatement"') < positionSection.indexOf('</div>\n\n    <!--'),
+     '§3.1 — and inside the section that publishes the ratings');
+}
+
+/* ================================================== dated copy, tenseless ==== */
+section('PR7 §3.6 — nothing in output dates itself against a passing deadline');
+{
+  /* "Project Online retires 30 September 2026" is true until 30 September 2026
+     and wrong the next morning, on a page whose whole argument is that its
+     figures are current. The tenseless form needs no maintenance and no diary
+     entry. The finding body was corrected earlier in the release; this is the
+     Sources row, which was missed because it is built in a different function.
+
+     Scanned as a class, not as one string: any future-tense verb beside a date
+     already inside this release's window is the same defect. */
+  const cap = capture({ id: 'msproject', ...FIXTURE_A, toolset: 'msproject' });
+  const t = allText(cap);
+  ok(/Project Online retirement, 30 September 2026/.test(t),
+     '§3.6 — the Sources row states the retirement tenselessly');
+  ok(!/retires 30 September/.test(t), '§3.6 — and the present-tense form is gone');
+  const DATING = /\b(retires|will retire|is retiring|expires|will expire|ends|will end)\b[^.]{0,40}\b(20\d\d)\b/i;
+  ok(!DATING.test(t), 'no output sentence dates itself against a deadline', (t.match(DATING) || [''])[0]);
+}
+
+/* ==================================================== ticket vocabulary ===== */
+section('PR7 item 2 — one word for the service desk, and it is the sources\' word');
+{
+  /* Both anchors publish "technician": HDI/MetricNet on desktop support
+     technicians, Jitbit on 21 per technician per day. The standing rule is that
+     a source is quoted in its own terms, so output says technician and never
+     agent. The page used to say both — "tickets-per-technician window" and
+     "tickets-per-agent window", two lines apart in the same paragraph — and an
+     independent reader caught it.
+
+     The internal constants stay TICKETS_PER_AGENT_*, so this scans rendered
+     output and the static report copy, never the source. */
+  const shapes = [
+    { id: '8.A', ...FIXTURE_A }, { id: '8.B', ...FIXTURE_B }, { id: '8.D', ...FIXTURE_D },
+    { id: '8.E', ...FIXTURE_E }, { id: '8.F', ...FIXTURE_F },
+  ];
+  let scanned = 0;
+  for (const shape of shapes) {
+    let cap;
+    try { cap = capture(shape); } catch { continue; }
+    if (!cap.ok) continue;
+    scanned++;
+    const t = allText(cap);
+    ok(!/\bagents?\b/i.test(t), `${shape.id}: output never says "agent"`, (t.match(/\bagents?\b/i) || [''])[0]);
+  }
+  ok(scanned === shapes.length, `shapes scanned for the ticket vocabulary (${scanned})`);
+  /* And the static methodology copy, which is where the two words collided. */
+  const staticCopy = staticReportText().replace(/<[^>]+>/g, ' ').replace(/&ndash;/g, '–').replace(/\s+/g, ' ');
+  ok(!/\bagents?\b/i.test(staticCopy), 'static report copy never says "agent"',
+     (staticCopy.match(/.{0,60}\bagents?\b.{0,60}/i) || [''])[0]);
+  ok(/tickets-per-technician window/.test(staticCopy),
+     'the methodology names the window in the sources\' own word');
+  ok(/170–320 tickets-per-technician window/.test(staticCopy),
+     'and the ProjexaR-set window is labelled with it too');
 }
 
 /* ======================================================= source orphans ===== */
@@ -2221,8 +2831,17 @@ section('§2 — the promoted block sits after the growth ceiling, and is rename
     'closing',
   ]), '§2.1 — the comparison table and the conversion box moved up together');
 
-  /* §2.2. Only the promoted section is renamed. */
-  ok(!has(report, 'What your answers can show you'), '§2.2 — the old name is gone');
+  /* §2.2. Only the promoted section is renamed.
+
+     PR7 item 5. This assertion used to read `has(report, ...)`, and `report` is
+     the WEB slice — everything from <section id="report"> up to the print
+     block. So it asserted the old name was gone from the half of the file PR5
+     edited, and was structurally blind to the half PR5 missed. The old name
+     survived in the print report's running header for two releases, and an
+     independent reader working from the PDF reported it. The scope moves to
+     `html`: the whole file, comments included. */
+  ok(!has(html, 'What your answers can show you'),
+     '§2.2 — the old name is gone from the WHOLE file, print report and comments included');
   ok(has(report, '<h2 class="section-title">What your answers show</h2>'),
      '§2.2 — the findings section keeps the name it had');
 
@@ -2239,6 +2858,63 @@ section('§2 — the promoted block sits after the growth ceiling, and is rename
   /* §6. The anchor resolves to an element that exists, on this page. */
   const href = (report.match(/<p class="tile-cta"><a [^>]*href="#([^"]+)"/) || [])[1];
   eq(href, 'getReport', '§6 — the download button anchors to the report section');
+
+  /* The print report's own markup, bounded at </main>. Slicing to end of file
+     sweeps in the tool's script, whose comments name these sections — which
+     made the orphan check below pass on a file where the rename had been
+     reverted. A guard that cannot fail is not a guard. */
+  const printStart = html.indexOf('<div id="printReport">');
+  const printBlock = html.slice(printStart, html.indexOf('</main>', printStart));
+
+  /* PR7 item 3 — the running headers extract as text, with a separator.
+
+     Every .p-head holds two halves. Strip the tags, as copying out of the PDF
+     and every screen reader does, and without a separator they concatenate:
+     "Your numbersProjexaR Capacity Check", which is the string the audit
+     quoted. Assert on the STRIPPED text, because that is the failure mode —
+     asserting on the markup would pass a file where the separator rendered but
+     carried no character. */
+  {
+    const heads = [...printBlock.matchAll(/<div class="p-head">([\s\S]*?)<\/div>/g)].map((m) => m[1]);
+    ok(heads.length === 6, 'all six running headers found', String(heads.length));
+    /* Detect the concatenation itself rather than guessing at it from casing:
+       "ProjexaR" contains a lowercase-then-uppercase pair of its own, so a
+       /[a-z][A-Z]/ probe reports every header as broken. Take the first and
+       last span's text and assert they are not adjacent in the stripped
+       output. Heads whose second half is written at render time (page one
+       carries the date) have nothing to compare statically and are covered by
+       the separator assertion below. */
+    const runTogether = heads.filter((h) => {
+      const spans = [...h.matchAll(/<span[^>]*>([\s\S]*?)<\/span>/g)]
+        .map((m) => m[1].replace(/<[^>]+>/g, '').trim());
+      const a = spans[0], b = spans[spans.length - 1];
+      if (!a || !b || a === b) return false;
+      const stripped = h.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+      return stripped.includes(a + b);
+    }).map((h) => h.replace(/<[^>]+>/g, '').trim());
+    ok(runTogether.length === 0,
+       'no running header extracts as two headings run together',
+       runTogether.join(' | '));
+    /* The separator must carry an actual character, not be an empty element. */
+    const empty = heads.filter((h) => /class="sep">\s*<\/span>/.test(h));
+    ok(empty.length === 0, 'every running-header separator carries a character', String(empty.length));
+  }
+
+  /* PR7 item 5 — the class, not the instance.
+
+     A rename that lands on screen and not in #printReport is a shape of defect,
+     not a one-off: the two reports are separate markup, they are edited from
+     the web report's side, and the print report is the artefact that gets
+     forwarded. Every web section name must appear somewhere in the print
+     report, as a running header or a heading. This is deliberately one-way —
+     the print report carries pages the web report has no section for, and it
+     should — so it catches drift without forbidding structure. */
+  const webSections = [...report.matchAll(/<h2 class="section-title">([^<]+)<\/h2>/g)].map((m) => m[1].trim());
+  ok(webSections.length >= 5, 'the web report still has its section titles to compare', String(webSections.length));
+  const orphans = webSections.filter((name) => !printBlock.includes(name));
+  ok(orphans.length === 0,
+     'every web report section name also appears in the print report — no rename lands on one side only',
+     orphans.join(' | '));
   ok(has(html, `id="${href}"`), '§6 — the anchor target exists in the markup');
   /* And it is where the spec puts it: in the first block of output tiles. */
   const firstBlock = report.slice(0, report.indexOf('<div class="hero-area"'));
