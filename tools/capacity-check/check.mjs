@@ -335,7 +335,16 @@ const capC = assertFixture('8.C', FIXTURE_C, {
   effortLo: 728000, effortHi: 845000, sums: true,
   fullLo: 1095000, fullHi: 1212000, reportedLo: 30.3, reportedHi: 33.5,
   duration: 7.2, itShare: 3.8,
-  licences: 25, yearly: 2500, spendPct: '0.68', fullPctLo: 0.21, fullPctHi: 0.23,
+  /* §4.1, PR7. 8.C is 8.A with six contractors, so approving §4.1 moves its
+     licence quote: 20 BAU + 5 PMs + 6 contractors = 31, and everything priced
+     off that basis moves with it.
+
+     The PR7 brief said §4.1 had "no numeric impact on fixtures 8.A to 8.F, all
+     of which set contractors to zero". 8.C sets six. These five figures are the
+     counter-example, and they are the only figures in 8.A to 8.F that move —
+     every rated quantity, every FTE, the growth ceiling and the cost block are
+     unchanged, which is what 8.C existed to prove in the first place. */
+  licences: 31, yearly: 3100, spendPct: '0.84', fullPctLo: 0.26, fullPctHi: 0.28,
 });
 
 /* Fixture 8.D — 8.A reported in dollars. Every rated figure, every FTE, the
@@ -810,9 +819,18 @@ section('§3.2 contractors — 8.C must move nothing rated');
     eq(cap.computed.corroboration, ref.computed.corroboration, `${sh.id}: corroboration`);
     /* Rule 5: the size of IT against the company excludes them. */
     eq(cap.computed.itPercent, ref.computed.itPercent, `${sh.id}: size of IT against the company`);
-    /* Rule 6: the licence basis excludes them. */
-    eq(cap.computed.licenceCount, ref.computed.licenceCount, `${sh.id}: licence count`);
-    eq(cap.computed.yearly, ref.computed.yearly, `${sh.id}: annual price`);
+    /* Rule 6, INVERTED by §4.1 in PR7. The licence basis is the one route
+       contractors take. A managed resource is a person with capacity recorded
+       in the system, and a contractor on project work has capacity recorded;
+       quoting the permanent-only count understates the price in a report whose
+       thesis is that the reader is undercounting.
+
+       Asserted as arithmetic rather than as a literal, so the rule is visible:
+       the basis is exactly the permanent basis plus the contractors, on every
+       count from 0 to 40. */
+    eq(cap.computed.licenceCount, ref.computed.licenceCount + sh.contractors,
+       `${sh.id}: licence count includes the contractors and nothing else`);
+    eq(cap.computed.yearly, cap.computed.licenceCount * 100, `${sh.id}: annual price follows the basis`);
     /* internal_project_fte stays permanent-only. */
     eq(cap.computed.at[0].internalProjectFte, ref.computed.at[0].internalProjectFte,
        `${sh.id}: internal_project_fte is permanent-only`);
@@ -2207,6 +2225,69 @@ section('PR7 item 4 — headings that name figures, counted');
      'item 4 — and it is still said');
 }
 
+/* =========================================== the spec matches what ships ==== */
+section('PR7 §1.4 — master §2.11 and the shipped bands statement are the same words');
+{
+  /* This is the guard for the failure that cost this release a halted PR.
+
+     PR1 changed the bands statement on the page — added a third item, then the
+     Table S10 sentence — and nobody updated master §2.11. Five days later a
+     brief written from the specification described a statement that had not
+     shipped for five days, and a stop condition fired on the difference. The
+     specification is in the repository now, so the two can be compared, and
+     anything that edits one without the other fails here.
+
+     Compared on normalised text: markdown emphasis, HTML tags, entities and
+     whitespace all collapse, because the two carry the same sentences in
+     different markup and only the sentences are the contract. */
+  const SPEC = join(fileURLToPath(new URL('.', import.meta.url)), '..', '..', 'claude', 'capacity-check-change-spec-sep-2026.md');
+  let spec = null;
+  try { spec = readFileSync(SPEC, 'utf8'); } catch { /* not checked out */ }
+  if (!spec) {
+    ok(true, '§1.4 — specification not present in this checkout, comparison skipped');
+  } else {
+    const norm = (t) => t
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/&ndash;/g, '–').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ')
+      .replace(/[*_>]/g, ' ')
+      .replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"')
+      .replace(/\s+/g, ' ').trim();
+
+    /* The statement in the spec is the blockquote beginning "These bands are". */
+    const from = spec.indexOf('> These bands are ProjexaR');
+    ok(from > 0, '§1.4 — master §2.11 carries the statement');
+    const end = spec.indexOf('\n\n', spec.indexOf('confidence interval.', from));
+    const specText = norm(spec.slice(from, end));
+    const shipped = norm(loadTool().api.bandsStatement(''));
+
+    /* Prefix, not equality: §2.11 prescribes the statement, and the page wraps
+       it with the §2.12 citation and the §3.2 scoping sentence, neither of
+       which belongs to §2.11. Every word §2.11 does specify must match, in
+       order, which is what actually drifted. */
+    ok(shipped.startsWith(specText),
+       '§1.4 — the page carries master §2.11 word for word',
+       shipped.startsWith(specText) ? '' : (() => {
+         let i = 0; while (i < specText.length && specText[i] === shipped[i]) i++;
+         return `\n   diverges at ${i}\n   spec:    ...${specText.slice(Math.max(0, i - 80), i + 120)}` +
+                `\n   shipped: ...${shipped.slice(Math.max(0, i - 80), i + 120)}`;
+       })());
+    /* And what the page adds is only the citation and the §3.2 sentence. */
+    const extra = shipped.slice(specText.length).trim();
+    ok(/^Colicev, A\., Hakkarainen/.test(extra),
+       '§1.4 — what the page adds after it starts with the citation');
+    ok(/No published study sits behind them\.$/.test(extra),
+       '§1.4 — and ends with the §3.2 scoping sentence');
+
+    /* And the intent clause is gone from both, not just from the page. */
+    ok(!/deliberately: we would rather understate/.test(specText),
+       '§1.4 — the withdrawn intent clause is gone from the specification too');
+    /* The register records it as withdrawn rather than silently dropping it. */
+    ok(/WITHDRAWN 9 Sep/.test(spec), '§1.4 — and §11 records the withdrawal');
+    ok(!/UNVERIFIED\s+— one read only/.test(spec),
+       '§1.4 — the stale Table S10 register row is gone');
+  }
+}
+
 /* ================================================== fixture 8.G, §4.1 ======== */
 section('Fixture 8.G — two contractors, and exactly one figure is allowed to move');
 {
@@ -2234,12 +2315,20 @@ section('Fixture 8.G — two contractors, and exactly one figure is allowed to m
     eq(G.itPercent, R.itPercent, '8.G: IT staff share');
     eq(G.at[0].internalProjectFte, R.at[0].internalProjectFte, '8.G: internal_project_fte stays permanent-only');
 
-    /* The licence quote — the one figure §4.1 would move, and the reason this
-       fixture exists. 25, not 27, because §4.1 was not approved. */
-    eq(G.licenceCount, 25, '8.G: licence basis is 25 — contractors excluded, §4.1 not approved');
-    eq(G.licenceCount, R.licenceCount, '8.G: which is also 8.A\'s basis, so nothing moved');
-    eq(G.yearly, R.yearly, '8.G: annual price');
-    eq(G.spendPct, R.spendPct, '8.G: share of reported spend, recomputed from the basis actually used');
+    /* The licence quote — the one figure §4.1 moves, and the reason this
+       fixture exists. §4.1 was approved, so the basis is 20 BAU + 5 PMs + 2
+       contractors = 27, not 25. Typed in by hand rather than derived from the
+       inputs, so an arithmetic change in the basis has to be re-stated here
+       deliberately instead of silently agreeing with itself. */
+    eq(G.licenceCount, 27, '8.G: licence basis is 27 — BAU staff, PMs and contractors');
+    eq(G.licenceCount, R.licenceCount + 2, '8.G: which is 8.A\'s basis plus the two contractors');
+    eq(G.monthly, 270, '8.G: £270 a month');
+    eq(G.yearly, 2700, '8.G: £2,700 a year on the annual plan');
+    /* Recomputed from the basis actually used, not carried over from 8.A. */
+    eq(roundN(G.spendPct, 2), 0.74, '8.G: share of reported spend recomputes from 27');
+    ok(G.spendPct !== R.spendPct, '8.G: and is not 8.A\'s share');
+    eq(roundN((G.yearly / FIXTURE_G.spend) * 100, 2), roundN(G.spendPct, 2),
+       '8.G: the share is the annual price over the reported spend, and nothing else');
 
     /* And the one thing that IS different: the unrated figure, with §4.2's
        sentence beside it. */
@@ -2256,13 +2345,24 @@ section('Fixture 8.G — two contractors, and exactly one figure is allowed to m
     const bag = (x) => { const m = new Map(); for (const n of numbersIn(allText(x))) m.set(n, (m.get(n) || 0) + 1); return m; };
     const A = bag(ref), B = bag(g);
     const lost = [...A.entries()].filter(([k, v]) => v > (B.get(k) || 0)).map(([k]) => k);
-    /* One token legitimately disappears: 8.A echoes its own contractor input as
-       "0" in "Your figures, as you entered them", and 8.G echoes "2" there
-       instead. That is the input the fixture changed, not a computed figure, so
-       it is named rather than allowed by loosening the check — a lost token that
-       is anything else is contractors leaking out of a route. */
-    eq(JSON.stringify(lost), JSON.stringify(['0']),
-       '8.G: the only published token 8.A had and 8.G lacks is the contractor input it echoes');
+    /* Exactly two groups of tokens legitimately stop being published, and
+       naming them is the whole assertion — anything else in this list is
+       contractors leaking into a route §3.2 excludes them from.
+
+       "0" is the contractor input 8.A echoes in "Your figures, as you entered
+       them"; 8.G echoes "2" there instead. The rest are the licence quote and
+       everything priced off it, which §4.1 moves on purpose: 25 people, £250 a
+       month, £2,500 a year, 0.68% of reported spend, and the two endpoints of
+       the share of full portfolio cost. */
+    const EXPECTED_LOST = ['0', '0.21', '0.23', '0.68', '2500', '25', '250'];
+    eq(JSON.stringify([...lost].sort()), JSON.stringify([...EXPECTED_LOST].sort()),
+       '8.G: the only figures 8.A published and 8.G does not are the contractor echo and the licence quote');
+    /* And the replacements are there, so this cannot pass by the quote having
+       been dropped rather than recomputed. */
+    const t8g = allText(g);
+    for (const n of ['27', '270', '2,700', '0.74']) {
+      ok(t8g.includes(n), `8.G: publishes ${n}`);
+    }
     ok(/Contractors and outsourced staff working on projects/.test(allText(g)),
        '8.G: and that echo is the input table row, which renders at every count');
   }

@@ -270,8 +270,16 @@ export function evaluate(v) {
   }
 
   /* §3.7. Twelve months for the price of ten — the annual plan, paid upfront.
-     Contractors are not licensed; the basis is BAU staff on projects plus PMs. */
-  o.licenceCount = v.bauStaff + v.pms;
+
+     §4.1, PR7. The basis is BAU staff on projects, plus PMs, plus contractors.
+     Contractors were excluded until PR7 and that was a commercial error: a
+     managed resource is a person with capacity recorded in the system, and a
+     contractor on project work has capacity recorded.
+
+     This is the one quantity in the oracle that contractors reach. Every other
+     figure here is permanent-only, and fixture 8.G asserts that by equality
+     against 8.A. */
+  o.licenceCount = v.bauStaff + v.pms + v.contractors;
   o.yearly = o.licenceCount * 100;
   /* A sterling price over a spend reported in another currency is a ratio
      across two currencies. It goes with the rest of the cost block; the price

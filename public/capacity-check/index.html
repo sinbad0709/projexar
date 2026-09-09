@@ -2081,10 +2081,24 @@ window.submitToSender = function(payload){
       ? v.staff / v.companyHeadcount * 100 : null;
 
     /* Licence basis is the people who appear on project plans: the BAU staff
-       working on projects plus the project managers coordinating them. It
-       assumes non-PM project staff also hold a BAU role, which holds for the
-       segment this tool is aimed at. Contractors are not licensed. */
-    c.licenceCount = v.bauStaff + v.pms;
+       working on projects, the project managers coordinating them, and the
+       contractors doing project work alongside them. It assumes non-PM project
+       staff also hold a BAU role, which holds for the segment this tool is
+       aimed at.
+
+       §4.1. Contractors were excluded until PR7, per master §3.2 row six, and
+       that was a commercial error. A managed resource is a person with capacity
+       recorded in the system, and a contractor on project work has capacity
+       recorded. Quoting 25 to a department that will licence 27 understates the
+       price in a report whose whole thesis is that the reader is undercounting
+       their own commitment.
+
+       This is the ONLY route contractors enter. They stay out of the rated
+       tile, the growth ceiling, the cost calculation, the run/change derivation
+       and the IT-share, all of which measure how far the portfolio leans on
+       permanent capacity. Fixture 8.G is the gate: exactly one figure moves,
+       and a second moving figure means a routing rule has leaked. */
+    c.licenceCount = v.bauStaff + v.pms + v.contractors;
     c.monthly = c.licenceCount * PRICE_MONTH;
     c.yearly  = c.licenceCount * PRICE_YEAR;
 
@@ -3328,8 +3342,12 @@ window.submitToSender = function(payload){
           + ' in a typical year.';
 
     if(v.contractors){
+      /* §4.1. "Counted separately throughout" was true until PR7 put
+         contractors into the licence basis. It is now separate from the
+         permanent staff, which is what the reader needs, rather than separate
+         from everything, which is no longer so. */
       s += ' You also told us about ' + qty(v.contractors, 'contractor or outsourced person', 'contractors and '
-         + 'outsourced staff') + ' on project work, counted separately throughout.';
+         + 'outsourced staff') + ' on project work, counted separately from your permanent staff.';
     }
 
     s += c.noBauCapacity
@@ -3357,9 +3375,12 @@ window.submitToSender = function(payload){
   }
 
   /* ================= Pricing ================= */
-  /* Licence basis is bauStaff + pms — the people who appear on project plans.
-     Stated with the count visible so the basis is never implied. Contractors
-     are not licensed and are not in the count (§3.2).
+  /* Licence basis is bauStaff + pms + contractors — everyone who appears on
+     project plans. Stated with the count visible so the basis is never implied.
+     §4.1 put contractors in at PR7: a managed resource is a person with
+     capacity recorded, and a contractor on project work has capacity recorded.
+     This is the only route contractors take; every rated and costed figure is
+     still permanent-only (§3.2).
 
      The share of spend is worked from the annual price, which is twelve months
      for the price of ten. The workings row used to multiply the monthly price
@@ -3766,16 +3787,20 @@ window.submitToSender = function(payload){
     /* Where contractors were reported, the routing is stated once here rather
        than repeated beside every figure they are absent from. */
     if(v.contractors){
+      /* §4.1. The licence basis moved out of this list in PR7 and into the
+         sentence below it. Everything else here still excludes them, and the
+         exclusions are stated in terms of what we leave out rather than what
+         the respondent's budget holds. */
       suppressed.push('<strong>Your ' + qty(v.contractors, 'contractor', 'contractors') + ' are counted separately '
         + 'from your permanent IT staff.</strong> They are excluded from the live-projects-per-BAU-FTE rating and '
         + 'from the growth ceiling, both of which measure how far your portfolio depends on permanent BAU '
-        + 'capacity; from the run and change derivation, which describes the permanent department; from the size '
-        + 'of your IT department against the company; and from the ProjexaR licence basis, which is your BAU '
-        + 'staff on projects '
-        + 'plus your project managers. They are excluded from the cost figures too: what contractors cost is paid '
-        + 'out of budget, and the cost figures here are built only from the permanent staff time your project '
-        + 'budgets do not record. They appear as a companion figure beside the BAU capacity rating and nowhere '
-        + 'else.');
+        + 'capacity; from the run and change derivation, which describes the permanent department; and from the '
+        + 'size of your IT department against the company. They are excluded from the cost figures too: what '
+        + 'contractors cost is paid out of budget, and the cost figures here are built only from the permanent '
+        + 'staff time your project budgets do not record. They appear as a companion figure beside the BAU '
+        + 'capacity rating, and they are counted in the ProjexaR licence basis, which is your BAU staff on '
+        + 'projects plus your project managers plus your contractors: a contractor working on your projects has '
+        + 'capacity recorded in the system, so they are a managed resource like anyone else.');
     }
     $('pr-bandnote').innerHTML = suppressed.join(' ');
 
@@ -4141,8 +4166,9 @@ window.submitToSender = function(payload){
     var pp = 'ProjexaR is charged per managed resource. On your figures, ' + n0(c.licenceCount) + ' '
       + plural(c.licenceCount,'person','people') + ' at ' + gbp(c.monthly) + ' a month, or ' + gbp(c.yearly)
       + ' a year on the annual plan paid upfront, which is twelve months for the price of ten.'
-      + (v.contractors ? ' Contractors are not licensed; the basis is your BAU staff on projects plus your project '
-         + 'managers.' : '');
+      + (v.contractors ? ' The basis is your BAU staff on projects, your project managers and your '
+         + qty(v.contractors, 'contractor', 'contractors') + ': anyone with capacity recorded against your '
+         + 'projects is a managed resource.' : '');
     if(c.spendPct !== null){
       pp += ' That is ' + pct2(c.spendPct) + ' of the annual IT project spend you gave us';
       pp += c.fullCostPct !== null
