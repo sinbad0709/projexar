@@ -24,14 +24,39 @@ import { INPUT_KEYS } from './shapes.mjs';
 const staticCache = new Map();
 
 export function staticReportText(path = TOOL_PATH) {
-  if (!staticCache.has(path)) {
+  return slice(path, 'print', '<div id="printReport">', '</main>');
+}
+
+/* PR8 §5 — the other half.
+
+   staticReportText() has existed since PR2 and reads the PRINT report's static
+   markup. There has never been an equivalent for the web report's, so every
+   copy-rule, em-dash and en-dash assertion that runs off allText() has been
+   scanned against one of the two documents and structurally blind to the other
+   — the same shape of guard that let a section name survive in the print
+   report for two releases while the suite asserted it was gone.
+
+   The web report carries static prose of its own: the section subheads, the
+   gate blurb, the conversion panel and the disclaimer. All of it is output and
+   all of it is read by the visitor. It is scanned here on the same terms. */
+export function staticWebText(path = TOOL_PATH) {
+  return slice(path, 'web', '<section id="report"', '<div id="printReport">');
+}
+
+/* Cached per file and per half. Re-reading a 240KB file once per capture to get
+   the same string back is pure waste. Comments are stripped — the tag regex in
+   allText() would leave their contents behind, and a note about the copy is not
+   the copy. */
+function slice(path, key, open, close) {
+  const id = `${key}:${path}`;
+  if (!staticCache.has(id)) {
     const html = readFileSync(path, 'utf8');
-    const start = html.indexOf('<div id="printReport">');
-    const end = html.indexOf('</main>', start);
-    if (start < 0 || end < start) throw new Error('printReport block not found in the markup');
-    staticCache.set(path, html.slice(start, end).replace(/<!--[\s\S]*?-->/g, ' '));
+    const start = html.indexOf(open);
+    const end = html.indexOf(close, start);
+    if (start < 0 || end < start) throw new Error(`${key} block not found in the markup`);
+    staticCache.set(id, html.slice(start, end).replace(/<!--[\s\S]*?-->/g, ' '));
   }
-  return staticCache.get(path);
+  return staticCache.get(id);
 }
 
 /* Every node the tool writes output into. Order is fixed so captures compare. */
@@ -49,8 +74,12 @@ export const SCREEN_NODES = [
 ];
 
 export const PRINT_NODES = [
-  'pr-herohead', 'pr-figure', 'pr-ceiling',
-  'pr-secondhead', 'pr-secondfigure', 'pr-secondnote',
+  /* PR8 §2.1/§2.3 — the cover line, then the three executive-summary slots in
+     the fixed order the printed report renders them in. */
+  'pr-attrib',
+  'pr-sum1head', 'pr-sum1figure', 'pr-sum1note',
+  'pr-sum2head', 'pr-sum2figure', 'pr-sum2note',
+  'pr-sum3head', 'pr-sum3figure', 'pr-sum3note',
   'pr-verdict', 'pr-tiles', 'pr-bandnote', 'pr-facts',
   'pr-inputs', 'pr-formulas', 'pr-derivations', 'pr-flexeranote', 'pr-fxnote',
   /* PR7 §3.1 — was static markup until it had to be shared with the screen. */
@@ -65,7 +94,11 @@ function readNode(node) {
 
 /* `toolPath` loads a variant copy of the tool, for invariance shapes that need
    a constant changed. Everything else about the capture is unchanged. */
-export function capture(shape, { toolPath } = {}) {
+/* `name` drives the gate's two optional name fields, so a caller can render the
+   cover on both branches of §2.1. Defaults to the pair the suite has always
+   sent; `{ name: null }` submits the gate with both fields empty, which the
+   form allows and which is therefore a cover the tool can actually produce. */
+export function capture(shape, { toolPath, name } = {}) {
   const tool = loadTool(toolPath);
 
   for (const key of INPUT_KEYS) {
@@ -88,21 +121,30 @@ export function capture(shape, { toolPath } = {}) {
 
   for (const id of SCREEN_NODES) result.screen[id] = readNode(tool.node(id));
   for (const id of PRINT_NODES) result.print[id] = readNode(tool.node(id));
-  /* The layer the page does not write: static printed-report copy. */
+  /* The layer the page does not write: the static copy of both reports. PR8 §5
+     added the web half; before that only the printed half was ever scanned. */
   result.staticReport = staticReportText(toolPath);
+  result.staticWeb = staticWebText(toolPath);
 
   /* The Sender payload. The gate needs a valid email and a ticked box. */
+  const who = name === undefined ? ['Test', 'Reader'] : (name === null ? ['', ''] : String(name).split(' '));
   tool.node('email').value = 'reader@example.com';
-  tool.node('fname').value = 'Test';
-  tool.node('lname').value = 'Reader';
+  tool.node('fname').value = who[0] || '';
+  tool.node('lname').value = who.slice(1).join(' ');
   tool.node('company').value = 'Example Ltd';
   tool.node('ack').checked = true;
+  /* The cover line before the gate runs. renderPrint writes it with whatever
+     the name fields hold, which at that point is nothing, and the gate rewrites
+     it — so both branches of §2.1 are produced by one shape and the suite can
+     read each of them. */
+  result.coverBeforeGate = readNode(tool.node('pr-attrib'));
   try {
     tool.fire('gateBtn', 'click');
     result.sender = tool.sender[0] || null;
   } catch (e) {
     result.error = `gate threw: ${e.message}`;
   }
+  result.coverAfterGate = readNode(tool.node('pr-attrib'));
 
   /* Structured values, for asserting against the oracle. */
   const v = check.values;
@@ -146,6 +188,24 @@ export function stripBandBars(html) {
   return String(html).replace(BAND_BAR, ' ');
 }
 
+/* PR8 §2.1. The cover line carries the date the report was produced, and the
+   harness freezes that date so a baseline does not change at midnight. It is
+   still three digits in the rendered output, and the day of the month lands in
+   the number multiset the digest compares — which made every one of the 603
+   shapes read as a numeric change on the release that first captured the
+   cover, and buried the one thing the digest exists to catch.
+
+   The date is not a figure. It is replaced by a token before the numbers are
+   counted, and only there: the sentence itself still goes through the copy
+   rule, the dash rules and the text digest with every word intact. The cover
+   carries no other number, which is asserted separately. */
+const REPORT_DATE =
+  /\b\d{1,2} (?:January|February|March|April|May|June|July|August|September|October|November|December) \d{4}\b/g;
+
+export function stripReportDate(text) {
+  return String(text).replace(REPORT_DATE, '[report date]');
+}
+
 /* All rendered text as one blob, tags stripped — what the copy-rule check and
    the text diff both read. */
 /* `pr-inputs` is the printed report's verbatim echo of what the respondent
@@ -158,6 +218,23 @@ export function stripBandBars(html) {
    from nothing else. */
 const COPY_EXEMPT = new Set(['pr-inputs']);
 
+/* PR8 §5. The rendered layer alone: every node the tool wrote on this shape,
+   with no static markup behind it.
+
+   allText() carries the static copy of both reports whether the page showed it
+   or not, which is right for a copy rule — a sentence in the file is a sentence
+   that can reach a reader — and wrong for an assertion about what one shape
+   does or does not claim. #fullCostTile ships with its heading written into the
+   markup and is hidden where no cost was computed, so "this shape makes no
+   full-cost claim" is a claim about the render and has to be read off the
+   render. */
+export function renderedText(cap, { exBar = false } = {}) {
+  const parts = [];
+  for (const id of SCREEN_NODES) parts.push(exBar ? stripBandBars(cap.screen[id] || '') : (cap.screen[id] || ''));
+  for (const id of PRINT_NODES) parts.push(cap.print[id] || '');
+  return flattenText(parts.join('\n'));
+}
+
 export function allText(cap, { forCopyRule = false, exBar = false } = {}) {
   const parts = [];
   for (const id of SCREEN_NODES) parts.push(exBar ? stripBandBars(cap.screen[id] || '') : (cap.screen[id] || ''));
@@ -166,7 +243,12 @@ export function allText(cap, { forCopyRule = false, exBar = false } = {}) {
     parts.push(cap.print[id] || '');
   }
   parts.push(cap.staticReport || '');
-  return parts.join('\n')
+  parts.push(cap.staticWeb || '');
+  return flattenText(parts.join('\n'));
+}
+
+function flattenText(s) {
+  return s
     .replace(/<[^>]*>/g, ' ')
     .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
@@ -178,5 +260,5 @@ export function allText(cap, { forCopyRule = false, exBar = false } = {}) {
 /* The multiset of numbers appearing in the rendered output. Two captures whose
    text differs but whose number list matches are a pure copy change. */
 export function numbersIn(text) {
-  return (text.match(/-?\d[\d,]*(?:\.\d+)?/g) || []).map((s) => s.replace(/,/g, ''));
+  return (stripReportDate(text).match(/-?\d[\d,]*(?:\.\d+)?/g) || []).map((s) => s.replace(/,/g, ''));
 }
