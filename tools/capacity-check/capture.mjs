@@ -43,6 +43,8 @@ export const SCREEN_NODES = [
   'costCurrencyNote',
   'ceilingEyebrow', 'ceilingFigure', 'ceilingNote',
   'factList', 'ragList', 'checkList', 'compareRows', 'ctaHead', 'ctaBody', 'priceLine',
+  /* PR7 §3.1 — the bands statement now renders on screen too. */
+  'bandsStatement',
   'closingVerdict',
 ];
 
@@ -51,6 +53,8 @@ export const PRINT_NODES = [
   'pr-secondhead', 'pr-secondfigure', 'pr-secondnote',
   'pr-verdict', 'pr-tiles', 'pr-bandnote', 'pr-facts',
   'pr-inputs', 'pr-formulas', 'pr-derivations', 'pr-flexeranote', 'pr-fxnote',
+  /* PR7 §3.1 — was static markup until it had to be shared with the screen. */
+  'pr-bands',
   'pr-cards', 'pr-checks', 'pr-compare', 'pr-sources', 'pr-price',
 ];
 
