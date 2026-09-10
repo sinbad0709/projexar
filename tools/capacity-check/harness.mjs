@@ -68,7 +68,18 @@ function decodeEntities(s) {
    is the tool-wide log, in call order, and an assertion reads the last entry
    after firing a rejected submission. Still a no-op in every other respect —
    nothing in the page depends on focus having moved. */
-function makeNode(id, selectOptions, focused) {
+/* PR10 §5. setAttribute, removeAttribute and scrollIntoView were all no-ops,
+   so "the reopened link lands on the results with the form collapsed" was, like
+   focus() before PR9, a claim the suite had no way to read. All three record
+   now. `scrolled` is the tool-wide log in call order — order is the whole
+   assertion on the prefill path, because scrolling before the collapse reads an
+   offset off a page the reader never sees. Still inert otherwise: nothing in
+   the page branches on any of them.
+
+   `open` is a plain property and needs no stub. It defaults to true here
+   because the markup carries the `open` attribute, and a stub that started
+   closed would let a missing collapse pass. */
+function makeNode(id, selectOptions, focused, scrolled) {
   const node = {
     id,
     value: '',
@@ -76,16 +87,18 @@ function makeNode(id, selectOptions, focused) {
     innerHTML: '',
     checked: false,
     hidden: true,
+    open: true,
     className: '',
     style: {},
     selectedIndex: -1,
     options: [],
+    attrs: {},
     _handlers: {},
     addEventListener(type, fn) { (this._handlers[type] ||= []).push(fn); },
-    removeAttribute() {},
-    setAttribute() {},
+    removeAttribute(name) { delete this.attrs[name]; },
+    setAttribute(name, value) { this.attrs[name] = value === undefined ? '' : String(value); },
     focus() { if (focused) focused.push(id); },
-    scrollIntoView() {},
+    scrollIntoView(opts) { if (scrolled) scrolled.push({ id, behavior: (opts && opts.behavior) || 'auto' }); },
     querySelector() { return null; },
     classList: { add() {}, remove() {}, toggle() {} },
   };
@@ -102,15 +115,20 @@ function makeNode(id, selectOptions, focused) {
   return node;
 }
 
-export function loadTool(path = TOOL_PATH) {
+/* `search` seeds location.search before the IIFE runs, which is the only way to
+   reach prefill() — the reopened-link path — at all. Everything the tool does on
+   that path (render, unhide, collapse, scroll, the reopened analytics event)
+   happens during load, so it cannot be driven after the fact. */
+export function loadTool(path = TOOL_PATH, { search = '' } = {}) {
   const html = readFileSync(path, 'utf8');
   const source = extractScript(html);
   const selects = extractSelects(html);
   const nodes = new Map();
   const focused = [];
+  const scrolled = [];
 
   const getNode = (id) => {
-    if (!nodes.has(id)) nodes.set(id, makeNode(id, selects[id], focused));
+    if (!nodes.has(id)) nodes.set(id, makeNode(id, selects[id], focused, scrolled));
     return nodes.get(id);
   };
 
@@ -133,7 +151,7 @@ export function loadTool(path = TOOL_PATH) {
       querySelector: () => null,
       querySelectorAll: () => [],
     },
-    location: { origin: 'https://projexar.com', pathname: '/capacity-check/', search: '' },
+    location: { origin: 'https://projexar.com', pathname: '/capacity-check/', search },
   };
   sandbox.window = sandbox;
   sandbox.globalThis = sandbox;
@@ -152,6 +170,7 @@ export function loadTool(path = TOOL_PATH) {
     sender,
     events,
     focused,
+    scrolled,
     /* Fire a handler the page registered on one of its own nodes. */
     fire(id, type, evt = { preventDefault() {} }) {
       const hs = getNode(id)._handlers[type] || [];

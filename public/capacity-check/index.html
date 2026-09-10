@@ -176,6 +176,37 @@
   --shadow-focus:0 0 0 3px var(--focus-ring);
 
   --container-narrow:760px; --container-mid:920px; --gutter:24px;
+  /* ✚ PR10 §2 — one reading column, for every prose block on the page.
+
+     There was no such rule before this. Eight blocks carried a max-width in ch
+     at five different values, and ch resolves against each element's OWN
+     font-size: 58ch on the 19px hero lead is 672px, 60ch on the 12.5px bands
+     statement is 457px, 64ch on the 14px navy-card notes is 547px. Five nominal
+     values across four type sizes produced eight different columns between
+     457px and 695px inside containers between 678px and 872px. Three more prose
+     blocks — the finding bodies, the gate blurb and the closing verdict —
+     carried no measure at all and ran to their container, the finding bodies at
+     77 characters against the 60 of the section lead directly above them. The
+     blocks that read as broken were the ones set in the smallest type, because
+     that is where a character count and a physical column disagree most.
+
+     A reading measure is a physical distance, not a character count. The
+     character-count heuristic is a proxy for that distance at body size; used
+     across four sizes it inverts, giving the smallest type the shortest line.
+     The same finding is already recorded at --midcta-measure, where PR5 reached
+     it for one box and did not generalise it.
+
+     660px is the column. At the four sizes the page sets prose in it is 57
+     characters at 19px, 68 at 16px and 77 at 14px — the whole range inside the
+     comfortable band, and the same column on screen for all of them. Where a
+     container is narrower than 660px the container wins, which is the correct
+     order: this caps a measure, it does not set one.
+
+     Two rules are deliberately NOT this one, and neither is a reading measure:
+     .hero h1's 19ch, which balances a display headline by line count, and
+     --midcta-measure, which is an alignment column shared by children of three
+     different sizes. */
+  --measure:660px;         /* ✚ */
   --bar-height:10px;       /* ✚ the band track under a rated tile, and the row
                          its two threshold labels sit in. No system equivalent —
                          the system has no meter or track component. */
@@ -224,12 +255,42 @@ a{ color:var(--text-brand); }
   letter-spacing:var(--text-display-3-track); font-weight:var(--weight-extrabold);
   max-width:19ch; margin:var(--space-6) auto var(--space-5); }
 .hero .lead{ font-size:var(--text-body-lg-size); line-height:var(--text-body-lg-line);
-  color:var(--text-muted); max-width:58ch; margin-inline:auto; }
+  color:var(--text-muted); max-width:var(--measure); margin-inline:auto; }
 
 /* ---------------------------------------------------------------- the form */
 .panel{ background:var(--surface-card); border:var(--border-width) solid var(--border-subtle);
   border-radius:var(--radius-surface); box-shadow:var(--shadow-lg); padding:var(--space-8);
   max-width:var(--container-narrow); margin:var(--space-9) auto var(--space-12); text-align:left; }
+
+/* PR10 §5 — the collapse control above the form.
+
+   Not rendered until a report exists. Before that there is nothing to collapse
+   and the page is unchanged from what it has always been, which is the point:
+   the manual path meets this control only after it has produced the thing the
+   control hides. Styled as a card rather than as a disclosure triangle, because
+   collapsed it is the only thing between the header and the results and has to
+   look like a control rather than like a caption. */
+.tool-shell > summary{ display:none; }
+.tool-shell[data-collapsible] > summary{
+  display:flex; align-items:baseline; flex-wrap:wrap; gap:var(--space-2) var(--space-4);
+  max-width:var(--container-narrow); margin:var(--space-9) auto 0; cursor:pointer; list-style:none;
+  padding:var(--space-4) var(--space-6); background:var(--surface-card);
+  border:var(--border-width) solid var(--border-subtle); border-radius:var(--radius-card);
+  box-shadow:var(--shadow-sm); }
+.tool-shell > summary::-webkit-details-marker{ display:none; }
+.tool-shell[data-collapsible] > summary:hover{ border-color:var(--border-strong); }
+.tool-shell[data-collapsible] > summary:focus-visible{ outline:none; box-shadow:var(--shadow-focus); }
+.tool-summary-label{ font-weight:var(--weight-bold); color:var(--text-strong); }
+.tool-summary-hint{ font-size:var(--text-body-sm-size); color:var(--text-muted); }
+/* The chevron, drawn the same way the finding cards draw theirs. */
+.tool-shell[data-collapsible] > summary::after{ content:""; margin-left:auto; width:9px; height:9px; flex:none;
+  align-self:center; border-right:2px solid var(--text-subtle); border-bottom:2px solid var(--text-subtle);
+  transform:rotate(45deg) translate(-2px,-2px); transition:transform var(--duration-fast) var(--ease-standard); }
+.tool-shell[data-collapsible][open] > summary::after{ transform:rotate(-135deg) translate(-2px,-2px); }
+/* With the summary present the panel no longer needs its own top margin: the
+   two would otherwise stack into a gap wider than either. */
+.tool-shell[data-collapsible] .panel{ margin-top:var(--space-4); }
+
 .fieldset{ border:0; padding:0; margin:0; }
 .fieldset + .fieldset{ margin-top:var(--space-9); }
 .legend{ display:flex; align-items:center; gap:var(--space-3); width:100%;
@@ -237,7 +298,7 @@ a{ color:var(--text-brand); }
   letter-spacing:var(--text-eyebrow-track); text-transform:uppercase; color:var(--text-brand);
   margin-bottom:var(--space-2); padding:0; }
 .legend::after{ content:""; flex:1; height:var(--border-width); background:var(--border-subtle); }
-.legend-note{ display:block; margin-bottom:var(--space-5); max-width:62ch;
+.legend-note{ display:block; margin-bottom:var(--space-5); max-width:var(--measure);
   font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line); color:var(--text-muted); }
 
 /* Two columns of label / control / footnote, aligned row by row. Subgrid keeps
@@ -326,26 +387,47 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 
 /* -------------------------------------------------------------- the report */
 #report[hidden]{ display:none; }
-#report{ padding-bottom:var(--space-12); }
+/* PR10 §5.1. Both paths scroll here with block:'start', and the site header is
+   position:sticky and 73px tall, so "the top of the report" put the report's own
+   heading behind it. It has done that on the manual path since the header
+   became sticky; the reopened link is where it stops being survivable, because
+   that reader has not watched the page scroll and has no idea anything is above
+   the fold. One value, both paths, and it is the browser's own scroll anchoring
+   rather than an offset computed in script. */
+#report{ padding-bottom:var(--space-12); scroll-margin-top:var(--space-11); }
 .section{ max-width:var(--container-narrow); margin:var(--space-10) auto 0; }
 .section:first-child{ margin-top:var(--space-9); }
 .section-title{ font-size:var(--text-h3-size); line-height:var(--text-h3-line);
   letter-spacing:var(--text-h3-track); font-weight:var(--weight-bold); margin-bottom:var(--space-2); }
 .section-sub{ font-size:var(--text-body-lg-size); line-height:var(--text-body-lg-line);
-  color:var(--text-muted); margin-bottom:var(--space-6); max-width:60ch; }
+  color:var(--text-muted); margin-bottom:var(--space-6); max-width:var(--measure); }
 .section-sub strong{ color:var(--text-strong); font-weight:var(--weight-bold); }
 
 /* PR7 §3.1 — the bands statement on screen. Set apart from the tiles above it
    by a rule and a tinted ground rather than by a heading alone: it is a
    different kind of thing from a rating, and a reader skimming for figures
    should be able to see where the figures stop and the methodology starts.
-   Measure held to the body text's 60ch, so a long paragraph does not run the
-   full width of a wide viewport. */
+
+   PR10 §2. This is the block the measure fault was worst in, and the comment
+   that used to sit here recorded how: "measure held to the body text's 60ch".
+   It was not the body text's. Body is 16px and this block was set at 12.5px, so
+   its 60ch resolved to 457px inside a 720px card — 64% of the card it sits in,
+   the narrowest column on the page under the longest block on the page. PR7
+   moved this out from behind the email gate precisely so a reader could see the
+   sourcing behind a rating; set at caption size in a two-thirds column it read
+   as the footnote it had been promoted out of being.
+
+   Two changes, and they are separate. The measure is now the page's one column
+   (--measure). The size is now the same body-sm the other supporting-prose
+   blocks use, because 400 words of sourcing is body copy and caption size is
+   what made it read as a footnote. The looser body line-height stays: it is the
+   longest continuous read on the page. Not one word of the statement itself is
+   touched — it is out of bounds under PR6 §6. */
 .bands-note{ margin-top:var(--space-6); padding:var(--space-5) var(--space-5) var(--space-4);
   border-top:var(--border-width) solid var(--border-subtle); background:var(--surface-subtle);
   border-radius:var(--radius-control); }
-.bands-note p{ font-size:var(--text-caption-size); line-height:var(--text-body-line);
-  color:var(--text-muted); max-width:60ch; }
+.bands-note p{ font-size:var(--text-body-sm-size); line-height:var(--text-body-line);
+  color:var(--text-muted); max-width:var(--measure); }
 .bands-note em{ font-style:italic; }
 .bands-head{ font-size:var(--text-body-size); font-weight:var(--weight-bold);
   color:var(--text-strong); margin-bottom:var(--space-3); }
@@ -446,7 +528,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
    no ceiling to compute. The accent is reserved for headroom there is some of. */
 .ceiling.is-constrained .h-figure{ color:var(--text-inverse); }
 .ceiling .h-note{ font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line);
-  color:var(--text-inverse-muted); max-width:64ch; }
+  color:var(--text-inverse-muted); max-width:var(--measure); }
 .ceiling .h-note strong{ color:var(--text-inverse); font-weight:var(--weight-semibold); }
 
 /* Two callouts of the same category — the full cost of the portfolio and the
@@ -484,7 +566,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   font-family:var(--font-mono, monospace); font-size:var(--text-body-sm-size); }
 .assumption input:focus-visible{ outline:2px solid var(--text-accent-figure); outline-offset:2px; }
 .assumption .a-parts{ margin-top:var(--space-3); font-size:var(--text-body-sm-size);
-  line-height:var(--text-body-sm-line); color:var(--text-inverse-muted); max-width:64ch; }
+  line-height:var(--text-body-sm-line); color:var(--text-inverse-muted); max-width:var(--measure); }
 .assumption .a-parts strong{ color:var(--text-inverse); font-weight:var(--weight-semibold); }
 
 /* Checks on the respondent's own answers. Not findings, and styled apart from
@@ -496,7 +578,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   margin-bottom:var(--space-3); flex-wrap:wrap; }
 .check-item .c-title{ font-weight:var(--weight-semibold); }
 .check-item .c-body{ font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line);
-  color:var(--text-muted); max-width:72ch; }
+  color:var(--text-muted); max-width:var(--measure); }
 /* PR7 item 6 — the observation. No pill, because it is not rated and a pill in
    that position reads as a fourth point on the scale above it. Set apart by a
    tinted ground and a rule instead, so a reader can see at a glance that it is
@@ -553,6 +635,12 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   transform:rotate(45deg) translate(-2px,-2px); transition:transform var(--duration-fast) var(--ease-standard); }
 .rag[open] > summary::after{ transform:rotate(-135deg) translate(-2px,-2px); }
 .rag .detail{ padding:0 var(--space-5) var(--space-5); color:var(--text-muted); }
+/* PR10 §2. The finding bodies are the longest prose on the report after the
+   bands statement and carried no measure at all, so they ran the full 755px
+   card — 77 characters at body size, against 60 for the section lead directly
+   above them. Two prose blocks in one section at two different measures, one of
+   them set by a rule and the other by whatever the container happened to be. */
+.rag .detail > *{ max-width:var(--measure); }
 
 /* The comparison table. Reinstated after the diagnostic cards: it turns the
    aggregate the report has just built into the question the aggregate cannot
@@ -623,13 +711,15 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   padding:var(--space-10) var(--space-8); max-width:var(--container-narrow); margin:var(--space-10) auto 0; }
 .closing h2{ font-size:var(--text-h2-size); line-height:var(--text-h2-line);
   letter-spacing:var(--text-h2-track); color:var(--text-inverse); margin-bottom:var(--space-5); }
-.closing .verdict{ font-size:var(--text-body-lg-size); line-height:var(--text-body-lg-line); color:var(--text-inverse-muted); }
+.closing .verdict{ font-size:var(--text-body-lg-size); line-height:var(--text-body-lg-line); color:var(--text-inverse-muted);
+  max-width:var(--measure); }
 .closing .verdict strong{ color:var(--text-inverse); font-weight:var(--weight-bold); }
 
 .gate{ background:var(--surface-card); border-radius:var(--radius-card); padding:var(--space-8);
   margin-top:var(--space-7); color:var(--text-body); }
 .gate h3{ font-size:var(--text-h3-size); letter-spacing:var(--text-h3-track); margin-bottom:var(--space-2); }
-.gate-sub{ font-size:var(--text-body-sm-size); color:var(--text-muted); margin-bottom:var(--space-6); }
+.gate-sub{ font-size:var(--text-body-sm-size); color:var(--text-muted); margin-bottom:var(--space-6);
+  max-width:var(--measure); }
 .consent{ display:flex; gap:var(--space-3); align-items:flex-start; margin-top:var(--space-5);
   font-size:var(--text-body-sm-size); color:var(--text-muted); cursor:pointer; }
 .consent input{ margin-top:3px; width:16px; height:16px; flex:none; accent-color:var(--surface-brand); }
@@ -670,8 +760,20 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
      printed, which is the one failure this paragraph cannot survive. */
   #pr-link a{ color:inherit; word-break:break-all; }
   .p-cover{ padding-top:44mm; }
-  .p-cover h1{ font-size:26pt; line-height:1.15; margin-bottom:14pt; max-width:22em; text-wrap:balance; }
-  .p-cover .p-cover-line{ font-size:11pt; color:var(--ink-500); max-width:30em; text-wrap:pretty; }
+  /* PR10 §1.1 — the print surface's two relative measures, audited with the
+     screen's. Both are in em, which resolves against each element's own
+     font-size, so neither says what it looks like it says. 22em at 26pt is
+     572pt, wider than the 182mm A4 text column, so the headline rule has never
+     constrained anything; 30em at 11pt is 330pt, 64% of the same column, so the
+     cover line has always wrapped there. The widths below are the widths those
+     rules produce today, written as the distances they are. Nothing on the
+     cover moves; the units stop lying about what they do, and a change to
+     either font-size no longer silently moves a column.
+
+     The cover line stays short on purpose. It is one sentence on a title page,
+     not a reading column, which is why it is not --measure. */
+  .p-cover h1{ font-size:26pt; line-height:1.15; margin-bottom:14pt; max-width:182mm; text-wrap:balance; }
+  .p-cover .p-cover-line{ font-size:11pt; color:var(--ink-500); max-width:116mm; text-wrap:pretty; }
   .page h2{ font-size:12.5pt; margin-bottom:5pt; }
   .p-head{ display:flex; justify-content:space-between; border-bottom:1pt solid var(--ink-300);
     padding-bottom:4pt; margin-bottom:12pt; font-size:8.5pt;
@@ -870,7 +972,29 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
     <p class="lead">Keeping the lights on is one of the primary functions of every IT department. Managing that against the volatile demand of IT projects is one of the hardest things an IT leader does. Answer a few questions and see how much project capacity you actually have, how much room it has to grow, and what your own answers say about the risks you are carrying.</p>
   </section>
 
+  <!-- PR10 §5. The form collapses above the results.
+
+       PR9 printed the result link in the PDF, which made it the second reader's
+       only route into the tool, and a reader following it from a forwarded
+       report met this form with the figures they were sent 2,810px below it.
+
+       Native details/summary, for the same reason the finding cards are: it is
+       keyboard-operable, it prints, and no script decides whether it is open.
+       The form is inside it and stays a live form when closed — every field
+       keeps its value, readAndValidate() reads them, and reopening costs one
+       click. Collapsed, not hidden: a movable number invites engagement where a
+       static one invites argument, and that needs the inputs visibly present.
+
+       The summary is not rendered until a report exists, because until then
+       there is nothing to collapse and a control offering to hide the only
+       thing on the page is furniture. openTool() sets data-collapsible on both
+       paths, so the two cannot drift. -->
   <section id="tool" class="wrap">
+   <details class="tool-shell" id="toolShell" open>
+    <summary class="tool-summary">
+      <span class="tool-summary-label">Your answers</span>
+      <span class="tool-summary-hint">Change any of them and run the check again</span>
+    </summary>
     <form class="panel" id="calcForm" novalidate>
 
       <fieldset class="fieldset">
@@ -1039,6 +1163,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 
       <button type="submit" class="btn btn-primary btn-block">Show my capacity</button>
     </form>
+   </details>
   </section>
 
   <section id="report" class="wrap" hidden aria-live="polite">
@@ -1866,6 +1991,26 @@ window.submitToSender = function(payload){
      project is "1 project". */
   var qty = function(n, one, many){ return n0(n) + ' ' + (Math.abs(n) === 1 ? one : many); };
 
+  /* PR10 §3. qty() agrees the noun and stops there, so the commonest non-zero
+     case still came out as "Your 1 contractor" — correct, and not something a
+     person writes. A bare numeral against a singular noun is the machine tell,
+     and it lands on the count a real IT department is likeliest to report.
+
+     The word, not the numeral, and only at one. Everywhere else the numeral
+     stands: sixteen is "16", and one is "one".
+
+     Not a blanket replacement of qty(). Three kinds of site keep the numeral
+     deliberately, because the word would be worse in each: the two workings
+     formula cells, where "one project manager + 6.2 effective BAU FTE" is
+     arithmetic written in words; the corroboration sentence, which enumerates
+     three figures in a row and would read as prose interrupted by one of them
+     spelled out; and any figure the respondent typed and is owed back as they
+     entered it. The choice is per site, which is why this is a second helper
+     rather than a change to the first. */
+  var qtyWord = function(n, one, many){
+    return Math.abs(n) === 1 ? 'one ' + one : n0(n) + ' ' + many;
+  };
+
   /* The same rule for a figure displayed to one decimal place. The noun agrees
      with what the reader sees, not with the underlying float: a caseload of
      1.04 is displayed as "1" and has to read "1 project". */
@@ -2550,8 +2695,17 @@ window.submitToSender = function(payload){
     if(v.pms === 0){
       return 'Nobody is formally running projects. ' + fte;
     }
-    return 'Each of your ' + n0(v.pms) + ' project ' + plural(v.pms,'manager','managers') + ' is carrying <strong>'
-         + n1(c.pmLoad) + ' concurrent projects</strong>. ' + fte;
+    /* PR10 §3. Two faults in one sentence. The caseload was n1() against a
+       hard-coded plural, so a department at one project per manager read "1
+       concurrent projects"; qty1() agrees the noun with the figure as displayed.
+       And "Each of your 1 project manager" is not a sentence anyone writes: at
+       one manager there is no "each", so the singular takes its own opening. */
+    if(v.pms === 1){
+      return 'Your project manager is carrying <strong>'
+           + qty1(c.pmLoad, 'concurrent project', 'concurrent projects') + '</strong>. ' + fte;
+    }
+    return 'Each of your ' + qty(v.pms, 'project manager', 'project managers') + ' is carrying <strong>'
+         + qty1(c.pmLoad, 'concurrent project', 'concurrent projects') + '</strong>. ' + fte;
   }
 
   /* ---- RAG tiles ---- */
@@ -2702,9 +2856,11 @@ window.submitToSender = function(payload){
              holds. The audit's own wording had contractors "already paid out of
              budget", which asserts something about their finances that sits in
              the unverified column. */
-          note:'Your ' + qty(v.contractors, 'contractor', 'contractors') + ' added to ' + fteRange
+          note:'Your ' + qtyWord(v.contractors, 'contractor', 'contractors') + ' added to ' + fteRange
              + ' effective BAU FTE. The rated figure measures how far the portfolio leans on permanent BAU '
-             + 'capacity. This figure adds your contractors and carries no rating, because the bands are set '
+             + 'capacity. This figure adds '
+             + plural(v.contractors, 'that person', 'your contractors')
+             + ' and carries no rating, because the bands are set '
              + 'against permanent capacity.'
         });
       }
@@ -2987,8 +3143,9 @@ window.submitToSender = function(payload){
           label:'The size of your IT department, against the company',
           note:n0(v.staff) + ' permanent IT staff out of ' + qty(v.companyHeadcount, 'person', 'people')
              + '. Every figure below is about that department.'
-             + (v.contractors ? ' Your ' + qty(v.contractors, 'contractor', 'contractors')
-                  + ' are counted separately and are not in it.' : '') });
+             + (v.contractors ? ' Your ' + qtyWord(v.contractors, 'contractor', 'contractors') + ' '
+                  + plural(v.contractors, 'is', 'are') + ' counted separately and '
+                  + plural(v.contractors, 'is', 'are') + ' not in it.' : '') });
 
     /* A bare 0.0 standing in for "not computed" is exactly what §1.1 forbids,
        so where there is no BAU capacity the figure is suppressed and the reason
@@ -3246,8 +3403,13 @@ window.submitToSender = function(payload){
          projects double-book the same person. It is a fair mechanism and a
          claim about a department nobody here has seen, so it becomes the
          condition it always was. */
+      /* PR10 §3. "Each of your project managers" was written as a fixed string
+         and reads as a plural on the one-manager department, where there is no
+         "each" to distribute over. Same fault as positionLead's opening, in a
+         second place, which is the pattern §3 predicted. */
       var caseload = c.pmLoad !== null && v.live > 0
-        ? ' Each of your project managers is carrying ' + qty1(c.pmLoad, 'concurrent project', 'concurrent projects')
+        ? (v.pms === 1 ? ' Your project manager is carrying ' : ' Each of your project managers is carrying ')
+          + qty1(c.pmLoad, 'concurrent project', 'concurrent projects')
           + '. Where two of those need the same person in the same week, reconciling by hand is what has to catch it.'
         : '';
       /* PR8 §3.1. This ran to five sequential claims in one paragraph: the
@@ -3572,7 +3734,7 @@ window.submitToSender = function(payload){
          contractors into the licence basis. It is now separate from the
          permanent staff, which is what the reader needs, rather than separate
          from everything, which is no longer so. */
-      s += ' You also told us about ' + qty(v.contractors, 'contractor or outsourced person', 'contractors and '
+      s += ' You also told us about ' + qtyWord(v.contractors, 'contractor or outsourced person', 'contractors and '
          + 'outsourced staff') + ' on project work, counted separately from your permanent staff.';
     }
 
@@ -3588,7 +3750,10 @@ window.submitToSender = function(payload){
     if(!c.noBauCapacity && v.live > 0){
       s += ' That is <strong>' + spanText(pick(c, 'projectsPerFTE'), fteFmt)
          + ' live projects for every unit of BAU capacity</strong>'
-         + (c.pmLoad !== null ? ', and ' + n1(c.pmLoad) + ' concurrent projects for each project manager' : '') + '.';
+         + (c.pmLoad !== null
+              ? ', and ' + qty1(c.pmLoad, 'concurrent project', 'concurrent projects')
+                + ' for each project manager'
+              : '') + '.';
     }
 
     if(v.budgetTracking === 'outthedoor'){
@@ -3864,7 +4029,10 @@ window.submitToSender = function(payload){
       var word = card.status || STATUS_WORD[card.rag];
       return '<details class="rag ' + card.rag + '"><summary><span class="pill ' + card.rag + '">'
            + esc(word) + '</span><span>' + esc(card.title) + '</span></summary>'
-           + '<div class="detail">' + esc(card.body) + '</div></details>';
+           /* PR10 §2. The body was a bare text node in a div, so the measure
+              rule could not reach it: a paragraph of prose that was not a
+              paragraph. It is one now, which is also what it always was. */
+           + '<div class="detail"><p>' + esc(card.body) + '</p></div></details>';
     }).join('');
 
     /* Checks on the respondent's own answers. One carries a state, one is
@@ -3943,6 +4111,27 @@ window.submitToSender = function(payload){
             so the intent was an assertion about our own reasoning written in
             the confident register. The fact stays; 7.0 > 6.19 is visible
             without being told what it was for. */
+         /* PR10 §6 — where the three role names come from, checked and recorded.
+            The brief had them coming from Table S10 of the supplement, whose
+            Version of Record copy returns 403, and asked for the parenthetical
+            to be dropped if it rested on nothing anyone could open.
+
+            It does not. They are defined in the paper's own running text, in
+            §4.1 "Selection issues in MPW", page 19 of the accepted manuscript:
+            "the company flags specific roles as 'leadership' (project leader,
+            chief project engineer, or project supervisor)". Openly readable at
+            livrepository.liverpool.ac.uk/3159074/1/Accepted%20article.pdf —
+            body prose, not a supplementary table, so it stands on the same
+            footing as every other clause in this statement.
+
+            The finding the sentence reports is Table A-10, ALT4: "Employee
+            Leadership Role does not moderate the effects." That is the test
+            named here and that is its result.
+
+            Checked at the same time, because it was the one figure on this page
+            nobody had read back out of the paper: "9,649 project-month-employee
+            observations (42 projects and 580 employees)" is the paper's own
+            wording in its conclusion. 580, not 58. */
          + '<p style="margin-top:6pt">Three things follow, and we state all three. First, the study covers '
          + 'new-product-development engineering, and a portfolio of IT change projects is a different setting. '
          + 'Second, managerial responsibility appears in it only as a check on how people were allocated to projects. '
@@ -4174,7 +4363,8 @@ window.submitToSender = function(payload){
          sentence below it. Everything else here still excludes them, and the
          exclusions are stated in terms of what we leave out rather than what
          the respondent's budget holds. */
-      suppressed.push('<strong>Your ' + qty(v.contractors, 'contractor', 'contractors') + ' are counted separately '
+      suppressed.push('<strong>Your ' + qtyWord(v.contractors, 'contractor', 'contractors') + ' '
+        + plural(v.contractors, 'is', 'are') + ' counted separately '
         + 'from your permanent IT staff.</strong> They are excluded from the live-projects-per-BAU-FTE rating and '
         + 'from the growth ceiling, both of which measure how far your portfolio depends on permanent BAU '
         + 'capacity; from the run and change derivation, which describes the permanent department; and from the '
@@ -4386,7 +4576,8 @@ window.submitToSender = function(payload){
          built from, it is arithmetic on the respondent's own numbers, and the
          reason line above points the reader at it. */
       fx.push(['Internal project FTE, permanent staff only',
-        n0(v.pms) + ' project managers + ' + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' effective BAU FTE',
+        qty(v.pms, 'project manager', 'project managers') + ' + '
+          + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' effective BAU FTE',
         spanText(pick(c, 'internalProjectFte'), fteFmt) + ' FTE']);
       fx.push(['Cost of the internal time on your projects',
         'our loaded cost per head is built on a UK salary survey, and you reported in '
@@ -4404,7 +4595,8 @@ window.submitToSender = function(payload){
       fx.push(['Loaded cost per head',
         n0(L.salary) + ' + ' + n0(Math.round(L.ni)) + ' + ' + n0(L.overhead), gbp(L.total)]);
       fx.push(['Internal project FTE, permanent staff only',
-        n0(v.pms) + ' project managers + ' + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' effective BAU FTE',
+        qty(v.pms, 'project manager', 'project managers') + ' + '
+          + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' effective BAU FTE',
         spanText(pick(c, 'internalProjectFte'), fteFmt) + ' FTE']);
       fx.push(['Cost of the internal time on your projects',
         spanText(pick(c, 'internalProjectFte'), fteFmt) + ' × ' + gbp(L.total),
@@ -4550,7 +4742,7 @@ window.submitToSender = function(payload){
       + plural(c.licenceCount,'person','people') + ' at ' + gbp(c.monthly) + ' a month, or ' + gbp(c.yearly)
       + ' a year on the annual plan paid upfront, which is twelve months for the price of ten.'
       + (v.contractors ? ' The basis is your BAU staff on projects, your project managers and your '
-         + qty(v.contractors, 'contractor', 'contractors') + ': anyone with capacity recorded against your '
+         + qtyWord(v.contractors, 'contractor', 'contractors') + ': anyone with capacity recorded against your '
          + 'projects is a managed resource.' : '');
     if(c.spendPct !== null){
       pp += ' That is ' + pct2(c.spendPct) + ' of the annual IT project spend you gave us';
@@ -4660,10 +4852,25 @@ window.submitToSender = function(payload){
   $('loadedSalary').value = String(ASHE_MEDIAN);
   $('loadedSalary').addEventListener('change', rerender);
 
+  /* PR10 §5. Both paths reveal the report through here, so the collapse control
+     cannot appear on one and not the other. `collapse` is the only difference
+     between them: a reopened link arrives at the figures with the form folded
+     above them, a manual submit leaves the form exactly as the respondent left
+     it. */
+  function showReport(collapse){
+    $('toolShell').setAttribute('data-collapsible', '');
+    if(collapse) $('toolShell').open = false;
+    $('report').hidden = false;
+  }
+
   $('calcForm').addEventListener('submit', function(e){
     e.preventDefault();
     var res = readAndValidate();
     if(!res.ok){
+      /* A field the reader cannot see cannot be corrected, and after a collapse
+         the whole form is one of those. Reopening first costs nothing on the
+         path where it is already open. */
+      $('toolShell').open = true;
       var el = $(res.firstBad);
       if(el){ el.focus(); el.scrollIntoView({behavior:'smooth',block:'center'}); }
       track('capacity_check_invalid', { field:res.firstBad });
@@ -4671,7 +4878,7 @@ window.submitToSender = function(payload){
     }
     lastV = res.values; lastC = compute(lastV);
     render(lastV, lastC);
-    $('report').hidden = false;
+    showReport(false);
     $('report').scrollIntoView({behavior:'smooth',block:'start'});
     track('capacity_check_generated', Object.assign(ragProps(lastC), {
       staff_band: staffBand(lastV.staff),
@@ -4877,7 +5084,24 @@ window.submitToSender = function(payload){
     if(pre.ok){
       lastV = pre.values; lastC = compute(lastV);
       render(lastV, lastC);
-      $('report').hidden = false;
+      showReport(true);
+      /* PR10 §5.1. The report was already rendered here and the page still
+         landed at the top of a fully expanded form, with the figures 2,810px
+         below. That was survivable while the link was something a respondent
+         saved for themselves; PR9 printed it in the PDF, so it is now the route
+         a forwarded report gives its second reader, and what it opened on was a
+         long form rather than the figures they were sent.
+
+         Instant, not smooth. This runs during load, where a smooth scroll
+         either animates against a page still settling or is cancelled outright
+         by the browser's own scroll restoration. The reader did not ask to be
+         taken anywhere; they followed a link to a result and should simply be
+         at it.
+
+         After the collapse, so the offset is read off the page they will see.
+         `block:'start'` puts the first finding under the sticky header rather
+         than behind it. */
+      $('report').scrollIntoView({behavior:'auto',block:'start'});
       track('capacity_check_reopened', ragProps(lastC));
     }
   }

@@ -273,6 +273,35 @@ export function singularShapes() {
   ];
 }
 
+/* PR10 §4 — the notation threshold.
+
+   moneySpan() switches a money range from whole pounds to millions when the
+   HIGH endpoint reaches £1,000,000, and it reads the DISPLAYED pound rather
+   than the raw float. Both halves matter and neither is asserted anywhere else:
+   the first is why one quantity can be in pounds while another on the same page
+   is in millions, and the second is why a figure whose raw value is 999,999.54
+   prints as £1.00m.
+
+   Two shapes, one on each side of the crossing, differing by a penny of salary.
+   8.A with 25 BAU staff puts internalEffortCost's high endpoint within a pound
+   of the threshold; the salary moves it across.
+
+     48154.73 -> raw 999,999.33, rounds to   999,999 -> £849,999–£999,999
+     48154.74 -> raw 999,999.54, rounds to 1,000,000 -> £0.85m–£1.00m
+
+   The full portfolio cost stays at £1.22m–£1.37m on both, which is the case the
+   §4 assertion exists for: two money quantities in two different units, on one
+   page, in one report, and each of them the same in all three places it is
+   printed. */
+export function notationShapes() {
+  return [
+    { id: 'notation-below', side: 'below the threshold',
+      ...FIXTURE_A, bauStaff: 25, loadedSalary: 48154.73 },
+    { id: 'notation-above', side: 'above the threshold',
+      ...FIXTURE_A, bauStaff: 25, loadedSalary: 48154.74 },
+  ];
+}
+
 /* Corroboration, all three outcomes in their new home. The derived run share
    for 8.A is 71.1% to 75.1%, so the window is 68.1 to 78.1.
 

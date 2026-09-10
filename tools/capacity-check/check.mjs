@@ -17,7 +17,7 @@ import { corpus, FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_D, FIXTURE_E, FIXTURE_
          FIXTURE_LOADED_COST, FIXTURE_SALARY,
          boundaryShapes, straddleShapes, toolsetInvarianceShapes, contractorShapes,
          suppressionShapes, singularShapes, corroborationShapes, budgetShapes,
-         loadedCostShapes, currencyShapes, LEGACY_BAND_CASES, CURRENCIES,
+         loadedCostShapes, currencyShapes, notationShapes, LEGACY_BAND_CASES, CURRENCIES,
          TOOLSETS, VISIBILITY, BUDGETS, ASSIGNMENT, BANDS } from './shapes.mjs';
 import { capture, allText, renderedText, numbersIn, staticReportText, staticWebText,
          SCREEN_NODES, PRINT_NODES } from './capture.mjs';
@@ -1638,6 +1638,40 @@ for (const shape of singularShapes()) {
      match on their trailing 1 and the check fails on correct copy. */
   const bad = text.match(/(?<![\d.])1 (?:projects|people|managers|months|persons|contractors)\b/g);
   ok(!bad, `${shape.id} (${shape.site}): no "1 <plural>"`, bad ? bad.join(', ') : '');
+
+  /* PR10 §3. The regex above requires the plural noun to sit immediately after
+     the "1", and every site with an adjective in between was invisible to it.
+     Three were live: "1 project managers" in two workings formula cells, and
+     "1 concurrent projects" in the position lead and in the closing verdict.
+     Up to three intervening words now, which reaches all of them. */
+  const spaced = text.match(
+    /(?<![\d.])1 (?:[a-z]+(?:-[a-z]+)? ){1,3}(?:projects|people|managers|months|persons|contractors)\b/g);
+  ok(!spaced, `${shape.id} (${shape.site}): no "1 <words> <plural>"`, spaced ? spaced.join(', ') : '');
+
+  /* And the verb. "Your 1 contractor are counted separately" was in two places,
+     one on screen and one in the printed report, and no assertion in this suite
+     could see either: qty() agrees the noun and the sentence around it was
+     written once, in the plural. */
+  const verb = text.match(/(?<![\d.])(?:1|one) (?:[a-z]+ ){0,3}(?:are|were|have|carry)\b/g);
+  ok(!verb, `${shape.id} (${shape.site}): no singular subject with a plural verb`,
+     verb ? verb.join(', ') : '');
+}
+{
+  /* The numeral itself, at the site §3 names. qty() produced "Your 1
+     contractor" — the noun correct and the sentence still machine output, on
+     the commonest non-zero count a department reports. */
+  const cap = capture(singularShapes()[5]);
+  const text = allText(cap);
+  ok(!/\b1 contractor\b/.test(text), 'singular: "1 contractor" appears nowhere');
+  ok(/one contractor/.test(text), 'singular: the count reads as a word at one');
+  ok(!/one contractors\b/.test(text), 'singular: and does not take the plural noun with it');
+  /* The numeral is still the numeral everywhere it is a figure rather than
+     prose, which is what makes this a per-site choice and not a global one. */
+  const many = allText(capture({ id: 'plural-contractors', ...singularShapes()[5], contractors: 6 }));
+  ok(/6 contractors/.test(many), 'plural: above one the numeral stands');
+  /* The workings formula cells keep arithmetic in figures. */
+  ok(/1 project manager \+/.test(allText(capture(singularShapes()[2]))),
+     'singular: the workings formula keeps the numeral, and fixes the noun');
 }
 {
   const cap = capture(singularShapes()[1]);
@@ -3789,6 +3823,264 @@ if (beforePath) {
   console.log(`  of the unchanged, gained a §5 band track ... ${barOnly}`);
   console.log(`  UNEXPECTED ................ ${unexpected}`);
   if (unexpectedIds.length) console.log('   ', unexpectedIds.join('\n    '));
+}
+
+/* ============================ PR10 §2 — one reading column ================== */
+section('PR10 §2 — one measure, on every prose block, in a unit that means it');
+{
+  const css = readFileSync(TOOL_PATH, 'utf8');
+
+  /* The root cause §1.1 asked for, asserted as the rule rather than as the
+     eight symptoms. Eight blocks carried max-width in ch at five values, and ch
+     resolves against each element's own font-size, so the page rendered eight
+     columns between 457px and 695px inside containers between 678px and 872px.
+     One token now, in px, because a reading measure is a physical distance and
+     the character count is only a proxy for it at body size. */
+  ok(/--measure:\d+px;/.test(css), '§2 — the measure is one token, in px');
+
+  /* No prose block may reintroduce a measure of its own, in any unit. This is
+     the assertion that matters: every one of the eight was individually
+     reasonable and the set was the fault. */
+  const PROSE = ['.hero .lead', '.legend-note', '.section-sub', '.bands-note p',
+                 '.ceiling .h-note', '.assumption .a-parts', '.check-item .c-body',
+                 '.rag .detail > *', '.gate-sub', '.closing .verdict'];
+  for (const sel of PROSE) {
+    const rule = (css.match(new RegExp('\\n' + sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      + '\\{[^}]*\\}')) || [''])[0];
+    ok(rule !== '', `§2 — ${sel} has a rule`);
+    ok(/max-width:var\(--measure\)/.test(rule),
+       `§2 — ${sel} takes the page's one measure`, rule.replace(/\s+/g, ' ').slice(0, 120));
+  }
+
+  /* Two rules keep a measure of their own, and neither is a reading measure.
+     Named here so that "no ch anywhere" never becomes the rule by accident —
+     a display headline balanced by line count is exactly what ch is for. */
+  ok(/\.hero h1\{[\s\S]{0,200}max-width:19ch/.test(css),
+     '§2 — the display headline keeps its line-count balance, in ch');
+  ok(/--midcta-measure:\d+px;/.test(css),
+     '§2 — and the conversion box keeps its alignment column, in px');
+
+  /* The bands statement. §2 named it the case that matters most: PR7 moved it
+     out from behind the email gate so a reader could see the sourcing behind a
+     rating, and it was the longest block on the page set in the smallest type
+     in the narrowest column — 12.5px at 60ch is 457px inside a 720px card. The
+     size is the half of that the measure token cannot fix. */
+  const bands = (css.match(/\n\.bands-note p\{[^}]*\}/) || [''])[0];
+  ok(!/--text-caption-size/.test(bands),
+     '§2 — the bands statement is no longer set at caption size', bands);
+  ok(/font-size:var\(--text-body-sm-size\)/.test(bands),
+     '§2 — it is set at the size the other supporting prose uses', bands);
+  /* And not one word of it moved. PR6 §6 puts it out of bounds. */
+  const cap = capture({ id: 'bands-measure', ...FIXTURE_A });
+  ok(has(String(cap.screen.bandsStatement || ''),
+         'These bands are ProjexaR’s management controls'),
+     '§2 — and the statement itself is untouched');
+
+  /* The print surface, audited on the same terms. Both of its measures were in
+     em, which resolves the same way ch does: 22em at 26pt is 572pt and has
+     never constrained the A4 text column, 30em at 11pt is 330pt and always has.
+     Written as the distances they are, so a change of font-size no longer moves
+     a column silently. */
+  ok(!/max-width:\d+em/.test(css), '§2 — no font-relative measure survives in the print report');
+  ok(/\.p-cover \.p-cover-line\{[^}]*max-width:\d+mm/.test(css),
+     '§2 — the cover line states its width as a distance');
+}
+
+/* ======================== PR10 §4 — one notation per figure ================= */
+section('PR10 §4 — one notation per figure, across all three surfaces');
+{
+  /* §1.3 asked whether the pounds/millions switch is one helper or several call
+     sites formatting independently, because several would let a value near the
+     threshold render two ways on a single shape. It is one: moneySpan() is the
+     only magnitude-threshold formatter in the file, and the only formatter the
+     two range-valued money quantities go through. So there is nothing to fix,
+     and this is the assertion that keeps it that way — the fault it exists to
+     catch is a future call site reaching for gbp() or gbpBig() directly.
+
+     Asserted as an identity across surfaces rather than as a rule about the
+     helper. The sender pastes the note into an email and attaches the PDF; the
+     recipient must not meet the same number written two ways, whatever the
+     implementation does. */
+  const SHAPES = [['8.A', FIXTURE_A], ['8.B', FIXTURE_B], ['8.C', FIXTURE_C],
+                  ['8.E', FIXTURE_E], ['8.F', FIXTURE_F], ['8.G', FIXTURE_G],
+                  ...notationShapes().map((sh) => [sh.id, sh])];
+
+  for (const [name, shape] of SHAPES) {
+    const cap = capture({ id: `notation-${name}`, ...shape });
+    if (!ok(cap.ok, `${name}: renders`, cap.error)) continue;
+
+    /* The screen's cost callout carries ONE of the two quantities, and which one
+       is stated by its own eyebrow: the full portfolio cost where the budget
+       answer lets the two be summed, the internal effort cost alone where it
+       does not. Reading the figure without reading the eyebrow is how 8.B, the
+       whole non-summing path, would be compared against the wrong printed slot.
+       The printed counterpart is named from the eyebrow for that reason. */
+    const eyebrow = String(cap.screen.costEyebrow || '');
+    const isFull = /full cost of your portfolio/i.test(eyebrow);
+    const shown = String(cap.screen.costFigure || '');
+    const full = isFull ? shown : '';
+    if (shown && shown !== 'Not computed') {
+      eq(String(cap.print[isFull ? 'pr-sum1figure' : 'pr-sum3figure'] || ''), shown,
+         `${name}: the cost callout reads the same figure in the printed summary`);
+      ok(has(String(cap.print['pr-compare'] || ''), shown),
+         `${name}: and the same in the printed comparison`, shown);
+      ok(has(String(cap.screen.compareRows || ''), shown),
+         `${name}: and the same on screen below the tiles`, shown);
+    }
+
+    /* The internal staff cost. Printed summary slot three is its canonical
+       rendering on every branch; the covering note is the one that leaves the
+       document, and it is the surface with the most to lose from a second
+       notation, because it is pasted into an email beside the attached PDF.
+
+       On screen the internal figure moves with the budget answer, for the same
+       reason the assertion above has to read the eyebrow: where the two costs
+       are summed it sits inside the callout's note, and where they are not it
+       IS the callout's figure. Both branches are asserted, neither is assumed. */
+    const internal = String(cap.print['pr-sum3figure'] || '');
+    if (internal && internal !== 'Not computed') {
+      const note = String(cap.screen.coverNote || '');
+      ok(has(note, internal),
+         `${name}: the covering note reads the internal cost exactly as the report does`,
+         `${internal} | ${note}`);
+      if (isFull) {
+        ok(has(String(cap.screen.costNote || ''), internal),
+           `${name}: and so does the screen callout's note, under the summed figure`, internal);
+        ok(has(String(cap.print['pr-sum1note'] || ''), internal),
+           `${name}: and the printed summary's first note`, internal);
+      } else {
+        eq(shown, internal,
+           `${name}: and on the non-summing path it is the callout's own figure`);
+      }
+    }
+
+    /* No shape prints one quantity in two notations. Both forms of a figure
+       appear together in exactly one place — the workings row that shows the
+       exact pounds and then says "shown as" the rendered form — and that row is
+       a deliberate, labelled disclosure of the rounding rather than a second
+       notation. It is excluded by name, not by accident. */
+    const surfaces = [String(cap.screen.costFigure || ''), String(cap.screen.costNote || ''),
+                      String(cap.screen.compareRows || ''), String(cap.screen.coverNote || ''),
+                      String(cap.print['pr-sum1figure'] || ''), String(cap.print['pr-sum1note'] || ''),
+                      String(cap.print['pr-sum3figure'] || ''), String(cap.print['pr-compare'] || '')].join(' ');
+    for (const q of [full, internal]) {
+      if (!q || q === 'Not computed' || !/m\b/.test(q)) continue;
+      /* A figure shown in millions must not also appear in whole pounds on any
+         of those surfaces. Reconstructed from the raw endpoints rather than
+         from the string, so this reads the arithmetic and not the output. */
+      const key = q === full ? 'fullPortfolioCost' : 'internalEffortCost';
+      const ends = [cap.computed.at[0][key], cap.computed.at[1][key]].filter((x) => typeof x === 'number');
+      for (const raw of ends) {
+        const asPounds = '£' + Math.round(raw).toLocaleString('en-GB');
+        ok(!has(surfaces, asPounds),
+           `${name}: ${key} in millions is not also printed in whole pounds`, asPounds);
+      }
+    }
+  }
+
+  /* The threshold itself, read off the pair that straddles it. The switch is on
+     the DISPLAYED pound: a raw high endpoint of 999,999.54 rounds to £1,000,000
+     and takes the whole range into millions, one penny of salary after a raw
+     999,999.33 kept it in pounds. Round first, display, then choose the unit —
+     the same rule §2.3 sets for rating a figure. */
+  const [below, above] = notationShapes().map((sh) => capture({ id: sh.id, ...sh }));
+  eq(String(below.print['pr-sum3figure']), '£849,999–£999,999',
+     'PR10 §4 — below the threshold the internal cost prints in whole pounds');
+  eq(String(above.print['pr-sum3figure']), '£0.85m–£1.00m',
+     'PR10 §4 — a pound above it, the whole range moves to millions');
+  eq(String(below.print['pr-sum1figure']), String(above.print['pr-sum1figure']),
+     'PR10 §4 — and the full portfolio cost, far above the threshold, does not move with it');
+  ok(!/£\d{3},\d{3}.*£\d\.\d\dm|£\d\.\d\dm.*£\d{3},\d{3}/.test(String(above.print['pr-sum3figure'])),
+     'PR10 §4 — a range never mixes units');
+  /* The one place both notations of one quantity are printed together, and the
+     words that make it a disclosure rather than a contradiction. */
+  ok(has(String(above.print['pr-formulas'] || ''), 'shown as'),
+     'PR10 §4 — the workings row that pairs the two forms says which is which');
+}
+
+/* ================= PR10 §5 — where a reopened link lands =================== */
+section('PR10 §5 — a reopened link lands on the results, with the form collapsed');
+{
+  /* PR9 printed the result link in the PDF, so this is the second reader's only
+     route into the tool. Before this PR the link round-tripped every input and
+     rendered the report, and then left the reader at the top of a fully
+     expanded form with the figures 2,810px below.
+
+     Driven through the real boot path. loadTool({search}) seeds location.search
+     before the IIFE runs, which is the only way to reach prefill() at all —
+     everything on that path happens during load. The existing §4.2 round-trip
+     test sets the fields directly and never executes it. */
+  const issued = capture({ id: 'landing', ...FIXTURE_A });
+  const search = '?' + issued.permalink.split('?')[1];
+
+  const reopened = loadTool(TOOL_PATH, { search });
+  const shell = reopened.node('toolShell');
+  const report = reopened.node('report');
+
+  eq(report.hidden, false, '§5 — the report is rendered and shown');
+  eq(shell.open, false, '§5.2 — the form above it is collapsed');
+  ok('data-collapsible' in shell.attrs, '§5.2 — and carries the control that reopens it');
+  /* Collapsed, not hidden, and still a live form: every answer is still in it,
+     which is what makes the number movable rather than a picture of one. */
+  eq(reopened.node('live').value, String(FIXTURE_A.live), '§5.2 — every answer is still in the form');
+  const back = reopened.api.readAndValidate();
+  ok(back.ok, '§5.2 — and the collapsed form still validates');
+  eq(JSON.stringify(back.values), JSON.stringify(issued.values),
+     '§5.2 — with the values the link carried');
+
+  /* §5.1. Landed on, not merely rendered. Order is the assertion: scrolling
+     before the collapse reads an offset off a page the reader never sees.
+
+     `last` rather than an index, because the fault this section exists to catch
+     is a path that does not scroll at all, and reading .behavior off the end of
+     an empty log aborts the run with a stack trace instead of reporting it —
+     the same way a lost range en-dash used to abort the §5 band-track section.
+     It fails with a reason. */
+  const last = (log) => log[log.length - 1] || { id: '(nothing was scrolled to)', behavior: '' };
+  eq(last(reopened.scrolled).id, 'report', '§5.1 — the prefill path lands on the results');
+  eq(last(reopened.scrolled).behavior, 'auto',
+     '§5.1 — instantly, because the reader followed a link to a result');
+  ok(shell.open === false, '§5.1 — and the collapse happened before the scroll was measured');
+
+  /* The reopened analytics event still fires, and still on the same path. */
+  ok(reopened.events.some(([n]) => n === 'capacity_check_reopened'),
+     '§5 — the reopened event is unchanged');
+
+  /* The manual path. Same reveal, same scroll, and the form is left exactly as
+     the respondent left it: open. */
+  const manual = loadTool();
+  for (const [k, v] of Object.entries(FIXTURE_A)) manual.node(k).value = String(v);
+  manual.fire('calcForm', 'submit');
+  eq(manual.node('report').hidden, false, '§5 — manual submit still reveals the report');
+  eq(manual.node('toolShell').open, true, '§5 — and leaves the form open, unchanged');
+  eq(last(manual.scrolled).id, 'report', '§5 — manual submit still scrolls to the report');
+  eq(last(manual.scrolled).behavior, 'smooth',
+     '§5 — smoothly, which is the behaviour it has always had');
+  ok('data-collapsible' in manual.node('toolShell').attrs,
+     '§5 — and offers the same collapse control once there is something to collapse');
+
+  /* A field nobody can see cannot be corrected. After a collapse, a rejected
+     submission has to reopen the form before it moves focus into it — which is
+     the PR9 §3.1 guarantee, on the one path that can now hide the field. */
+  const rejected = loadTool(TOOL_PATH, { search });
+  eq(rejected.node('toolShell').open, false, '§5 — collapsed after a reopen');
+  rejected.node('live').value = '';
+  rejected.fire('calcForm', 'submit');
+  eq(rejected.node('toolShell').open, true, '§5 — a rejected submission reopens the form');
+  eq(rejected.focused[rejected.focused.length - 1], 'live',
+     '§5 — before moving focus to the failing field');
+
+  /* Before this PR the summary was not in the markup at all, so the copy is
+     pinned here: it sits above #report and staticWebText() does not reach it. */
+  const html = readFileSync(TOOL_PATH, 'utf8');
+  ok(/<details class="tool-shell" id="toolShell" open>/.test(html),
+     '§5 — the form is inside a native details, open by default');
+  ok(html.indexOf('<details class="tool-shell"') < html.indexOf('<section id="report"'),
+     '§5 — and above the results, not below them');
+  ok(has(html, 'Change any of them and run the check again'),
+     '§5 — the control says the answers are still editable');
+  ok(/\.tool-shell > summary\{ display:none; \}/.test(html),
+     '§5 — and is not rendered until there is a report to collapse');
 }
 
 /* ------------------------------------------------------------------- result */
