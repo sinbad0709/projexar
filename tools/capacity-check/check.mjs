@@ -3709,10 +3709,14 @@ section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comme
   ok(/The behaviour was\s+always right; only this description of it was wrong/.test(flatSrc),
      '§4 — and says explicitly that this was a comment fault, not a behaviour one');
 
-  /* PR11 §3.2 — the consent field is documented as having no destination, so
-     the next reader does not assume Sender is storing it. */
-  ok(/No Sender custom field named `report_consent` exists/.test(flatSrc),
-     '§3.2 — the missing Sender field is recorded where the value is assembled');
+  /* PR11 §3.2 — the consent field's destination is documented where the value
+     is assembled. It had none until 10 Sep; it has one now, and the comment
+     moved with the fact rather than being left to describe the old world,
+     which is the whole point of §4. */
+  ok(/The Sender custom field with this code was created on 10 September/.test(flatSrc),
+     '§3.2 — the consent field now has a destination, recorded where the value is assembled');
+  ok(!/No Sender custom field named `report_consent` exists/.test(flatSrc),
+     '§3.2 — and the comment no longer says it has none');
 
 
   /* §2. One verification path in this Worker, not two: the same helper, the

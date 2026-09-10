@@ -373,11 +373,12 @@ async function handleCapacityReport(request, env) {
     // the second line of defence if that check is ever moved or loosened, not
     // because "no" is reachable from here.
     //
-    // No Sender custom field named `report_consent` exists in the account, so
-    // Sender discards this value on arrival. Creating the field is an account
-    // action, not a code one. The payload has carried the key since 9 August
-    // and keeps carrying it, so the field starts recording the moment it is
-    // created without a deploy.
+    // The Sender custom field with this code was created on 10 September, so
+    // the value now lands. It did not before: the payload had carried the key
+    // since 9 August with nothing in the account to receive it, and Sender
+    // discarded it on arrival. Nothing was deployed to close that — the field
+    // began recording the moment it existed, which is the property worth
+    // knowing if the field is ever renamed or removed.
     "{{report_consent}}": body.ack ? "yes" : "no",
     // Stamped here rather than taken from body.submitted_at. The browser's
     // value came off the visitor's own clock, which can be arbitrarily wrong
