@@ -641,6 +641,15 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   align-items:center; justify-content:center; font-size:var(--text-h3-size); font-weight:var(--weight-extrabold); }
 .permalink{ margin-top:var(--space-5); font-size:var(--text-caption-size); color:var(--text-subtle);
   word-break:break-all; background:var(--surface-muted); padding:var(--space-3); border-radius:var(--radius-sm); text-align:left; }
+
+/* PR9 §4.1. The note is the thing the sender pastes, so it is set as the thing
+   it will become: a paragraph of an email, on its own ground, at reading size
+   rather than at caption size. The copy control sits under it. */
+#noteBlock{ margin-top:var(--space-5); }
+.cover-note{ background:var(--surface-muted); padding:var(--space-5); border-radius:var(--radius-sm);
+  font-size:var(--text-body-sm-size); line-height:var(--text-body-line); color:var(--text-body); }
+.note-actions{ display:flex; align-items:center; gap:var(--space-4); margin-top:var(--space-4); flex-wrap:wrap; }
+.note-copied{ font-size:var(--text-caption-size); color:var(--text-muted); }
 .disclaimer{ max-width:var(--container-narrow); margin:var(--space-7) auto 0; text-align:center;
   font-size:var(--text-caption-size); line-height:var(--text-caption-line); color:var(--text-subtle); }
 
@@ -656,6 +665,10 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   /* PR8 §2.1. The cover carries a title and one line and nothing else, so it
      is set down the page rather than up against the top margin. It takes no
      running header: a running header on a title page repeats the title. */
+  /* PR9 §4.2. The result link carries every answer, so it is long. Left to
+     itself it overflows the page margin and the end of it is simply not
+     printed, which is the one failure this paragraph cannot survive. */
+  #pr-link a{ color:inherit; word-break:break-all; }
   .p-cover{ padding-top:44mm; }
   .p-cover h1{ font-size:26pt; line-height:1.15; margin-bottom:14pt; max-width:22em; text-wrap:balance; }
   .p-cover .p-cover-line{ font-size:11pt; color:var(--ink-500); max-width:30em; text-wrap:pretty; }
@@ -1187,33 +1200,45 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <div class="gate" id="gate">
         <h3>Get the full report</h3>
         <p class="gate-sub">A PDF of this report to keep and to send on: every number worked through, the arithmetic behind each one, what your answers say about how visible and costed this is, the sources any claim rests on, and four things you can do about it that involve buying nothing.</p>
+        <!-- PR9 §3.2. Every field carries a maxlength, and the Worker carries
+             the same cap again. The attribute is the convenience: it stops a
+             paste from silently overflowing a field the respondent cannot see
+             the end of. The Worker-side check is the control, because an
+             attribute is advice to a browser and this endpoint is reachable
+             without one. The two numbers are the same on purpose; see LIMITS
+             in src/worker.js. -->
         <div class="grid">
           <div class="field full" id="f-email">
             <label for="email">Work email</label>
-            <div class="control"><input type="email" id="email" autocomplete="email" placeholder="you@company.com"></div>
-            <div class="under"><span class="error"></span></div>
+            <div class="control"><input type="email" id="email" maxlength="254" autocomplete="email" placeholder="you@company.com"></div>
+            <div class="under"><span class="error" id="email-error"></span></div>
           </div>
           <div class="field" id="f-fname">
             <label for="fname">First name <span class="opt">(optional)</span></label>
-            <div class="control"><input type="text" id="fname" autocomplete="given-name"></div>
+            <div class="control"><input type="text" id="fname" maxlength="100" autocomplete="given-name"></div>
             <div class="under"></div>
           </div>
           <div class="field" id="f-lname">
             <label for="lname">Last name <span class="opt">(optional)</span></label>
-            <div class="control"><input type="text" id="lname" autocomplete="family-name"></div>
+            <div class="control"><input type="text" id="lname" maxlength="100" autocomplete="family-name"></div>
             <div class="under"></div>
           </div>
           <div class="field full" id="f-company">
             <label for="company">Company <span class="opt">(optional)</span></label>
-            <div class="control"><input type="text" id="company" autocomplete="organization"></div>
+            <div class="control"><input type="text" id="company" maxlength="200" autocomplete="organization"></div>
             <div class="under"></div>
           </div>
         </div>
+        <!-- PR9 §3.1. The checkbox names its own error message through
+             aria-describedby, so a screen reader reaching the control is told
+             what is wrong with it rather than being left to find a paragraph
+             below. role="alert" announces the message when it appears; the
+             element is empty until then, so nothing is announced on load. -->
         <label class="consent" for="ack">
-          <input type="checkbox" id="ack">
+          <input type="checkbox" id="ack" aria-describedby="ackError">
           <span>Email me my report. ProjexaR will also send occasional related emails, and you can stop these at any time. <a href="/privacy/">Privacy Notice</a></span>
         </label>
-        <p id="ackError"></p>
+        <p id="ackError" role="alert"></p>
 
         <!--
           Turnstile protects /api/capacity-report, which writes to Sender. Same
@@ -1230,6 +1255,31 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
         <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
         <button type="button" class="btn btn-primary btn-block" id="gateBtn" style="margin-top:var(--space-6)">Get the full report</button>
+      </div>
+
+      <!-- PR9 §4. The covering note and the link, shown once the gate is
+           satisfied. No email is sent from this site (§1.1), so the
+           confirmation screen is where these belong: the audit wanted them
+           somewhere they could be copied without opening the PDF, and this is
+           that place.
+
+           Hidden rather than absent, so the note is written by render() from
+           the same objects the report renders from and cannot drift from it.
+           Nothing here is gated in the sense of being withheld — every figure
+           it carries is already on the screen above.
+
+           No product name and no ask (§0.14). The forward is the sales action,
+           and a note that costs the sender something to send is a note they do
+           not send. -->
+      <div class="gate" id="noteBlock" hidden>
+        <h3>A note to send it with</h3>
+        <p class="gate-sub">Written from your figures. Nothing in it names a product or asks for anything, so it costs you nothing to forward.</p>
+        <p class="cover-note" id="coverNote"></p>
+        <div class="note-actions">
+          <button type="button" class="btn btn-secondary" id="copyNote">Copy the note</button>
+          <span class="note-copied" id="copyNoteState" role="status"></span>
+        </div>
+        <div class="permalink"><strong>Your link, saved:</strong><br><span id="noteLink"></span></div>
       </div>
     </div>
 
@@ -1290,6 +1340,16 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
            below it. The qualification it sat with stays where it was. -->
       <p style="margin-top:6pt">Every figure drawn from a banded answer is shown as a range and rated on the less
         favourable end. Where we could have picked a single flattering number, we did not.</p>
+      <!-- PR9 §4.2. The URL this report was produced from, printed. A PDF is
+           terminal: a reader who disagrees with an input has nowhere to take
+           the disagreement. The link carries every answer, so they can change
+           the one they doubt and watch what it does to the figures. It is the
+           only route by which a second reader reaches the tool at all.
+
+           Written by renderPrint from permalink(), the same function that
+           builds the link on screen and the one posted to Sender, so the three
+           cannot differ. -->
+      <p class="p-note" style="margin-top:12pt" id="pr-link"></p>
     </section>
 
     <!-- 3. The executive summary. Three figures, money first, in a fixed order:
@@ -2356,12 +2416,32 @@ window.submitToSender = function(payload){
     return Math.floor((Math.ceil(n) - 1) / 10) * 10 + 1;
   }
 
+  /* PR9 §3.1. aria-invalid marks the control as wrong; aria-describedby is what
+     says what is wrong with it. Without the second, a screen reader reaching the
+     input is told it is invalid and nothing else, and the message sits in a
+     sibling the reader has no reason to visit. Wired only where the error slot
+     carries an id, which is what makes this safe to apply through the one
+     function both forms use. */
   function setError(id, msg){
     var wrap = $('f-'+id), input = $(id);
     if(!wrap) return;
     var slot = wrap.querySelector('.error');
-    if(msg){ wrap.classList.add('is-invalid'); if(slot) slot.textContent = msg; if(input) input.setAttribute('aria-invalid','true'); }
-    else   { wrap.classList.remove('is-invalid'); if(slot) slot.textContent = ''; if(input) input.removeAttribute('aria-invalid'); }
+    var named = slot && slot.id;
+    if(msg){
+      wrap.classList.add('is-invalid');
+      if(slot) slot.textContent = msg;
+      if(input){
+        input.setAttribute('aria-invalid','true');
+        if(named) input.setAttribute('aria-describedby', slot.id);
+      }
+    }else{
+      wrap.classList.remove('is-invalid');
+      if(slot) slot.textContent = '';
+      if(input){
+        input.removeAttribute('aria-invalid');
+        if(named) input.removeAttribute('aria-describedby');
+      }
+    }
   }
 
   function readAndValidate(){
@@ -2663,7 +2743,7 @@ window.submitToSender = function(payload){
        on projects. The report runs without a ceiling and says why, rather than
        showing a blank tile or a zero standing in for "not computed". §1.1. */
     if(h.noRoute){
-      return { state:'none', eyebrow:CEILING_EYEBROW,
+      return { state:'none', eyebrow:CEILING_EYEBROW, gap:'',
         figure:'Not enough capacity information to project a ceiling',
         note:'A growth ceiling is projected from the two rated capacity measures. You reported no project managers '
            + 'and no BAU staff working on projects, so neither measure has a divisor and there is nothing to '
@@ -2671,7 +2751,7 @@ window.submitToSender = function(payload){
     }
 
     if(h.noPace){
-      return { state:'none', eyebrow:CEILING_EYEBROW,
+      return { state:'none', eyebrow:CEILING_EYEBROW, gap:'',
         figure:'No live projects to work from',
         note:'Your portfolio growth ceiling projects your current pace forward to the point where a capacity metric '
            + 'would turn red. That projection needs a current pace to work from, and with nothing live right now '
@@ -2697,7 +2777,7 @@ window.submitToSender = function(payload){
       var over = h.value === hh.value
         ? qty(-h.value, 'project', 'projects')
         : n0(-hh.value) + ' to ' + qty(-h.value, 'project', 'projects');
-      return { state:'over', eyebrow:CEILING_EYEBROW,
+      return { state:'over', eyebrow:CEILING_EYEBROW, gap:over, straddle:false,
         figure:'You are running ' + over + ' a year above your sustainable pace.',
         /* §2. Four sentences where there was one compound one, and the gap
            stated once positively after its own short negative. */
@@ -2711,7 +2791,8 @@ window.submitToSender = function(payload){
        other. Stated as what it is, rather than resolved to whichever end reads
        better. */
     if(h.value < 0){
-      return { state:'over', eyebrow:CEILING_EYEBROW,
+      return { state:'over', eyebrow:CEILING_EYEBROW, straddle:true,
+        gapLo:qty(-h.value, 'project', 'projects'), gapHi:qty(hh.value, 'project', 'projects'),
         figure:'Your band spans your sustainable pace: from ' + qty(-h.value, 'project', 'projects')
              + ' a year above it to ' + qty(hh.value, 'project', 'projects') + ' a year of room.',
         note:'The share of their time you picked is the difference between the two. At the bottom of that band the '
@@ -2722,7 +2803,7 @@ window.submitToSender = function(payload){
     }
 
     if(h.value === 0 && hh.value === 0){
-      return { state:'at', eyebrow:CEILING_EYEBROW,
+      return { state:'at', eyebrow:CEILING_EYEBROW, gap:'',
         figure:'You are exactly at your sustainable pace.',
         note:'Your ' + qty(v.annual, 'project', 'projects') + ' a year is the pace your current capacity '
            + 'sustains, and ' + bindingPhrase(c) + '. There is no room '
@@ -2732,7 +2813,7 @@ window.submitToSender = function(payload){
     var room = h.value === hh.value
       ? qty(h.value, 'more project', 'more projects')
       : n0(h.value) + ' to ' + qty(hh.value, 'more project', 'more projects');
-    return { state:'room', eyebrow:CEILING_EYEBROW,
+    return { state:'room', eyebrow:CEILING_EYEBROW, gap:room,
       figure:'Room to grow: ' + room + ' a year at today’s pace.',
       note:'Your typical annual throughput (' + qty(v.annual, 'project', 'projects') + ' a year) has room to grow '
          + 'to ' + pace + ' before a capacity metric turns red, and ' + bindingPhrase(c) + '. This is a pace '
@@ -3825,6 +3906,14 @@ window.submitToSender = function(payload){
     $('priceLine').innerHTML = priceCopy(v, c);
     $('closingVerdict').innerHTML = verdict(v, c);
 
+    /* PR9 §4. The covering note and the result link, written here from the same
+       hc and fc the report above was rendered from, so neither can drift from
+       the figures beside it. #noteBlock stays hidden until the gate is
+       satisfied; nothing in it is withheld in any other sense, because every
+       figure it carries is already on the screen above. */
+    $('coverNote').textContent = coverNote(v, c, hc, fc);
+    $('noteLink').textContent = permalink(v);
+
     renderPrint(v, c, hc, fc);
   }
 
@@ -3933,6 +4022,72 @@ window.submitToSender = function(payload){
     return [one, two, three];
   }
 
+  /* ---- The covering note (PR9 §4.1) ----
+     One note, and the sender is the author of it. It is written in their first
+     person because they are the one forwarding it, and everything in it is a
+     figure they gave us or arithmetic on one.
+
+     The audit proposed three notes selectable by purpose. One neutral note
+     ships instead: the selector is a second thing to get right in the release
+     that first touches the live integration, and §0.14 already settled that a
+     document presuming one reason to forward is wrong for the other three.
+
+     Nothing here is a second source for a number. The spend is the value the
+     respondent entered, the internal cost is fc.effort — the same string the
+     printed summary's third slot carries — and the gap is the string the growth
+     ceiling already publishes. Every one of the three is asserted equal to its
+     counterpart in the report on every fixture, rather than assumed equal
+     because it was written from the same object.
+
+     Each sentence is conditional on its own figure existing. A suppressed
+     figure drops its sentence rather than printing a reason: this is an email
+     someone forwards, and a note explaining what it could not compute is a note
+     they rewrite by hand, which is the same as one they do not send.
+
+     No product name and no ask. The forward is the sales action; a note that
+     costs the sender something to send does not get sent. */
+  function coverNote(v, c, hc, fc){
+    var out = ['I ran a capacity check on our project portfolio. The numbers are my own estimates, so treat '
+             + 'them as directional, but the shape is right.'];
+    var figures = 0;
+
+    /* Their reported spend, in the currency they chose. Not suppressed on a
+       non-sterling answer: it is their own figure, echoed, and the currency
+       gate removes what we would have priced, not what they told us. */
+    if(v.spend !== null){
+      out.push('Our project budgets record ' + CURRENCY[v.currency] + n0(v.spend) + ' a year.');
+      figures++;
+    }
+    if(fc){
+      out.push('The internal staff time behind the same work is another ' + fc.effort + ', which sits in the '
+             + 'staff budget rather than in any project.');
+      figures++;
+    }
+
+    var gap = '';
+    if(hc.state === 'over'){
+      gap = hc.straddle
+        ? 'Our band spans the pace the current team sustains: from ' + hc.gapLo + ' a year above it to '
+          + hc.gapHi + ' a year of room.'
+        : 'We are running ' + hc.gap + ' a year above what the current team sustains.';
+    }else if(hc.state === 'at'){
+      gap = 'We are running at exactly the pace the current team sustains.';
+    }else if(hc.state === 'room'){
+      gap = 'We have room for ' + hc.gap + ' a year at today\u2019s pace.';
+    }
+    if(gap){ out.push(gap); figures++; }
+
+    /* Four steps, on every report. The printed report's step list is static
+       markup and the suite pins the count at four, so the sentence is true
+       unconditionally. "about it" needs the figures above it to refer to; with
+       none of them the sentence stands without the phrase. */
+    out.push(figures
+      ? 'There are four things in the report we can do about it that need no new software.'
+      : 'There are four things in the report we can do that need no new software.');
+    out.push('Happy to walk through the workings.');
+    return out.join(' ');
+  }
+
   /* ---- The cover line (PR8 §2.1) ----
      The attribution is the reason the cover reads this way: it puts the
      estimates on the person who gave them rather than on us, which is what
@@ -3960,6 +4115,14 @@ window.submitToSender = function(payload){
   function renderPrint(v, c, hc, fc){
     $('pr-bands').innerHTML = bandsStatement('p-note');
     coverAttribution();
+
+    /* PR9 §4.2. An anchor rather than bare text: printed to PDF the link stays
+       clickable, and printed on paper the address is still there to be read.
+       Same permalink() the screen and the Sender payload use. */
+    var link = permalink(v);
+    $('pr-link').innerHTML = 'This report was produced from the answers this address carries: '
+      + '<a href="' + esc(link) + '">' + esc(link) + '</a>. Opening it puts every answer back in the form with '
+      + 'these figures rebuilt beneath them, so a reader who doubts one of them can change it and see what moves.';
 
     /* PR8 §2.3. Three slots, fixed order, money first. The lead-and-second
        swap the printed report used to mirror off the screen is gone: it made
@@ -4526,16 +4689,31 @@ window.submitToSender = function(payload){
   function validEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s); }
 
   $('gateBtn').addEventListener('click', function(){
-    var email = $('email').value.trim(), ok = true;
+    var email = $('email').value.trim(), ok = true, firstBad = null;
     /* Both name fields are optional. Where neither is given, both Sender
        parameters go out empty and the greeting template handles the fallback —
        that is a Sender-side concern, not this page's. */
     var firstname = $('fname').value.trim(), lastname = $('lname').value.trim();
-    if(!validEmail(email)){ setError('email','Enter a work email address so we can send your report.'); ok = false; }
-    else setError('email','');
+    if(!validEmail(email)){
+      setError('email','Enter a work email address so we can send your report.');
+      ok = false; firstBad = 'email';
+    }else setError('email','');
     var ackErr = $('ackError');
-    if(!$('ack').checked){ ackErr.style.display='block'; ackErr.textContent='Please tick the box so we can send your report.'; ok = false; }
-    else ackErr.style.display='none';
+    if(!$('ack').checked){
+      ackErr.style.display='block'; ackErr.textContent='Please tick the box so we can send your report.';
+      ok = false; if(!firstBad) firstBad = 'ack';
+    }else{ ackErr.style.display='none'; ackErr.textContent=''; }
+    /* PR9 §3.1. The gate is at the foot of a long page and the message it
+       writes can be off screen, so a rejection that only styles a field loses
+       the lead as surely as one that refuses it outright. Focus moves to the
+       first failing control, in the order the form reads, which puts the
+       message in front of a screen reader through aria-describedby and the
+       field in front of everyone else. The calculator form above has done this
+       since it shipped; the gate never did. */
+    if(!ok && firstBad){
+      var bad = $(firstBad);
+      if(bad){ bad.focus(); bad.scrollIntoView({behavior:'smooth',block:'center'}); }
+    }
     if(!ok || !lastV) return;
 
     /* Sender takes firstname and lastname separately and the form now collects
@@ -4615,10 +4793,22 @@ window.submitToSender = function(payload){
       + '<h3>Your report is ready</h3>'
       + '<p class="gate-sub">It opens in your browser’s print view. Choose <strong>Save as PDF</strong> as the '
       + 'destination. If nothing happened, use the button below.</p>'
-      + '<button type="button" class="btn btn-primary" id="openReport">Open the report</button>'
-      + '<div class="permalink"><strong>Your link, saved:</strong><br>' + esc(payload.permalink) + '</div></div>';
+      + '<button type="button" class="btn btn-primary" id="openReport">Open the report</button></div>';
     $('openReport').addEventListener('click', openReport);
     setTimeout(openReport, 300);
+
+    /* PR9 §4.3. The covering note and the link, revealed together with the
+       report and directly beneath it. They were written at render from the same
+       objects the report was, so nothing is computed here.
+
+       The saved link moved out of the success state and into this block, so the
+       URL appears once on the page rather than twice, beside the note it is
+       meant to be sent with.
+
+       No email leaves this site (§1.1). Whatever automation sends one is Sender
+       configuration and is not in this repository; this is the copy and the
+       link Mark puts into it. */
+    $('noteBlock').hidden = false;
 
     /* Last, and fire-and-forget. The report is the thing the visitor was
        promised and it is already on screen and already opening by this point;
@@ -4628,6 +4818,39 @@ window.submitToSender = function(payload){
        success state above. */
     if(typeof window.submitToSender === 'function'){ try{ window.submitToSender(payload); }catch(e){} }
     else console.info('[ProjexaR] Sender endpoint not wired. Payload:', payload);
+  });
+
+  /* ---- The copy control (PR9 §4.1) ----
+     "Copyable in one action" is the requirement, and the clipboard API is the
+     one action. It can be absent (this page over http, or an old browser) and
+     it can be refused, so the fallback selects the note's own text and leaves
+     the reader one keystroke from the same result rather than retyping a
+     paragraph. Neither path may throw: the note is on the page and readable
+     whatever happens here, and a broken button must not take the rest of the
+     confirmation screen with it. */
+  function selectNote(){
+    try{
+      var range = document.createRange();
+      range.selectNodeContents($('coverNote'));
+      var sel = window.getSelection();
+      sel.removeAllRanges(); sel.addRange(range);
+      $('copyNoteState').textContent = 'Selected. Press Ctrl+C, or Cmd+C on a Mac.';
+    }catch(e){
+      $('copyNoteState').textContent = 'Select the note above and copy it.';
+    }
+  }
+
+  $('copyNote').addEventListener('click', function(){
+    var text = $('coverNote').textContent;
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(
+          function(){ $('copyNoteState').textContent = 'Copied.'; },
+          function(){ selectNote(); });
+        return;
+      }
+    }catch(e){}
+    selectNote();
   });
 
   /* The widget writes its token into a hidden input inside its own container.

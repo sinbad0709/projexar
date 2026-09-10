@@ -71,6 +71,10 @@ export const SCREEN_NODES = [
   /* PR7 §3.1 — the bands statement now renders on screen too. */
   'bandsStatement',
   'closingVerdict',
+  /* PR9 §4. The covering note and the saved link, both written at render from
+     the same objects the report is written from. They sit outside the report
+     and are read by the copy rule and both dash rules like any other output. */
+  'coverNote', 'noteLink',
 ];
 
 export const PRINT_NODES = [
@@ -85,6 +89,8 @@ export const PRINT_NODES = [
   /* PR7 §3.1 — was static markup until it had to be shared with the screen. */
   'pr-bands',
   'pr-cards', 'pr-checks', 'pr-compare', 'pr-sources', 'pr-price',
+  /* PR9 §4.2. The result URL, printed on the provenance page. */
+  'pr-link',
 ];
 
 function readNode(node) {
@@ -218,6 +224,26 @@ export function stripReportDate(text) {
    from nothing else. */
 const COPY_EXEMPT = new Set(['pr-inputs']);
 
+/* PR9 §4. The three forwarding surfaces, out of the DIGEST only.
+
+   They are output and they are scanned as output: the copy rule, the em-dash
+   rule and the en-dash rule all read allText() with no exclusion, so every one
+   of them sees the covering note and the printed link on all 603 shapes.
+
+   What they must stay out of is the number multiset the digest compares,
+   for the same reason PR8 took the cover date out of it. The note carries no
+   figure of its own — every one is a duplicate of a figure already inside the
+   report, asserted equal rather than assumed equal — and the link carries the
+   raw answers, including a salary written to fourteen decimal places. Left in,
+   the pair reads as a numeric change on every shape in the corpus and buries
+   the one thing the digest exists to catch: a computed figure that moved.
+
+   The exclusion is stated as a set rather than folded into a slice, because
+   this is the mistake PR8 §5 catalogued: an assertion whose scope quietly
+   answers a different question from the one it appears to ask. Everything
+   excluded here is excluded from one comparison and from nothing else. */
+const DIGEST_EXEMPT = new Set(['coverNote', 'noteLink', 'pr-link']);
+
 /* PR8 §5. The rendered layer alone: every node the tool wrote on this shape,
    with no static markup behind it.
 
@@ -235,11 +261,15 @@ export function renderedText(cap, { exBar = false } = {}) {
   return flattenText(parts.join('\n'));
 }
 
-export function allText(cap, { forCopyRule = false, exBar = false } = {}) {
+export function allText(cap, { forCopyRule = false, exBar = false, exDigest = false } = {}) {
   const parts = [];
-  for (const id of SCREEN_NODES) parts.push(exBar ? stripBandBars(cap.screen[id] || '') : (cap.screen[id] || ''));
+  for (const id of SCREEN_NODES) {
+    if (exDigest && DIGEST_EXEMPT.has(id)) continue;
+    parts.push(exBar ? stripBandBars(cap.screen[id] || '') : (cap.screen[id] || ''));
+  }
   for (const id of PRINT_NODES) {
     if (forCopyRule && COPY_EXEMPT.has(id)) continue;
+    if (exDigest && DIGEST_EXEMPT.has(id)) continue;
     parts.push(cap.print[id] || '');
   }
   parts.push(cap.staticReport || '');
