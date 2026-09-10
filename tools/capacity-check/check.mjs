@@ -3206,10 +3206,46 @@ section('PR8 §2 — the printed report, in the order a forwarded document is re
      statement of what the product does. */
   const productClaims = sections.map((sec, i) => ({
     i, priced: /id="pr-price"/.test(sec),
-    pitch: /ProjexaR works from your actual projects/.test(sec),
+    pitch: /ProjexaR is being designed so that each line manager/.test(sec),
   })).filter((x) => x.priced || x.pitch);
   eq(productClaims.length, 1, '§2.7 — the product claim appears in exactly one section');
   eq(productClaims[0].i, 6, '§2.7 — and that section is the last one');
+
+  /* PR11 §2 — the claim is written as design intent, not as a description of a
+     product that exists. The copy rule cannot see this: it detects words and
+     not tense, so the present-tense original is pinned absent BY VALUE, from
+     the whole file rather than from the printed block, and the phrase that
+     carries the intent is pinned present. A tense guard was considered and
+     rejected in the PR11 report; this is the assertion that stands in for it,
+     and it only ever catches this one sentence coming back. */
+  ok(!has(html, 'ProjexaR works from your actual projects'),
+     '§2 — the present-tense product claim is gone from the WHOLE file');
+  /* Written to catch the "is set and owned" variant too. The first draft of
+     this assertion pinned the report's exact words, passed, and left the screen
+     CTA saying the same thing with one extra verb in the middle. */
+  ok(!/commitment (is )?set and owned by their line manager/.test(html),
+     '§2 — and so is the set-once framing of the BAU declaration, in either voice');
+
+  /* The screen said it twice more than the printed report did, on both branches
+     of the mid-page CTA and in its body. Pinned absent by value on the whole
+     file, and the design-intent forms pinned present, because these are written
+     into the script rather than the markup and no capture reaches both CTA
+     branches on one shape. */
+  for (const gone of ['ProjexaR works from the actual commitments',
+                      'ProjexaR works from the plans themselves',
+                      'Nothing needs to be built and nothing needs to be migrated',
+                      'every project plan obeys it']) {
+    ok(!has(html, gone), `§2 — the present-tense CTA claim is gone: "${gone}"`);
+  }
+  for (const kept of ['ProjexaR is being designed to work from the actual commitments',
+                      'ProjexaR is being designed to work from the plans themselves',
+                      'Nothing will need to be built and nothing will need to be migrated',
+                      'project plan reading from that record']) {
+    ok(has(html, kept), `§2 — and the design-intent form stands: "${kept}"`);
+  }
+  ok(/ProjexaR is being designed so that each line manager keeps the\s+BAU commitment of each person in their team up to date, and every project plan that depends on it reads\s+from that record\./
+       .test(sections[6]),
+     '§2 — the product page states design intent, in a form that keeps the record time-phased');
 
   /* §2.7 and §0.14 — no ask, anywhere in the body. */
   const printCopy = printBlock.replace(/<!--[\s\S]*?-->/g, ' ');
@@ -3635,6 +3671,50 @@ section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comme
   ok(/no toolset input reaches rag_pm/.test(flatSrc),
      '§3.3 — restating master §0.8 where the field it governs is assembled');
 
+  /* PR11 §4 — three comment corrections in this file, none of them a behaviour
+     change. Each is asserted as the false statement ABSENT and the true one
+     PRESENT: absence alone passes on a deleted paragraph, and a deleted
+     paragraph is how the next reader learns nothing instead of something
+     false. Read off the flattened source, for the reflow reason above. */
+
+  /* 4.1 — the segment rules. The old text named values the Worker has never
+     posted, so a Sender condition written from it matches nobody. */
+  ok(!/rag_pm is 'red'/.test(flatSrc) && !/both are 'green'/.test(flatSrc),
+     '§4 — the segment rules are no longer stated in red, amber and green');
+  ok(/rag_pm is 'At risk'/.test(flatSrc) && /both are 'Healthy'/.test(flatSrc),
+     '§4 — they are stated in the words the Worker actually posts');
+  ok(/No such value has ever been posted/.test(flatSrc),
+     '§4 — and the correction records why the old rules matched nobody');
+  ok(!/The segment rules above are stated in RAG terms/.test(flatSrc),
+     '§4 — the mapping caveat is gone, because there is nothing left to map');
+
+  /* 4.2 — headroom. Signed and unclamped since PR1: zero means one thing, and
+     blank is the value carrying two. The old comment had those the wrong way
+     round. It is also named as an adverse-endpoint field, which is what stops
+     a future segment rule being written against it. */
+  ok(!/It reads 0 both when a tile is already past its red/.test(flatSrc),
+     '§4 — the clamped-headroom description is gone');
+  ok(/headroom is an ADVERSE-ENDPOINT field/.test(flatSrc),
+     '§4 — headroom is named as an adverse-endpoint field, as the tool payload already implies');
+  ok(/signed and unclamped/i.test(flatSrc), '§4 — recorded as signed and unclamped');
+  ok(/Zero means one thing/.test(flatSrc) && /Blank is the value\s+carrying two meanings/.test(flatSrc),
+     '§4 — zero means one thing and blank means two, which is the way round the code has it');
+
+  /* 4.3 — the cost-blind rule. 'tracked' is the option's value attribute and is
+     never posted; the payload carries the option's display text. */
+  ok(!/value other than 'tracked'/.test(flatSrc),
+     "§4 — the cost-blind rule is no longer given as the bare word 'tracked'");
+  ok(/Internal BAU time is budgeted and tracked/.test(flatSrc),
+     '§4 — it names the display text the tool actually sends');
+  ok(/The behaviour was\s+always right; only this description of it was wrong/.test(flatSrc),
+     '§4 — and says explicitly that this was a comment fault, not a behaviour one');
+
+  /* PR11 §3.2 — the consent field is documented as having no destination, so
+     the next reader does not assume Sender is storing it. */
+  ok(/No Sender custom field named `report_consent` exists/.test(flatSrc),
+     '§3.2 — the missing Sender field is recorded where the value is assembled');
+
+
   /* §2. One verification path in this Worker, not two: the same helper, the
      same secret binding and the same caller IP on both endpoints. */
   eq((src.match(/await verifyTurnstile\(/g) || []).length, 2,
@@ -3643,6 +3723,37 @@ section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comme
   ok(/return false;\s*\n\s*const body = new FormData\(\)/.test(src)
      || /if \(!token \|\| !secret\) return false;/.test(src),
      '§2 — verification fails closed on an absent token or secret');
+}
+
+
+/* PR11 §4.4 — the fourth comment correction, in the tool rather than the
+   Worker. The straddle example named its two words in the opposite order to the
+   one RAG_ORDER produces, and the code beneath it is correct. Asserted against
+   the ORDERING ITSELF as well as the comment, so the two cannot drift apart
+   again: whichever way the comment reads, the table has to agree with it. */
+{
+  const TOOL = process.env.CAPACITY_CHECK_HTML
+    || fileURLToPath(new URL('../../public/capacity-check/index.html', import.meta.url));
+  const src = readFileSync(TOOL, 'utf8');
+
+  ok(!/a straddling range reads "Watch to At risk"/.test(src.replace(/\s+/g, ' ')),
+     '§4 — the straddle example no longer states the opposite order to the code');
+  ok(/a straddling range reads "At risk to Watch"/.test(src.replace(/\s+/g, ' ')),
+     '§4 — it states the order RAG_ORDER actually produces');
+
+  /* The code, read back. RAG_ORDER ranks the adverse end higher and ragSpan
+     puts the higher rank first, so "At risk to Watch" is what a Watch/At risk
+     straddle renders and "Watch to Healthy" is what the audit's own render test
+     expects. Typed in from the specification, never read off the page. */
+  const ORDER = { healthy: 0, atrisk: 1, over: 2 };
+  const WORD = { over: 'At risk', atrisk: 'Watch', healthy: 'Healthy' };
+  const span = (a, b) => (a === b ? WORD[a]
+    : ORDER[a] > ORDER[b] ? `${WORD[a]} to ${WORD[b]}` : `${WORD[b]} to ${WORD[a]}`);
+  eq(JSON.stringify([...src.matchAll(/var RAG_ORDER = \{ healthy:(\d), atrisk:(\d), over:(\d) \};/g)]
+       .map((m) => m.slice(1, 4).join(','))[0], null), '"0,1,2"',
+     '§4 — RAG_ORDER still ranks the adverse end highest');
+  eq(span('atrisk', 'over'), 'At risk to Watch', '§4 — and a Watch/At risk straddle reads adverse end first');
+  eq(span('healthy', 'atrisk'), 'Watch to Healthy', "§4 — matching the audit's own straddle render test");
 }
 
 /* The Worker itself, run. `cloudflare:email` does not resolve outside the
@@ -3735,6 +3846,55 @@ section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comme
     eq(body.fields['{{report_permalink}}'], base.permalink, 'and the permalink survives the origin check');
     ok(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(body.fields['{{report_requested_at}}']),
        'the timestamp is in the format Sender documents, not ISO 8601');
+  }
+
+  section('PR11 §3 — a request without consent is rejected, and nothing is sent');
+  {
+    verifies = true;
+
+    /* The gate the Worker did not have. `report_consent` recorded "yes" or "no"
+       and the subscriber was created either way, so a crafted request without
+       the tick joined the nurture group exactly like one with it.
+
+       Absent and false are asserted separately: absent is the field simply not
+       sent, false is the tick deliberately cleared, and a check written as a
+       truthiness test on a missing key passes one of those and fails the other.
+       Each has to answer 400 AND post nothing — the status alone would pass on
+       a Worker that wrote the subscriber and then returned an error. */
+    for (const [label, payload] of [
+      ['absent', (() => { const p = { ...good }; delete p.ack; return p; })()],
+      ['false', { ...good, ack: false }],
+      /* The values a crafted request reaches for. All truthy, none of them the
+         boolean the page sends, so a `!body.ack` check would wave all three
+         through. This is why the Worker tests `!== true`. */
+      ['the string "false"', { ...good, ack: 'false' }],
+      ['the string "no"', { ...good, ack: 'no' }],
+      ['0', { ...good, ack: 0 }],
+      ['null', { ...good, ack: null }],
+    ]) {
+      const r = await post(payload);
+      eq(r.res.status, 400, `consent ${label}: rejected with 400`);
+      eq(r.sender.length, 0, `consent ${label}: and NOTHING reaches Sender`);
+      eq(JSON.stringify(await r.res.clone().json()), '{"ok":false}',
+         `consent ${label}: in the same shape as the other rejections`);
+    }
+
+    /* And the tick still gets through, recorded as the value Sender is meant to
+       store. A gate that also turned away consenting respondents would satisfy
+       every assertion above it. */
+    const yes = await post(good);
+    eq(yes.res.status, 200, 'consent given: accepted');
+    eq(yes.sender.length, 1, 'and posts to Sender exactly once');
+    eq(JSON.parse(yes.sender[0].init.body).fields['{{report_consent}}'], 'yes',
+       'and the consent is recorded as "yes"');
+
+    /* The rejection happens before the token is spent. Nothing is verified on a
+       request that will not be served, which also means the assertions above
+       are not quietly relying on Turnstile to do this job. */
+    const none = await post((() => { const p = { ...good }; delete p.ack; return p; })());
+    eq(none.res.status, 400, 'consent absent: still 400 with a valid token present');
+    eq(calls.filter((c) => c.url.includes('challenges.cloudflare.com')).length, 0,
+       'and no Turnstile verification is spent on it');
   }
 
   section('PR9 §3.2 — oversize is rejected by the Worker, never truncated');
