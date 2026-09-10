@@ -3717,14 +3717,21 @@ section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comme
     eq(Object.keys(body).sort().join(','), 'email,fields,firstname,groups,lastname',
        'with the subscriber shape unchanged');
 
-    /* §0.15. The Sender field contract is byte-identical: the same fifteen
-       placeholders, none added, none removed, none renamed. */
+    /* §6. The Sender field contract is byte-identical: the same fifteen
+       placeholders, none added, none removed, none renamed.
+
+       This cited §0.15 until that number was withdrawn on 10 September — it was
+       scoped to PR9 and was never a standing constraint. The assertion outlives
+       it, and matters more now than it did: the Sender reconciliation is live
+       rather than deferred, so this field set is the thing under audit, and an
+       audit wants a fixed point to measure drift against. The decision it
+       actually rests on is §6 of the master, which is where it now points. */
     const FIELDS = ['{{company}}', '{{it_staff}}', '{{bau_staff}}', '{{licence_count}}',
       '{{effective_fte}}', '{{pm_load}}', '{{projects_per_fte}}', '{{rag_pm}}', '{{rag_bau}}',
       '{{headroom}}', '{{toolset}}', '{{budget_tracking}}', '{{report_permalink}}',
       '{{report_consent}}', '{{report_requested_at}}'];
     eq(Object.keys(body.fields).sort().join(','), FIELDS.slice().sort().join(','),
-       '§0.15 — the custom-field set gains nothing and loses nothing');
+       '§6 — the custom-field set gains nothing and loses nothing');
     eq(body.fields['{{report_permalink}}'], base.permalink, 'and the permalink survives the origin check');
     ok(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(body.fields['{{report_requested_at}}']),
        'the timestamp is in the format Sender documents, not ISO 8601');
