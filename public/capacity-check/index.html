@@ -1274,7 +1274,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <p id="ctaBody"></p>
       <p class="price-note" id="priceLine"></p>
       <a class="btn btn-primary" href="/start/" id="trialCta">Start free</a>
-      <p class="midcta-sub">Unlimited 14-day trial</p>
+      <p class="midcta-sub" data-offer="short">Free for five. 14 days unlimited to start.</p>
       <p class="midcta-alt"><a href="#getReport">Or get the full report first &darr;</a></p>
     </div>
 
@@ -1305,7 +1305,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
            contradiction already open on /start reproduced inside a single page.
            No price beside it; the price is stated once, in the panel. -->
       <p class="checks-cta"><a href="/start/" class="cta-inline">Start free</a>
-        <span class="checks-cta-sub">Unlimited 14-day trial</span></p>
+        <span class="checks-cta-sub" data-offer="short">Free for five. 14 days unlimited to start.</span></p>
     </div>
 
     <div class="section">
@@ -1684,6 +1684,18 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <p>This report works from a blended average. ProjexaR is being designed so that each line manager keeps the
         BAU commitment of each person in their team up to date, and every project plan that depends on it reads
         from that record.</p>
+      <!-- PR12 §4. The offer, stated in full because neither half is ever shown
+           alone, and placed before the licence quote so the quote is the last
+           word on this page. Master §0.14 bans the ask, not the price: this is
+           a statement of what it costs, it carries no link and no urgency, and
+           the trial action stays off the printed report as it was.
+
+           The quote below is unaffected by it. This report is produced for
+           organisations well above five managed resources, and at that size the
+           quote is the whole count. What free covers, and the fact that above
+           five you licence everyone rather than only the ones past five, is
+           stated on the pricing page. -->
+      <p class="p-note" data-offer="full">Start with 14 days of unlimited access, in your own tenant with your own data. After that, ProjexaR stays free for up to five people with capacity recorded, with no time limit.</p>
       <p class="p-note" id="pr-price"></p>
     </section>
   </div>

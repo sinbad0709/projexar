@@ -1415,10 +1415,15 @@ section('Static printed copy — the eighteen numbers are inside the suite');
     '7.0': 'ProjexaR control: the PM red threshold, named in the bands statement',
     '170': 'ProjexaR control: ticket window, lower', '320': 'ProjexaR control: ticket window, upper',
     '25': 'ProjexaR control: overhead uplift, per cent',
+    /* PR12 §4. The nineteenth, and the first that is neither a citation figure
+       nor a control: the offer's own duration, in the ProjexaR section's offer
+       statement. It is accounted for here rather than exempted, because the
+       point of this table is that nothing reaches the printed page unnamed. */
+    '14': 'The offer: days of unlimited access before the free tier begins',
   };
-  eq(staticNums.length, 18, 'the static printed copy publishes eighteen numbers');
+  eq(staticNums.length, 19, 'the static printed copy publishes nineteen numbers');
   eq([...new Set(staticNums)].sort().join(','), Object.keys(WANT).sort().join(','),
-     'and they are exactly the eighteen accounted for in the provenance table');
+     'and they are exactly the nineteen accounted for in the provenance table');
   /* The capture genuinely carries them: a number only in the static layer must
      reach allText(), or none of the above is worth anything. */
   const captured = new Set(numbersIn(allText(capture({ id: 'static', ...FIXTURE_A }))));
@@ -2292,9 +2297,17 @@ section('PR7 §7.5 — one more route to the trial, additive and unpriced');
 
   ok(/<p class="checks-cta"><a href="\/start\/" class="cta-inline">Start free<\/a>/.test(report),
      '§7.5 — the second route exists and points at /start/');
-  /* Same offer wording as the panel, exactly. */
-  const panelSub = (report.match(/<p class="midcta-sub">([^<]+)<\/p>/) || [])[1];
-  const ctaSub = (report.match(/<span class="checks-cta-sub">([^<]+)<\/span>/) || [])[1];
+  /* Same offer wording as the panel, exactly.
+
+     PR12 put a data-offer attribute on both elements, and these two patterns
+     were anchored to a bare class attribute, so both stopped matching at once
+     and the comparison below became eq(undefined, undefined): a pass, on a page
+     where the two subs could by then have said anything. Master §0.16 in its
+     text form. Both are now asserted to have matched before they are compared. */
+  const panelSub = (report.match(/<p class="midcta-sub"[^>]*>([^<]+)<\/p>/) || [])[1];
+  const ctaSub = (report.match(/<span class="checks-cta-sub"[^>]*>([^<]+)<\/span>/) || [])[1];
+  ok(panelSub !== undefined, '§7.5 — the panel sub is found at all');
+  ok(ctaSub !== undefined, '§7.5 — the second route\'s sub is found at all');
   eq(ctaSub, panelSub, '§7.5 — the offer is described in the panel\'s own words, exactly');
   const panelBtn = (report.match(/id="trialCta">([^<]+)<\/a>/) || [])[1];
   const ctaBtn = (report.match(/class="cta-inline">([^<]+)<\/a>/) || [])[1];
@@ -2996,7 +3009,8 @@ section('§2 — the promoted block sits after the growth ceiling, and is rename
 
   /* §3. Three copy strings, and all three live in static markup outside every
      captured node — so without these the text diff cannot see them at all. */
-  ok(has(report, '<p class="midcta-sub">Unlimited 14-day trial</p>'), '§3.2 — the trial line');
+  ok(has(report, '<p class="midcta-sub" data-offer="short">Free for five. 14 days unlimited to start.</p>'),
+     '§3.2 — the offer line, in the short form PR12 §2 settled');
   ok(!has(html, 'Two projects free, forever'), '§3.2 — the old trial line is gone');
   /* §5.3 of PR6 settled the three routes to the report on one verb. The old
      label is asserted absent so the vocabulary cannot drift back apart. */
@@ -4252,6 +4266,221 @@ section('PR10 §5 — a reopened link lands on the results, with the form collap
      '§5 — the control says the answers are still editable');
   ok(/\.tool-shell > summary\{ display:none; \}/.test(html),
      '§5 — and is not rendered until there is a report to collapse');
+}
+
+
+/* ================== PR12 §5 — one offer, stated once, everywhere ============
+
+   The site has no build step and no partial. Every page carries its own copy,
+   so nothing structural stops the next person editing one page and leaving the
+   other eight contradicting it. That is what happened to the offer this PR
+   replaces: the same sentence in nine places, corrected in none of them when
+   the decision of 1 September changed it, and the Capacity Check ended up
+   saying "Unlimited 14-day trial" beside a "Start free" link to a page
+   promising two projects free forever.
+
+   This section is the only thing that survives that next edit. It reads the
+   shipped files off disk, not a captured render, because the failure it exists
+   to catch is a hand edit to markup.
+
+   Three claims, and the second and third are the ones the old suite could not
+   have made:
+
+   1. The retired offer does not come back, in any construction. The string
+      list is built from the PR12 §1.1 sweep over every tracked file under
+      public/, src/ and tools/, not from the seven surfaces the audit named:
+      that sweep found nine, including a verbatim copy of the /product paid
+      trigger on the home page and two "nobody is counted on the free plan"
+      claims that the five-resource cap makes flatly false.
+
+   2. Neither half is ever presented alone. This is the defect, not the old
+      wording: "Unlimited 14-day trial" by itself reads as a trial that expires
+      and "free forever" by itself understates day one, and a page carrying one
+      half contradicts every page carrying the other. Asserted as: every
+      mention of the fourteen days anywhere in output sits inside one of the
+      canonical strings.
+
+   3. The canonical statement is byte-identical to site.js's OFFER constant
+      wherever it appears. site.js is as close to a shared source as a site
+      with no build step has: it stamps [data-offer] elements at runtime. But
+      the inline text is what a crawler and a reader with JavaScript off get,
+      and on the Capacity Check, which does not load site.js, it is what
+      everyone gets. So the inline text is the copy, and this is what stops it
+      drifting from the constant that claims to govern it. */
+section('PR12 §5 — the retired offer does not come back, on any page');
+{
+  const PUB = fileURLToPath(new URL('../../public/', import.meta.url));
+  const PAGES = ['index.html', '404.html', 'start/index.html', 'pricing/index.html',
+                 'product/index.html', 'contact/index.html', 'privacy/index.html',
+                 'trust/index.html', 'solutions/index.html',
+                 'solutions/project-online-migration/index.html',
+                 'capacity-check/index.html', 'js/site.js'];
+
+  /* The OFFER constant, read out of site.js rather than restated here. A copy
+     of the wording in the suite is a second source for the thing this section
+     exists to keep to one. */
+  const siteJs = readFileSync(join(PUB, 'js', 'site.js'), 'utf8');
+  const offerBlock = siteJs.slice(siteJs.indexOf('var OFFER = {'), siteJs.indexOf('var STORE_CURRENCY'));
+  ok(offerBlock.length > 0, '§5 — the OFFER constant is found in site.js');
+  const OFFER = {};
+  for (const key of ['full', 'fullBilling', 'short']) {
+    const m = offerBlock.match(new RegExp(key + ':((?:\\s*"(?:[^"\\\\]|\\\\.)*"\\s*\\+?)+)'));
+    ok(m !== null, `§5 — OFFER.${key} is declared`);
+    if (m) OFFER[key] = m[1].split('+').map(s => s.trim().replace(/^"|"$/g, '')).join('');
+  }
+  eq(OFFER.short, 'Free for five. 14 days unlimited to start.',
+     '§5 — the short form is the wording PR12 §2 settled');
+  ok(/five people with capacity recorded/.test(OFFER.full || ''),
+     '§5 — the full statement uses people outside billing contexts, per PR7 §6.2');
+  ok(/five managed resources/.test(OFFER.fullBilling || ''),
+     '§5 — and the billing unit in them');
+  /* Both halves, in both registers. A statement that lost one half would
+     otherwise satisfy every assertion below. */
+  for (const key of ['full', 'fullBilling']) {
+    ok(/14 days of unlimited access/.test(OFFER[key] || ''), `§5 — OFFER.${key} carries the sandbox half`);
+    ok(/stays free for up to five/.test(OFFER[key] || ''), `§5 — OFFER.${key} carries the free-tier half`);
+  }
+  const CANON = Object.values(OFFER);
+
+  /* 1. The retired offer, in every construction the §1.1 sweep found, plus the
+        constructions it would have found had they existed. "free forever" is
+        banned outright: the canonical statement says "with no time limit", and
+        an exception for one phrasing is how a second wording gets in. */
+  const BANNED = [
+    /\btwo projects\b/i, /\b2 projects\b/i, /\bfree forever\b/i, /\bforever free\b/i,
+    /\btwo active projects\b/i, /\bmore than two\b/i, /\bneed a third\b/i,
+    /\bnobody is counted\b/i, /\bno card until\b/i, /\bfree to start\b/i,
+    /unlimited 14-day trial/i, /\b14-day trial\b/i, /\bfree for two\b/i,
+  ];
+
+  /* Comments are IN scope. PR7 item 5 moved the stale-name assertion to the
+     whole file for exactly this reason: a retired wording sitting in a comment
+     is the copy the next person reinstates. The cost is that a comment cannot
+     quote what it retired, and site.js's OFFER block describes the old offer
+     rather than quoting it for that reason.
+
+     Two exemptions, both named, both narrow, and neither about the offer. A
+     new occurrence of either string still fails, because the allowlist matches
+     the whole surrounding sentence, not the banned string. */
+  const ALLOWED = [
+    /* A tools-and-process card about one register read consistently. Nothing to
+       do with the offer, and it predates it. */
+    'so two projects can be read against each other.',
+    /* Colicev's population, quoted as the paper publishes it. Caught only
+       because "42 projects" ends in "2 projects"; the word boundary above
+       handles it, and this stays as the record of why it was ever a hit. */
+    'observations across 42 projects and 580 employees',
+  ];
+  for (const page of PAGES) {
+    let text = readFileSync(join(PUB, page), 'utf8');
+    for (const allowed of ALLOWED) text = text.split(allowed).join(' ');
+    for (const banned of BANNED) {
+      const hit = banned.exec(text);
+      ok(hit === null, `§5 — ${page}: ${banned}`,
+         hit === null ? '' : JSON.stringify(text.slice(Math.max(0, hit.index - 60), hit.index + 80)));
+    }
+  }
+
+  /* 2. Neither half alone. Every mention of the fourteen days, on every page,
+        sits inside a canonical string. Comments are stripped first: the
+        rationale for the wording is allowed to discuss it. */
+  const SANDBOX_HALF = /14 days of unlimited access|14 days unlimited to start/i;
+  const FREE_HALF = /stays free for up to five|free for five|free, with no time limit/i;
+  for (const page of PAGES) {
+    let text = readFileSync(join(PUB, page), 'utf8')
+      .replace(/<!--[\s\S]*?-->/g, ' ')
+      .replace(/\/\*[\s\S]*?\*\//g, ' ');
+
+    /* site.js declares the canonical strings as a concatenation across three
+       lines, so they do not appear contiguously in it. The block that defines
+       them is not a surface that states the offer, and it is asserted above. */
+    if (page === 'js/site.js') {
+      const from = text.indexOf('var OFFER = {');
+      text = text.slice(0, from) + text.slice(text.indexOf('};', from) + 2);
+    }
+
+    /* A block marked data-offer-pair states the offer across several elements,
+       so the guard reads it whole. It has to carry both halves to be removed;
+       a block that carries one and claims the marker fails here. */
+    const pair = /<(\w+)[^>]*\bdata-offer-pair\b[^>]*>([\s\S]*?)<\/\1>/g;
+    let pm;
+    while ((pm = pair.exec(text)) !== null) {
+      ok(SANDBOX_HALF.test(pm[2]) && FREE_HALF.test(pm[2]),
+         `§5 — ${page}: a data-offer-pair block carries both halves`,
+         JSON.stringify(pm[2].replace(/\s+/g, ' ').trim().slice(0, 160)));
+    }
+    text = text.replace(pair, ' ');
+
+    /* The free half, page by page. Stated the other way round from the
+       sandbox half above, because "free" on its own is an ordinary English
+       word on these pages and cannot be scanned for: the free half is
+       recognised by its offer phrasings, and a page carrying one of those has
+       to carry the sandbox half somewhere too. The retired free-half
+       constructions are handled by the banned list rather than here. */
+    const whole = readFileSync(join(PUB, page), 'utf8').replace(/<!--[\s\S]*?-->/g, ' ');
+    if (FREE_HALF.test(whole)) {
+      ok(SANDBOX_HALF.test(whole), `§5 — ${page}: the free half is never stated alone either`);
+    }
+
+    for (const canon of CANON) text = text.split(canon).join(' ');
+    const orphan = text.match(/\b14[ -]days?\b|\bfourteen days?\b/i);
+    ok(orphan === null, `§5 — ${page}: the sandbox half is never stated alone`,
+       orphan ? JSON.stringify(text.slice(Math.max(0, orphan.index - 70), orphan.index + 70)) : '');
+  }
+
+  /* 3. Every [data-offer] element's inline text is the constant it names. */
+  let stamped = 0;
+  for (const page of PAGES) {
+    const text = readFileSync(join(PUB, page), 'utf8');
+    const re = /<(\w+)[^>]*\bdata-offer="(\w+)"[^>]*>([\s\S]*?)<\/\1>/g;
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      stamped++;
+      const [, , key, inline] = m;
+      ok(OFFER[key] !== undefined, `§5 — ${page}: data-offer="${key}" names a real constant`);
+      eq(inline.replace(/\s+/g, ' ').trim(), OFFER[key], `§5 — ${page}: data-offer="${key}" is verbatim`);
+    }
+  }
+  ok(stamped >= 6, '§5 — the offer is stamped on every surface that carries it', `found ${stamped}`);
+
+  /* The Capacity Check does not load site.js, so its copy is inline only. It is
+     in PAGES above and therefore covered by all three claims; this names the
+     reason, because a later reader may otherwise "tidy" it out of the list. */
+  ok(!/src="\/js\/site\.js"/.test(readFileSync(join(PUB, 'capacity-check', 'index.html'), 'utf8')),
+     '§5 — the Capacity Check still carries its offer copy inline, with no site.js to stamp it');
+
+  /* PR12's numeric invariant, asserted rather than asserted-about.
+
+     The offer statement is the first copy to put a number on the printed page
+     that is not a citation figure or a control, and the printed report is a
+     document a reader takes figures out of. Measured across the 603-shape
+     corpus, this PR adds exactly one number to what the tool publishes, the
+     offer's own 14, and removes none: the licence basis, the quote and the
+     share-of-spend figures are untouched.
+
+     Stated here as a property of the wording rather than as a baseline diff, so
+     it holds on a fresh checkout with no before-capture to compare against. A
+     second number in the offer copy, a resource count or a price, fails. */
+  for (const [key, text] of Object.entries(OFFER)) {
+    const nums = numbersIn(text);
+    eq(nums.join(','), '14', `§5 — OFFER.${key} publishes one number, and it is the fourteen days`);
+  }
+
+  /* And the quote itself is untouched: the licence basis is still the whole
+     count, which is what makes the boundary on the pricing page necessary. A
+     free-tier subtraction spliced in here would be the one change PR12 forbids,
+     and it would be invisible in copy review. */
+  const tool = readFileSync(join(PUB, 'capacity-check', 'index.html'), 'utf8');
+  ok(/c\.licenceCount = v\.bauStaff \+ v\.pms \+ v\.contractors;/.test(tool),
+     '§5 — the licence basis is still the whole count, with no free five subtracted');
+  ok(!/licenceCount\s*-\s*5|Math\.max\(0,\s*c\.licenceCount/.test(tool),
+     '§5 — and nothing anywhere nets the free five off it');
+
+  /* The offer never renders inside the price line. §4: the quoted organisation
+     pays the quoted figure, and an offer sentence sharing that element is how a
+     reader concludes otherwise. */
+  ok(!/id="pr-price"[^>]*data-offer/.test(tool) && !/id="priceLine"[^>]*data-offer/.test(tool),
+     '§5 — the offer is never stated inside the licence quote');
 }
 
 /* ------------------------------------------------------------------- result */
