@@ -47,8 +47,8 @@ raw gap is 9.065 which would round to 9.1, and the page must print 9.0.
 
 | File | What it does |
 |---|---|
-| `harness.mjs` | Loads the HTML, extracts the tool's IIFE, runs it in a `vm` against a DOM stub. Parses the real `<select>` options so `selText()` returns what a respondent read, and freezes `Date` so the baseline does not change at midnight. |
-| `shapes.mjs` | The 603-shape corpus, the six §4 fixtures, and the assertion shapes (boundaries, band straddles, toolset and contractor invariance, suppression rows, singulars, corroboration states, currency options, budget branches, loaded-cost edits, legacy band decoding). |
+| `harness.mjs` | Loads the HTML, extracts the tool's IIFE, runs it in a `vm` against a DOM stub. Parses the real `<select>` options so `selText()` returns what a respondent read, and freezes `Date` so the baseline does not change at midnight. `loadTool(path, { search })` seeds `location.search`, which is the only way to reach the reopened-link path; the stub records `focus()`, `scrollIntoView()` and `setAttribute()` rather than swallowing them. |
+| `shapes.mjs` | The 603-shape corpus, the six §4 fixtures, and the assertion shapes (boundaries, band straddles, toolset and contractor invariance, suppression rows, singulars, notation thresholds, corroboration states, currency options, budget branches, loaded-cost edits, legacy band decoding). |
 | `oracle.mjs` | The formulas, written from the spec. Never imports from the page. |
 | `capture.mjs` | Drives one shape through the page's own submit handler, then reads back every node it wrote — screen, printed report and Sender payload — plus the static printed-report copy the page does not write. |
 | `baseline.mjs` | Writes the digest baseline. |
@@ -361,6 +361,139 @@ None of them changed a number. All of them were rewritten to keep figure order,
 and that is the right call rather than sorting the comparison: a report that
 printed the low endpoint where the high one belongs is precisely the class of
 fault this suite exists to catch, and a sorted multiset cannot see it.
+
+## One measure, and what the unit was doing
+
+PR10 audited every rule constraining a text measure, on screen and in print, at
+1440px, 1024px and 380px. Eight screen blocks carried `max-width` in `ch` at five
+values, and `ch` resolves against **each element's own font-size** — so five
+nominal values across four type sizes produced eight different columns:
+
+| block | size | cap | rendered | its container |
+|---|---|---|---|---|
+| `.bands-note p` | 12.5px | 60ch | 457px | 720px |
+| `.legend-note` | 14px | 62ch | 529px | 678px |
+| `.ceiling .h-note` | 14px | 64ch | 547px | 696px |
+| `.check-item .c-body` | 14px | 72ch | 615px | 710px |
+| `.hero .lead` | 19px | 58ch | 672px | 872px |
+| `.section-sub` | 19px | 60ch | 695px | 760px |
+
+and three prose blocks (`.detail`, `.gate-sub`, and the finding bodies) carried
+no measure at all and ran to their container. The blocks that read as broken were
+the ones set in the smallest type, because that is where a character count and a
+physical column disagree most.
+
+A reading measure is a physical distance; the character count is a proxy for it
+at body size, and used across four sizes it inverts and gives the smallest type
+the shortest line. The file already recorded that finding at `--midcta-measure`,
+where PR5 reached it for one box and did not generalise it. There is one token
+now, `--measure`, in px, and every prose block takes it. Where a container is
+narrower the container wins, which is the correct order: this caps a measure, it
+does not set one.
+
+Two rules keep a measure of their own and neither is a reading measure —
+`.hero h1`'s 19ch, which balances a display headline by line count, and
+`--midcta-measure`, an alignment column shared by children of three sizes. Both
+are asserted present, so "no ch anywhere" cannot become the rule by accident.
+
+The print report had the same fault in `em`: `.p-cover h1` at 22em of 26pt is
+572pt, wider than the 182mm A4 text column, so it never constrained anything, and
+`.p-cover .p-cover-line` at 30em of 11pt is 330pt and always did. Both are
+written as distances now. Nothing on the cover moves — 439.7px becomes 438.4px —
+and a change of font-size no longer moves a column silently.
+
+The bands statement is the block PR10 §2 named as mattering most, and the comment
+that used to sit on its rule recorded the drift in writing: "measure held to the
+body text's 60ch". It was not the body text's. Body is 16px; that block was
+12.5px. It is at body-sm now, because 400 words of sourcing is body copy and
+caption size is what made a block PR7 promoted out from behind the gate read as
+the footnote it had been. **Not one word of the statement moved** — PR6 §6 puts
+it out of bounds — and the suite asserts that too.
+
+## One notation per figure
+
+`moneySpan()` is the only magnitude-threshold formatter in the file, and the only
+formatter the two range-valued money quantities go through. So a value near the
+threshold cannot render two ways across the web report, the printed report and
+the covering note: there is one helper, and PR10 §1.3 confirmed it rather than
+finding a defect.
+
+The threshold reads the **displayed** pound, not the raw float — the same rule
+§2.3 sets for rating a figure. `notationShapes()` pins both sides of the crossing
+with two shapes a penny of salary apart:
+
+    48154.73 -> raw 999,999.33, rounds to   999,999 -> £849,999–£999,999
+    48154.74 -> raw 999,999.54, rounds to 1,000,000 -> £0.85m–£1.00m
+
+On both, the full portfolio cost stays at £1.22m–£1.37m, which is the case worth
+having: two money quantities in two different units, on one page, each of them
+identical in all three places it is printed. A range never mixes units, because
+the switch is made once off the larger endpoint.
+
+The screen's cost callout carries **one** of the two quantities and its own
+eyebrow says which — the full portfolio cost where the budget answer lets the two
+be summed, the internal effort cost alone where it does not. Reading the figure
+without reading the eyebrow is how fixture 8.B, the whole non-summing path, gets
+compared against the wrong printed slot; the assertion reads the eyebrow.
+
+The one place both notations of one quantity appear together is the workings row
+that prints the exact pounds and then says "shown as" the rendered form. That is
+a labelled disclosure of the rounding, not a second notation, and it is excluded
+by name rather than by accident.
+
+## Where a reopened link lands
+
+`setAttribute`, `removeAttribute` and `scrollIntoView` were all no-ops in the
+stub, so "the reopened link lands on the results with the form collapsed" was,
+exactly like `focus()` before PR9, a claim the suite had no way to read. All
+three record now. `scrolled` is the tool-wide log in call order, and **order is
+the assertion** on the prefill path: scrolling before the collapse reads an
+offset off a page the reader never sees.
+
+`loadTool(path, { search })` seeds `location.search` before the IIFE runs, which
+is the only way to reach `prefill()` at all — everything on that path happens
+during load. The PR9 §4.2 round-trip test sets the fields directly and has never
+executed it.
+
+Measured in a real browser on fixture 8.A: the report used to sit **2,810px**
+below a page that opened at scroll 0 with the form fully expanded. It lands on
+the figures now, with the form folded into one row above them, still holding
+every answer — open it, change a number, submit, and the report, the PDF and the
+saved link all move together.
+
+`#report` also gained a `scroll-margin-top`. The site header is `position:sticky`
+and 73px tall, and both paths scroll with `block:'start'`, so "the top of the
+report" put the report's own heading behind it. That has been true on the manual
+path since the header became sticky; the reopened link is where it stops being
+survivable, because that reader has not watched the page scroll and has no idea
+anything is above the fold.
+
+## The singular, in the places the old regex could not see
+
+PR3 §3.5 checks every prose integer at 1, and its regex required the plural noun
+to sit **immediately** after the "1". Every site with a word in between was
+invisible to it, and three were live:
+
+- `1 project managers`, in two workings formula cells
+- `1 concurrent projects`, in the position lead and in the closing verdict
+- `Your 1 contractor **are** counted separately`, on screen and in the printed
+  report — a plural verb no assertion in this suite could see, because `qty()`
+  agrees the noun and the sentence around it was written once, in the plural
+
+Up to three intervening words now, plus a verb-agreement scan. And `Each of your
+1 project manager is carrying` is not a sentence anyone writes: at one manager
+there is no "each", so both sites that said it take their own opening.
+
+`qtyWord()` spells the count at one and leaves the numeral everywhere else, which
+is why it is a second helper rather than a change to `qty()`. Three kinds of site
+keep the numeral deliberately: the workings formula cells, where "one project
+manager + 6.2 effective BAU FTE" is arithmetic written in words; the corroboration
+sentence, which enumerates three figures in a row; and any figure the respondent
+typed and is owed back as they entered it.
+
+**Nothing moved a figure.** Across all 661 shapes the suite renders, zero values
+changed. On 21 of them the ordered numeric list is shorter, and every deleted
+item is the numeral `1` in a sentence §3 required to be rewritten.
 
 ## The link preview
 
