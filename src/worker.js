@@ -235,6 +235,22 @@ async function handleCapacityReport(request, env) {
     return json({ ok: false }, 400);
   }
 
+  // Consent, before the token is spent verifying and before anything reaches
+  // Sender. The page enforces the tick and will not submit without it, but the
+  // checks above this one exist because a crafted request does not go through
+  // the page, and consent is the one input where that distinction is not a
+  // matter of data quality. A request without it must not create a subscriber.
+  //
+  // Strict `true`, not truthy. The page sends a checkbox's `.checked`, so the
+  // only honest value is a boolean, and a string "false" is truthy.
+  //
+  // This is the gate. The `report_consent` field below RECORDS the value and
+  // has never gated anything: it wrote "no" and subscribed regardless.
+  if (body.ack !== true) {
+    console.warn("capacity report rejected without consent:", body.email);
+    return json({ ok: false }, 400);
+  }
+
   // Turnstile, before anything reaches Sender. This endpoint writes to the
   // subscriber list, so an unprotected POST pollutes it and burns free-tier
   // allowance. Same check, same secret binding and same helper as
@@ -281,15 +297,27 @@ async function handleCapacityReport(request, env) {
   //
   // HOW THESE ARE CONSUMED DOWNSTREAM
   //
-  // Nurture segmentation runs on rag_pm and rag_bau only:
-  //   red    — rag_pm is 'red'   OR rag_bau is 'red'
-  //   amber  — neither is red    AND either is 'amber'
-  //   green  — both are 'green'
+  // Nurture segmentation runs on rag_pm and rag_bau only. The values below are
+  // the exact strings this Worker posts, because those are what a Sender
+  // condition has to match. They are the words the report shows the
+  // respondent, not RAG codes:
+  //   at risk — rag_pm is 'At risk'   OR rag_bau is 'At risk'
+  //   watch   — neither is 'At risk'  AND either is 'Watch'
+  //   healthy — both are 'Healthy'
   //
-  // headroom is used in email copy only and must NEVER be used as a
-  // segment filter. It reads 0 both when a tile is already past its red
-  // threshold and when the portfolio sits exactly at the limit, and blank
-  // when nothing is live. Those are materially different prospects.
+  // This block used to state the same three rules in red, amber and green. No
+  // such value has ever been posted, so a condition written from it matches
+  // nobody and the segment silently stays empty.
+  //
+  // headroom is an ADVERSE-ENDPOINT field: it is the low end of the blended
+  // band, which is the less favourable one, and not a midpoint or a range. It
+  // is used in email copy only and must NEVER be used as a segment filter.
+  //
+  // It is signed and unclamped, and has been since PR1. Zero means one thing —
+  // the portfolio sits exactly at the limit — and a tile already past its
+  // threshold reads NEGATIVE rather than flooring at zero. Blank is the value
+  // carrying two meanings: nothing live, or no BAU capacity to divide by.
+  // Those are materially different prospects.
   //
   // The tool calls this figure the "portfolio growth ceiling" on screen and in
   // the printed report from v5.1. The field keeps the name `headroom` because
@@ -310,12 +338,22 @@ async function handleCapacityReport(request, env) {
   // condition writes it as rag_pm + toolset and still needs no new field.
   //
   // budget_tracking drives a 'cost-blind' tag applied Sender-side for any
-  // value other than 'tracked'. It cuts across all three segments rather
-  // than forming a fourth.
+  // answer other than the budgeted-and-tracked one. It cuts across all three
+  // segments rather than forming a fourth.
+  //
+  // The rule used to be written here as the bare word 'tracked'. That is the
+  // option's value attribute in the form's markup and it is never posted: the
+  // tool sends the option's full display text, the same sentence the
+  // respondent read, so the condition is on "Internal BAU time is budgeted and
+  // tracked" and the other three are the tag's population. The behaviour was
+  // always right; only this description of it was wrong.
   //
   // Note the tool sends rag_pm and rag_bau as the words the report shows the
-  // respondent — "At risk", "Watch", "Healthy" — not red/amber/green. The
-  // segment rules above are stated in RAG terms; map them on that basis.
+  // respondent — "At risk", "Watch", "Healthy" — not red/amber/green. This
+  // paragraph used to end by saying the segment rules above were stated in RAG
+  // terms and had to be mapped onto those words. They are stated in the posted
+  // words now, so there is nothing left to map, and a caveat sitting thirty
+  // lines below the rules it corrects was never the right place for it.
   const fields = {
     "{{company}}": body.company || "",
     "{{it_staff}}": body.it_staff,
@@ -330,6 +368,17 @@ async function handleCapacityReport(request, env) {
     "{{toolset}}": body.toolset,
     "{{budget_tracking}}": body.budget_tracking,
     "{{report_permalink}}": body.permalink,
+    // Records consent; it does not gate it. The gate is the `body.ack !== true`
+    // rejection above, so this can only read "yes" today. The ternary stays as
+    // the second line of defence if that check is ever moved or loosened, not
+    // because "no" is reachable from here.
+    //
+    // The Sender custom field with this code was created on 10 September, so
+    // the value now lands. It did not before: the payload had carried the key
+    // since 9 August with nothing in the account to receive it, and Sender
+    // discarded it on arrival. Nothing was deployed to close that — the field
+    // began recording the moment it existed, which is the property worth
+    // knowing if the field is ever renamed or removed.
     "{{report_consent}}": body.ack ? "yes" : "no",
     // Stamped here rather than taken from body.submitted_at. The browser's
     // value came off the visitor's own clock, which can be arbitrarily wrong

@@ -1681,9 +1681,9 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
     <section class="page">
       <div class="p-head"><span>See this on your own plans</span><span class="sep">: </span><span>ProjexaR Capacity Check</span></div>
       <h2>See this on your own plans</h2>
-      <p>This report works from a blended average. ProjexaR works from your actual projects and your actual people,
-        with each person's operational commitment set and owned by their line manager, so when it changes every
-        plan that depends on it changes with it.</p>
+      <p>This report works from a blended average. ProjexaR is being designed so that each line manager keeps the
+        BAU commitment of each person in their team up to date, and every project plan that depends on it reads
+        from that record.</p>
       <p class="p-note" id="pr-price"></p>
     </section>
   </div>
@@ -2644,8 +2644,10 @@ window.submitToSender = function(payload){
 
   /* ================= Copy ================= */
   var STATUS_WORD = { over:'At risk', atrisk:'Watch', healthy:'Healthy' };
-  /* Adverse first, so a straddling range reads "Watch to At risk" and never the
-     flattering end alone. */
+  /* Adverse first, so a straddling range reads "At risk to Watch", or "Watch to
+     Healthy", and never the flattering end alone. The example here used to name
+     those two words in the opposite order to the one this table produces, which
+     is the order a reader would have carried into the next thing they wrote. */
   var RAG_ORDER = { healthy:0, atrisk:1, over:2 };
 
   /* The two endpoint values of one named quantity, in band order. */
@@ -4064,13 +4066,20 @@ window.submitToSender = function(payload){
       return '<div class="compare-row"><div class="c-now">' + esc(row.now) + '</div>'
            + '<div class="c-next">' + esc(row.next) + '</div></div>'; }).join('');
 
+    /* PR11 §2. This block carried the same breach as the printed report's last
+       page: a product in planning described as a product that exists. The PR
+       named the printed page; the acceptance criterion is "anywhere in output",
+       and the screen said it twice more in stronger terms than the report did.
+       Written as design intent throughout, and the line manager's record is
+       kept rather than set, because the design of record has it time-phased. */
     $('ctaHead').textContent = c.noBauCapacity || v.live === 0
-      ? 'Every figure above came from an estimate. ProjexaR works from the plans themselves.'
-      : 'The blended average above is an estimate. ProjexaR works from the actual commitments.';
-    $('ctaBody').textContent = 'Nothing needs to be built and nothing needs to be migrated. Each person’s '
-      + 'operational commitment is set and owned by their line manager, and every project plan obeys it. You can '
-      + 'see who is genuinely available, catch the clashes while they are still fixable, and answer "can we take this '
-      + 'on?" with something better than instinct.';
+      ? 'Every figure above came from an estimate. ProjexaR is being designed to work from the plans themselves.'
+      : 'The blended average above is an estimate. ProjexaR is being designed to work from the actual commitments.';
+    $('ctaBody').textContent = 'Nothing will need to be built and nothing will need to be migrated. The design has '
+      + 'each line manager keeping the operational commitment of each person in their team up to date, and every '
+      + 'project plan reading from that record. The intent is that you can see who is genuinely available, catch '
+      + 'the clashes while they are still fixable, and answer "can we take this on?" with something better than '
+      + 'instinct.';
     $('priceLine').innerHTML = priceCopy(v, c);
     $('closingVerdict').innerHTML = verdict(v, c);
 
