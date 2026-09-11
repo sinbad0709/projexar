@@ -374,6 +374,31 @@ export function epsilonShape() {
   return { id: 'epsilon-1005', ...FIXTURE_A, loadedSalary: EPSILON_SALARY };
 }
 
+/* PR14 §3 — the second epsilon case, and a structurally different one.
+
+   epsilonShape() pins the epsilon at ONE call site: roundN(x, 2) inside
+   gbpBig(), on a hero money figure, reached through a contrived salary. That is
+   one value that works, and the question §3 asks is whether it is the general
+   case. It is not: the epsilon is load-bearing at round1() as well, on ordinary
+   whole-number answers, and there it moves a RATED tile figure rather than a
+   money notation.
+
+   Seven BAU staff at the top of the 71-80% band is 5.6 effective FTE, which in
+   IEEE 754 is 5.6000000000000005, so 77 ÷ 5.60 comes out 13.749999999999998.
+   A reader dividing 77 by the 5.60 the workings print gets 13.75 and rounds it
+   to 13.8, which is what the tile publishes. Without the epsilon the tile
+   publishes 13.7 and the workings row stops reproducing.
+
+   Nothing is contrived here. Every input is a whole number a respondent would
+   type, which is the difference that matters: the m-notation case needs a
+   salary nobody would enter, and on its own it left the impression that the
+   epsilon guards a corner. */
+export function epsilonRatioShape() {
+  return { id: 'epsilon-ratio', ...FIXTURE_A,
+    companyHeadcount: 1200, staff: 58, pms: 11, bauStaff: 7, bauPercent2: 71,
+    live: 77, annual: 82 };
+}
+
 /* Corroboration, all three outcomes in their new home. The derived run share
    for 8.A is 71.1% to 75.1%, so the window is 68.1 to 78.1.
 
@@ -396,6 +421,87 @@ export function corroborationShapes() {
        so the Watch copy must not offer it. */
     { id: 'corrob-watch-nopm', expect: 'Watch', ...BASE, pms: 0, bauSplitEstimate: 95 },
   ];
+}
+
+/* PR14 §2 — shapes on which a printed operand is not its own display rounding.
+
+   Every fixture happens to produce a whole tenth of effective BAU FTE and a
+   whole pound of loaded cost, so every calculation the workings print
+   reproduces on them by luck of the values rather than by construction. That is
+   the third time this release has found that shape of blindness, and it is how
+   the BAU tile's own division went three releases printing "45 ÷ 4.9" against a
+   result of 9.1 where the division a reader performs gives 9.2.
+
+   These reach the cases the fixtures cannot. Each is named for the operand it
+   makes fractional, and the PR14 §2 section fails if any of them is unreached
+   rather than reporting a count. */
+export function reproducibilityShapes() {
+  return [
+    /* Effective BAU capacity to the hundredth. 16 staff at 31-40% is 4.96 to
+       6.40 FTE, which displays as 5.0 to 6.4, and 45 ÷ 5.0 is not 45 ÷ 4.96. */
+    { id: 'repro-bau-hundredths', operand: 'bau', ...BASE, staff: 45, bauStaff: 16, bauPercent2: 31 },
+    /* A second, structurally different one: a different headcount against a
+       different band, so the case is not one arithmetic coincidence. */
+    { id: 'repro-bau-hundredths-2', operand: 'bau', ...BASE, staff: 45, bauStaff: 7, bauPercent2: 41 },
+    /* The same divisor in the contractor companion row, which is the second
+       row reading the raw quantity and was never named anywhere. */
+    { id: 'repro-delivery-hundredths', operand: 'bau', ...BASE, staff: 45, bauStaff: 16,
+      bauPercent2: 31, contractors: 6 },
+    /* A whole-pound salary whose loaded cost carries pence. The loaded cost is
+       1.4 x salary - 750, so it lands on a whole pound only where the salary is
+       a multiple of five: four ordinary answers in five reach this. */
+    { id: 'repro-loaded-pence', operand: 'loaded', ...BASE, loadedSalary: 50001 },
+    { id: 'repro-loaded-pence-2', operand: 'loaded', ...BASE, loadedSalary: 40003 },
+    /* Below the 2026/27 secondary threshold, where the NI row's subtraction is
+       negative and the figure beside it is nil. */
+    { id: 'repro-ni-nil', operand: 'ni', ...BASE, loadedSalary: 4000 },
+    { id: 'repro-ni-at-threshold', operand: 'ni', ...BASE, loadedSalary: 5000 },
+    /* The full portfolio cost on the knife edge. At this shape the internal
+       effort cost comes out 519,385.49999999994: Math.round takes it down and
+       roundN takes it up, the workings printed "£519,386 + £367,000" and the
+       total beside them read £886,385. */
+    { id: 'repro-portfolio-halfpenny', operand: 'portfolio', ...BASE,
+      companyHeadcount: 20000, staff: 55, pms: 5, live: 1, annual: 2,
+      bauStaff: 10, bauPercent2: 51, pmPercent2: 21, contractors: 6, loadedSalary: 50001 },
+  ];
+}
+
+/* PR14 §1 — the width of the corroboration window, pinned from both sides.
+
+   CORROBORATION_TOLERANCE survived being changed from 3 to 4 with the whole
+   suite green. It is not the same kind of thing as the two defensive epsilons
+   listed beside it in §11: it sets the width of a window the report publishes,
+   and widening it makes the check MORE permissive. The one check whose job is
+   to catch us being wrong could have been quietly weakened by one character.
+
+   Nothing caught it because every shape that reaches the check sits well away
+   from either edge. 8.A's derived run share is 71.1% to 76.0%, so at a
+   tolerance of 3 the window is 68.1 to 79.0, and the existing corroboration
+   shapes state 50, 72, 90 and 95: each of them lands the same way at any
+   tolerance from 0 to 12.
+
+   These four sit one point outside and one point inside each end, which is the
+   only place a one-point drift is visible:
+
+     68   below 68.1, so the note. At a tolerance of 4 the floor drops to 67.1
+          and this becomes Healthy, so raising it fails here.
+     69   inside, so Healthy. At 2 the floor rises to 69.1 and this becomes the
+          note, so lowering it fails here.
+     79   inside, so Healthy. At 2 the ceiling falls to 78.0 and this becomes
+          the Watch.
+     80   above 79.0, so the Watch. At 4 the ceiling rises to 80.0 and this
+          becomes Healthy.
+
+   The expected outcomes are typed in from that arithmetic rather than read off
+   either constant, so a change made in the tool and the oracle together still
+   fails. */
+export function corroborationToleranceShapes() {
+  return [
+    { id: 'tol-below-outside', stated: 68, expect: 'note',    edge: 'one point below the floor of 68.1' },
+    { id: 'tol-below-inside',  stated: 69, expect: 'healthy', edge: 'one point above the floor of 68.1' },
+    { id: 'tol-above-inside',  stated: 79, expect: 'healthy', edge: 'one point below the ceiling of 79.0' },
+    { id: 'tol-above-outside', stated: 80, expect: 'watch',   edge: 'one point above the ceiling of 79.0' },
+  ].map((x) => ({ ...x, ...BASE, bauSplitEstimate: x.stated }));
 }
 
 /* One shape per currency option. The cost block runs on GBP and is suppressed

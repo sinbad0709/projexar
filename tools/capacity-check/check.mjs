@@ -15,10 +15,12 @@ import { join } from 'node:path';
 const sha = (v) => createHash('sha256').update(String(v)).digest('hex').slice(0, 16);
 import { corpus, FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_D, FIXTURE_E, FIXTURE_F, FIXTURE_G,
          FIXTURE_H, FIXTURE_LOADED_COST, FIXTURE_SALARY,
-         pmShareInvarianceShapes, epsilonShape,
+         pmShareInvarianceShapes, epsilonShape, epsilonRatioShape,
          boundaryShapes, straddleShapes, toolsetInvarianceShapes, contractorShapes,
          suppressionShapes, singularShapes, corroborationShapes, budgetShapes,
-         loadedCostShapes, currencyShapes, notationShapes, LEGACY_BAND_CASES, CURRENCIES,
+         loadedCostShapes, currencyShapes, notationShapes, reproducibilityShapes,
+         corroborationToleranceShapes,
+         LEGACY_BAND_CASES, CURRENCIES,
          TOOLSETS, VISIBILITY, BUDGETS, ASSIGNMENT, BANDS } from './shapes.mjs';
 import { capture, allText, renderedText, numbersIn, staticReportText, staticWebText,
          SCREEN_NODES, PRINT_NODES } from './capture.mjs';
@@ -26,7 +28,8 @@ import { TOOL_PATH, loadTool } from './harness.mjs';
 import { evaluate, roundN, round1, redThreshold, loadedCost, bandContaining,
          typicalDurationMonths, itShare, pricesCosts, COST_CURRENCY,
          finding2State, finding3State, finding4State,
-         TICKETS_LO, TICKETS_HI, WORKING_DAYS, JITBIT_PER_DAY, HDI_LO, HDI_HI } from './oracle.mjs';
+         TICKETS_LO, TICKETS_HI, WORKING_DAYS, JITBIT_PER_DAY, HDI_LO, HDI_HI,
+         CORROBORATION_TOLERANCE } from './oracle.mjs';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -686,7 +689,9 @@ section('§3.1 — the full-cost tile renders before the email gate, unobscured'
   const gateAt = html.indexOf('<div class="gate" id="gate">');
   ok(heroAt > 0 && gateAt > heroAt, 'the hero area is in the markup before the email gate');
   for (const cap of [capA, capC]) {
-    if (!cap.ok) continue;
+    /* §0.18's neighbour: a shape that stops rendering must fail here, not be
+       skipped into a loop body that then asserts nothing. */
+    if (!ok(cap.ok, `${cap.id}: renders`, cap.error)) continue;
     eq(cap.hero.costHidden, false, `${cap.id}: the tile is not hidden`);
     ok(!/blur|locked|gated|teaser/i.test(cap.hero.costClass), `${cap.id}: no gating class on the tile`);
     ok(/£/.test(cap.screen.costFigure), `${cap.id}: the figure itself is rendered`, cap.screen.costFigure);
@@ -855,7 +860,7 @@ section('§0 — copy written in this PR carries no em-dash aside');
 
   for (const shape of currencyShapes()) {
     const cap = capture(shape);
-    if (!cap.ok) continue;
+    if (!ok(cap.ok, `${shape.id}: renders`, cap.error)) continue;
     for (const [id, read] of NEW_SURFACES) {
       const found = asideDash(read(cap));
       ok(!found, `${shape.id}: ${id} carries no em-dash aside`, found ? read(cap) : '');
@@ -1339,6 +1344,15 @@ section('§3.8 — exactly four findings, each Healthy-capable, states from the 
   console.log(`  process combinations checked ... ${checked}`);
   console.log(`  all-four-Healthy combinations .. ${healthyReports}`);
   ok(healthyReports > 0, 'at least one combination returns four Healthy findings');
+  /* §0.18. This is a cross product, so its size is produced by code and written
+     down nowhere: seven toolsets by three visibilities by four budgets by three
+     assignment answers. A new required input takes every one of them to
+     validation failure and the loop then asserts nothing while the run still
+     reads green, which is exactly what PR13 did to the fuzz pass. The
+     all-Healthy floor above catches the set emptying completely and nothing
+     else; this catches it shrinking. */
+  eq(checked, TOOLSETS.length * VISIBILITY.length * BUDGETS.length * ASSIGNMENT.length,
+     '§0.18 — every process combination rendered, none silently skipped');
 }
 {
   /* Each finding must be reachable at Healthy from data the report publishes,
@@ -1497,7 +1511,7 @@ for (const shape of corroborationShapes()) {
 section('§3 — the derivation states what it reads, on every branch');
 for (const shape of corroborationShapes()) {
   const cap = capture(shape);
-  if (!cap.ok) continue;
+  if (!ok(cap.ok, `${shape.id}: renders`, cap.error)) continue;
   /* PR13 retired the assumption this row used to state. The rule it was
      serving stands: the derivation says what it rests on beside the arithmetic,
      on every branch and not only where it flags. What it rests on is now the
@@ -2438,6 +2452,10 @@ section('PR6 §1.1 — no em-dash in output, every range en-dash intact');
   const shapes = [
     ...corpus(), ...boundaryShapes(), ...straddleShapes(), ...contractorShapes(),
     ...suppressionShapes(), ...singularShapes(), ...corroborationShapes(),
+    /* PR14 §2. These render copy no other shape does — the nil-NI branch, and
+       a divisor at two decimal places — so a dash rule that did not read them
+       would be scoped past the only new prose in the change. */
+    ...reproducibilityShapes(),
     ...currencyShapes(), ...budgetShapes(), ...loadedCostShapes(),
     { id: '8.A', ...FIXTURE_A }, { id: '8.B', ...FIXTURE_B }, { id: '8.C', ...FIXTURE_C },
     { id: '8.D', ...FIXTURE_D }, { id: '8.E', ...FIXTURE_E }, { id: '8.F', ...FIXTURE_F },
@@ -3143,7 +3161,7 @@ section('Sources — every retained source is attached to a surviving claim');
     { ...FIXTURE_A, ticketsPerMonth: null }, { ...FIXTURE_A, bauStaff: 0 }];
   for (const shape of probes) {
     const cap = capture({ id: 'orphan-probe', ...shape });
-    if (!cap.ok) continue;
+    if (!ok(cap.ok, 'orphan-probe: renders', cap.error)) continue;
     const listed = new Set(cap.print['pr-sources'].match(/<th[^>]*>([^<]+)<\/th>/g)
       ?.map((m) => m.replace(/<[^>]*>/g, '')) || []);
     for (const [title, anchor, claim] of ANCHORS) {
@@ -4358,6 +4376,33 @@ section('The epsilon case, pinned to a value that is actually one');
     ok(has(cap.screen.costFigure, '£1.01m'), 'epsilon: which renders as £1.01m', cap.screen.costFigure);
     ok(!/£1\.00m/.test(allText(cap)), 'epsilon: and never as £1.00m');
   }
+
+  /* PR14 §3. The £1,005,000 case is a real one, and it is also ONE call site:
+     roundN(x, 2) inside gbpBig(), reached through a salary nobody would type.
+     A second case, structurally different, so that "the epsilon is pinned"
+     means the epsilon rather than that one value.
+
+     round1() on a ratio, on whole-number answers, moving a RATED tile figure.
+     Seven BAU staff at the top of the 71-80% band is 5.6 effective FTE, which
+     in IEEE 754 is 5.6000000000000005, so 77 ÷ 5.60 comes out
+     13.749999999999998. Without the epsilon the tile publishes 13.7, where a
+     reader dividing 77 by the 5.60 the workings print beside it gets 13.75 and
+     rounds to 13.8. The mutation fails on this shape too, at a different call
+     site and on a different kind of figure. */
+  const ratio = capture(epsilonRatioShape());
+  if (ok(ratio.ok, 'epsilon: the ratio case renders', ratio.error)) {
+    eq(ratio.computed.at[1].bauEffectiveFte, 5.6000000000000005,
+       'epsilon: 7 staff at 80% is the float a hair above 5.6');
+    eq(ratio.computed.at[1].projectsPerFTE, 13.749999999999998,
+       'epsilon: so the ratio lands a hair below the half');
+    ok(has(ratio.screen.tileGrid, '13.8–15.5'),
+       'epsilon: and the tile publishes 13.8, which is what 77 ÷ 5.60 rounds to',
+       String(ratio.screen.tileGrid).replace(/<[^>]*>/g, ' '));
+    ok(!has(ratio.screen.tileGrid, '13.7'), 'epsilon: never 13.7');
+    ok(has(ratio.print['pr-formulas'], '77 ÷ 4.97–5.60'),
+       'epsilon: with the divisor printed at the precision the division used',
+       String(ratio.print['pr-formulas']).replace(/<[^>]*>/g, ' ').slice(0, 200));
+  }
 }
 
 /* ========= PR13 §4 — the workings add up from the figures the page prints === */
@@ -4523,6 +4568,453 @@ section('PR13 §3 — a link with no project-manager share renders what it still
     ok(enDash.every((x) => /\d.{0,3}–.{0,3}\d/.test(x)),
        `§3 — ${name}: every en-dash sits between two figures`, enDash.join(' | '));
   }
+}
+
+
+/* ============ PR14 §1 — the corroboration row's two outcomes ================
+
+   The check, its branches and its card copy were right on both sides from PR7.
+   The two labels in the workings row were not: a stated figure ABOVE the window
+   read "Below the window" and one below it read "Above the window, stated not
+   rated", on every shape, from PR1 until PR14. Measured on fixtures 8.E and
+   8.F, where the window is 68.1% to 79.0% and the stated figures are 82% and
+   60%.
+
+   That is the worst place in the report for it. The cell prints the window and
+   the respondent's own figure three characters apart, so a reader who accepted
+   the card and turned to the workings to see how we got there found us
+   contradicting ourselves about a comparison they can make in their head. It is
+   §9.1's criterion exactly: a figure the tool publishes contradicted by another
+   figure the tool publishes.
+
+   DERIVED, not pinned. A pinned string would have passed against the inverted
+   labels for as long as they stayed inverted, which is what every existing
+   assertion over this row did for thirteen PRs. What is asserted here is that
+   the direction word agrees with the comparison the same cell prints, read out
+   of the cell: the window, the stated figure, and which side of it that figure
+   falls on. Invert the labels again and every one of these fails. */
+section('PR14 §1 — the corroboration workings row agrees with the comparison it prints');
+{
+  const population = [...corroborationShapes(), ...corpus(), ...pmShareInvarianceShapes(),
+                      ...boundaryShapes(), ...straddleShapes(), ...budgetShapes(),
+                      { id: '8.A', ...FIXTURE_A }, { id: '8.B', ...FIXTURE_B },
+                      { id: '8.E', ...FIXTURE_E }, { id: '8.F', ...FIXTURE_F },
+                      { id: '8.H', ...FIXTURE_H }];
+  /* Every branch has to be reached, or a label could be inverted on the branch
+     nothing renders. Counted per side rather than in total. */
+  const seen = { above: 0, below: 0, inside: 0 };
+  let rows = 0;
+  for (const shape of population) {
+    const cap = capture(shape);
+    if (!cap.ok) continue;
+    const cell = grab(cap.print['pr-formulas'],
+      /<th>Corroboration window, ±3 points on the derived range<\/th><td>([\s\S]*?)<\/td><td><strong>([\s\S]*?)<\/strong>/,
+      `${shape.id}: the corroboration row`, 0);
+    if (cell === undefined) continue;
+    const m = /<td>([\d.]+)% to ([\d.]+)%, against your ([\d.]+)%<\/td><td><strong>([^<]*)<\/strong>/.exec(cell);
+    if (!ok(m !== null, `${shape.id}: the corroboration cell reads as a window and a stated figure`, cell)) continue;
+    rows++;
+    const [, loS, hiS, statedS, label] = m;
+    const lo = Number(loS), hi = Number(hiS), stated = Number(statedS);
+
+    /* The comparison, made on the two figures the row itself printed. */
+    const above = stated > hi, below = stated < lo;
+    eq(/\bAbove the window\b/.test(label), above,
+       `${shape.id}: "Above the window" iff the stated ${stated}% is above ${hi}%`);
+    eq(/\bBelow the window\b/.test(label), below,
+       `${shape.id}: "Below the window" iff the stated ${stated}% is below ${lo}%`);
+    eq(/\bInside the window\b/.test(label), !above && !below,
+       `${shape.id}: "Inside the window" iff it is neither`);
+
+    /* And the check itself lands the same way round, which is the half that was
+       never wrong and is asserted so that "fixing" the row by moving the check
+       fails instead of passing. */
+    const state = cap.computed.corroboration;
+    eq(state, above ? 'watch' : (below ? 'note' : 'healthy'),
+       `${shape.id}: and the check assigns the branch the same comparison does`);
+
+    /* §2.9's asymmetry, on the same row. Below the window is the side the
+       derivation's blind spot lands on, so it carries no rating; above it is
+       the Watch. The row says "stated not rated" on exactly one of them. */
+    eq(/stated not rated/.test(label), below,
+       `${shape.id}: the unrated qualifier sits on the below branch and only there`);
+
+    /* The card copy, untouched and agreeing with the row. Two surfaces, one
+       comparison: the defect this section exists for was the two disagreeing,
+       so the assertion is that they cannot. */
+    const checks = String(cap.screen.checkList) + String(cap.print['pr-checks']);
+    eq(has(checks, 'We derive more change effort than you reported'), above,
+       `${shape.id}: the card says we derive MORE only above the window`);
+    eq(has(checks, 'We derive less change effort than you reported'), below,
+       `${shape.id}: and LESS only below it`);
+    eq(has(checks, 'Your two answers about the same department agree'), !above && !below,
+       `${shape.id}: and that they agree only inside it`);
+
+    if (above) seen.above++; else if (below) seen.below++; else seen.inside++;
+  }
+  console.log(`  corroboration rows read ... ${rows}`);
+  console.log(`  above / below / inside .... ${seen.above} / ${seen.below} / ${seen.inside}`);
+  /* §0.18. Generated coverage states and floors its own size. */
+  ok(rows > 400, 'PR14 §1: the row rendered on a population, not on a fixture', `${rows} rows`);
+  for (const [side, n] of Object.entries(seen)) {
+    ok(n > 0, `PR14 §1: the ${side} branch is reached`, `${n} shapes`);
+  }
+
+  /* §1. The check is not touched. Pinned as source, because the whole defect
+     was that the report could be made self-consistent by inverting the check
+     instead of the labels, and that would have been the wrong repair: §2.9's
+     asymmetry is deliberate and the branch assignment has been right since PR7.
+     A rewrite of this expression fails here and has to be argued for. */
+  const src = readFileSync(TOOL_PATH, 'utf8');
+  ok(/c\.corroboration = v\.bauSplitEstimate > c\.corroborationHi \? 'watch'\s*\n\s*: \(v\.bauSplitEstimate < c\.corroborationLo \? 'note' : 'healthy'\);/
+     .test(src), 'PR14 §1: the check still reads stated > hi as the Watch and stated < lo as the note');
+  ok(/c\.corroborationLo\s*= round1\(c\.derivedRunShare\[0\] - CORROBORATION_TOLERANCE\);/.test(src),
+     'PR14 §1: and the window is still the derived range widened outward from each endpoint');
+  ok(/c\.corroborationHi\s*= round1\(c\.derivedRunShare\[1\] \+ CORROBORATION_TOLERANCE\);/.test(src),
+     'PR14 §1: at both ends');
+
+  /* §1. The WIDTH of the window, which is a different claim from which side of
+     it a figure falls on, and which nothing asserted.
+
+     CORROBORATION_TOLERANCE survived being changed from 3 to 4 with the whole
+     suite green. It is not the same kind of thing as the two defensive epsilons
+     §11 lists beside it: it sets the width of a window the report publishes,
+     and widening it makes the check MORE permissive. The one check whose job is
+     to catch us being wrong could have been quietly weakened by one character,
+     and the tool and the oracle each carry their own copy of the number, so
+     changing both together would have passed as well.
+
+     8.A's derived run share is 71.1% to 76.0%, so at a tolerance of 3 the
+     window is 68.1 to 79.0. The four shapes sit one point outside and one point
+     inside each end, which is the only place a one-point drift is visible: the
+     existing corroboration shapes state 50, 72, 90 and 95 and land the same way
+     at any tolerance from 0 to 12.
+
+     The expected outcomes are typed in from that arithmetic, not read off
+     either constant. */
+  {
+    let edges = 0;
+    for (const shape of corroborationToleranceShapes()) {
+      const cap = capture(shape);
+      if (!ok(cap.ok, `${shape.id}: renders`, cap.error)) continue;
+      edges++;
+      eq(cap.computed.derivedRunShare.join('–'), '71.1–76',
+         `${shape.id}: the derived run share is the one this window is measured from`);
+      eq(cap.computed.corroborationLo, 68.1, `${shape.id}: the window floor is three points below it`);
+      eq(cap.computed.corroborationHi, 79, `${shape.id}: and the ceiling three points above`);
+      eq(cap.computed.corroboration, shape.expect,
+         `${shape.id}: stated ${shape.stated}% is ${shape.edge}, so ${shape.expect}`);
+    }
+    eq(edges, 4, 'PR14 §1: all four window edges were rendered');
+    /* And the constant itself, so a change has to be made deliberately in both
+       places and then still face the four shapes above. */
+    ok(/var CORROBORATION_TOLERANCE = 3;/.test(readFileSync(TOOL_PATH, 'utf8')),
+       'PR14 §1: the window is three points wide, stated in the tool');
+    eq(CORROBORATION_TOLERANCE, 3, 'PR14 §1: and in the oracle, independently');
+  }
+}
+
+
+/* ===== PR14 §2 — every printed calculation reproduces from its own operands ==
+
+   The workings exist so a sceptical reader can redo our arithmetic. A row whose
+   printed operands do not produce its printed result is therefore worse than a
+   wrong figure in the body: it is the section written to be checked, failing
+   the check.
+
+   PR13 §4 asserted the three SUMS the workings publish. This asserts every
+   calculation of any shape, and it found four more rows the sums assertion had
+   no reach into:
+
+     the BAU tile's own ratio      divided by the RAW effective FTE and printed
+                                   the display rounding, so "45 ÷ 5.0" sat
+                                   beside 9.1 where 45 ÷ 4.96 is 9.1 and
+                                   45 ÷ 5.0 is 9.0. Recorded in §11 at PR13 and
+                                   left, because PR13 §5 forbade moving the
+                                   tile. The tile has not moved: what moved is
+                                   what the row prints its divisor as.
+     the contractor companion      the same divisor, one row down, named
+                                   nowhere. Found by the assertion, not by
+                                   reading.
+     the internal effort cost      "10.8–13.0 × £69,251" against a product
+                                   computed from £69,251.40. The loaded cost is
+                                   1.4 × salary − 750, so four ordinary
+                                   whole-pound salaries in five carry pence.
+     employer NI below the         "15% × (4,000 − 5,000)" beside £0. The
+     secondary threshold           arithmetic printed there answers −£150, and
+                                   the floor that makes it nil was not stated.
+
+   And one row where the result, not the operands, was wrong: the full portfolio
+   cost rounded the internal effort cost with Math.round while the display
+   rounded it with roundN, and at a salary of £50,001 the cost lands on
+   519,385.49999999994, which the two disagree about. The page printed
+   "£519,386 + £367,000" and the total beside it read £886,385.
+
+   HOW IT WORKS, and why it is a table rather than a parser. Each row label maps
+   to a regex that captures that row's own printed operands and to the
+   arithmetic the cell states, written here FROM THE CELL and never from the
+   tool, on oracle.mjs's rule. Rows that state rather than compute are named
+   with the reason they carry no arithmetic. A label in neither list FAILS, so a
+   row added later cannot arrive unchecked, and a row whose wording changes
+   fails at its own regex rather than passing over an empty match (§0.17).
+
+   Comparison is at the precision the row published, read off the printed figure
+   itself: three decimals where it printed three, millions where it printed an
+   m. That is the claim being made — not that our float matches theirs, but that
+   a reader doing the sum on the page arrives at the figure on the page. */
+section('PR14 §2 — every printed calculation in the workings reproduces from its own operands');
+{
+  const N = (x) => Number(String(x).replace(/[£,\s]/g, ''));
+  /* Capture groups as numbers, undefined preserved: an optional group is a
+     range that collapsed to one figure, which is a real state, not a miss. */
+  const ops = (m) => m.slice(1).map((x) => (x === undefined ? undefined : N(x)));
+  /* Half-up on the decimal value, which is what a reader does. roundN's
+     epsilon is the same intent; §11 records what it is and is not for. */
+  const R = (x, dp) => { const p = 10 ** dp; return Math.round(x * p + 1e-9) / p; };
+
+  /* Every numeric literal a cell published, each with the precision and unit it
+     was published in. */
+  const shown = (cell) => {
+    const out = [];
+    const re = /(-?)£?(-?)(\d[\d,]*(?:\.\d+)?)(m)?/g;
+    let m;
+    while ((m = re.exec(cell))) {
+      const raw = m[3], dot = raw.indexOf('.');
+      out.push({ v: (m[1] || m[2] ? -1 : 1) * N(raw), dp: dot < 0 ? 0 : raw.length - dot - 1, m: !!m[4] });
+    }
+    return out;
+  };
+  const agrees = (x, s) => R(s.m ? x / 1e6 : x, s.dp) === s.v;
+
+  const STATED = Symbol('stated');
+  /* label -> [how, calc] for a calculation, or [STATED, why] for a row that
+     does not carry one. `set` marks the one row whose printed figures are two
+     differences in branch order rather than an ordered pair. */
+  const ROWS = new Map([
+    ['Effective project manager capacity on projects',
+     [/^(\d[\d,]*) × (\d+)–(\d+)%$/, (o) => [o[0] * o[1] / 100, o[0] * o[2] / 100]]],
+    ['Effective BAU capacity on projects',
+     [/^(\d[\d,]*) × (\d+)–(\d+)%$/, (o) => [o[0] * o[1] / 100, o[0] * o[2] / 100]]],
+    ['Concurrent projects per PM', [/^(\d[\d,]*) ÷ (\d[\d,]*)$/, (o) => [o[0] / o[1]]]],
+    /* The row this section was written for. The divisor is printed at the
+       precision the division used, so the larger divisor gives the smaller
+       ratio and both ends come out. */
+    ['Live projects per effective BAU FTE',
+     [/^(\d[\d,]*) ÷ ([\d.,]+)(?:–([\d.,]+))?$/, (o) => [o[0] / (o[2] ?? o[1]), o[0] / o[1]]]],
+    ['Live projects per delivery FTE, including contractors (unrated)',
+     [/^(\d[\d,]*) ÷ \(([\d.,]+)(?:–([\d.,]+))? \+ (\d[\d,]*)\)$/,
+      (o) => [o[0] / ((o[2] ?? o[1]) + o[3]), o[0] / (o[1] + o[3])]]],
+    ['Typical project duration',
+     [/^\((\d[\d,]*) ÷ (\d[\d,]*)\) × (\d+)$/, (o) => [o[0] / o[1] * o[2]]]],
+    ['Capacity needed for tickets alone',
+     [/^(\d[\d,]*) ÷ (\d[\d,]*) to (\d[\d,]*) ÷ (\d[\d,]*) a month$/, (o) => [o[0] / o[1], o[2] / o[3]]]],
+    ['Run work you reported', [/^(\d[\d,]*) × (\d+)%$/, (o) => [o[0] * o[1] / 100]]],
+    ['Run work that is not ticket-shaped',
+     [/^([\d.,-]+) − ([\d.,]+) to ([\d.,-]+) − ([\d.,]+)$/, (o) => [o[0] - o[1], o[2] - o[3]]]],
+    ['The size of your IT department, against the company',
+     [/^(\d[\d,]*) ÷ (\d[\d,]*)$/, (o) => [o[0] / o[1] * 100]]],
+    /* The two red thresholds print the INPUTS the divisor was built from, not
+       the divisor, so a reader multiplies the same raw quantity the tool did.
+       That is why these two never had the BAU tile's fault. */
+    ['Red threshold, projects per PM',
+     [/^([\d.]+) × (\d[\d,]*), rounded up$/, (o) => [Math.ceil(o[0] * o[1] - 1e-9)]]],
+    ['Red threshold, projects per BAU FTE',
+     [/^([\d.]+) × \((\d[\d,]*) × (\d+)–(\d+)%\), rounded up, at each end of the band$/,
+      (o) => [Math.ceil(o[0] * (o[1] * o[2] / 100) - 1e-9), Math.ceil(o[0] * (o[1] * o[3] / 100) - 1e-9)]]],
+    ['The same threshold across a year, per PM',
+     [/^\((\d[\d,]*) − 1\) × \((\d[\d,]*) ÷ (\d[\d,]*)\), rounded down, \+ 1$/,
+      (o) => [Math.floor((o[0] - 1) * (o[1] / o[2]) + 1e-9) + 1]]],
+    ['The same threshold across a year, per BAU FTE',
+     [/^\((\d[\d,]*) − 1\) and \((\d[\d,]*) − 1\), each × \((\d[\d,]*) ÷ (\d[\d,]*)\), rounded down, \+ 1$/,
+      (o) => [Math.floor((o[0] - 1) * (o[2] / o[3]) + 1e-9) + 1,
+              Math.floor((o[1] - 1) * (o[2] / o[3]) + 1e-9) + 1]]],
+    /* The ceiling prints two sustainable paces against one annual pace, and the
+       value column states the two gaps in branch order: above the pace first
+       where the band straddles. Compared as a set for that reason and for that
+       reason only. */
+    ['Portfolio growth ceiling',
+     [/^([\d.,]+)(?: to ([\d.,]+))? a year − your ([\d.,]+) a year$/,
+      (o) => [Math.abs(o[0] - o[2]), Math.abs((o[1] ?? o[0]) - o[2])], 'set']],
+    /* Built on the DISPLAYED components per §2.3, which is what PR13 corrected
+       and what this assertion now holds in place from the other side. */
+    ['Change effort implied by the staff you named',
+     [/^(?:\(([\d.,]+)(?:–([\d.,]+))? \+ ([\d.,]+)(?:–([\d.,]+))?\)|([\d.,]+)(?:–([\d.,]+))?) ÷ (\d[\d,]*), on the (?:two )?time bands? you gave us$/,
+      (o) => (o[0] !== undefined
+        ? [(o[0] + o[2]) / o[6] * 100, ((o[1] ?? o[0]) + (o[3] ?? o[2])) / o[6] * 100]
+        : [o[4] / o[6] * 100, (o[5] ?? o[4]) / o[6] * 100])]],
+    ['Run effort implied by the same figures',
+     [/^100% − ([\d.,]+)%(?:–([\d.,]+)%)?$/, (o) => [100 - (o[1] ?? o[0]), 100 - o[0]]]],
+    /* Two branches, because below the secondary threshold the subtraction is
+       negative and the figure beside it is nil: the floor is the rule, so the
+       branch states the rule instead of printing arithmetic that contradicts
+       its own answer. */
+    ['Employer National Insurance',
+     [/^(?:(\d+)% × \(([\d.,]+) − ([\d.,]+)\), the 2026\/27 secondary rate and threshold|nothing is due: your figure does not reach the 2026\/27 secondary threshold of £(5,000)), gov\.uk$/,
+      (o) => (o[0] === undefined ? [0] : [o[0] / 100 * (o[1] - o[2])])]],
+    ['Overhead, ProjexaR’s judgement rather than a sourced figure',
+     [/^(\d+)% × ([\d.,]+), for workspace, equipment, licences, training and management$/,
+      (o) => [o[0] / 100 * o[1]]]],
+    ['Loaded cost per head', [/^([\d.,]+) \+ ([\d.,]+) \+ ([\d.,]+)$/, (o) => [o[0] + o[1] + o[2]]]],
+    ['Internal project FTE, permanent staff only',
+     [/^(?:([\d.,]+)(?:–([\d.,]+))? effective project manager FTE \+ )?(?:no project managers were reported, so )?([\d.,]+)(?:–([\d.,]+))? effective BAU FTE(?: alone)?$/,
+      (o) => [(o[0] ?? 0) + o[2], (o[1] ?? o[0] ?? 0) + (o[3] ?? o[2])]]],
+    /* The loaded cost carries its pence here and nowhere else, because this is
+       the one row that multiplies by it. */
+    ['Cost of the internal time on your projects',
+     [/^([\d.,]+)(?:–([\d.,]+))? × £([\d.,]+)$/, (o) => [o[0] * o[2], (o[1] ?? o[0]) * o[2]]]],
+    /* Four figures published: the pair in pounds, then the same pair in the
+       notation the report uses for it. Both are checked, each at its own
+       precision, which is how "one notation per figure" is held from this side. */
+    ['Full portfolio cost',
+     [/^£([\d.,]+) \+ £([\d.,]+) to £([\d.,]+) \+ £([\d.,]+)$/,
+      (o) => [o[0] + o[1], o[2] + o[3], o[0] + o[1], o[2] + o[3]]]],
+    ['Your reported spend as a share of it',
+     [/^£([\d.,]+) ÷ £([\d.,]+)(?:–£([\d.,]+))?$/,
+      (o) => [o[0] / (o[2] ?? o[1]) * 100, o[0] / o[1] * 100]]],
+    ['ProjexaR as a share of your reported project spend',
+     [/^\((\d[\d,]*) × £(\d+) × (\d+), the annual plan paid upfront\) ÷ ([\d.,]+)$/,
+      (o) => [o[0] * o[1] * o[2] / o[3] * 100]]],
+    ['ProjexaR as a share of your full portfolio cost',
+     [/^([\d.,]+) ÷ £([\d.,]+)(?:–£([\d.,]+))?$/,
+      (o) => [o[0] / (o[2] ?? o[1]) * 100, o[0] / o[1] * 100]]],
+
+    /* Rows that state rather than compute. Each is named with why it carries no
+       arithmetic a reader could redo, because "it has no rule" and "nobody
+       wrote one" are the same thing to a passing run. */
+    ['The divisor window, and where it sits',
+     [STATED, 'the value column is ProjexaR’s declared control, not a result; the conversion its '
+            + 'how column states is pinned against WORKING_DAYS in the §3.6 section']],
+    ['Sustainable annual pace',
+     [STATED, 'its operands are the two threshold rows above it, named rather than reprinted; the '
+            + 'value is asserted against the oracle on every corpus shape']],
+    ['Which measure binds first', [STATED, 'a selection between two routes; the value is a measure name']],
+    ['Corroboration window, ±3 points on the derived range',
+     [STATED, 'the value column is a verdict, and the comparison behind it is asserted in PR14 §1']],
+    ['Median IT salary', [STATED, 'the respondent’s own figure, echoed back rather than derived']],
+    ['Whether this is added to your reported spend',
+     [STATED, 'the branch the budgets answer took, stated in prose']],
+    ['Run and change corroboration', [STATED, 'a §1.1 suppression row: nothing was computed']],
+  ]);
+
+  const population = [...corpus(), ...reproducibilityShapes(), ...boundaryShapes(),
+                      ...straddleShapes(), ...contractorShapes(), ...singularShapes(),
+                      ...corroborationShapes(), ...currencyShapes(), ...budgetShapes(),
+                      ...loadedCostShapes(), ...notationShapes(), ...pmShareInvarianceShapes(),
+                      ...toolsetInvarianceShapes(), ...suppressionShapes().filter((x) => !x.rejects),
+                      { id: '8.A', ...FIXTURE_A }, { id: '8.B', ...FIXTURE_B }, { id: '8.C', ...FIXTURE_C },
+                      { id: '8.D', ...FIXTURE_D }, { id: '8.E', ...FIXTURE_E }, { id: '8.F', ...FIXTURE_F },
+                      { id: '8.G', ...FIXTURE_G }, { id: '8.H', ...FIXTURE_H }, epsilonShape()];
+
+  const strip = (x) => String(x).replace(/<[^>]*>/g, '').replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
+  const labelsSeen = new Set();
+  const bad = [];
+  let shapes = 0, checked = 0, statedRows = 0, suppressed = 0;
+
+  for (const shape of population) {
+    const cap = capture(shape);
+    if (!cap.ok) continue;
+    shapes++;
+    /* The copy rule, over a population the corpus does not contain. The nil-NI
+       branch is the only wholly new sentence in this change and no other
+       section renders it. */
+    const violations = copyRuleViolations(allText(cap, { forCopyRule: true }));
+    ok(violations.length === 0, `${shape.id}: no banned hedge or price comparison`, violations.join(', '));
+    const table = String(cap.print['pr-formulas']);
+    const rows = [...table.matchAll(
+      /<tr><th>([\s\S]*?)<\/th><td>([\s\S]*?)<\/td><td><strong>([\s\S]*?)<\/strong><\/td><\/tr>/g)];
+    /* §0.17. The rows are the operands of everything below; a table that stops
+       matching must fail here, not pass silently at every row that never ran. */
+    if (!ok(rows.length > 0, `${shape.id}: the workings table renders rows`, table.slice(0, 120))) continue;
+
+    for (const [, L, H, V] of rows) {
+      const label = strip(L), how = strip(H), value = strip(V);
+      labelsSeen.add(label);
+      const rule = ROWS.get(label);
+      if (!ok(rule !== undefined, `PR14 §2: the workings row "${label}" is accounted for`,
+              'every row is either a calculation with a rule or named as stated')) continue;
+      if (rule[0] === STATED) { statedRows++; continue; }
+      if (!/\d/.test(value) || /Not computed|Not summed/.test(value)) { suppressed++; continue; }
+
+      const m = rule[0].exec(how);
+      if (!ok(m !== null, `${shape.id}: "${label}" reads as the calculation it states`, how)) continue;
+      const want = rule[1](ops(m));
+      /* A division by an unanswered quantity is a suppression, not a row. */
+      if (want.some((x) => !isFinite(x))) continue;
+      checked++;
+      const got = shown(value);
+      if (/^under 0\.01%$/.test(value)) {
+        ok(want.every((w) => w < 0.01), `${shape.id}: "${label}" is under the printing floor`, want.join());
+        continue;
+      }
+      /* spanText prints one figure where both ends DISPLAY the same, so the
+         collapse is judged on the displayed figure and never on the raw one. */
+      const seen = [];
+      for (const w of want) {
+        const key = got[0] ? R(got[0].m ? w / 1e6 : w, got[0].dp) : w;
+        if (!seen.some((x) => x.key === key)) seen.push({ key, w });
+      }
+      const list = seen.length === got.length ? seen.map((x) => x.w) : want;
+      if (!ok(list.length === got.length,
+              `${shape.id}: "${label}" publishes as many figures as its arithmetic produces`,
+              `"${how}" => "${value}", computed ${want.join(' / ')}`)) continue;
+
+      let wrong = null;
+      if (rule[2] === 'set') {
+        const pool = got.slice();
+        for (const w of list) {
+          const i = pool.findIndex((sm) => agrees(w, sm));
+          if (i < 0) { wrong = `${w} is not among the figures published`; break; }
+          pool.splice(i, 1);
+        }
+      } else {
+        for (let i = 0; i < list.length; i++) {
+          if (!agrees(list[i], got[i])) { wrong = `operands give ${list[i]}, the row published ${got[i].v}`; break; }
+        }
+      }
+      if (!ok(wrong === null, `${shape.id}: "${label}" reproduces from its own printed operands`,
+              `"${how}" => "${value}": ${wrong}`) && bad.length < 8) bad.push(`${label}: ${how} => ${value}`);
+    }
+  }
+
+  console.log(`  shapes rendered ........... ${shapes}`);
+  console.log(`  workings rows checked ..... ${checked}`);
+  console.log(`  stated rather than computed ${statedRows}`);
+  console.log(`  suppressed on the shape ... ${suppressed}`);
+  console.log(`  distinct row labels ....... ${labelsSeen.size} of ${ROWS.size} in the table`);
+  /* §0.18. Generated coverage states and floors its own size. */
+  ok(shapes > 650, 'PR14 §2: the population rendered', `${shapes} shapes`);
+  ok(checked > 14000, 'PR14 §2: and the calculations were reached', `${checked} rows`);
+  /* A rule nothing reaches is a rule nobody has tested. Every label in the
+     table must be produced by the population, or the table is describing rows
+     that no longer render and the coverage it claims is imaginary. */
+  for (const label of ROWS.keys()) {
+    ok(labelsSeen.has(label), `PR14 §2: the population reaches the row "${label}"`);
+  }
+
+  /* §2. The BAU tile's RATED value is not what changed. PR13 §5 forbids moving
+     it and master §2.6 ties the growth ceiling's divisor to it, so the ratio is
+     still the live count over the UNROUNDED effective FTE; what changed is the
+     precision the workings print that divisor at. Asserted on the shapes where
+     the two are different numbers, which is the only place the claim has
+     content. */
+  let raw = 0;
+  for (const shape of [...reproducibilityShapes(), ...straddleShapes(), ...boundaryShapes()]) {
+    const cap = capture(shape);
+    if (!cap.ok) continue;
+    for (const e of [0, 1]) {
+      const a = cap.computed.at[e];
+      if (a.bauEffectiveFte === null || a.projectsPerFTE === null) continue;
+      eq(a.projectsPerFTE, cap.values.live / a.bauEffectiveFte,
+         `${shape.id}[${e}]: the BAU tile still divides by the unrounded effective FTE`);
+      if (a.bauEffectiveFte !== round1(a.bauEffectiveFte)) {
+        raw++;
+        ok(a.projectsPerFTE !== cap.values.live / round1(a.bauEffectiveFte),
+           `${shape.id}[${e}]: and the two divisors really are different numbers here`);
+      }
+    }
+  }
+  ok(raw > 0, 'PR14 §2: the unrounded-divisor case is reached', `${raw} endpoints`);
 }
 
 /* ============================ PR10 §2 — one reading column ================== */
@@ -4845,15 +5337,27 @@ section('§0.17 — every node this suite reads exists, and is written by the to
   const everWritten = new Set();
   const population = [...corpus(), ...currencyShapes(), ...contractorShapes(),
                       ...suppressionShapes(), ...loadedCostShapes(), ...budgetShapes(),
-                      ...notationShapes(), ...singularShapes()];
+                      ...notationShapes(), ...singularShapes(), ...reproducibilityShapes()];
   ok(population.length > 600, '§0.17 — the population is the corpus plus the special sets',
      `${population.length} shapes`);
+  let rendered = 0;
   for (const shape of population) {
     const cap = capture({ id: `n017-${shape.id}`, ...shape });
     if (!cap.ok) continue;
+    rendered++;
     for (const id of PRINT_NODES) if (String(cap.print[id] || '').trim() !== '') everWritten.add(id);
     for (const id of SCREEN_NODES) if (String(cap.screen[id] || '').trim() !== '') everWritten.add(id);
   }
+  /* §0.18. The population is generated — it is the 603-shape corpus plus the
+     special sets — so its size is stated and floored. Counting what was
+     CONSTRUCTED is not coverage: every shape here can fail validation together,
+     and this loop skips on that, so a shrunk population would leave every
+     "the tool writes this node" claim below resting on fewer shapes than it
+     says. The two counts are different numbers and both are asserted. */
+  console.log(`  §0.17 population rendered . ${rendered} of ${population.length}`);
+  ok(rendered > 600, '§0.18 — the §0.17 population rendered, and states how much of it',
+     `${rendered} of ${population.length}`);
+
   for (const id of [...known].sort()) {
     if (EMPTY_BY_DESIGN[id]) {
       ok(true, `§0.17 — "${id}" is empty by design: ${EMPTY_BY_DESIGN[id]}`);
@@ -4861,6 +5365,52 @@ section('§0.17 — every node this suite reads exists, and is written by the to
     }
     ok(everWritten.has(id), `§0.17 — the tool writes "${id}" on at least one shape`);
   }
+}
+
+
+/* ================= The specification index resolves, both ways ==============
+
+   `claude/INDEX.md` is the map of the specification set, and its own first rule
+   is that the copy in that directory is the only authoritative one. It has now
+   fallen behind twice. `f8437b9` renamed the PR11 and PR12 briefs and did not
+   touch the index, so two of its rows cited files that no longer existed; and
+   two briefs were written without ever being placed in the directory at all.
+
+   Nothing asserted it, because nothing in this suite had any reason to read a
+   document. It is three lines and a readdir, so it is asserted now.
+
+   WHAT THIS CATCHES: a file renamed or deleted without the index following, and
+   a file added without an entry. Both directions, because a one-way check
+   would have passed on the state PR14 found — every file existed, and two rows
+   pointed at names that did not.
+
+   WHAT IT CANNOT CATCH, and the PR13 brief is the standing example: a document
+   that was never placed in the directory. An index can only be complete about
+   the directory it describes, and a missing document leaves no trace in either.
+   That is stated in INDEX.md itself and recorded in the master's §11, because a
+   passing assertion here must not be read as "the set is complete". */
+section('The specification index resolves, both ways');
+{
+  const DOCS = fileURLToPath(new URL('../../claude/', import.meta.url));
+  const index = readFileSync(join(DOCS, 'INDEX.md'), 'utf8');
+
+  /* §0.17. Both operands are extractions, and a table that stops matching would
+     otherwise make every claim below true of two empty sets. */
+  const onDisk = readdirSync(DOCS)
+    .filter((f) => f.endsWith('.md') && f !== 'INDEX.md').sort();
+  const listed = [...index.matchAll(/^\| `([^`]+\.md)` \|/gm)].map((m) => m[1]).sort();
+  ok(onDisk.length > 15, 'the index directory holds the specification set', `${onDisk.length} documents`);
+  ok(listed.length > 15, 'and INDEX.md lists a table of them', `${listed.length} rows`);
+
+  for (const f of listed) {
+    ok(onDisk.includes(f), `INDEX.md — the entry "${f}" resolves to a file that exists`);
+  }
+  for (const f of onDisk) {
+    ok(listed.includes(f), `INDEX.md — the document "${f}" has an entry`);
+  }
+  /* No row twice. A rename half-applied leaves the old name beside the new one,
+     and both would resolve for as long as the old file lingered. */
+  eq(new Set(listed).size, listed.length, 'INDEX.md — no document is listed twice');
 }
 
 /* ================== PR12 §5 — one offer, stated once, everywhere ============

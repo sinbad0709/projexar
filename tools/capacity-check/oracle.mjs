@@ -68,7 +68,13 @@ export const NI_RATE = 0.15, NI_THRESHOLD = 5000, OVERHEAD_RATE = 0.25;
 export function loadedCost(salary) {
   const ni = NI_RATE * Math.max(0, salary - NI_THRESHOLD);
   const overhead = OVERHEAD_RATE * salary;
-  return { salary, ni, overhead, total: salary + ni + overhead };
+  /* PR14 §2. The total is money and is held to the penny. The workings
+     multiply the displayed internal FTE by it and print it as an operand, so
+     its precision has to be bounded or that row cannot print a figure a reader
+     can multiply: a salary entered with pence carries three decimal places into
+     1.4 x salary - 750. A whole-pound salary reaches one decimal place at most
+     and is untouched. */
+  return { salary, ni, overhead, total: roundN(salary + ni + overhead, 2) };
 }
 
 /* The salary that produces a given loaded cost. The fixtures pin the loaded
@@ -225,13 +231,16 @@ function at(v, e, shared) {
 
   /* §3.1. Suppressed with the BAU tile; summed only on an explicit
      out-the-door answer. §2.2: the sum uses the rounded, displayed internal
-     figure, so a reader adding the two printed numbers gets the printed total. */
+     figure, so a reader adding the two printed numbers gets the printed total,
+     and it is rounded the way the display rounds (PR14 §2). */
   if (o.bauSuppressed || o.noPmShare || !shared.priceCosts) {
     o.internalEffortCost = null; o.fullPortfolioCost = null; o.reportedShare = null;
   } else {
     o.internalEffortCost = o.internalProjectFte * shared.loaded.total;
     if (shared.sums) {
-      o.fullPortfolioCost = Math.round(o.internalEffortCost) + v.spend;
+      /* roundN, not Math.round: the display rounds through roundN, and the two
+         disagree wherever the cost lands a float hair below a half. PR14 §2. */
+      o.fullPortfolioCost = roundN(o.internalEffortCost, 0) + v.spend;
       o.reportedShare = (v.spend / o.fullPortfolioCost) * 100;
     } else {
       o.fullPortfolioCost = null; o.reportedShare = null;
