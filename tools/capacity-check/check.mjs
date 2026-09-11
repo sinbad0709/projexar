@@ -14,7 +14,8 @@ import { join } from 'node:path';
 
 const sha = (v) => createHash('sha256').update(String(v)).digest('hex').slice(0, 16);
 import { corpus, FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_D, FIXTURE_E, FIXTURE_F, FIXTURE_G,
-         FIXTURE_LOADED_COST, FIXTURE_SALARY,
+         FIXTURE_H, FIXTURE_LOADED_COST, FIXTURE_SALARY,
+         pmShareInvarianceShapes, epsilonShape,
          boundaryShapes, straddleShapes, toolsetInvarianceShapes, contractorShapes,
          suppressionShapes, singularShapes, corroborationShapes, budgetShapes,
          loadedCostShapes, currencyShapes, notationShapes, LEGACY_BAND_CASES, CURRENCIES,
@@ -435,15 +436,15 @@ function assertFixture(name, shape, expect) {
 }
 
 const capA = assertFixture('8.A', FIXTURE_A, {
-  bauFteLo: 6.2, bauFteHi: 8.0, ipfLo: 11.2, ipfHi: 13.0,
+  bauFteLo: 6.2, bauFteHi: 8.0, ipfLo: 10.8, ipfHi: 13.0,
   pmConcurrent: 9.0, ragPM: 'At risk', perFteLo: 5.6, perFteHi: 7.3, ragBAU: 'Watch',
   pmRedLive: 36, pmRedAnnual: 59,
   bauRedLiveLo: 63, bauRedLiveHi: 81, bauRedAnnualLo: 104, bauRedAnnualHi: 134,
   sustainable: 58, binding: 'Concurrent projects per PM', headroom: -17,
-  derivedRunLo: 71.1, derivedRunHi: 75.1, corroboration: 'healthy',
+  derivedRunLo: 71.1, derivedRunHi: 76.0, corroboration: 'healthy',
   ticketLo: 3.0, ticketHi: 5.6, runWork: 32.4, gapLo: 26.8, gapHi: 29.4,
-  effortLo: 728000, effortHi: 845000, sums: true,
-  fullLo: 1095000, fullHi: 1212000, reportedLo: 30.3, reportedHi: 33.5,
+  effortLo: 702000, effortHi: 845000, sums: true,
+  fullLo: 1069000, fullHi: 1212000, reportedLo: 30.3, reportedHi: 34.3,
   duration: 7.2, itShare: 3.8,
   licences: 25, yearly: 2500, spendPct: '0.68', fullPctLo: 0.21, fullPctHi: 0.23,
 });
@@ -453,29 +454,29 @@ const capA = assertFixture('8.A', FIXTURE_A, {
    with Mark: the fixture value was a slip, cost figures display in whole pounds
    rounded half-up, and £656,500 is what the suite asserts. */
 const capB = assertFixture('8.B', FIXTURE_B, {
-  bauFteLo: 6.1, bauFteHi: 7.0, ipfLo: 10.1, ipfHi: 11.0,
+  bauFteLo: 6.1, bauFteHi: 7.0, ipfLo: 9.3, ipfHi: 10.6,
   pmConcurrent: 4.0, ragPM: 'Healthy', perFteLo: 2.3, perFteHi: 2.6, ragBAU: 'Healthy',
   pmRedLive: 29, pmRedAnnual: 43,
   bauRedLiveLo: 62, bauRedLiveHi: 71, bauRedAnnualLo: 92, bauRedAnnualHi: 106,
   sustainable: 42, binding: 'Concurrent projects per PM', headroom: 18,
-  derivedRunLo: 54.2, derivedRunHi: 57.9, corroboration: 'healthy',
+  derivedRunLo: 55.8, derivedRunHi: 61.2, corroboration: 'healthy',
   ticketLo: 4.4, ticketHi: 8.2, runWork: 13.4, gapLo: 5.2, gapHi: 9.0,
-  effortLo: 656500, effortHi: 715000, sums: false,
+  effortLo: 604500, effortHi: 689000, sums: false,
   fullLo: null, fullHi: null,
   duration: 8.0, itShare: 4.0,
   licences: 14, yearly: 1400, spendPct: '0.78',
 });
 
 const capC = assertFixture('8.C', FIXTURE_C, {
-  bauFteLo: 6.2, bauFteHi: 8.0, ipfLo: 11.2, ipfHi: 13.0,
+  bauFteLo: 6.2, bauFteHi: 8.0, ipfLo: 10.8, ipfHi: 13.0,
   pmConcurrent: 9.0, ragPM: 'At risk', perFteLo: 5.6, perFteHi: 7.3, ragBAU: 'Watch',
   pmRedLive: 36, pmRedAnnual: 59,
   bauRedLiveLo: 63, bauRedLiveHi: 81, bauRedAnnualLo: 104, bauRedAnnualHi: 134,
   sustainable: 58, binding: 'Concurrent projects per PM', headroom: -17,
-  derivedRunLo: 71.1, derivedRunHi: 75.1, corroboration: 'healthy',
+  derivedRunLo: 71.1, derivedRunHi: 76.0, corroboration: 'healthy',
   ticketLo: 3.0, ticketHi: 5.6, runWork: 32.4, gapLo: 26.8, gapHi: 29.4,
-  effortLo: 728000, effortHi: 845000, sums: true,
-  fullLo: 1095000, fullHi: 1212000, reportedLo: 30.3, reportedHi: 33.5,
+  effortLo: 702000, effortHi: 845000, sums: true,
+  fullLo: 1069000, fullHi: 1212000, reportedLo: 30.3, reportedHi: 34.3,
   duration: 7.2, itShare: 3.8,
   /* §4.1, PR7. 8.C is 8.A with six contractors, so approving §4.1 moves its
      licence quote: 20 BAU + 5 PMs + 6 contractors = 31, and everything priced
@@ -486,7 +487,7 @@ const capC = assertFixture('8.C', FIXTURE_C, {
      counter-example, and they are the only figures in 8.A to 8.F that move —
      every rated quantity, every FTE, the growth ceiling and the cost block are
      unchanged, which is what 8.C existed to prove in the first place. */
-  licences: 31, yearly: 3100, spendPct: '0.84', fullPctLo: 0.26, fullPctHi: 0.28,
+  licences: 31, yearly: 3100, spendPct: '0.84', fullPctLo: 0.26, fullPctHi: 0.29,
 });
 
 /* Fixture 8.D — 8.A reported in dollars. Every rated figure, every FTE, the
@@ -495,12 +496,12 @@ const capC = assertFixture('8.C', FIXTURE_C, {
    What differs is the cost block, which is gone, and the share of reported
    spend, which crossed two currencies and is gone with it. */
 const capD = assertFixture('8.D', FIXTURE_D, {
-  bauFteLo: 6.2, bauFteHi: 8.0, ipfLo: 11.2, ipfHi: 13.0,
+  bauFteLo: 6.2, bauFteHi: 8.0, ipfLo: 10.8, ipfHi: 13.0,
   pmConcurrent: 9.0, ragPM: 'At risk', perFteLo: 5.6, perFteHi: 7.3, ragBAU: 'Watch',
   pmRedLive: 36, pmRedAnnual: 59,
   bauRedLiveLo: 63, bauRedLiveHi: 81, bauRedAnnualLo: 104, bauRedAnnualHi: 134,
   sustainable: 58, binding: 'Concurrent projects per PM', headroom: -17,
-  derivedRunLo: 71.1, derivedRunHi: 75.1, corroboration: 'healthy',
+  derivedRunLo: 71.1, derivedRunHi: 76.0, corroboration: 'healthy',
   ticketLo: 3.0, ticketHi: 5.6, runWork: 32.4, gapLo: 26.8, gapHi: 29.4,
   effortLo: null, effortHi: null, sums: true,
   fullLo: null, fullHi: null,
@@ -512,40 +513,76 @@ const capD = assertFixture('8.D', FIXTURE_D, {
    the corroboration window of 68.1 to 78.1. Run work and the non-ticket gap
    move with the run share; nothing else does. */
 const capE = assertFixture('8.E', FIXTURE_E, {
-  bauFteLo: 6.2, bauFteHi: 8.0, ipfLo: 11.2, ipfHi: 13.0,
+  bauFteLo: 6.2, bauFteHi: 8.0, ipfLo: 10.8, ipfHi: 13.0,
   pmConcurrent: 9.0, ragPM: 'At risk', perFteLo: 5.6, perFteHi: 7.3, ragBAU: 'Watch',
   pmRedLive: 36, pmRedAnnual: 59,
   bauRedLiveLo: 63, bauRedLiveHi: 81, bauRedAnnualLo: 104, bauRedAnnualHi: 134,
   sustainable: 58, binding: 'Concurrent projects per PM', headroom: -17,
-  derivedRunLo: 71.1, derivedRunHi: 75.1, corroboration: 'watch',
+  derivedRunLo: 71.1, derivedRunHi: 76.0, corroboration: 'watch',
   ticketLo: 3.0, ticketHi: 5.6, runWork: 36.9, gapLo: 31.3, gapHi: 33.9,
-  effortLo: 728000, effortHi: 845000, sums: true,
-  fullLo: 1095000, fullHi: 1212000, reportedLo: 30.3, reportedHi: 33.5,
+  effortLo: 702000, effortHi: 845000, sums: true,
+  fullLo: 1069000, fullHi: 1212000, reportedLo: 30.3, reportedHi: 34.3,
   duration: 7.2, itShare: 3.8,
   licences: 25, yearly: 2500, spendPct: '0.68', fullPctLo: 0.21, fullPctHi: 0.23,
 });
 
 const capF = assertFixture('8.F', FIXTURE_F, {
-  bauFteLo: 6.2, bauFteHi: 8.0, ipfLo: 11.2, ipfHi: 13.0,
+  bauFteLo: 6.2, bauFteHi: 8.0, ipfLo: 10.8, ipfHi: 13.0,
   pmConcurrent: 9.0, ragPM: 'At risk', perFteLo: 5.6, perFteHi: 7.3, ragBAU: 'Watch',
   pmRedLive: 36, pmRedAnnual: 59,
   bauRedLiveLo: 63, bauRedLiveHi: 81, bauRedAnnualLo: 104, bauRedAnnualHi: 134,
   sustainable: 58, binding: 'Concurrent projects per PM', headroom: -17,
-  derivedRunLo: 71.1, derivedRunHi: 75.1, corroboration: 'note',
+  derivedRunLo: 71.1, derivedRunHi: 76.0, corroboration: 'note',
   ticketLo: 3.0, ticketHi: 5.6, runWork: 27.0, gapLo: 21.4, gapHi: 24.0,
-  effortLo: 728000, effortHi: 845000, sums: true,
-  fullLo: 1095000, fullHi: 1212000, reportedLo: 30.3, reportedHi: 33.5,
+  effortLo: 702000, effortHi: 845000, sums: true,
+  fullLo: 1069000, fullHi: 1212000, reportedLo: 30.3, reportedHi: 34.3,
   duration: 7.2, itShare: 3.8,
   licences: 25, yearly: 2500, spendPct: '0.68', fullPctLo: 0.21, fullPctHi: 0.23,
+});
+
+/* Fixture 8.H — 8.A with project managers at 41-50%. PR13 §5.
+
+   Every figure below is derived from the formulas, by hand, before the suite
+   was run, in the same way 8.A's were. The derivation, endpoint by endpoint:
+
+     pm FTE      5 x 0.41 = 2.05 -> 2.1     5 x 0.50 = 2.5
+     BAU FTE     20 x 0.31 = 6.2            20 x 0.40 = 8.0
+     internal    2.1 + 6.2 = 8.3            2.5 + 8.0 = 10.5
+     effort      8.3 x 65,000 = 539,500     10.5 x 65,000 = 682,500
+     full        539,500 + 367,000          682,500 + 367,000
+                 = 906,500                  = 1,049,500
+     reported    367,000/906,500 = 40.5%    367,000/1,049,500 = 35.0%
+     change      8.3/45 = 18.4%             10.5/45 = 23.3%
+     run         100 - 18.4 = 81.6%         100 - 23.3 = 76.7%
+     window      76.7 - 3 = 73.7 to 81.6 + 3 = 84.6, against a stated 72%
+
+   The corroboration branch differs from 8.A's and that is the point rather
+   than a side effect: part-time managers imply less change effort, so the same
+   stated 72% that sat inside 8.A's window sits below this one. The check is a
+   named consumer of internal project FTE.
+
+   Everything else is asserted equal to 8.A by value, typed in again rather than
+   read back from capA, so a change in 8.A cannot drag 8.H with it. */
+const capH = assertFixture('8.H', FIXTURE_H, {
+  bauFteLo: 6.2, bauFteHi: 8.0, ipfLo: 8.3, ipfHi: 10.5,
+  pmConcurrent: 9.0, ragPM: 'At risk', perFteLo: 5.6, perFteHi: 7.3, ragBAU: 'Watch',
+  pmRedLive: 36, pmRedAnnual: 59,
+  bauRedLiveLo: 63, bauRedLiveHi: 81, bauRedAnnualLo: 104, bauRedAnnualHi: 134,
+  sustainable: 58, binding: 'Concurrent projects per PM', headroom: -17,
+  derivedRunLo: 76.7, derivedRunHi: 81.6, corroboration: 'note',
+  ticketLo: 3.0, ticketHi: 5.6, runWork: 32.4, gapLo: 26.8, gapHi: 29.4,
+  effortLo: 539500, effortHi: 682500, sums: true,
+  fullLo: 906500, fullHi: 1049500, reportedLo: 35.0, reportedHi: 40.5,
+  duration: 7.2, itShare: 3.8,
+  licences: 25, yearly: 2500, spendPct: '0.68', fullPctLo: 0.24, fullPctHi: 0.28,
 });
 
 /* ------------------------------------------- §4 figures as they are printed */
 section('§4 figures as the reader sees them');
 if (capA.ok) {
   const t = allText(capA);
-  ok(has(capA.screen.costFigure, '£1.10m–£1.21m'),
-     '8.A: full portfolio cost reads £1.10m–£1.21m', capA.screen.costFigure);
-  ok(!/£1\.09m/.test(t), '8.A: the epsilon case does not render £1.09m');
+  ok(has(capA.screen.costFigure, '£1.07m–£1.21m'),
+     '8.A: full portfolio cost reads £1.07m–£1.21m', capA.screen.costFigure);
   ok(has(capA.screen.costEyebrow, 'The full cost of your portfolio'),
      '8.A: hero label is "The full cost of your portfolio"', capA.screen.costEyebrow);
   ok(!/true cost/i.test(t), '8.A: nothing is called the "true cost"');
@@ -554,8 +591,8 @@ if (capA.ok) {
   ok(has(t, '5.6–7.3'), '8.A: live per BAU FTE prints as 5.6–7.3');
   ok(has(t, '3.0–5.6'), '8.A: ticket FTE prints as 3.0–5.6');
   ok(has(t, '26.8–29.4'), '8.A: run-work gap prints as 26.8–29.4');
-  ok(has(t, '£728,000–£845,000'), '8.A: internal effort cost prints as £728,000–£845,000');
-  ok(has(t, '30.3%–33.5%'), '8.A: reported share prints as 30.3%–33.5%');
+  ok(has(t, '£702,000–£845,000'), '8.A: internal effort cost prints as £702,000–£845,000');
+  ok(has(t, '30.3%–34.3%'), '8.A: reported share prints as 30.3%–34.3%');
   ok(has(t, '0.68%'), '8.A: ProjexaR is 0.68% of reported spend');
   ok(has(t, '0.21%–0.23%'), '8.A: ProjexaR is 0.21%–0.23% of full cost');
   ok(has(t, '(25 × £10 × 10, the annual plan paid upfront) ÷ 367000')
@@ -574,7 +611,7 @@ if (capB.ok) {
   ok(!/5\.2–9\.1/.test(t), '8.B: the gap is not 9.1');
   ok(has(t, '13.4'), '8.B: run work reported prints as 13.4');
   ok(has(t, '4.4–8.2'), '8.B: ticket FTE prints as 4.4–8.2');
-  ok(has(t, '£656,500–£715,000'), '8.B: internal effort cost prints as £656,500–£715,000');
+  ok(has(t, '£604,500–£689,000'), '8.B: internal effort cost prints as £604,500–£689,000');
   ok(has(capB.screen.costEyebrow, 'What the internal time on your projects costs'),
      '8.B: the non-summing path does not claim a full portfolio cost', capB.screen.costEyebrow);
   /* PR8 §5. Read off the render, not off allText(): #fullCostTile carries its
@@ -948,6 +985,178 @@ section('Toolset invariance — no toolset input moves a rating or a figure');
   }
 }
 
+/* ================= PR13 §1 — the question, and when it is asked ============= */
+section('PR13 §1 — banded like the BAU question, asked only where there are PMs');
+{
+  const tool = loadTool();
+  const opts = tool.selects.pmPercent2;
+  ok(Array.isArray(opts), 'the share is asked through a select, like the BAU band');
+  /* Mirrored exactly, per §1. Compared against the BAU select rather than
+     against a list typed here, because "the same banding" is the requirement
+     and two lists that drift apart is the way it stops being true. */
+  eq(opts.map((o) => o[0]).join(','), tool.selects.bauPercent2.map((o) => o[0]).join(','),
+     '§1 — the same ten band values as the BAU question, in the same order');
+  eq(opts.map((o) => o[1]).join(','), tool.selects.bauPercent2.map((o) => o[1]).join(','),
+     '§1 — and the same labels');
+
+  /* The wording, and the help text that has to work for someone who is a
+     project manager by function rather than by title — master §4.3's point,
+     which is what makes the share vary in the first place. */
+  const html = readFileSync(TOOL_PATH, 'utf8');
+  const field = between(html, '<div class="field full" id="f-pmPercent2"', '</div>\n          </div>',
+                        'PR13 §1 the project-manager share field');
+  ok(has(field, 'blended average share of their time spent on project management'),
+     '§1 — the label asks for the share as a blended average');
+  ok(has(field, 'whether or not they hold the title'),
+     '§1 — the help text covers a project manager by function rather than by title');
+  ok(has(field, 'alongside another role gives less than their whole week'),
+     '§1 — and says why the share is not whole');
+  ok(has(field, 'range across the band you pick'),
+     '§1 — the hint states the range treatment, as the BAU band does');
+
+  /* Asked only where there are project managers, and the visibility is asserted
+     in BOTH directions. The DOM stub defaults `hidden` to true, so the hidden
+     half passes for no reason on its own (§0.16) and the shown half is the one
+     that carries the claim. */
+  const shown = loadTool();
+  shown.node('pms').value = '5';
+  shown.api.readAndValidate();
+  eq(shown.node('f-pmPercent2').hidden, false, '§1 — shown where there are project managers');
+
+  const gone = loadTool();
+  gone.node('pms').value = '0';
+  gone.api.readAndValidate();
+  eq(gone.node('f-pmPercent2').hidden, true, '§1 — and not asked where there are none');
+
+  /* And it tracks the count as it is typed, not only at submit. */
+  const typed = loadTool();
+  typed.node('pms').value = '0';
+  typed.fire('pms', 'input');
+  eq(typed.node('f-pmPercent2').hidden, true, '§1 — the count drives it directly');
+  typed.node('pms').value = '3';
+  typed.fire('pms', 'input');
+  eq(typed.node('f-pmPercent2').hidden, false, '§1 — in both directions');
+
+  /* Required where it is asked, on the same basis as the BAU band. */
+  const blank = capture({ id: 'pm-share-blank', ...FIXTURE_A, pmPercent2: '' });
+  ok(!blank.valid, '§1 — a blank answer is rejected where the question is asked', blank.error);
+  eq(blank.error, 'validation failed at pmPercent2', '§1 — and rejected at that field');
+
+  /* Not required where it is not asked. The BAU band still is, so this is the
+     conditional requirement rather than a loosened one. */
+  const noPms = capture({ id: 'pm-share-nopms', ...FIXTURE_A, pms: 0, pmPercent2: '' });
+  ok(noPms.ok, '§1 — with no project managers a blank answer is not an omission', noPms.error);
+  eq(noPms.values.pmPercent2, '', '§1 — and nothing is assumed in its place');
+  eq(noPms.computed.at[0].pmProjectFte, 0,
+     '§1 — no project managers means no project manager capacity, which is zero rather than absent');
+  eq(noPms.computed.noPmShare, false, '§1 — and nothing is suppressed');
+
+  /* A stale answer left behind by a count that dropped to zero is discarded
+     rather than carried into the report or into the saved link. */
+  const stale = capture({ id: 'pm-share-stale', ...FIXTURE_A, pms: 0, pmPercent2: 91 });
+  ok(stale.ok, '§1 — a stale answer does not stop the report');
+  eq(stale.values.pmPercent2, '', '§1 — the answer to a question we did not ask is dropped');
+  ok(!/[?&]pp=/.test(stale.permalink), '§1 — and the saved link does not carry it', stale.permalink);
+  eq(stale.computed.at[0].internalProjectFte, noPms.computed.at[0].internalProjectFte,
+     '§1 — so it reaches no figure');
+}
+
+/* ============ PR13 §2 — the project-manager share, and where it must not go = */
+section('PR13 §2 — the share reaches internal_project_fte and nothing else');
+{
+  const caps = pmShareInvarianceShapes().map((sh) => ({ sh, cap: capture(sh) }));
+  const ref = caps[caps.length - 1].cap;   /* the 91-100 band, which 8.A carries */
+
+  for (const { sh, cap } of caps) {
+    if (!ok(cap.ok, `${sh.id}: renders`, cap.error)) continue;
+
+    /* Not the PM tile's divisor. Master §2.1's band comes from a study counting
+       concurrent projects per PERSON: someone carrying nine projects carries
+       nine whether they are at 40% of their week or all of it. Dividing by FTE
+       would replace a sourced ratio with one nothing supports. */
+    eq(cap.computed.pmLoad, ref.computed.pmLoad, `${sh.id}: PM tile ratio unmoved`);
+    eq(cap.computed.ragPM, ref.computed.ragPM, `${sh.id}: PM tile rating unmoved`);
+    eq(cap.computed.ceiling.pmLive, ref.computed.ceiling.pmLive, `${sh.id}: PM red threshold unmoved`);
+
+    /* Not the BAU tile either. It divides by BAU capacity and nothing else. */
+    eq(cap.computed.at[0].bauEffectiveFte, ref.computed.at[0].bauEffectiveFte,
+       `${sh.id}: bau_effective_fte unmoved`);
+    eq(cap.computed.at[0].projectsPerFTE, ref.computed.at[0].projectsPerFTE,
+       `${sh.id}: BAU tile ratio unmoved`);
+    eq(cap.computed.ragFTE, ref.computed.ragFTE, `${sh.id}: BAU tile rating unmoved`);
+    eq(cap.computed.ceiling.bauLive, ref.computed.ceiling.bauLive, `${sh.id}: BAU red threshold unmoved`);
+
+    /* Not the growth ceiling. Master §2.6 ties its divisor to the divisor the
+       rated tile publishes, and the PM tile stays headcount-based. */
+    eq(cap.computed.ceiling.value, ref.computed.ceiling.value, `${sh.id}: growth ceiling unmoved`);
+    eq(cap.computed.ceiling.sustainable, ref.computed.ceiling.sustainable,
+       `${sh.id}: sustainable annual pace unmoved`);
+    eq(cap.computed.ceiling.binding, ref.computed.ceiling.binding, `${sh.id}: binding route unmoved`);
+
+    /* Not the licence basis. It counts people with capacity recorded, and a
+       part-time project manager is a person. */
+    eq(cap.computed.licenceCount, ref.computed.licenceCount, `${sh.id}: licence basis unmoved`);
+    eq(cap.computed.yearly, ref.computed.yearly, `${sh.id}: the quote unmoved`);
+    eq(cap.computed.monthly, ref.computed.monthly, `${sh.id}: the monthly quote unmoved`);
+    eq(cap.computed.spendPct, ref.computed.spendPct, `${sh.id}: share of reported spend unmoved`);
+
+    /* Nor anything else the brief did not route it to. The IT share is here by
+       name because PR13 §2 lists it as inheriting the widened range and it does
+       not: it is staff / company headcount and reads no FTE quantity at all. */
+    eq(cap.computed.itPercent, ref.computed.itPercent, `${sh.id}: IT share of the company unmoved`);
+    eq(cap.computed.typicalDurationMonths, ref.computed.typicalDurationMonths,
+       `${sh.id}: typical project duration unmoved`);
+    eq(JSON.stringify(cap.computed.ticketFTE), JSON.stringify(ref.computed.ticketFTE),
+       `${sh.id}: ticket FTE unmoved`);
+    eq(JSON.stringify(cap.computed.runWorkGap), JSON.stringify(ref.computed.runWorkGap),
+       `${sh.id}: run-work gap unmoved`);
+    eq(cap.computed.at[0].deliveryPerFTE, ref.computed.at[0].deliveryPerFTE,
+       `${sh.id}: the contractor companion figure unmoved`);
+
+    /* And no posted Sender field moves. PR13 §5: the field contract is under
+       audit and this PR was scheduled on the understanding it would not disturb
+       it. Every key is compared, so a field added later is covered without
+       anyone remembering to add it here.
+
+       `permalink` is the one exception and it is not a derived field: it is the
+       respondent's own answers encoded, so it carries the new one and MUST
+       differ, or the link would reopen to a report built on a share nobody
+       gave. Named here rather than skipped silently, and asserted to differ
+       below. */
+    for (const key of Object.keys(ref.sender)) {
+      if (key === 'permalink') continue;
+      eq(cap.sender[key], ref.sender[key], `${sh.id}: Sender field ${key} unmoved`);
+    }
+    if (sh.band !== 91) {
+      ok(cap.sender.permalink !== ref.sender.permalink,
+         `${sh.id}: the saved link carries this answer rather than the reference one`);
+    }
+    ok(cap.sender.permalink.includes(`pp=${sh.band}`),
+       `${sh.id}: and carries it under the pp parameter`, cap.sender.permalink);
+  }
+
+  /* The other half, and without it the set above would pass with the input
+     wired to nothing. An invariance set that only asserts sameness cannot tell
+     a routed input from an ignored one. */
+  const lo = caps[0].cap, hi = caps[caps.length - 1].cap;
+  if (lo.ok && hi.ok) {
+    ok(lo.computed.at[0].internalProjectFte < hi.computed.at[0].internalProjectFte,
+       'the bottom band produces less internal project FTE than the top',
+       `${lo.computed.at[0].internalProjectFte} vs ${hi.computed.at[0].internalProjectFte}`);
+    ok(lo.computed.at[0].internalEffortCost < hi.computed.at[0].internalEffortCost,
+       'and less internal effort cost');
+    ok(lo.computed.at[0].fullPortfolioCost < hi.computed.at[0].fullPortfolioCost,
+       'and a smaller full portfolio cost');
+    ok(lo.computed.derivedRunShare[0] > hi.computed.derivedRunShare[0],
+       'and a higher derived run share, which is the direction less change effort implies');
+    /* Every band produces its own internal FTE. Ten distinct values, so a
+       routing that reached only the endpoints would fail here. */
+    const seen = new Set(caps.filter((x) => x.cap.ok)
+      .map((x) => x.cap.computed.at[0].internalProjectFte));
+    eq(seen.size, BANDS.length, 'each of the ten bands produces its own internal project FTE');
+  }
+}
+
 /* ================================ §3.2 contractors — six routing rules ====== */
 section('§3.2 contractors — 8.C must move nothing rated');
 {
@@ -1220,18 +1429,28 @@ for (const shape of corroborationShapes()) {
        `${shape.id}: the Watch branch is the one above the window`);
     ok(has(cap.screen.checkList, 'derive more change effort'),
        `${shape.id}: says we derive more, which is what the figures show`);
-    ok(has(cap.screen.checkList, 'BAU headcount and time band'), `${shape.id}: names the input to revisit`);
-    /* §3. The assumption is named first, before the input to revisit, so a
-       probable false positive reads as a prompt rather than a flag. */
+    /* PR13. The two branches no longer name the same thing.
+
+       This branch used to open on the assumption that produced the gap — every
+       project manager counted as a full-time equivalent of change work — and
+       then offer the BAU answer as the thing to revisit. The share is asked now
+       rather than assumed, so there is no assumption left to name, and what the
+       derivation reads is two time bands. With project managers, both are named
+       and neither is "the BAU headcount"; with none, the BAU answer is the only
+       one left and the old sentence still stands. */
     if (cap.values.pms > 0) {
       const body = cap.screen.checkList.replace(/<[^>]*>/g, ' ');
-      ok(has(body, 'also carry run work') || has(body, 'also carries run work'),
-         `${shape.id}: the Watch branch names PM run work`);
-      ok(body.indexOf('run work.') < body.indexOf('BAU headcount and time band'),
-         `${shape.id}: it names PM run work before the input to revisit`);
-      ok(has(body, 'full-time equivalent of change work'),
-         `${shape.id}: and states the assumption that produced it`);
+      ok(has(body, 'The two answers worth revisiting are the time bands'),
+         `${shape.id}: the Watch branch points at the two bands it derives from`);
+      ok(has(body, 'time on project management') && has(body, 'share of your BAU staff'),
+         `${shape.id}: and names both of them`);
+      ok(!/full-time equivalent of change work/.test(body),
+         `${shape.id}: the retired assumption is not still claimed`);
+      ok(!/also carry run work|also carries run work/.test(body),
+         `${shape.id}: nor the explanation that rested on it`);
     } else {
+      ok(has(cap.screen.checkList, 'BAU headcount and time band'),
+         `${shape.id}: with no PMs the BAU answer is the one to revisit`);
       ok(!/also carry run work|also carries run work/.test(cap.screen.checkList),
          `${shape.id}: with no PMs the PM explanation is not offered`);
       ok(has(cap.screen.checkList, 'no project managers'), `${shape.id}: says so instead`);
@@ -1275,12 +1494,19 @@ for (const shape of corroborationShapes()) {
 }
 
 /* ================================ §3 the corroboration assumption =========== */
-section('§3 — the derivation states what it assumes, on every branch');
+section('§3 — the derivation states what it reads, on every branch');
 for (const shape of corroborationShapes()) {
   const cap = capture(shape);
   if (!cap.ok) continue;
-  ok(has(cap.print['pr-formulas'], 'counting each project manager as a full-time equivalent of change work'),
-     `${shape.id}: the assumption is stated beside the derivation, not only where it flags`);
+  /* PR13 retired the assumption this row used to state. The rule it was
+     serving stands: the derivation says what it rests on beside the arithmetic,
+     on every branch and not only where it flags. What it rests on is now the
+     two answers the respondent gave. */
+  ok(has(cap.print['pr-formulas'],
+        cap.values.pms > 0 ? 'on the two time bands you gave us' : 'on the time band you gave us'),
+     `${shape.id}: the derivation names its inputs beside the arithmetic, on every branch`);
+  ok(!has(cap.print['pr-formulas'], 'full-time equivalent of change work'),
+     `${shape.id}: and no longer claims an assumption the tool has stopped making`);
 }
 
 /* ================================================ §1.1 suppression rows ===== */
@@ -1296,9 +1522,16 @@ for (const shape of suppressionShapes()) {
     ok(!cap.valid, `${shape.id}: rejected at validation, not rendered`, cap.error);
     const tool = loadTool();
     const o = tool.api.compute({ ...FIXTURE_A, bandLo: null, bandHi: null,
-      bauPercent2: '', loadedSalary: FIXTURE_SALARY, spend: FIXTURE_A.spend });
+      bauPercent2: '', pmBandLo: 91, pmBandHi: 100,
+      loadedSalary: FIXTURE_SALARY, spend: FIXTURE_A.spend });
     eq(o.at[0].bauEffectiveFte, null, `${shape.id}: bau_effective_fte suppressed`);
-    eq(o.at[0].internalProjectFte, FIXTURE_A.pms, `${shape.id}: internal_project_fte falls back to pm_count`);
+    /* §1.1 used to say this row falls back to pm_count. PR13 asks what share of
+       a project manager's time goes to project management, so the fallback is
+       the project managers' own effective FTE at each endpoint — 5 managers on
+       the 91-100% band, not 5 managers. The master is corrected in the same
+       commit. */
+    eq(o.at[0].internalProjectFte, 4.6, `${shape.id}: internal_project_fte falls back to the PM capacity, lo`);
+    eq(o.at[1].internalProjectFte, 5, `${shape.id}: internal_project_fte falls back to the PM capacity, hi`);
     eq(o.at[0].ragFTE, null, `${shape.id}: BAU tile suppressed`);
     eq(o.ceiling.bauLive, null, `${shape.id}: BAU route suppressed`);
     eq(o.corroboration, null, `${shape.id}: corroboration suppressed`);
@@ -1751,9 +1984,18 @@ for (const shape of singularShapes()) {
      prose, which is what makes this a per-site choice and not a global one. */
   const many = allText(capture({ id: 'plural-contractors', ...singularShapes()[5], contractors: 6 }));
   ok(/6 contractors/.test(many), 'plural: above one the numeral stands');
-  /* The workings formula cells keep arithmetic in figures. */
-  ok(/1 project manager \+/.test(allText(capture(singularShapes()[2]))),
-     'singular: the workings formula keeps the numeral, and fixes the noun');
+  /* The workings formula cells keep arithmetic in figures.
+
+     PR13 moved the site. The internal-FTE row used to open "1 project manager +
+     6.2 effective BAU FTE"; it now adds two FTE figures, and the project
+     manager COUNT appears one row above, in the capacity derivation, in exactly
+     the form the BAU count has always taken there. The numeral is still the
+     numeral, and there is no noun left to agree with it. */
+  {
+    const t = allText(capture(singularShapes()[2]));
+    ok(/1 × 91–100%/.test(t), 'singular: the workings formula keeps the numeral');
+    ok(!/1 project managers/.test(t), 'singular: and no formula cell takes a plural noun at one');
+  }
 }
 {
   const cap = capture(singularShapes()[1]);
@@ -1940,6 +2182,7 @@ section('Seeded fuzz — 400 shapes across the whole input space');
   const rnd = () => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
   const pick = (a) => a[Math.floor(rnd() * a.length)];
   let fuzzFail = 0;
+  let fuzzRendered = 0;
 
   for (let i = 0; i < 400; i++) {
     const pms = pick([0, 0, 1, 2, 5, 12, 25, 60]);
@@ -1953,7 +2196,7 @@ section('Seeded fuzz — 400 shapes across the whole input space');
       annual: live + pick([0, 1, 5, 30, 200]),
       spend: pick([null, 0, 1000, 367000, 90000000]),
       currency: pick(['GBP', 'USD', 'EUR', 'AUD', 'NZD', 'CAD']),
-      bauStaff, bauPercent2: pick(BANDS),
+      bauStaff, bauPercent2: pick(BANDS), pmPercent2: pick(BANDS),
       contractors: pick([0, 0, 1, 4, 30]),
       ticketsPerMonth: pick([null, 0, 12, 960, 100000]),
       bauSplitEstimate: pick([null, 0, 20, 56, 72, 100]),
@@ -1963,6 +2206,7 @@ section('Seeded fuzz — 400 shapes across the whole input space');
     };
     const cap = capture(shape);
     if (!cap.ok) continue;   /* rejected by validation is a valid outcome */
+    fuzzRendered++;
     const text = allText(cap, { forCopyRule: true });
     if (badNumbers(text)) {
       fuzzFail++; fail++; failures.push(`${shape.id}: NaN/Infinity/undefined — ${JSON.stringify(shape)}`);
@@ -1985,6 +2229,19 @@ section('Seeded fuzz — 400 shapes across the whole input space');
     if (badPlural) { fuzzFail++; fail++; failures.push(`${shape.id}: "${badPlural[0]}"`); } else pass++;
   }
   console.log(`  fuzz failures ............. ${fuzzFail}`);
+  /* §0.16, in the form this pass is exposed to. "Rejected by validation is a
+     valid outcome" is true, and it also means a new required input silently
+     empties this section: every shape the generator does not answer it on is
+     skipped, and 400 shapes assert nothing while the run still reads green.
+
+     PR13 did exactly that. Adding the project-manager share took the rendered
+     count from 400 to 97 before pmPercent2 was added to the generator, and not
+     one assertion failed — the drop showed up only in the suite's own total,
+     which nobody reads as coverage. The floor is stated so the next one fails
+     here instead. Measured both ways in the session that added it. */
+  console.log(`  fuzz shapes rendered ...... ${fuzzRendered} of 400`);
+  ok(fuzzRendered >= 250, 'fuzz: the generator still reaches most of the input space',
+     `${fuzzRendered} of 400 rendered`);
 }
 
 /* ============================================= static report copy =========== */
@@ -3668,9 +3925,9 @@ section('PR9 §4.2 — the link is issued with the report, printed in it, and ro
      through the tool's own PARAMS mapping, every answer comes back and
      compute() returns an identical object. */
   const PARAMS = { companyHeadcount: 'ch', staff: 'st', pms: 'm', live: 'l', annual: 'a', spend: 'sp',
-    currency: 'cu', bauStaff: 'bs', bauPercent2: 'bp', contractors: 'ct', ticketsPerMonth: 'tk',
-    bauSplitEstimate: 'sx', loadedSalary: 'lc', toolset: 'tl', resourceVisibility: 'rv',
-    budgetTracking: 'bt', assignmentKnowledge: 'ak' };
+    currency: 'cu', bauStaff: 'bs', bauPercent2: 'bp', pmPercent2: 'pp', contractors: 'ct',
+    ticketsPerMonth: 'tk', bauSplitEstimate: 'sx', loadedSalary: 'lc', toolset: 'tl',
+    resourceVisibility: 'rv', budgetTracking: 'bt', assignmentKnowledge: 'ak' };
   const q = new URLSearchParams(link.split('?')[1]);
   eq([...q.keys()].sort().join(','), Object.values(PARAMS).sort().join(','),
      'the link carries every input the tool reads, and no more');
@@ -4082,6 +4339,192 @@ if (beforePath) {
   if (unexpectedIds.length) console.log('   ', unexpectedIds.join('\n    '));
 }
 
+/* The epsilon case, which 8.A used to carry and does not any more.
+
+   PR13 moved 8.A's full portfolio cost off £1,095,000, which is what carried
+   "the epsilon case does not render £1.09m". Chasing that assertion to a new
+   home showed it had never been one: 1095000/1e6 multiplies to exactly 109.5,
+   so it rendered £1.10m with the epsilon and without it, and the negative
+   passed for a reason unrelated to its own label. Removing `+ 1e-9` from the
+   tool left the entire suite green.
+
+   £1,005,000 is a real epsilon case and is pinned here. The mutation now fails,
+   which is the only evidence that an assertion about an epsilon is one. */
+section('The epsilon case, pinned to a value that is actually one');
+{
+  const cap = capture(epsilonShape());
+  if (ok(cap.ok, 'epsilon: renders', cap.error)) {
+    eq(cap.computed.at[0].fullPortfolioCost, 1005000, 'epsilon: the full portfolio cost is exactly £1,005,000');
+    ok(has(cap.screen.costFigure, '£1.01m'), 'epsilon: which renders as £1.01m', cap.screen.costFigure);
+    ok(!/£1\.00m/.test(allText(cap)), 'epsilon: and never as £1.00m');
+  }
+}
+
+/* ========= PR13 §4 — the workings add up from the figures the page prints === */
+section('PR13 §4 — every sum the workings publish reproduces from the displayed figures');
+{
+  /* §9.1 is the criterion this release exists for: no figure the tool publishes
+     may be contradicted by another. The workings put three sums on the page,
+     and until PR13 all three held by luck of the fixture values rather than by
+     construction — every fixture happened to produce a whole tenth of an FTE.
+
+     A banded project-manager share does not: five managers at 91% is 4.55.
+     Left raw, the page would have printed "4.6 + 6.2" against 10.75 and
+     "10.8 x £65,000" against £698,750, on fixture 8.A, which is the worked
+     example the whole specification is built on. The quantities are rounded at
+     source instead, per §2.3's rule, and the three sums are asserted here on a
+     population wide enough that a fixture value cannot carry them.
+
+     The BAU tile's own ratio is deliberately not in this list. It divides by the
+     RAW effective FTE, so "45 ÷ 4.9" can print 9.1 where the displayed division
+     gives 9.2 — a pre-existing case of the same class, reachable today on the
+     straddle shapes. PR13 §5 forbids moving the BAU tile ratio, so it is
+     reported rather than changed. */
+  const population = [...corpus(), ...pmShareInvarianceShapes(), ...contractorShapes(),
+                      ...straddleShapes(), ...boundaryShapes(), ...currencyShapes(),
+                      ...budgetShapes(), ...loadedCostShapes(), ...notationShapes(),
+                      ...corroborationShapes(), ...singularShapes(),
+                      ...suppressionShapes().filter((x) => !x.rejects)];
+  let sums = 0, checked = 0;
+  for (const shape of population) {
+    const cap = capture(shape);
+    if (!cap.ok) continue;
+    checked++;
+    for (const e of [0, 1]) {
+      const a = cap.computed.at[e];
+      if (a.internalProjectFte === null) continue;
+      sums++;
+      /* 1. The internal FTE row: its two components, added. */
+      const pmPart = a.pmProjectFte;
+      const bauPart = a.bauEffectiveFte === null ? 0 : round1(a.bauEffectiveFte);
+      eq(a.internalProjectFte, roundN(pmPart + bauPart, 1),
+         `${shape.id}[${e}]: internal FTE is its two displayed components added`);
+      eq(a.internalProjectFte, round1(a.internalProjectFte),
+         `${shape.id}[${e}]: and is itself a displayed figure`);
+      /* 2. The cost row: that figure, multiplied by the loaded cost. */
+      if (a.internalEffortCost !== null) {
+        eq(a.internalEffortCost, a.internalProjectFte * cap.computed.loaded.total,
+           `${shape.id}[${e}]: the cost is the displayed FTE times the loaded cost`);
+      }
+      /* 3. The run row: "100% − <change>", on the displayed change share. */
+      if (a.derivedChangeShare !== null) {
+        eq(roundN(a.derivedChangeShare + a.derivedRunShare, 1), 100,
+           `${shape.id}[${e}]: the displayed change and run shares add to 100`);
+      }
+    }
+  }
+  /* §0.17. A loop that ran zero times asserts nothing, and this one is filtered
+     twice. Both counts are stated. */
+  ok(checked > 600, 'PR13 §4: the population rendered', `${checked} shapes`);
+  ok(sums > 1200, 'PR13 §4: and the sums were reached', `${sums} endpoints`);
+}
+
+/* ==================== PR13 §3 — links issued before the question existed ==== */
+section('PR13 §3 — a link with no project-manager share renders what it still can');
+{
+  /* Links in printed reports and in Sender records carry no `pp`, because they
+     were made before there was one to carry. A decoded link with no share is
+     not a link answering zero and it is not one answering 100%, and treating it
+     as either silently is the thing this input exists to stop. It is treated as
+     unanswered: the figures that read internal project FTE are suppressed per
+     master §1.1, and everything else on the link still publishes.
+
+     Driven through the real boot path, because the form cannot reach this state
+     — on the form the answer is required where it is asked. */
+  const issued = capture({ id: 'pm-link', ...FIXTURE_A });
+  const full = issued.permalink.split('?')[1];
+  ok(/(^|&)pp=91(&|$)/.test(full), '§3 — a link issued now carries the share', full);
+
+  const SHAPES = {
+    absent: full.replace(/&pp=91/, ''),
+    empty: full.replace(/&pp=91/, '&pp='),
+    present: full,
+    /* Not a band value. `permalink()` never writes one, so it is a hand-edited
+       or truncated link; mapping it onto the nearest band would put a figure
+       nobody gave into the cost calculation. */
+    notaband: full.replace(/&pp=91/, '&pp=45'),
+  };
+  ok(SHAPES.absent !== full && SHAPES.empty !== full && SHAPES.notaband !== full,
+     '§3 — the three altered links actually differ from the issued one');
+
+  const opened = {};
+  for (const [name, query] of Object.entries(SHAPES)) {
+    const tool = loadTool(TOOL_PATH, { search: `?${query}` });
+    const back = tool.api.readAndValidate({ reopened: true });
+    opened[name] = { tool, back, c: back.ok ? tool.api.compute(back.values) : null };
+    ok(back.ok, `§3 — the ${name} link renders rather than erroring`, back.firstBad || '');
+    eq(tool.node('report').hidden, false, `§3 — the ${name} link shows the report`);
+  }
+
+  /* Present: nothing is suppressed and the figure is the one 8.A publishes. */
+  eq(opened.present.c.noPmShare, false, '§3 — present: the share is read');
+  eq(opened.present.c.at[0].internalProjectFte, 10.8, '§3 — present: internal project FTE is 8.A\'s');
+  eq(opened.present.c.at[0].internalEffortCost, 702000, '§3 — present: and so is the cost');
+
+  /* Absent, empty and a non-band value are one state: unanswered. */
+  for (const name of ['absent', 'empty', 'notaband']) {
+    const c = opened[name].c;
+    eq(opened[name].back.values.pmPercent2, '', `§3 — ${name}: reads as no answer`);
+    eq(c.noPmShare, true, `§3 — ${name}: the share is absent`);
+    eq(c.at[0].pmProjectFte, null, `§3 — ${name}: no project manager FTE is invented`);
+    eq(c.at[0].internalProjectFte, null, `§3 — ${name}: internal project FTE suppressed`);
+    eq(c.at[0].internalEffortCost, null, `§3 — ${name}: internal effort cost suppressed`);
+    eq(c.at[0].fullPortfolioCost, null, `§3 — ${name}: full portfolio cost suppressed`);
+    eq(c.at[0].reportedShare, null, `§3 — ${name}: the reported share suppressed`);
+    eq(c.fullCostPct, null, `§3 — ${name}: ProjexaR's share of full cost suppressed`);
+    eq(c.corroboration, null, `§3 — ${name}: the corroboration check suppressed`);
+
+    /* And nothing that does not read it goes with them. A reader following an
+       old link sees what the tool can still tell them. */
+    eq(c.pmLoad, 9, `§3 — ${name}: the PM tile still publishes`);
+    eq(c.ragPM, 'over', `§3 — ${name}: with its rating`);
+    eq(c.at[0].bauEffectiveFte, 6.2, `§3 — ${name}: the BAU tile still publishes`);
+    eq(c.ragFTE, 'atrisk', `§3 — ${name}: with its rating`);
+    eq(c.ceiling.value, -17, `§3 — ${name}: the growth ceiling still publishes`);
+    eq(c.licenceCount, 25, `§3 — ${name}: the licence basis still publishes`);
+    eq(c.yearly, 2500, `§3 — ${name}: and the quote`);
+    eq(roundN(c.spendPct, 2), 0.68, `§3 — ${name}: and its share of reported spend`);
+    eq(round1(c.itPercent), 3.8, `§3 — ${name}: and the IT share of the company`);
+    eq(c.typicalDurationMonths, 7.2, `§3 — ${name}: and the typical project duration`);
+
+    /* §1.1: a suppressed figure says why, where it would have been. */
+    const note = opened[name].tool.node('pmShareNote');
+    eq(note.hidden, false, `§3 — ${name}: the reason is shown where the cost block was`);
+    ok(has(note.innerHTML, 'saved before we asked'), `§3 — ${name}: and says what is missing`);
+    ok(has(note.innerHTML, 'no longer assume all of it'),
+       `§3 — ${name}: and that the assumption it replaced is gone`);
+    ok(has(opened[name].tool.node('pr-formulas').innerHTML, 'this link was saved before we asked for'),
+       `§3 — ${name}: the workings state it too`);
+    ok(has(opened[name].tool.node('pr-inputs').innerHTML, 'saved before we asked'),
+       `§3 — ${name}: and the input echo does not report it as an omission`);
+  }
+
+  /* On a link that does carry the share, none of that appears. */
+  eq(opened.present.tool.node('pmShareNote').hidden, true,
+     '§3 — present: no missing-share note on a link that carries one');
+
+  /* No NaN, no banned copy, on any of the four. */
+  for (const name of Object.keys(SHAPES)) {
+    /* `pr-inputs` is exempt from the copy rule and only from it, exactly as it
+       is in allText(): it echoes the input labels and the options the
+       respondent picked, and the only way to make "Estimated total IT staff"
+       pass would be to misreport their answer. */
+    const nodes = [...SCREEN_NODES, ...PRINT_NODES].filter((id) => id !== 'pr-inputs');
+    const t = nodes
+      .map((id) => opened[name].tool.node(id).innerHTML || opened[name].tool.node(id).textContent || '')
+      .join(' ').replace(/<[^>]*>/g, ' ');
+    ok(!badNumbers(t), `§3 — ${name}: no NaN, Infinity or undefined reaches the page`,
+       (t.match(/.{0,50}(NaN|Infinity|undefined).{0,50}/) || [''])[0]);
+    ok(copyRuleViolations(t).length === 0, `§3 — ${name}: copy rule`);
+    /* PR6's two dash rules. This prose reaches a reader on no shape the corpus
+       renders, so it is scanned here or nowhere. */
+    ok(!/—/.test(t), `§3 — ${name}: no em-dash`, (t.match(/.{0,40}—.{0,40}/) || [''])[0]);
+    const enDash = t.match(/.{0,3}–.{0,3}/g) || [];
+    ok(enDash.every((x) => /\d.{0,3}–.{0,3}\d/.test(x)),
+       `§3 — ${name}: every en-dash sits between two figures`, enDash.join(' | '));
+  }
+}
+
 /* ============================ PR10 §2 — one reading column ================== */
 section('PR10 §2 — one measure, on every prose block, in a unit that means it');
 {
@@ -4241,9 +4684,9 @@ section('PR10 §4 — one notation per figure, across all three surfaces');
      999,999.33 kept it in pounds. Round first, display, then choose the unit —
      the same rule §2.3 sets for rating a figure. */
   const [below, above] = notationShapes().map((sh) => capture({ id: sh.id, ...sh }));
-  eq(String(below.print['pr-sum3figure']), '£849,999–£999,999',
+  eq(String(below.print['pr-sum3figure']), '£826,666–£999,999',
      'PR10 §4 — below the threshold the internal cost prints in whole pounds');
-  eq(String(above.print['pr-sum3figure']), '£0.85m–£1.00m',
+  eq(String(above.print['pr-sum3figure']), '£0.83m–£1.00m',
      'PR10 §4 — a pound above it, the whole range moves to millions');
   eq(String(below.print['pr-sum1figure']), String(above.print['pr-sum1figure']),
      'PR10 §4 — and the full portfolio cost, far above the threshold, does not move with it');
@@ -4388,6 +4831,11 @@ section('§0.17 — every node this suite reads exists, and is written by the to
        suppressed cost block would have been, empty on every sterling shape.
        The currency shapes below are the ones that fill it. */
     costCurrencyNote: 'filled only on non-sterling shapes, which the corpus covers separately',
+    /* Only a link saved before PR13 asked the project-manager share fills this,
+       and no shape in this population is one — the form cannot produce the
+       state. The PR13 §3 section drives it through the boot path and asserts
+       the node's content, the copy rule and both dash rules on it there. */
+    pmShareNote: 'filled only on a reopened link that predates the question, covered by PR13 §3',
   };
   /* The corpus is sterling-only, and several nodes exist precisely for the
      cases it does not carry: pr-fxnote is written only where the cost block is

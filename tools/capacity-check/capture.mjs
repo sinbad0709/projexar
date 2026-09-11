@@ -66,6 +66,12 @@ export const SCREEN_NODES = [
   /* The stated reason where a suppressed cost block would have been. Empty on
      every sterling shape, which is what makes it worth capturing. */
   'costCurrencyNote',
+  /* PR13. The same slot's job for a different suppression: a link saved before
+     the project-manager share was asked. Empty on every shape the corpus
+     renders, because the corpus cannot produce a link from before the question
+     existed — the PR13 §3 section drives that through the boot path and scans
+     this node there. */
+  'pmShareNote',
   'ceilingEyebrow', 'ceilingFigure', 'ceilingNote',
   'factList', 'ragList', 'checkList', 'compareRows', 'ctaHead', 'ctaBody', 'priceLine',
   /* PR7 §3.1 — the bands statement now renders on screen too. */

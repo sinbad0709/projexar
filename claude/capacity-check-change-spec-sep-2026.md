@@ -69,8 +69,15 @@ Three defects in the brief came from one quantity carrying two meanings. Define 
 | Name | Definition | Used by |
 |---|---|---|
 | `bau_effective_fte_lo` / `_hi` | `bau_staff_on_projects × band_lo` / `× band_hi` | BAU tile, growth ceiling |
-| `internal_project_fte_lo` / `_hi` | `pm_count + bau_effective_fte_*` — **permanent staff only, contractors excluded** | Corroboration check, full-cost calculation |
+| `pm_project_fte_lo` / `_hi` | `round1(pm_count × pm_band_lo)` / `× pm_band_hi` — **[ADDED PR13]** | `internal_project_fte` and nothing else |
+| `internal_project_fte_lo` / `_hi` | `pm_project_fte_* + round1(bau_effective_fte_*)`, the whole rounded to 1 dp — **permanent staff only, contractors excluded** | Corroboration check, full-cost calculation |
 | `contractor_fte` | the new contractor input, integer ≥ 0 | Displayed figures and exclusions only — see §3.2 |
+
+**[CHANGED PR13, 11 September 2026.]** `internal_project_fte` was `pm_count + bau_effective_fte`, which counted every project manager at 100% of their time. That was the only input in the tool assumed rather than asked, and it sat inside the headline cost figure. PR13 asks for the share on the same ten-point bands as §3.5's BAU question, and routes it here and nowhere else — not to the PM tile's divisor, not to the growth ceiling, not to the licence basis. See the §2 exclusions in the PR13 brief for why each of the three would look defensible and is wrong.
+
+**Both components are the DISPLAYED figures, and so is their sum.** The workings print `<pm FTE> + <BAU FTE>` with the total beside them, and then multiply that total by the loaded cost. Five managers at 91% is 4.55, so a raw quantity would put "4.6 + 6.2" against a total of 10.75 on the page, one row above "10.8 × £65,000" against £698,750. That is §2.3's rule, and it applies to a published derived quantity exactly as it applies to a rating. `bau_effective_fte` itself stays **raw**: it is the divisor the BAU tile and the growth ceiling publish, and rounding it there would move a rating.
+
+`pm_project_fte` is `0` where `pm_count = 0` — the question is not asked and there is no capacity to have a share of — and `null` where it was asked and not answered, which only a link saved before PR13 can produce. The two are different states and §1.1 says what each does.
 
 **[CHANGED FROM BRIEF]** §2.3 of the brief put contractors inside `internal project FTE` while §2.9 required them excluded from the run/change derivation, which §2.4 builds on that same quantity. The fixture sets contractors to 0, so the contradiction passes the test suite and fails in production. `internal_project_fte` is permanent-only in all uses.
 
@@ -81,7 +88,8 @@ Three defects in the brief came from one quantity carrying two meanings. Define 
 | Condition | Behaviour |
 |---|---|
 | `pm_count = 0` | Suppress the PM tile and the PM route of the growth ceiling. The BAU route binds alone. |
-| `bau_staff_on_projects = 0`, or no band selected | Suppress the BAU tile, the BAU route, `bau_effective_fte`, the full-cost calculation and the corroboration check. `internal_project_fte = pm_count`. |
+| `bau_staff_on_projects = 0`, or no BAU band selected | Suppress the BAU tile, the BAU route, `bau_effective_fte`, the full-cost calculation and the corroboration check. `internal_project_fte = pm_project_fte`. **[CHANGED PR13** — it was `= pm_count`, which is the 100% assumption this release removes.**]** |
+| `pm_count > 0` and no project-manager band answered | **[ADDED PR13.]** Suppress `internal_project_fte`, the internal effort cost, the full portfolio cost, the reported share, ProjexaR's share of full cost and the corroboration check. Everything that does not read `internal_project_fte` still publishes: both tiles and their ratings, the growth ceiling, the licence basis, the quote, the share of reported spend, the IT share, the typical project duration, the ticket figures. Reachable only from a link saved before the question existed — on the form the answer is required where it is asked. A link carrying no answer is not a link answering zero and not one answering 100%, and the page says which figures are missing and why. |
 | `live_projects = 0` | `headroom` blank, as now. Typical project duration not computed. |
 | `annual_projects = 0` | `turnover` undefined. Suppress the annual-pace thresholds and the growth ceiling. |
 | `it_staff = 0` | Suppress the corroboration check. |
@@ -302,6 +310,10 @@ All three closing sentences are load-bearing and none may be trimmed for length.
 ```
 internal_effort_cost(endpoint) = internal_project_fte(endpoint) × loaded_cost_per_head
 ```
+
+**[CHANGED PR13, 11 September 2026.]** The formula is unchanged; its input is not. `internal_project_fte` now carries the answer to the project-manager share question instead of assuming 100%, so every figure in this section moves — the internal effort cost, the full portfolio cost, the reported share, and ProjexaR's share of full cost. Nothing else in §3 moves: the loaded cost per head, the branch on the budgets input, the gating decision and the contractor routing are all untouched. On fixture 8.A the internal effort cost goes from £728,000–£845,000 to £702,000–£845,000, because the high endpoint of the 91–100% band is the 100% that was assumed before.
+
+`internal_project_fte` is the **displayed** quantity, so the multiplication on the workings page reproduces from the figure printed beside it. Where the project-manager share was asked and not answered the whole block is suppressed per §1.1, and the page states that reason where the figure would have been, exactly as it does for the currency gate.
 
 Then branch on the budgets input:
 
@@ -531,7 +543,9 @@ No new fields. The Worker and the Sender custom-field set stay as they are. Spec
 
 - `rag_pm` and `rag_bau` carry the display words **Healthy / Watch / At risk**, computed from the new bands in §2.1 and §2.2.
 - `rag_pm` is the band value from §2.1 and nothing else. The toolset escalation is removed in PR1 per §2.4, so there is no adjustment left to exclude.
-- `headroom` becomes a **signed** integer. Negative values are sent as-is. Do not clamp. Blank when nothing is live. It remains unusable as a segment filter and is for copy only.
+- `headroom` becomes a **signed** integer. Negative values are sent as-is. Do not clamp. **Blank on two conditions, not one: nothing to project from, or no capacity route to project with.** It is `0` only when the portfolio is exactly at its limit. It remains unusable as a segment filter and is for copy only.
+
+  **[CORRECTED PR13, 11 September 2026.]** This bullet read "Blank when nothing is live", which names one of the two. The other is §1.1's last row: with no project managers and no BAU capacity on projects, neither ceiling route has a divisor, so there is no threshold to project forward however much is live. The code has been right since PR1 — `growthCeilingOf` returns `noRoute` before it ever looks at the turnover — and its own comment states both conditions; this line did not. Found during PR11, which named exactly two facts and left it; corrected here.
 - The `Flag Understated Project Costs` group continues to be driven by the same budgets input, unchanged.
 - **[FOUND IN PR2, HISTORY CORRECTED 10 Sep] `effective_fte` was posting `null`** — it read a property name that was not on the compute object, so `JSON.stringify` dropped it. Fixed in PR2 with no field added or removed. **Both fields now carry the adverse endpoint of their range**, matching how the tiles are rated. Document that: a field that looks like "the" number but is one end of a range is a trap, and it needs stating in its own terms rather than by analogy to `headroom`, which no longer has the property the analogy borrowed. Do not segment on either without accounting for it.
 
@@ -556,6 +570,10 @@ The 603-shape baseline must be re-blessed wholesale — this release changes ess
 - **Only text differences are categorised by judgement**, into *expected copy change* (text differs, every number identical) and *unexpected*.
 - **Unexpected** is then the only category worth Mark's review time, and it means what §7 intends it to mean. It should be empty.
 
+**[ADDED PR13, 11 September 2026.]** Add: **project-manager share invariance** (the share varied across all ten bands with everything else constant, asserting the PM tile ratio and rating, the BAU tile ratio and rating, the growth ceiling, the licence basis, the quote, the share of reported spend, the IT share and every posted Sender field identical across the set — and `internal_project_fte` *different* on every band, because an invariance set that only asserts sameness cannot tell a routed input from an ignored one) · **a link carrying no project-manager share**, in all three shapes the parameter can arrive in: absent, present, and present but empty, plus a fourth for a value that is not a band · **a fixture with part-time project managers** · **the displayed-arithmetic invariant**, that every sum the workings publish reproduces from the figures printed beside it.
+
+**And a floor on the fuzz pass.** "Rejected by validation is a valid outcome" is true and it is also how a new required input silently empties that section: every generated shape that does not answer it is skipped, and 400 shapes assert nothing while the run reads green. PR13 did exactly that — the rendered count went from 400 to 97 and not one assertion failed. The count is stated and floored now.
+
 Add fixture shapes for: negative headroom · headroom exactly zero · headroom blank · a range straddling a band boundary · **toolset invariance** (the toolset input varied across all its values with everything else held constant, asserting both tile ratings, the growth ceiling, every published figure and both Sender RAG values identical across the set) · `contractor_fte > 0` · all three corroboration outcomes · budgets carrying internal staff time (non-summing path) · an edited loaded cost flowing into the PDF and share URL · a legacy free-text-percentage URL decoding to a band · the full-cost tile rendering before the email gate · one shape per row of the suppression table in §1.1.
 
 ---
@@ -568,12 +586,15 @@ This was missed when review item 2 was actioned: that fix gave the corroboration
 
 ### 8.A — The strained department
 
-**Inputs:** headcount 1,200 · IT staff 45 · PMs 5 · live projects 45 · annual projects 75 · project spend £367,000 · BAU staff on projects 20 · blended band **31–40%** · tickets 960/month · run share 72% · contractors 0 · tools mixed · view manual · budgets out-the-door · who-on-what stale.
+**Inputs:** headcount 1,200 · IT staff 45 · PMs 5 · live projects 45 · annual projects 75 · project spend £367,000 · BAU staff on projects 20 · blended band **31–40%** · **PM share band 91–100%** · tickets 960/month · run share 72% · contractors 0 · tools mixed · view manual · budgets out-the-door · who-on-what stale.
+
+**[UPDATED PR13, 11 September 2026.]** The PM share band is new, and 91–100% is the band containing the 100% the fixture assumed before the question existed. So the high endpoint of every figure built on `internal_project_fte` is exactly the one this table published before, and only the low endpoint moves. Every figure below was re-derived from the formulas by hand rather than adjusted to match the code; the rows that moved are marked.
 
 | Figure | Expected |
 |---|---|
 | `bau_effective_fte` | **6.2 – 8.0** |
-| `internal_project_fte` | **11.2 – 13.0** |
+| `pm_project_fte` | **4.6 – 5.0** (5 × 0.91 = 4.55 → 4.6; 5 × 1.00 = 5.0) |
+| `internal_project_fte` | **10.8 – 13.0** *(was 11.2 – 13.0)* |
 | Concurrent projects per PM | **9.0** → **At risk** |
 | Live projects per effective BAU FTE | **5.6 – 7.3**, rated on 7.3 → **Watch** |
 | Typical project duration | **7.2 months** |
@@ -582,9 +603,9 @@ This was missed when review item 2 was actioned: that fix gave the corroboration
 | Red threshold, annual pace (BAU route) | **104 – 134** |
 | Sustainable annual pace | **58** at both endpoints; binding route: PM |
 | Growth ceiling | **−17** → *"You are running 17 projects a year above your sustainable pace."* |
-| Derived change share | **24.9% – 28.9%** |
-| Derived run share | **71.1% – 75.1%** |
-| Stated run share | 72% — inside the range → corroboration **Healthy** |
+| Derived change share | **24.0% – 28.9%** *(was 24.9% – 28.9%)* |
+| Derived run share | **71.1% – 76.0%** *(was 71.1% – 75.1%)* |
+| Stated run share | 72% — inside the window of 68.1% to 79.0% → corroboration **Healthy** *(the window was 68.1% to 78.1%)* |
 | Ticket FTE | **3.0 – 5.6** (960 ÷ 320 to 960 ÷ 170) |
 | Run-work FTE reported | **32.4** |
 | Run-work gap | **26.8 – 29.4 FTE** |
@@ -608,10 +629,10 @@ Findings number exactly four. The report's single Healthy comes from the corrobo
 
 | Figure | Expected |
 |---|---|
-| Internal effort cost | **£728,000 – £845,000** |
-| Full portfolio cost | **£1,095,000 – £1,212,000** |
-| Reported spend as a share of full cost | **30.3% – 33.5%** |
-| ProjexaR's share of full cost | **0.21% – 0.23%** |
+| Internal effort cost | **£702,000 – £845,000** *(was £728,000 – £845,000)* |
+| Full portfolio cost | **£1,069,000 – £1,212,000** *(was £1,095,000 – £1,212,000)* |
+| Reported spend as a share of full cost | **30.3% – 34.3%** *(was 30.3% – 33.5%)* |
+| ProjexaR's share of full cost | **0.21% – 0.23%** (unchanged at 2 dp; the underlying divisor moved) |
 
 ### 8.B — The well-run department: proving Healthy is reachable
 
@@ -619,19 +640,22 @@ Findings number exactly four. The report's single Healthy comes from the corrobo
 
 First, the context, because it changes how the result should be read: **a report that returns all-Healthy describes a department that is not a prospect.** Once there are real respondents, a low Healthy rate will be expected and correct. The state exists for credibility, not conversion — a findings list that can never say anything is fine reads as a sales instrument, which is the fault being corrected. So this fixture proves reachability; it is not a target to tune toward.
 
-**Inputs:** headcount 600 · IT staff 24 · PMs 4 · live projects 16 · annual projects 24 · project spend £180,000 · BAU staff on projects 10 · blended band **61–70%** · tickets 1,400/month · run share 56% · contractors 0 · a single PPM tool · view not manual · who-on-what current · **budgets carry internal staff time**.
+**Inputs:** headcount 600 · IT staff 24 · PMs 4 · live projects 16 · annual projects 24 · project spend £180,000 · BAU staff on projects 10 · blended band **61–70%** · **PM share band 81–90%** · tickets 1,400/month · run share 56% · contractors 0 · a single PPM tool · view not manual · who-on-what current · **budgets carry internal staff time**.
+
+**[UPDATED PR13, 11 September 2026.]** This is the fixture with part-time project managers, which §5 of the PR13 brief requires of at least one. The band is not free: the corroboration check reads `internal_project_fte`, so a lower band raises the derived run share until the stated 56% falls out of the window and the all-Healthy gate below stops being reachable. 81–90% is the lowest band that keeps it, and the gate is what this fixture is for. The deeply part-time case is the suite's fixture 8.H, which is 8.A at 41–50% and carries no such gate.
 
 | Figure | Expected |
 |---|---|
 | `bau_effective_fte` | **6.1 – 7.0** |
-| `internal_project_fte` | **10.1 – 11.0** |
+| `pm_project_fte` | **3.2 – 3.6** (4 × 0.81 = 3.24 → 3.2; 4 × 0.90 = 3.6) |
+| `internal_project_fte` | **9.3 – 10.6** *(was 10.1 – 11.0)* |
 | Concurrent projects per PM | **4.0** → **Healthy** |
 | Live projects per effective BAU FTE | **2.3 – 2.6** → **Healthy** |
 | Typical project duration | **8.0 months** |
 | Sustainable annual pace | **42** at both endpoints; binding route: PM |
 | Growth ceiling | **+18** → *"You could take on 18 more projects a year before a capacity measure turns red."* |
-| Derived run share | **54.2% – 57.9%** |
-| Stated run share | 56% — inside the range → corroboration **Healthy** |
+| Derived run share | **55.8% – 61.2%** *(was 54.2% – 57.9%)* |
+| Stated run share | 56% — inside the window of 52.8% to 64.2% → corroboration **Healthy** *(the window was 51.2% to 60.9%)* |
 | Ticket FTE | **4.4 – 8.2** |
 | Run work reported | **13.4 FTE** |
 | Findings 1, 2, 3, 4 | **Healthy, Healthy, Healthy, Healthy** |
@@ -749,6 +773,12 @@ Every factual claim in this document now sits in one of two columns. **[DECIDED]
 | ~~Eleven Sender custom fields carry default values~~ | **CLOSED 10 Sep 2026.** The defaults are cleared. They were harmless only while the template used none of those fields, and would have printed as the respondent's own figures the moment it did: the numbers were exactly what the two pre-PR1 records hold, and three of them ("Amber", "MS Project", "out the door") are strings this tool has never sent at all. The hazard was the combination, not either half, which is why clearing them had to precede any template change that uses a field | 10 Sep 2026 |
 | **Rule 1 — no present-tense claim about a product that has not shipped — is enforced by REVIEW, and the render suite does not cover it.** The copy rule detects words; tense is not a word. A tense guard over the report's ProjexaR section was designed and rejected in PR11 rather than skipped: that same section's pricing note opens *"ProjexaR is charged per managed resource"*, which is present tense, about the product, and which PR8 §2.7 **requires** the page to say. The distinction rule 1 draws is commercial fact against unshipped capability, not tense, and no verb list separates them — one containing `is` fails the price line on every run, one excluding it misses *"ProjexaR is a tool that records…"*, which is the most natural way to write the banned claim. A check that fails on true copy gets switched off, the same reasoning that took `about` and `around` off the §5 list. **What PR11 pinned by value are regression guards for six specific strings, not coverage of the rule.** They fail only if those exact sentences come back. The evidence that this is not coverage is PR11's own: its first assertion pinned the printed report's wording, **passed**, and left the screen CTA making the same claim with one extra verb in the middle — "operational commitment **is** set and owned" against "operational commitment set and owned". Two further breaches on both branches of `ctaHead` were found by reading rendered output for the word ProjexaR, not by the suite. **Anyone reading a passing run (39,767 assertions at PR11, and rising; the figure moves with every commit, and its size is not evidence of coverage) must not infer rule 1 holds.** New or reworded product copy needs a human to read it, on both surfaces, including the branch a fixture does not reach | PR11: the guard designed against `pr-price` and the §2.7 requirement, and the assertion gap demonstrated in-session rather than argued | 10 Sep 2026 |
 
+| **The project-manager share was the tool's only assumed input, and it sat inside the headline cost figure.** `internal_project_fte` was `pm_count + bau_effective_fte`, counting every project manager at 100%. On fixture 8.A that is 5 of 11.2 to 13.0 effective FTE. PR13 asks for the share and routes it to `internal_project_fte` alone | The compute object read directly, and the §2 exclusions worked through against §2.1, §2.6 and §3.2 row six | 11 Sep 2026 |
+| **The brief's §2 list of downstream consumers is wrong on one item.** It names "the IT-share calculation" as inheriting the widened range. That figure is `it_staff ÷ company_headcount`; it reads no FTE quantity and cannot inherit anything from `internal_project_fte`. Wiring it would have been a leak into a route §2 excludes it from, not compliance with §2. The other four named consumers — internal effort cost, full portfolio cost, ProjexaR's share of full cost, the corroboration check — are real and all four move. Asserted unmoved across all ten bands | The compute path read directly; `itPercent` takes `v.staff` and `v.companyHeadcount` and nothing else | 11 Sep 2026 |
+| **The three sums the workings publish held by luck of the fixture values, not by construction.** Every fixture happened to produce a whole tenth of an FTE, so `<pm> + <BAU> = <total>`, `<total> × <loaded cost> = <cost>` and `100% − <change> = <run>` all reproduced on the page. A banded share does not: five managers at 91% is 4.55. The quantities are rounded at source per §2.3 and the three sums are now asserted across 663 shapes at both endpoints | Derived before the change and confirmed by the mutation: reverting to the raw sum fails 103 assertions | 11 Sep 2026 |
+
+| **The `+ 1e-9` in `roundN` had no live case in the suite, and the assertion that claimed to be one never was.** "8.A: the epsilon case does not render £1.09m" rested on a full portfolio cost of £1,095,000. The literal `1.095` is `1.09499999999999997`, but `1095000/1e6` comes out of the division with a bit pattern that multiplies to exactly `109.5`, so that figure rendered £1.10m with the epsilon and without it. Removing `+ 1e-9` from the tool left all 46,085 assertions green. £1,005,000 is a real case — `1.005 × 100` is `100.49999999999999` — and is pinned to a shape of its own now; the mutation fails on it. Found because PR13 moved 8.A off £1,095,000 and the assertion had to be rehoused | The mutation run, both ways, 11 September 2026 |
+
 **Not verified — do not publish, and do not decide on, without checking first**
 
 | Claim | Status |
@@ -761,6 +791,8 @@ Every factual claim in this document now sits in one of two columns. **[DECIDED]
 | Contractor cost sits inside the respondent's reported project spend | Modelling assumption about respondents, not a checked fact (§3.2) |
 | ASHE median for SOC 213 | Not yet fetched. §3.3 requires stop-and-ask if unreachable |
 | The benchmark cited in the tool for IT headcount per employee | Known to exist; its identity and citation have **not** been read by this document. §4.2 requires CC to find and report it |
+| **The corroboration workings row states its two outcomes the wrong way round.** The cell prints the derived window and the respondent's figure, then labels a figure ABOVE the window "Below the window" and one below it "Above the window, stated not rated". Measured on fixtures 8.E and 8.F: a window of 68.1% to 79.0% against a stated 82% reads "Below the window". The *check* and its card copy are correct on both branches, and so is the §2.9 asymmetry the README describes — it is the two labels in `pr-formulas` and nothing else. **Pre-existing, out of PR13's scope, and not fixed.** PR13 §5 requires a legible diff of what moved and why, and an unrelated copy correction in the same commit works against that. It is a figure the tool publishes contradicted by another figure on the same row, which is §9.1's criterion, so it wants its own change | **Found 11 September 2026, rendered rather than read.** Not fixed |
+| **The BAU tile's published ratio divides by the raw effective FTE, not the displayed one.** The workings print "45 ÷ 4.9" and a result of 9.1, where the division a reader performs gives 9.2. Reachable today on the straddle shapes, and the same class as the three sums PR13 corrected. **Not fixed**: PR13 §5 forbids moving the BAU tile ratio, and this changes it | Derived from `projectsPerFTE`, which reads `bau_effective_fte` raw by design — §2.6 ties the ceiling's divisor to it. 11 Sep 2026 |
 | Contractors occupy a managed-resource slot in the product | **Assumption, and load-bearing from 9 September.** From the free-tier decision record's definition, never confirmed against the product. It cost nothing while contractors sat outside the licence basis; §4.1 put them in, so it now sets the price the tool quotes. If it is wrong the quote overstates by the contractor count and §3.2 row six goes back. Confirm before launch |
 | ~~7.0 was placed above the confidence interval deliberately, to understate rather than manufacture the problem~~ | **WITHDRAWN 9 Sep, and it had shipped.** The bands arrived already set on 3 September, attributed as *supported by* the research rather than derived from it; the PR sessions verified Colicev, observed the relationship, and §2.11 wrote the observation up as intent. The deck is positive evidence against it, not silence: across all 29 XML parts carrying text — 17 slides plus layouts and masters, no `notesSlides` part, 10,815 characters — `confidence interval` **0**, `3.57` **0**, `6.19` **0**, `turning point` **0**, `deliberate` **0**, `understate` **0**, `manufactur` **0**, `conservat` **0**. Deleted from output in PR7 §2 and guarded by two assertions, one sentence-scoped so a band value can never again appear beside an intent word |
 | ~~5.0 was set at or from Colicev's turning point~~ | **WITHDRAWN 9 Sep**, same search, same finding. The deck sets it as a policy trigger, not a derivation |

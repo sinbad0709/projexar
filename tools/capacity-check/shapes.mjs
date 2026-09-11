@@ -18,7 +18,7 @@
    The assertion shapes below are not part of the 603. They exist to be checked
    against stated values, not diffed. */
 
-import { salaryForLoadedCost } from './oracle.mjs';
+import { salaryForLoadedCost, NI_RATE, NI_THRESHOLD, OVERHEAD_RATE } from './oracle.mjs';
 
 export const TOOLSETS = ['excel', 'msproject', 'planner', 'ppm', 'mixed', 'none', 'other'];
 export const VISIBILITY = ['none', 'manual', 'dedicated'];
@@ -37,9 +37,15 @@ export const FIXTURE_LOADED_COST = 65000;
 export const FIXTURE_SALARY = salaryForLoadedCost(FIXTURE_LOADED_COST);
 
 /* Fixture 8.A — the strained department. */
+/* PR13 puts 8.A on the 91-100% project-manager band. It is the band that
+   contains the 100% the tool assumed before the question existed, so the high
+   endpoint of every figure built on internal project FTE is exactly the one the
+   fixture published before, and only the low endpoint moves. That makes the
+   before-and-after legible, which matters more here than a dramatic fixture:
+   8.B carries a genuinely part-time band and 8.H a deeply part-time one. */
 export const FIXTURE_A = {
   companyHeadcount: 1200, staff: 45, pms: 5, live: 45, annual: 75, spend: 367000,
-  currency: 'GBP', bauStaff: 20, bauPercent2: 31, contractors: 0,
+  currency: 'GBP', bauStaff: 20, bauPercent2: 31, pmPercent2: 91, contractors: 0,
   ticketsPerMonth: 960, bauSplitEstimate: 72, loadedSalary: FIXTURE_SALARY,
   toolset: 'mixed', resourceVisibility: 'manual', budgetTracking: 'outthedoor',
   assignmentKnowledge: 'stale',
@@ -47,9 +53,16 @@ export const FIXTURE_A = {
 
 /* Fixture 8.B — the well-run department. All four findings must return Healthy,
    and the non-summing path must be taken. */
+/* 8.B's project managers are part-time at 81-90%, which is what makes this the
+   fixture that proves the feature rather than merely carrying it. The band is
+   not free: the corroboration check reads internal project FTE, so a lower band
+   raises the derived run share until the fixture's stated 56% falls out of the
+   window and the all-Healthy gate stops being reachable. 81-90 is the lowest
+   band that keeps it, and the gate is the point of this fixture. The deeply
+   part-time case is 8.H, which is 8.A and carries no such gate. */
 export const FIXTURE_B = {
   companyHeadcount: 600, staff: 24, pms: 4, live: 16, annual: 24, spend: 180000,
-  currency: 'GBP', bauStaff: 10, bauPercent2: 61, contractors: 0,
+  currency: 'GBP', bauStaff: 10, bauPercent2: 61, pmPercent2: 81, contractors: 0,
   ticketsPerMonth: 1400, bauSplitEstimate: 56, loadedSalary: FIXTURE_SALARY,
   toolset: 'ppm', resourceVisibility: 'dedicated', budgetTracking: 'tracked',
   assignmentKnowledge: 'live',
@@ -73,6 +86,23 @@ export const FIXTURE_C = { ...FIXTURE_A, contractors: 6 };
    from. Two rather than six because a small count makes an off-by-one in the
    basis visible: 25 against 27 reads differently from 25 against 31. */
 export const FIXTURE_G = { ...FIXTURE_A, contractors: 2 };
+
+/* Fixture 8.H — 8.A with project managers at 41-50%. PR13 §5.
+
+   8.A is deliberately the least disturbed shape the new input can take, so on
+   its own it proves the wiring and not much else. This is the fixture where the
+   project-manager share is the dominant term: internal project FTE falls from
+   10.8-13.0 to 8.3-10.5 on inputs that are otherwise identical, and every
+   rated figure, the growth ceiling, the licence basis and the reported spend
+   are asserted equal to 8.A's. A routing leak that 8.A would show as a rounding
+   wobble shows here as a whole FTE.
+
+   Its corroboration lands on a different branch from 8.A's, and that is the
+   feature rather than a side effect: part-time managers imply less change
+   effort, so the same stated 72% that sat inside 8.A's window sits below this
+   one. The check is a named consumer of internal project FTE, so this is the
+   input reaching a route it is meant to reach. */
+export const FIXTURE_H = { ...FIXTURE_A, pmPercent2: 41 };
 
 /* Fixture 8.D — 8.A reported in dollars, and nothing else changed. Every rated
    figure, every FTE, the growth ceiling and the licence count must be identical
@@ -127,7 +157,7 @@ function numericSweep() {
         staff, pms, live,
         annual: Math.max(live, Math.round((live * 5) / 3)),
         spend: 367000, currency: 'GBP',
-        bauStaff: 20, bauPercent2: 31, contractors: 0,
+        bauStaff: 20, bauPercent2: 31, pmPercent2: 91, contractors: 0,
         ticketsPerMonth: 960, bauSplitEstimate: 72, loadedSalary: FIXTURE_SALARY,
         toolset: 'mixed', resourceVisibility: 'manual',
         budgetTracking: 'outthedoor', assignmentKnowledge: 'stale',
@@ -221,6 +251,22 @@ export function toolsetInvarianceShapes() {
   return TOOLSETS.map((toolset) => ({ id: `invariance-${toolset}`, ...BASE, toolset }));
 }
 
+/* PR13 §2 — project-manager share invariance.
+
+   Every one of the ten bands, everything else held constant at 8.A. The share
+   reaches internal_project_fte and nothing else, so across this set the PM tile
+   ratio and rating, the BAU tile ratio and rating, the growth ceiling, the
+   licence basis, the quote and the share of reported spend must all be
+   identical, and every posted Sender field with them.
+
+   The set also has to prove the opposite, or it would pass with the input wired
+   to nothing: internal_project_fte must differ between the bottom band and the
+   top. An invariance set that only asserts sameness cannot tell a correctly
+   routed input from an ignored one. */
+export function pmShareInvarianceShapes() {
+  return BANDS.map((pmPercent2) => ({ id: `pm-share-${pmPercent2}`, band: pmPercent2, ...BASE, pmPercent2 }));
+}
+
 /* Contractor invariance (fixture 8.C). Six contractors against 8.A, and every
    rated figure, threshold, cost figure, the ceiling and the licence count must
    be identical. */
@@ -302,6 +348,32 @@ export function notationShapes() {
   ];
 }
 
+/* The epsilon case, and it was never where the suite thought it was.
+
+   roundN carries `+ 1e-9`, and the reason given for it everywhere is that 1.095
+   is 1.09499999999999997 in IEEE 754 and rounds to 1.09 without it. That is
+   true of the LITERAL. It is not true of 1095000/1e6, which comes out of the
+   division with a bit pattern that multiplies to exactly 109.5 — so fixture
+   8.A's £1,095,000 went through gbpBig identically with the epsilon and
+   without it, and "the epsilon case does not render £1.09m" passed for a reason
+   that had nothing to do with the epsilon. Confirmed by removing the epsilon
+   from the tool and watching the whole suite stay green.
+
+   £1,005,000 is a real one: 1.005 x 100 is 100.49999999999999, so it renders as
+   £1.00m without the epsilon and £1.01m with it. Pinned here, and the shape is
+   built to land on it:
+
+     internal FTE at the adverse endpoint is 10.8, and the salary below makes
+     the loaded cost £59,074.074, so the internal effort cost is exactly
+     £638,000 and the full portfolio cost exactly £1,005,000.
+
+   Contrived on the salary, like notationShapes() and for the same reason: a
+   formatter boundary is pinned by a value chosen to land on it. */
+export const EPSILON_SALARY = (638000 / 10.8 + NI_THRESHOLD * NI_RATE) / (1 + NI_RATE + OVERHEAD_RATE);
+export function epsilonShape() {
+  return { id: 'epsilon-1005', ...FIXTURE_A, loadedSalary: EPSILON_SALARY };
+}
+
 /* Corroboration, all three outcomes in their new home. The derived run share
    for 8.A is 71.1% to 75.1%, so the window is 68.1 to 78.1.
 
@@ -366,7 +438,7 @@ export const LEGACY_BAND_CASES = [
 
 export const INPUT_KEYS = [
   'companyHeadcount', 'staff', 'pms', 'live', 'annual', 'spend', 'currency',
-  'bauStaff', 'bauPercent2', 'contractors', 'ticketsPerMonth', 'bauSplitEstimate',
+  'bauStaff', 'bauPercent2', 'pmPercent2', 'contractors', 'ticketsPerMonth', 'bauSplitEstimate',
   'loadedSalary',
   'toolset', 'resourceVisibility', 'budgetTracking', 'assignmentKnowledge',
 ];
