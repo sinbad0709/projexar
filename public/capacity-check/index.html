@@ -533,11 +533,20 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 .ceiling{ margin-top:var(--space-6);
   background:var(--surface-accent); border-radius:var(--radius-card);
   box-shadow:var(--shadow-lg); padding:var(--space-8) var(--space-7); }
+/* PR15 addendum §2.1. Centring the prose alone left the eyebrow and the
+   figure flush at the card's padding edge and the body 18px in, which reads as
+   a mistake rather than as a column. Every child of the card takes the same
+   centred column now, so there is one left edge on the card instead of two.
+   The cap is unchanged at 660px and this is not a per-block exception: it is
+   the same --measure the rest of the page uses, applied to the blocks that had
+   been escaping it. */
 .ceiling .h-eyebrow{ font-size:var(--text-eyebrow-size); font-weight:var(--text-eyebrow-weight);
-  letter-spacing:var(--text-eyebrow-track); text-transform:uppercase; color:var(--text-inverse-muted); }
+  letter-spacing:var(--text-eyebrow-track); text-transform:uppercase; color:var(--text-inverse-muted);
+  max-width:var(--measure); margin-inline:auto; }
 .ceiling .h-figure{ font-family:var(--font-display); font-size:var(--text-h2-size);
   font-weight:var(--weight-extrabold); letter-spacing:var(--text-h2-track);
-  line-height:var(--text-h2-line); color:var(--text-accent-figure); margin-block:var(--space-3) var(--space-3); }
+  line-height:var(--text-h2-line); color:var(--text-accent-figure); margin-block:var(--space-3) var(--space-3);
+  max-width:var(--measure); margin-inline:auto; }
 /* The figure switches off the accent colour whenever it is a sentence rather
    than a count — running above the sustainable pace, sitting exactly on it, or
    no ceiling to compute. The accent is reserved for headroom there is some of. */
@@ -742,8 +751,11 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 
 .closing{ background:var(--surface-inverse); border-radius:var(--radius-surface);
   padding:var(--space-10) var(--space-8); max-width:var(--container-narrow); margin:var(--space-10) auto 0; }
+/* PR15 addendum §2.1 - the closing card's heading shares the verdict's column
+   for the same reason. */
 .closing h2{ font-size:var(--text-h2-size); line-height:var(--text-h2-line);
-  letter-spacing:var(--text-h2-track); color:var(--text-inverse); margin-bottom:var(--space-5); }
+  letter-spacing:var(--text-h2-track); color:var(--text-inverse); margin-bottom:var(--space-5);
+  max-width:var(--measure); margin-inline:auto; }
 /* PR15 §3.1 - the third navy card, same fault, same fix. */
 .closing .verdict{ font-size:var(--text-body-lg-size); line-height:var(--text-body-lg-line); color:var(--text-inverse-muted);
   max-width:var(--measure); margin-inline:auto; }
@@ -1047,7 +1059,15 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
           <div class="field full" id="f-pms">
             <label for="pms">Indicative number of IT project managers at any one time<span class="tip" data-tip="People who actively run projects, whatever their job title. Used against your live project count to work out how many each is carrying at once."><i class="info" tabindex="0" role="note" aria-label="People who actively run projects, whatever their job title.">i</i></span></label>
             <div class="control"><input type="number" id="pms" min="0" max="2000" step="1" inputmode="numeric" placeholder="e.g. 5"></div>
-            <div class="under"><span class="hint">Whoever holds a plan together. Enter 0 if nobody does formally.</span><span class="error"></span></div>
+            <!-- PR15 addendum §2.6. Two changes, both about the same reader.
+                 The by-function framing was recorded at line 1019 as the thing
+                 the SHARE question has to work for, and was missing from the
+                 count, which is the question the reader meets first: someone
+                 answering "nobody does formally" and then typing 4 is counting
+                 people who run projects by function, which is exactly what the
+                 share question goes on to ask about. And entering 0 removed
+                 the share question with nothing anywhere announcing it. -->
+            <div class="under"><span class="hint">Whoever holds a plan together, whether or not they hold the title. Enter 0 if nobody does, and we will not ask what share of their time they give it.</span><span class="error"></span></div>
           </div>
           <!-- Banded, and the banding mirrors the BAU time band exactly (§3.5).
                Until PR13 this was the one input in the tool that was assumed
@@ -1061,7 +1081,11 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
                share is least likely to be whole. The count above is asked on
                the same basis. -->
           <div class="field full" id="f-pmPercent2" hidden>
-            <label for="pmPercent2">Your best estimate of the blended average share of their time spent on project management<span class="tip" data-tip="Averaged across everyone you counted. Whoever holds a plan together counts, whether or not they hold the title, and someone running projects alongside another role gives less than their whole week to it."><i class="info" tabindex="0" role="note" aria-label="Averaged across everyone you counted; someone running projects alongside another role gives less than their whole week to it.">i</i></span></label>
+            <!-- PR15 addendum §2.4. This label and the BAU one differed in four
+                 words, two screens apart, and their hints were byte-identical,
+                 so neither the label nor the hint told the reader which
+                 population was being asked about. Each names its own now. -->
+            <label for="pmPercent2">Your best estimate of the blended average share of a project manager&rsquo;s time that goes to project management<span class="tip" data-tip="Averaged across everyone you counted. Whoever holds a plan together counts, whether or not they hold the title, and someone running projects alongside another role gives less than their whole week to it."><i class="info" tabindex="0" role="note" aria-label="Averaged across everyone you counted; someone running projects alongside another role gives less than their whole week to it.">i</i></span></label>
             <div class="control"><select id="pmPercent2">
               <option value="" selected>Select a band</option>
               <option value="1">1&ndash;10%</option>
@@ -1075,7 +1099,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
               <option value="81">81&ndash;90%</option>
               <option value="91">91&ndash;100%</option>
             </select></div>
-            <div class="under"><span class="hint">We report every figure this drives as a range across the band you pick.</span><span class="error"></span></div>
+            <div class="under"><span class="hint">Across everyone you counted as a project manager. We report every figure this drives as a range across the band you pick.</span><span class="error"></span></div>
           </div>
         </div>
       </fieldset>
@@ -1122,7 +1146,14 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 
       <fieldset class="fieldset">
         <legend class="legend">Time available for projects</legend>
-        <p class="legend-note">Rarely do we get the luxury of appointing BAU resources full time to projects. BAU resources are hired with the primary focus of supporting and maintaining existing systems and services. The following questions help us tease out how dependent your project portfolio is on BAU resourcing.</p>
+        <!-- PR15 addendum §2.5. Three faults, not two. It was the only
+             first-person voice in a data-entry sequence; the inverted opening
+             ("Rarely do we get...") is a register nothing else in the tool
+             uses; and "resources" for people breaks PR7 §6.2, which keeps the
+             billing unit in billing contexts and uses people everywhere else.
+             Second person, no inversion, people rather than resources, and the
+             third sentence keeps its job of saying what the section is for. -->
+        <p class="legend-note">BAU staff are hired to support and maintain existing systems, and are rarely available to projects full time. These questions work out how much your project portfolio depends on them.</p>
         <div class="grid">
           <div class="field full" id="f-bauStaff">
             <label for="bauStaff">Estimated number of BAU staff currently working on IT projects<span class="tip" data-tip="People whose main job is supporting or maintaining existing systems, who are also named on project work. Count them however small their project involvement."><i class="info" tabindex="0" role="note" aria-label="Support and maintenance staff who are also named on project work.">i</i></span></label>
@@ -1135,7 +1166,8 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
                answer they came from. The band is carried through to every
                dependent figure as a range. Wording is Norm's. -->
           <div class="field full" id="f-bauPercent2">
-            <label for="bauPercent2">Your best estimate of the blended average share of their time spent on that project work<span class="tip" data-tip="Averaged across all of them. One person giving half their week and one giving a day a month average out to somewhere in the middle, so pick the band containing your best guess."><i class="info" tabindex="0" role="note" aria-label="Averaged across all of them; pick the band containing your best guess.">i</i></span></label>
+            <!-- PR15 addendum §2.4 - the other half of the same pair. -->
+            <label for="bauPercent2">Your best estimate of the blended average share of a BAU person&rsquo;s time that goes to project work<span class="tip" data-tip="Averaged across all of them. One person giving half their week and one giving a day a month average out to somewhere in the middle, so pick the band containing your best guess."><i class="info" tabindex="0" role="note" aria-label="Averaged across all of them; pick the band containing your best guess.">i</i></span></label>
             <div class="control"><select id="bauPercent2">
               <option value="" selected>Select a band</option>
               <option value="1">1&ndash;10%</option>
@@ -1149,7 +1181,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
               <option value="81">81&ndash;90%</option>
               <option value="91">91&ndash;100%</option>
             </select></div>
-            <div class="under"><span class="hint">We report every figure this drives as a range across the band you pick.</span><span class="error"></span></div>
+            <div class="under"><span class="hint">Across everyone you counted as BAU staff on projects. We report every figure this drives as a range across the band you pick.</span><span class="error"></span></div>
           </div>
           <!-- Counted, displayed beside the BAU tile, and excluded from every
                rated figure (§3.2). Wording is Norm's. -->
@@ -3430,8 +3462,23 @@ window.submitToSender = function(payload){
          plain ones. Same figures, same exclusions, same claim. */
       note:'Your project budgets record <strong>' + CURRENCY[v.currency] + n0(v.spend) + '</strong> a year. The '
          + 'people doing the work cost a further <strong>' + effort + '</strong>, which is ' + fteSpan
-         + ' effective full-time equivalents on your projects at ' + gbp(c.loaded.total) + ' a head. That sits '
-         + 'in the staff budget rather than the project budget. Your reported figure is <strong>' + share
+         + ' effective full-time equivalents on your projects at ' + gbp(c.loaded.total) + ' a head. '
+         /* PR15 addendum §2.2. The range paragraph up in "Your capacity
+            position" names the BAU band only, and it is locally true there:
+            the tiles beside it are BAU-only. By the time the reader reaches
+            this figure PR13 has routed the project-manager share into it too,
+            so the unqualified "every figure drawn from that answer" upstream
+            would have them attribute this range to one band. Said here, at
+            the figure it explains, rather than by lengthening the paragraph
+            that already carries the most prose on the page.
+
+            Guarded on the share having been answered: a link saved before the
+            question existed suppresses this whole block anyway, but the
+            sentence would be false rather than merely absent, and false is
+            the worse failure. */
+         + (c.noPmShare ? '' : 'This range comes from both time bands you picked. ')
+         + 'That sits in the staff budget rather than the project budget. '
+         + 'Your reported figure is <strong>' + share
          + '</strong> of what the portfolio costs.' + excludes };
   }
 
@@ -3634,17 +3681,40 @@ window.submitToSender = function(payload){
        about how the department works. Everything downstream of it is the
        condition it always was.
 
-       PR15 §6.3. The error-rate claim stays, and its inferential tail - "and
-       those errors feed decisions unnoticed" - goes with the rest: the rate is
-       a cited fact about spreadsheets, where the tail was a claim about this
-       reader's decisions. Keeping the fact keeps the Panko source attached to
-       a claim that renders, which is what stops it becoming an orphan on the
-       sources page. The citation's own form is unchanged and is reported. */
+       PR15 addendum §1. The error-rate claim was WRONG, and the source we
+       hung it on says the opposite. We published "spreadsheets carry a
+       materially higher error rate than purpose-built systems". Panko
+       concludes the reverse of its premise: "intensive research has shown
+       that spreadsheet error rates are comparable to those in other human
+       cognitive activities", and that the cause "is not sloppiness but rather
+       fundamental limitations in human cognition". He puts complex cognitive
+       error rates at 2% to 5% and treats spreadsheet errors as the same
+       phenomenon. The difference he draws is TESTING, not the medium: about a
+       third of software development effort goes into formal testing, after
+       which errors remain in 0.1% to 0.3% of lines of code, and spreadsheets
+       are rarely tested at all.
+
+       So the citation sat in the one place in the findings carrying an inline
+       attribution, supporting a claim its own source contradicts, in the
+       direction that favoured our argument. Rewritten to what the paper
+       actually establishes, which is the better argument for this finding
+       anyway: the risk is untested work, not a defective tool.
+
+       Both claims here are Panko's and neither is an inference about the
+       reader's department, so §0.11 is unaffected - this condition still
+       carries exactly one asserted inference, the first sentence.
+
+       Never write, on this source: that spreadsheets are more error-prone
+       than purpose-built systems, that the medium causes the errors, or that
+       the errors feed the reader's decisions unnoticed. The first two are
+       contradicted by the paper and the third was cut in the main brief. */
     excel:'Your plans live in spreadsheets, so each plan sits in a file with no connection to resource data. '
         + 'Where consistency between the two depends on manual re-entry, that is where figures drift apart with '
         + 'nothing to flag it, where an overwrite leaves no trace, and where there is no audit trail to '
-        + 'reconstruct what changed. Spreadsheets carry a materially higher error rate than purpose-built '
-        + 'systems (Panko, University of Hawaii).',
+        + 'reconstruct what changed. Spreadsheet error rates are comparable to those in other complex human '
+        + 'tasks, and unlike software, spreadsheets are rarely tested. Field audits since 1997 have found '
+        + 'errors in the large majority of those examined, and the people who built them generally believed '
+        + 'they were correct (Panko, University of Hawaii, 2000).',
     msproject:'Microsoft Project is built around one file and one owner. It forecasts resource demand inside a '
         + 'single project, but not across several concurrent ones without the enterprise-tier service (Microsoft '
         + 'Learn). Unless a shared resource pool is deliberately configured, each file holds its own resource data '
@@ -3654,12 +3724,16 @@ window.submitToSender = function(payload){
         + 'capacity, with the advanced capacity and reporting features behind a premium tier (Microsoft Support). '
         + 'Boards are not natively linked to a resourcing system, so a conclusion drawn from one board can miss '
         + 'what is happening across the others.',
-    mixed:'Your planning and resourcing data sits across several tools that do not share data natively, so there '
-        + 'are multiple sources of truth and no single place showing the full picture. Every cross-reference '
-        + 'between them is manual, and inconsistencies compound as tools are added.',
-    none:'There is no system holding the plan, the resourcing or the capacity. Basic capacity questions can only '
-        + 'be answered by asking around, and nothing prevents a decision being made on stale or incomplete '
-        + 'information, including the figures you entered here.',
+    /* PR15 addendum §2.3. §0.11 is a rule, not a copy preference, so leaving
+       these two branches at three and two asserted inferences meant the
+       report obeyed it only for readers who answered a particular way. Same
+       treatment as `excel`: one assertion, everything downstream conditional. */
+    mixed:'Your planning and resourcing data sits across several tools that do not share data natively. Where a '
+        + 'cross-reference between them is made by hand, that is where inconsistencies compound as tools are '
+        + 'added.',
+    none:'There is no system holding the plan, the resourcing or the capacity. Where a capacity question can '
+        + 'only be answered by asking around, a decision can be taken on stale or incomplete information, '
+        + 'including the figures you entered here.',
     other:'We cannot say how your tool handles cross-project resourcing, because you have not named it. That is '
         + 'flagged for a conversation rather than answered with a generic claim.'
   };
@@ -3937,20 +4011,39 @@ window.submitToSender = function(payload){
        workings labels were; the branches below have always been right. */
     if(c.corroboration !== null){
       var derived = spanText(c.derivedRunShare, pctFmt);
+      /* PR15 addendum §3. Both figures are correct and they are exact
+         complements - the derived run share and the internal project FTE sum
+         to the IT headcount at each endpoint of the band - but nothing on the
+         page said so, and the two ranges run in opposite directions, so a
+         reader pairing them left to right pairs the wrong ends. The
+         relationship is named here, at the figure that invites the
+         comparison.
+
+         Guarded on c.priceCosts, and that guard is the point rather than a
+         formality: the internal project FTE appears on screen ONLY inside the
+         cost block, which the currency gate removes whole (§1.1). A clause
+         pointing "above" at a figure a non-sterling report does not carry is
+         the fault PR4 found in four places at once. */
+      var complement = c.priceCosts
+        ? ', the other side of the ' + spanText(pick(c, 'internalProjectFte'), fteFmt)
+          + ' effective FTE on change above'
+        : '';
       if(c.corroboration === 'healthy'){
         out.push({ key:'corroboration', rag:'healthy',
           title:'Your two answers about the same department agree',
           body:'You told us ' + v.bauSplitEstimate + '% of IT effort goes to run work. The people you named, '
              + spanText(pick(c, 'pmProjectFte'), fteFmt) + ' effective project manager FTE and '
              + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' effective BAU FTE against '
-             + qty(v.staff, 'person', 'people') + ' in IT, imply ' + derived + '. Those two figures came from '
+             + qty(v.staff, 'person', 'people') + ' in IT, imply ' + derived + ' on run work' + complement
+             + '. Those two figures came from '
              + 'different questions and they corroborate, so the capacity figures on this page rest on a '
              + 'consistent picture of your department.' });
       }else if(c.corroboration === 'note'){
         out.push({ key:'corroboration', note:true,
           title:'We derive less change effort than you reported, which is what we would expect',
           body:'You told us ' + v.bauSplitEstimate + '% of IT effort goes to run work. The staff you named imply '
-             + derived + '. This check counts only project managers and BAU staff working on projects, so anyone '
+             + derived + ' on run work' + complement
+             + '. This check counts only project managers and BAU staff working on projects, so anyone '
              + 'delivering projects without also holding a BAU role (dedicated project staff, for instance) is '
              + 'invisible to it. Where that is the case the gap is expected and there is nothing to correct, so '
              + 'this check carries no rating.' });
@@ -3979,7 +4072,7 @@ window.submitToSender = function(payload){
         out.push({ key:'corroboration', rag:'atrisk',
           title:'We derive more change effort than you reported',
           body:'You told us ' + v.bauSplitEstimate + '% of IT effort goes to run work. The staff you named '
-             + 'imply ' + derived + '. ' + pmFirst
+             + 'imply ' + derived + ' on run work' + complement + '. ' + pmFirst
              + 'Your effective BAU FTE and the growth ceiling both depend on it.' });
       }
     }
@@ -4313,9 +4406,24 @@ window.submitToSender = function(payload){
         + 'above the Secondary Threshold of £5,000 a year (£96 a week, £417 a month)']);
     }
     if(v.toolset === 'excel'){
+      /* PR15 addendum §1.3.1. The row described a DIFFERENT PAPER from the one
+         the finding cites, and a different one again from the paper that was
+         read. "94% of 88" is real, but it belongs to the 2005/2008 revision of
+         the 1998 JEUC article, whose aggregation runs to audits published in
+         2002 and 2004 and which the 1998 original therefore cannot contain.
+         Nobody here has opened that revision; it was carried on trust.
+
+         One work now, named in full, in both places, and it is the work that
+         was actually read end to end: the EuSpRIG 2000 paper, openly readable
+         on arXiv, which supports every clause of the sentence citing it. The
+         figures below are quoted from its own Table 1 and Table 2. */
       src.push(['Spreadsheet error rates',
-        'R. Panko, University of Hawaii, <em>What We Know About Spreadsheet Errors</em>, Journal of End-User Computing '
-        + '10(2), 1998, rev. 2008: 94% of 88 audited spreadsheets contained at least one error']);
+        'R. Panko, University of Hawaii, <em>Spreadsheet Errors: What We Know. What We Think We Can Do.</em> '
+        + 'Proceedings of the European Spreadsheet Risks Interest Group (EuSpRIG), Greenwich, July 2000, '
+        + 'arXiv:0802.3457. Field audits from 1997 onward found errors in 91% of the 54 spreadsheets examined; '
+        + 'across 998 subjects and 1,170 spreadsheets in laboratory experiments, 51% contained errors. The paper '
+        + 'concludes that spreadsheet error rates are comparable to those in other human cognitive activities, '
+        + 'and that the difference from software is formal testing rather than the medium']);
     }
     if(v.toolset === 'msproject'){
       src.push(['Microsoft Project capabilities',

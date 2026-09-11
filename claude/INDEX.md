@@ -38,6 +38,7 @@ Any commit that verifies, disproves or changes the status of an item in the mast
 | `capacity-check-pr13-brief-sep-2026.md` | PR13 revision 2. The project manager time-share |
 | `capacity-check-pr14-brief-sep-2026.md` | PR14. Arithmetic a reader can check. Carries a provenance marker: committed from the as-issued copy, because it had no file |
 | `capacity-check-pr15-brief-sep-2026.md` | PR15. The review pass. Carries a provenance marker: committed from the as-issued copy |
+| `capacity-check-pr15-addendum-sep-2026.md` | The Panko correction and six decisions. Read with the PR15 brief |
 | `capacity-check-sender-audit-sep-2026.md` | The Sender audit of 10 September. Its §5 carries the launch blockers PR11 and PR12 answer |
 | `free-tier-analysis-sep-2026.md` | The offer decision of 1 September, and the definition of a managed resource |
 

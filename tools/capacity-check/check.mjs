@@ -1019,14 +1019,43 @@ section('PR13 §1 — banded like the BAU question, asked only where there are P
   const html = readFileSync(TOOL_PATH, 'utf8');
   const field = between(html, '<div class="field full" id="f-pmPercent2"', '</div>\n          </div>',
                         'PR13 §1 the project-manager share field');
-  ok(has(field, 'blended average share of their time spent on project management'),
-     '§1 — the label asks for the share as a blended average');
+  /* PR15 addendum §2.4 supersedes the wording, not the claim. "their time"
+     named no population, and the BAU label four words away said the same
+     thing, so neither label told the reader which group was being asked
+     about. The claim this assertion makes is unchanged and is now made in two
+     parts: still a blended average, and now naming its own population. */
+  ok(has(field, 'blended average share of a project manager&rsquo;s time that goes to project management'),
+     '§1 — the label asks for the share as a blended average, of a named population');
   ok(has(field, 'whether or not they hold the title'),
      '§1 — the help text covers a project manager by function rather than by title');
   ok(has(field, 'alongside another role gives less than their whole week'),
      '§1 — and says why the share is not whole');
   ok(has(field, 'range across the band you pick'),
      '§1 — the hint states the range treatment, as the BAU band does');
+
+  /* PR15 addendum §2.4. The two band labels and their two hints must not be
+     the same words. The hints were byte-identical, which is how a label
+     differing in four words two screens away went unnoticed for four
+     releases. Both are extracted and asserted found before they are compared
+     (§0.17): if either slice stops matching, this becomes a comparison of
+     nothing to nothing and passes. */
+  const bauField = between(html, '<div class="field full" id="f-bauPercent2"', '</div>\n          </div>',
+                           'PR15 the BAU share field');
+  ok(bauField.length > 0, '§2.4 — the BAU share field is found before it is compared');
+  const labelOf = (f, id) => (f.match(new RegExp('<label for="' + id + '">([^<]*)')) || [])[1];
+  const hintOf = (f) => (f.match(/<span class="hint">([^<]*)/) || [])[1];
+  const pmLabel = labelOf(field, 'pmPercent2'), bauLabel = labelOf(bauField, 'bauPercent2');
+  const pmHint = hintOf(field), bauHint = hintOf(bauField);
+  for (const [v, what] of [[pmLabel, 'PM label'], [bauLabel, 'BAU label'],
+                           [pmHint, 'PM hint'], [bauHint, 'BAU hint']]) {
+    ok(v !== undefined && v.length > 0, `§2.4 — the ${what} is found before it is compared`);
+  }
+  ok(pmLabel !== bauLabel, '§2.4 — the two band labels are not the same words');
+  ok(pmHint !== bauHint, '§2.4 — and neither are their hints');
+  ok(/project manager/.test(pmLabel || ''), '§2.4 — the PM label names its population');
+  ok(/BAU/.test(bauLabel || ''), '§2.4 — and the BAU label names its own');
+  ok(/project manager/.test(pmHint || '') && /BAU/.test(bauHint || ''),
+     '§2.4 — each hint names the population it averages across');
 
   /* Asked only where there are project managers, and the visibility is asserted
      in BOTH directions. The DOM stub defaults `hidden` to true, so the hidden
@@ -3214,7 +3243,17 @@ section('Sources — every retained source is attached to a surviving claim');
        survey cited beside no UK figure is an orphan. */
     ['Median IT salary', (cap) => cap.computed.at[0].internalEffortCost !== null, 'the cost figures'],
     ['Employer National Insurance', (cap) => cap.computed.at[0].internalEffortCost !== null, 'the cost figures'],
-    ['Spreadsheet error rates', (cap) => cap.values.toolset === 'excel', 'the spreadsheet mechanism in finding 2'],
+    /* PR15 addendum §1.4. This was anchored to the ANSWER — toolset ===
+       'excel' — rather than to the sentence that cites the source. That is
+       weak in the §0.17 sense and it was demonstrated rather than argued
+       during PR15: the main brief considered cutting the citing sentence, and
+       had it been cut this row would have gone on passing while supporting
+       nothing at all. It reads the rendered claim now, so the source and the
+       sentence stand or fall together. */
+    ['Spreadsheet error rates',
+      (cap) => /Spreadsheet error rates are comparable to those in other complex human tasks/
+        .test(allText(cap)),
+      'the spreadsheet mechanism in finding 2'],
     ['Microsoft Project capabilities', (cap) => cap.values.toolset === 'msproject',
       'the MS Project mechanism in finding 2'],
     ['Project Online retirement', (cap) => cap.values.toolset === 'msproject',
@@ -5934,6 +5973,100 @@ section('PR15 §1.4 — the question count is computed, not written');
      '§1.4 — and the rendered count comes from the fields, not from a constant');
   ok(/if\(!tpl \|\| n < 1/.test(html),
      '§1.4 — with a count of nothing left alone rather than published (§0.17)');
+}
+
+section('PR15 addendum §1 — the Panko claim states only what the source supports');
+{
+  /* The claim we published was contradicted by the paper we hung it on, in the
+     one place in the findings carrying an inline attribution, and in the
+     direction that favoured our argument. The banned list is the retired claim
+     plus the two neighbouring claims the source also refuses, because a
+     correction that only pins the exact retired sentence is a regression guard
+     for one string rather than a guard on the claim (PR11's lesson, §11). */
+  const excel = capture({ id: 'panko', ...FIXTURE_A, toolset: 'excel' });
+  if (ok(excel.ok, 'panko: renders', excel.error)) {
+    const out = allText(excel);
+    for (const banned of [
+      /materially higher error rate/i,
+      /more error[- ]prone than/i,
+      /spreadsheets? (are|is) (inherently )?(more )?(error|unreliable)/i,
+      /errors? feed (your |their )?decisions/i,
+    ]) {
+      const hit = banned.exec(out);
+      ok(hit === null, `addendum §1 — the contradicted claim does not appear: ${banned}`,
+         hit === null ? '' : JSON.stringify(out.slice(Math.max(0, hit.index - 80), hit.index + 100)));
+    }
+    /* And the two claims the paper does establish, both present. */
+    ok(/error rates are comparable to those in other complex human tasks/.test(out),
+       'addendum §1 — the comparability finding, which is what the paper concludes');
+    ok(/unlike software, spreadsheets are rarely tested/.test(out),
+       'addendum §1 — and the difference the paper actually draws, which is testing');
+    ok(/Field audits since 1997 have found errors in the large majority/.test(out),
+       'addendum §1 — the field-audit finding');
+    ok(/generally believed\s+they were correct|generally believed they were correct/.test(out),
+       'addendum §1 — and the overconfidence finding');
+
+    /* One work, named the same way in both places, with a year in each. The
+       inline attribution is the half a screen reader reaches: pr-sources is
+       print-only. */
+    ok(/\(Panko, University of Hawaii, 2000\)/.test(excel.screen.ragList || ''),
+       'addendum §1.3.2 — the inline attribution carries a year, on screen');
+    const row = excel.print['pr-sources'] || '';
+    ok(/Spreadsheet Errors: What We Know\. What We Think We Can Do\./.test(row),
+       'addendum §1.3.1 — the sources row names the paper that was read');
+    ok(/EuSpRIG/.test(row) && /July 2000/.test(row) && /arXiv:0802\.3457/.test(row),
+       'addendum §1.3.1 — with venue, date and a resolvable identifier');
+    /* The retired citation described a different paper, whose figures belong
+       to a revision nobody here has opened. Pinned absent so it cannot return
+       alongside the one that was verified. */
+    for (const gone of ['What We Know About Spreadsheet Errors', 'Journal of End-User Computing',
+                        '94% of 88 audited spreadsheets']) {
+      ok(!readFileSync(TOOL_PATH, 'utf8').includes(gone),
+         `addendum §1.3.1 — the unread citation is gone from the file: "${gone}"`);
+    }
+  }
+}
+
+section('PR15 addendum §2.1 / §2.2 / §2.3 / §3 — the approved decisions');
+{
+  const css = readFileSync(TOOL_PATH, 'utf8');
+
+  /* §2.1. One column per navy card: every child on the same measure, so the
+     card has one left edge rather than two. The cap has still not moved. */
+  ok(/--measure:660px;/.test(css), '§2.1 — the cap is still 660px');
+  for (const sel of ['.ceiling .h-eyebrow', '.ceiling .h-figure', '.ceiling .h-note',
+                     '.assumption', '.assumption .a-parts', '.closing h2', '.closing .verdict']) {
+    const rule = (css.match(new RegExp('\\n' + sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\{[^}]*\\}')) || [''])[0];
+    ok(rule.length > 0, `§2.1 — the ${sel} rule is found before it is read`);
+    ok(/max-width:var\(--measure\)/.test(rule) && /margin-inline:auto/.test(rule),
+       `§2.1 — ${sel} shares the card's one centred column`);
+  }
+
+  /* §2.2, §2.3 and §3, on rendered output. */
+  const cap = capture({ id: 'addendum', ...FIXTURE_A });
+  if (ok(cap.ok, 'addendum: renders', cap.error)) {
+    const out = allText(cap);
+    ok(/This range comes from both time bands you picked\./.test(out),
+       '§2.2 — the cost card says where its range comes from');
+    ok(/on run work, the other side of the [\d.]+(–[\d.]+)? effective FTE on change above/.test(out),
+       '§3 — the checks block names the two figures as one split');
+  }
+
+  /* §2.3. Both remaining branches of finding 2, each rendered on its own
+     shape, because no single report reaches more than one of them. */
+  for (const [toolset, kept, gone] of [
+    ['mixed', /Where a cross-reference between them is made by hand/,
+      /Every cross-reference\s+between them is manual/],
+    ['none', /Where a capacity question can\s+only be answered by asking around/,
+      /Basic capacity questions can only\s+be answered by asking around/],
+  ]) {
+    const c = capture({ id: `addendum-${toolset}`, ...FIXTURE_A, toolset });
+    if (!ok(c.ok, `addendum-${toolset}: renders`, c.error)) continue;
+    const out = allText(c);
+    ok(kept.test(out), `§2.3 — the ${toolset} branch states its condition conditionally`);
+    ok(!gone.test(readFileSync(TOOL_PATH, 'utf8')),
+       `§2.3 — and the asserted form it replaced is gone from the file`);
+  }
 }
 
 /* ------------------------------------------------------------------- result */
