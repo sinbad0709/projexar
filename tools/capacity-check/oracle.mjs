@@ -100,9 +100,50 @@ export function bauEffectiveFte(v, e) {
   if (share === null || v.bauStaff === 0) return null;
   return v.bauStaff * share;
 }
+
+/* PR13. The share of a project manager's time that goes to project management,
+   on the same ten-point bands as the BAU question.
+
+   Three states and they are not two: no project managers means no share to have
+   (0, and the question is not asked); a band means the share at that endpoint;
+   and asked-but-unanswered means null, which only a link saved before the
+   question existed can produce. Null suppresses internal_project_fte and
+   everything downstream of it, because a link carrying no answer is not a link
+   answering 100% and this input exists to stop the tool treating it as one. */
+export function pmBandEndpoints(v) {
+  const raw = v.pmPercent2;
+  const lo = raw === null || raw === undefined || raw === '' ? null : Number(raw);
+  return lo === null ? [null, null] : [lo, lo + 9];
+}
+export function pmShare(v, e) {
+  if (v.pms === 0) return 0;
+  const b = pmBandEndpoints(v);
+  return b[0] === null ? null : b[e] / 100;
+}
+
+/* Rounded at source. This is a published figure, and the workings print it
+   beside the BAU figure with their sum in the next column, then multiply that
+   sum by the loaded cost. Five managers at 91% is 4.55, and a page adding
+   "4.6 + 6.2" to a total of 10.75 is the fault this release exists to correct
+   one row further down the same table. §2.3. */
+export function pmProjectFte(v, e) {
+  const share = pmShare(v, e);
+  return share === null ? null : round1(v.pms * share);
+}
+
+/* The sum of the two DISPLAYED components rather than of the two raw ones, for
+   the same reason and by the same rule. bau_effective_fte itself stays raw: it
+   is the divisor the BAU tile and the growth ceiling publish, and rounding it
+   there would move a rating. */
 export function internalProjectFte(v, e) {
+  const pm = pmProjectFte(v, e);
+  if (pm === null) return null;
   const bau = bauEffectiveFte(v, e);
-  return v.pms + (bau === null ? 0 : bau);
+  /* round1 over the sum as well as over each part. Two exact tenths added in
+     IEEE 754 are not an exact tenth: 0.9 + 6.2 is 7.1000000000000005, which
+     displays as 7.1 and is not 7.1, and the difference reaches the cost
+     figure and the magnitude threshold that formats it. */
+  return round1(pm + (bau === null ? 0 : round1(bau)));
 }
 
 /* §3.5. A legacy free-text percentage maps to the band containing it. */
@@ -139,8 +180,12 @@ export function itShare(v) {
 function at(v, e, shared) {
   const o = {};
   o.bauEffectiveFte = bauEffectiveFte(v, e);
+  o.pmProjectFte = pmProjectFte(v, e);
   o.internalProjectFte = internalProjectFte(v, e);
   o.bauSuppressed = o.bauEffectiveFte === null;
+  /* The project-manager share was asked and not answered. A separate absence
+     from the BAU one, with its own reason on the page. */
+  o.noPmShare = o.internalProjectFte === null;
 
   o.bauRatio = o.bauSuppressed ? null : v.live / o.bauEffectiveFte;
   o.bauDisplay = o.bauRatio === null ? null : round1(o.bauRatio);
@@ -167,17 +212,21 @@ function at(v, e, shared) {
   }
 
   const statedRun = v.bauSplitEstimate;
-  if (o.bauSuppressed || v.staff === 0 || statedRun === null || statedRun === undefined) {
+  if (o.bauSuppressed || o.noPmShare || v.staff === 0 || statedRun === null || statedRun === undefined) {
     o.derivedChangeShare = null; o.derivedRunShare = null;
   } else {
+    /* Both off the displayed internal FTE, and the run share off the displayed
+       change share, because the workings print "100% − <change>" beside the run
+       figure and a reader doing that subtraction has to reach the number the
+       page prints. */
     o.derivedChangeShare = round1((o.internalProjectFte / v.staff) * 100);
-    o.derivedRunShare = round1((1 - o.internalProjectFte / v.staff) * 100);
+    o.derivedRunShare = round1(100 - o.derivedChangeShare);
   }
 
   /* §3.1. Suppressed with the BAU tile; summed only on an explicit
      out-the-door answer. §2.2: the sum uses the rounded, displayed internal
      figure, so a reader adding the two printed numbers gets the printed total. */
-  if (o.bauSuppressed || !shared.priceCosts) {
+  if (o.bauSuppressed || o.noPmShare || !shared.priceCosts) {
     o.internalEffortCost = null; o.fullPortfolioCost = null; o.reportedShare = null;
   } else {
     o.internalEffortCost = o.internalProjectFte * shared.loaded.total;
@@ -222,6 +271,7 @@ export function evaluate(v) {
      which is the endpoint every rating and every Sender field is computed from. */
   o.bauEffectiveFte = o.adv.bauEffectiveFte;
   o.bauSuppressed = o.adv.bauSuppressed;
+  o.noPmShare = o.adv.noPmShare;
   o.bauRatio = o.adv.bauRatio;
   o.bauDisplay = o.adv.bauDisplay;
   o.ragBAU = o.adv.ragBAU;

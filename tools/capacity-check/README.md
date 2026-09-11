@@ -48,7 +48,7 @@ raw gap is 9.065 which would round to 9.1, and the page must print 9.0.
 | File | What it does |
 |---|---|
 | `harness.mjs` | Loads the HTML, extracts the tool's IIFE, runs it in a `vm` against a DOM stub. Parses the real `<select>` options so `selText()` returns what a respondent read, and freezes `Date` so the baseline does not change at midnight. `loadTool(path, { search })` seeds `location.search`, which is the only way to reach the reopened-link path; the stub records `focus()`, `scrollIntoView()` and `setAttribute()` rather than swallowing them. |
-| `shapes.mjs` | The 603-shape corpus, the six §4 fixtures, and the assertion shapes (boundaries, band straddles, toolset and contractor invariance, suppression rows, singulars, notation thresholds, corroboration states, currency options, budget branches, loaded-cost edits, legacy band decoding). |
+| `shapes.mjs` | The 603-shape corpus, the seven §4 fixtures, and the assertion shapes (boundaries, band straddles, toolset, contractor and project-manager-share invariance, suppression rows, singulars, notation thresholds, corroboration states, currency options, budget branches, loaded-cost edits, legacy band decoding). |
 | `oracle.mjs` | The formulas, written from the spec. Never imports from the page. |
 | `capture.mjs` | Drives one shape through the page's own submit handler, then reads back every node it wrote — screen, printed report and Sender payload — plus the static printed-report copy the page does not write. |
 | `baseline.mjs` | Writes the digest baseline. |
@@ -71,12 +71,107 @@ seeded 400-shape fuzz pass reaches the combinations the corpus fixes — blank
 optional answers, every currency, every band, contractors, edited loaded costs,
 zero PMs against zero BAU staff.
 
+**It states how many of the 400 it rendered, and floors it.** Skipping a shape
+the form rejects is right, and it is also how a new required input empties the
+section without failing anything: every generated shape that does not answer the
+new question is skipped. PR13 did exactly that — adding the project-manager
+share took the rendered count from 400 to 97 and not one assertion failed. The
+drop showed up only in the suite's own total, which nobody reads as coverage.
+
 Every corpus shape reports in sterling. That is deliberate — the corpus exists to
 hold one thing still while another moves — but it is also how the currency bug
 survived three releases, so the currency branches are covered by fixture 8.D and
 by `currencyShapes()`, one per option, rather than by the corpus.
 
-## Why there are six fixtures
+## The project-manager share, and the three things it must not touch
+
+PR13 added the one input the tool had been assuming. Every project manager was
+counted at 100% of their time, inside the headline cost figure — on fixture 8.A
+that is 5 of 11.2 to 13.0 effective FTE — and it was the only answer in the tool
+nobody was asked for.
+
+It reaches `internal_project_fte` and nothing else. Three routes would each look
+defensible and are each wrong:
+
+- **Not the PM tile's divisor.** Master §2.1's band comes from a study counting
+  concurrent projects per *person*. Someone carrying nine projects carries nine
+  whether they are at 40% of their week or all of it. Dividing by FTE would
+  replace a sourced ratio with one nothing supports.
+- **Not the growth ceiling.** Master §2.6 ties the ceiling's divisor to the
+  divisor the rated tile publishes, and the PM tile stays headcount-based.
+- **Not the licence basis.** It counts people with capacity recorded in the
+  system. A part-time project manager is a person.
+
+`pmShareInvarianceShapes()` runs all ten bands with everything else held
+constant and asserts each of those unmoved, along with the BAU tile, the quote,
+the share of reported spend, the IT share and **every posted Sender field** —
+every key, so a field added later is covered without anyone remembering. The
+`permalink` field is the one exception and it is named rather than skipped: it
+is the answers encoded, so it carries the new one and has to differ.
+
+The set also asserts the opposite, and without that half it would pass with the
+input wired to nothing: ten bands must produce ten different internal FTE
+values, and the bottom band must produce less cost and a higher derived run
+share than the top. An invariance set that only asserts sameness cannot tell a
+routed input from an ignored one.
+
+## Links issued before the question existed
+
+`pp` is a new URL parameter, and links without it already sit in printed reports
+and in Sender records. A decoded link with no share is **not** a link answering
+zero and **not** a link answering 100%, and treating it as either silently is the
+thing this input exists to stop.
+
+It is treated as unanswered. `internal_project_fte` is suppressed and takes the
+internal effort cost, the full portfolio cost, the reported share, ProjexaR's
+share of full cost and the corroboration check with it, per master §1.1. Nothing
+else goes: both tiles and their ratings, the growth ceiling, the licence basis,
+the quote, the share of reported spend, the IT share and the typical project
+duration all still publish, because a reader following an old link should see
+what the tool can still tell them. The page says which figures are missing and
+why, in the slot where the cost block would have been and again in the workings.
+
+Three shapes, because the parameter can arrive in three states and a fourth is
+worth having:
+
+| Link | Behaviour |
+|---|---|
+| `pp` absent | unanswered |
+| `pp=` (present, empty) | unanswered — `permalink()` never writes one, so it is a truncated or hand-edited link |
+| `pp=91` | read |
+| `pp=45` (not a band value) | unanswered, never mapped onto the nearest band — inventing an answer would put a figure nobody gave into the cost calculation |
+
+On the **form** the answer is required where it is asked, because a blank there
+is an omission rather than a link from before the question. `readAndValidate`
+takes a `reopened` flag and that is the only thing it changes.
+
+## Why the internal FTE is rounded before anything is built on it
+
+The workings publish three sums: `<pm FTE> + <BAU FTE>` with their total, that
+total multiplied by the loaded cost, and `100% − <change share>` beside the run
+share. All three used to reproduce from the printed figures by luck of the
+fixture values — every fixture happened to produce a whole tenth of an FTE.
+
+A banded share does not. Five managers at 91% is 4.55, so the raw quantity would
+have put "4.6 + 6.2" against a total of 10.75 on the page, one row above
+"10.8 × £65,000" against £698,750, on fixture 8.A. That is §9.1's fault exactly:
+a figure the tool publishes contradicted by another figure the tool publishes.
+
+So `pm_project_fte` is rounded at source, `internal_project_fte` is the sum of
+the two **displayed** components (rounded again, because two exact tenths added
+in IEEE 754 are not an exact tenth — 0.9 + 6.2 is 7.1000000000000005), the cost
+is that displayed total times the loaded cost, and the run share is
+`100 − displayed change share`. The PR13 §4 section asserts all three across the
+corpus and every branch set, at both endpoints.
+
+`bau_effective_fte` stays **raw**. It is the divisor the BAU tile and the growth
+ceiling publish, and rounding it would move a rating, which PR13 §5 forbids. The
+consequence is that the BAU tile's own published division — "45 ÷ 4.9" printing
+9.1 where the displayed division gives 9.2 — is the same class of fault, is
+reachable today on the straddle shapes, and is recorded in the master's §11
+rather than fixed here.
+
+## Why there are seven fixtures
 
 Three of them were added in PR4, and each covers a branch that had never been a
 fixture:
@@ -86,6 +181,7 @@ fixture:
 | 8.D | 8.A reported in USD | Every fixture was sterling, so a cost block that added dollars to pounds and labelled the sum £ passed everything. |
 | 8.E | 8.A with an 82% run share | Above the corroboration window. |
 | 8.F | 8.A with a 60% run share | Below it. Every fixture sat inside the window, so the §2.9 branches were never rendered by a fixture and shipped inverted from PR1 to PR3. |
+| 8.H | 8.A with project managers at 41–50% | PR13. 8.A carries the 91–100% band, which is the band containing the 100% it used to assume, so on its own it proves the wiring and little else. Here the share is the dominant term: internal project FTE falls from 10.8–13.0 to 8.3–10.5 on otherwise identical inputs, and a routing leak that 8.A would show as a rounding wobble shows here as a whole FTE. Its corroboration lands on a different branch from 8.A's, which is the input reaching a route it is meant to reach rather than a side effect. |
 
 That is the third time the same shape of blindness has cost this release a
 defect. The contractor routing was invisible while every fixture carried zero
@@ -136,6 +232,20 @@ FTE figures, and the ProjexaR price in sterling with no percentage beside it.
 
 The suite asserts the six options out of the real `<select>`, so an option added
 to the form without a decision about it fails rather than shipping unpriced.
+
+## The epsilon, and an assertion that was never about one
+
+`roundN` carries `+ 1e-9`, and the reason given for it everywhere is that 1.095
+is 1.09499999999999997 in IEEE 754. That is true of the literal. It is not true
+of `1095000/1e6`, which multiplies to exactly 109.5 — so fixture 8.A's
+£1,095,000 rendered £1.10m with the epsilon and without it, and "the epsilon
+case does not render £1.09m" passed for a reason unrelated to its own label.
+
+PR13 moved 8.A's figure, which is how this surfaced: rehousing the assertion
+meant finding out what it actually tested. `epsilonShape()` pins £1,005,000,
+where `1.005 × 100` is 100.49999999999999 and the two round differently, and the
+mutation — removing `+ 1e-9` from the tool — fails on it. That mutation left the
+whole suite green before.
 
 ## Why the fixtures carry an odd-looking salary
 

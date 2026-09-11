@@ -1015,6 +1015,34 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
             <div class="control"><input type="number" id="pms" min="0" max="2000" step="1" inputmode="numeric" placeholder="e.g. 5"></div>
             <div class="under"><span class="hint">Whoever holds a plan together. Enter 0 if nobody does formally.</span><span class="error"></span></div>
           </div>
+          <!-- Banded, and the banding mirrors the BAU time band exactly (§3.5).
+               Until PR13 this was the one input in the tool that was assumed
+               rather than asked: every project manager was counted at 100% of
+               their time, inside the headline cost figure. Asked only where
+               there are project managers to ask about, and required where it is
+               asked.
+
+               The wording has to work for someone who is a project manager by
+               function rather than by title, because that is the person whose
+               share is least likely to be whole. The count above is asked on
+               the same basis. -->
+          <div class="field full" id="f-pmPercent2" hidden>
+            <label for="pmPercent2">Your best estimate of the blended average share of their time spent on project management<span class="tip" data-tip="Averaged across everyone you counted. Whoever holds a plan together counts, whether or not they hold the title, and someone running projects alongside another role gives less than their whole week to it."><i class="info" tabindex="0" role="note" aria-label="Averaged across everyone you counted; someone running projects alongside another role gives less than their whole week to it.">i</i></span></label>
+            <div class="control"><select id="pmPercent2">
+              <option value="" selected>Select a band</option>
+              <option value="1">1&ndash;10%</option>
+              <option value="11">11&ndash;20%</option>
+              <option value="21">21&ndash;30%</option>
+              <option value="31">31&ndash;40%</option>
+              <option value="41">41&ndash;50%</option>
+              <option value="51">51&ndash;60%</option>
+              <option value="61">61&ndash;70%</option>
+              <option value="71">71&ndash;80%</option>
+              <option value="81">81&ndash;90%</option>
+              <option value="91">91&ndash;100%</option>
+            </select></div>
+            <div class="under"><span class="hint">We report every figure this drives as a range across the band you pick.</span><span class="error"></span></div>
+          </div>
         </div>
       </fieldset>
 
@@ -1245,6 +1273,12 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
            number that failed to load. Ordered last so it sits under whichever
            callout leads. -->
       <p class="hero-note" id="costCurrencyNote" hidden></p>
+      <!-- PR13. The same slot's job for a different suppression: a link saved
+           before the project-manager share was asked. Its own node rather than
+           a second string through costCurrencyNote, because the two can never
+           both apply and a shared slot would hide that they are different
+           absences with different remedies. -->
+      <p class="hero-note" id="pmShareNote" hidden></p>
     </div>
 
     <!-- §2.1. The comparison table and the conversion box, moved together to
@@ -2149,6 +2183,39 @@ window.submitToSender = function(payload){
     return (e === E_LO ? v.bandLo : v.bandHi) / 100;
   }
 
+  /* ---- Project manager time (PR13) ----
+     The share of a project manager's time that goes to project management, on
+     the same ten-point bands as the BAU question and carried through as a
+     range in the same way.
+
+     Three states, and they are not two:
+
+       pms === 0         the question is not asked, and there is no project
+                         manager capacity to have a share of. Zero, not null.
+       band picked       the share, at the endpoint asked for.
+       asked, no band    null. Only a link saved before this question existed
+                         reaches it; the form requires the answer where it asks
+                         it. Everything built on internal_project_fte is
+                         suppressed rather than assumed, because a decoded link
+                         with no answer is not the same as one answering 100%,
+                         and treating it as either silently is what this input
+                         exists to stop. */
+  function pmShare(v, e){
+    if(v.pms === 0) return 0;
+    if(v.pmBandLo === null) return null;
+    return (e === E_LO ? v.pmBandLo : v.pmBandHi) / 100;
+  }
+
+  /* Rounded at source, because this is a published figure and every sum the
+     workings print on it has to reproduce from what the reader can see (§2.3).
+     With a share of 91% of five managers the raw quantity is 4.55, and a page
+     printing "4.6 + 6.2" against a total of 10.75 is the fault this release
+     exists to correct, one row further down the same table. */
+  function pmProjectFte(v, e){
+    var share = pmShare(v, e);
+    return share === null ? null : round1(v.pms * share);
+  }
+
   /* null, not 0, where there is no BAU capacity to divide by — a zero divisor
      and an unanswered question are different states and the report says
      different things about them. */
@@ -2157,10 +2224,23 @@ window.submitToSender = function(payload){
     return (share === null || v.bauStaff === 0) ? null : v.bauStaff * share;
   }
 
-  /* Permanent staff only. */
+  /* Permanent staff only, and the sum of the two DISPLAYED components rather
+     than of the two raw ones — §2.3's rule, which the run-work gap already
+     follows. The workings print "<pm FTE> + <BAU FTE>" beside this total and
+     then multiply this total by the loaded cost, so both rows have to add up on
+     the page. bau_effective_fte itself stays raw: it is the divisor the BAU tile
+     and the growth ceiling publish, and rounding it there would move a rating.
+
+     null where the project-manager share was asked and not answered. */
   function internalProjectFte(v, e){
+    var pm = pmProjectFte(v, e);
+    if(pm === null) return null;
     var bau = bauEffectiveFte(v, e);
-    return v.pms + (bau === null ? 0 : bau);
+    /* round1 over the sum as well as over each part. Two exact tenths added
+       in IEEE 754 are not an exact tenth: 0.9 + 6.2 is 7.1000000000000005,
+       which displays as 7.1 and is not 7.1, and the difference reaches the
+       cost figure and the magnitude threshold that formats it. */
+    return round1(pm + (bau === null ? 0 : round1(bau)));
   }
 
   function ragPM(load){
@@ -2266,7 +2346,15 @@ window.submitToSender = function(payload){
 
     /* The named quantities of §1. */
     a.bauEffectiveFte    = bauEffectiveFte(v, e);
+    a.pmProjectFte       = pmProjectFte(v, e);
     a.internalProjectFte = internalProjectFte(v, e);
+
+    /* The project-manager share was asked and not answered, which only a link
+       saved before the question existed can produce. Everything that reads
+       internal_project_fte is suppressed on it, and the page says so where each
+       figure would have been (§1.1). It is a separate flag from noBauCapacity
+       because it is a different absence with a different reason line. */
+    a.noPmShare = a.internalProjectFte === null;
 
     /* No BAU staff on projects means there is no delivery capacity to divide
        by. The tile, the BAU ceiling route, the corroboration check and the
@@ -2283,11 +2371,15 @@ window.submitToSender = function(payload){
 
     /* Corroboration (§2.9), derived at this endpoint. The comparison against
        the stated split is made against the pair of endpoints, in compute(). */
-    if(a.noBauCapacity || v.staff === 0 || v.bauSplitEstimate === null){
+    if(a.noBauCapacity || a.noPmShare || v.staff === 0 || v.bauSplitEstimate === null){
       a.derivedChangeShare = null; a.derivedRunShare = null;
     }else{
+      /* Both off the displayed internal FTE, and the run share off the
+         displayed change share, because the workings print "100% − <change>"
+         beside the run figure. A reader doing that subtraction on the page has
+         to arrive at the number the page prints. */
       a.derivedChangeShare = round1(a.internalProjectFte / v.staff * 100);
-      a.derivedRunShare    = round1((1 - a.internalProjectFte / v.staff) * 100);
+      a.derivedRunShare    = round1(100 - a.derivedChangeShare);
     }
 
     /* ---- Full cost (§3.1) ----
@@ -2299,7 +2391,7 @@ window.submitToSender = function(payload){
        cost is built on a UK salary survey, so it prices a UK department. Where
        the respondent reports in another currency we do not know their salaries
        and we do not convert. See COST_CURRENCY. */
-    if(a.noBauCapacity || !shared.priceCosts){
+    if(a.noBauCapacity || a.noPmShare || !shared.priceCosts){
       a.internalEffortCost = null; a.fullPortfolioCost = null; a.reportedShare = null;
     }else{
       a.internalEffortCost = a.internalProjectFte * shared.loaded.total;
@@ -2368,6 +2460,10 @@ window.submitToSender = function(payload){
        the flattering end alone. */
     c.adv = adverse(c.at);
     c.noBauCapacity = c.adv.noBauCapacity;
+    /* Band-independent: the share is asked or it is not, at both endpoints
+       alike. Named on the compute object so the copy does not have to
+       re-derive the condition at each of the places that state it. */
+    c.noPmShare = c.adv.noPmShare;
 
     /* Band-independent quantities. Concurrent projects per PM does not move
        with the band and is not a range. */
@@ -2537,6 +2633,10 @@ window.submitToSender = function(payload){
     /* Norm's wording. A band, not a free-text percentage — see §3.5 and the
        explanation the report carries. */
     { id:'bauPercent2',        req:true,  select:true },
+    /* Asked only where there are project managers, and required where it is
+       asked. `askedIf` is read by readAndValidate and by the field's own
+       visibility, so the two cannot drift apart. */
+    { id:'pmPercent2',         req:true,  select:true, askedIf:function(v){ return v.pms > 0; } },
     /* Norm's wording. Permanent staff are counted separately; this figure is
        excluded from every rated quantity (§3.2). */
     { id:'contractors',        req:false, min:0, max:20000,      what:'how many contractors work on projects' },
@@ -2569,6 +2669,11 @@ window.submitToSender = function(payload){
      between. */
   function bandHiOf(lo){ return lo + 9; }
   function bandLabel(v){ return v.bandLo === null ? '' : v.bandLo + '–' + v.bandHi + '%'; }
+  /* The same banding, for the project-manager share. One helper each rather
+     than one taking a pair of keys, because the two are read in different
+     places and a shared accessor would need the caller to name the quantity
+     anyway. */
+  function pmBandLabel(v){ return v.pmBandLo === null ? '' : v.pmBandLo + '–' + v.pmBandHi + '%'; }
 
   /* Legacy shared URLs carry a free-text percentage where the band now sits.
      Map it to the band containing it so an old link renders rather than errors.
@@ -2610,13 +2715,35 @@ window.submitToSender = function(payload){
     }
   }
 
-  function readAndValidate(){
+  /* The project-manager share is asked only where there are project managers.
+     Visibility and the requirement read the same rule, so a hidden field can
+     never be the thing holding a submission up. Called on every keystroke in
+     the count, on the reopened-link path, and from readAndValidate itself, so
+     the field on screen always matches the state the report was built from. */
+  function syncPmShareField(){
+    var asked = Number($('pms').value.trim() || 0) > 0;
+    $('f-pmPercent2').hidden = !asked;
+    if(!asked) setError('pmPercent2', '');
+    return asked;
+  }
+
+  /* `opts.reopened` is the link path and nothing else. A link saved before the
+     project-manager question existed carries no answer to it, and there is
+     nobody at the other end to ask: erroring would show that reader a form
+     where they were sent a result. The answer is treated as missing, the
+     figures that depend on it are suppressed, and the report says so — §1.1's
+     rule, applied to the one input that can arrive absent. On the form the
+     answer is required, because a blank there is an omission rather than a
+     link from before the question. */
+  function readAndValidate(opts){
+    var reopened = !!(opts && opts.reopened);
     var v = {}, ok = true, firstBad = null;
     RULES.forEach(function(r){
       var raw = $(r.id).value.trim(), msg = '';
       if(r.select){
-        if(!raw) msg = 'Pick an option so we can work out your position.';
-        v[r.id] = raw;
+        var asked = !r.askedIf || r.askedIf(v);
+        if(!raw && asked && !reopened) msg = 'Pick an option so we can work out your position.';
+        v[r.id] = asked ? raw : '';
       }else if(raw === ''){
         if(r.req) msg = 'We need ' + r.what + ' to work this out.';
         v[r.id] = OPTIONAL_NUMERIC[r.id] ? null
@@ -2637,6 +2764,14 @@ window.submitToSender = function(payload){
        by effective BAU capacity — §1.1. */
     v.bandLo = v.bauPercent2 === '' ? null : Number(v.bauPercent2);
     v.bandHi = v.bandLo === null ? null : bandHiOf(v.bandLo);
+
+    /* The project-manager band, on the same footing. Null where the question
+       was not asked (no project managers) and null where it was asked and not
+       answered; pmShare() tells those two apart from the count, because they
+       mean different things and only one of them suppresses anything. */
+    v.pmBandLo = v.pmPercent2 === '' ? null : Number(v.pmPercent2);
+    v.pmBandHi = v.pmBandLo === null ? null : bandHiOf(v.pmBandLo);
+    syncPmShareField();
 
     if(ok){
       if(v.staff > v.companyHeadcount){
@@ -3048,11 +3183,47 @@ window.submitToSender = function(payload){
          + ' Your project effort is shown in this report as full-time equivalents.';
   }
 
+  /* ---- The project-manager share, where a reopened link does not carry one ----
+     One string, used by every slot that would have shown a figure built on
+     internal project FTE, so a reader meets the same reason wherever they
+     first notice the absence. It states what is missing and what to do about
+     it, and it does not apologise for a link that was correct when it was
+     made. */
+  var PM_SHARE_MISSING_HOW = 'needs the share of your project managers’ time that goes to project management, '
+                           + 'which this link was saved before we asked for';
+
+  var PM_SHARE_MISSING_NOTE =
+      '<strong>This link was saved before we asked one of the questions.</strong> It does not say what share of '
+    + 'your project managers’ time goes to project management, and we no longer assume all of it. Everything '
+    + 'built on that figure is left out of this report: the cost of your internal project time, your portfolio '
+    + 'cost in total, and the run and change corroboration. Every other figure here is the one your link '
+    + 'carried. Answer the question in the form above and submit it again for the full report.';
+
+  /* The internal project FTE row of the workings, in both places the cost
+     block publishes it. Its two components are the DISPLAYED ones and so is
+     the total, so the addition a reader makes on the page comes out at the
+     figure beside it (§2.3). */
+  function internalFteRow(v, c){
+    var bauPart = spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' effective BAU FTE';
+    return ['Internal project FTE, permanent staff only',
+      v.pms > 0
+        ? spanText(pick(c, 'pmProjectFte'), fteFmt) + ' effective project manager FTE + ' + bauPart
+        : 'no project managers were reported, so ' + bauPart + ' alone',
+      spanText(pick(c, 'internalProjectFte'), fteFmt) + ' FTE'];
+  }
+
   function fullCostCopy(v, c){
     /* Suppressed with the BAU tile. With no BAU staff on project work there is
        no blended band to cost, and internal_project_fte falls back to the PM
        count alone — which is not what this figure claims to measure. §1.1. */
     if(c.noBauCapacity) return null;
+
+    /* Suppressed where the project-manager share was asked and not answered.
+       A reopened link made before that question existed carries no share, and
+       the figure this block is built on assumed one for as long as the tool
+       did not ask. Suppressed rather than assumed at 100%, which is the
+       assumption PR13 exists to remove. */
+    if(c.noPmShare) return null;
 
     /* Suppressed on a non-sterling answer. The whole block goes: the internal
        effort cost, the full portfolio cost and the reported share. The hero
@@ -3561,7 +3732,7 @@ window.submitToSender = function(payload){
         out.push({ key:'corroboration', rag:'healthy',
           title:'Your two answers about the same department agree',
           body:'You told us ' + v.bauSplitEstimate + '% of IT effort goes to run work. The people you named, '
-             + qty(v.pms, 'project manager', 'project managers') + ' and '
+             + spanText(pick(c, 'pmProjectFte'), fteFmt) + ' effective project manager FTE and '
              + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' effective BAU FTE against '
              + qty(v.staff, 'person', 'people') + ' in IT, imply ' + derived + '. Those two figures came from '
              + 'different questions and they corroborate, so the capacity figures on this page rest on a '
@@ -3575,22 +3746,25 @@ window.submitToSender = function(payload){
              + 'invisible to it. Where that is the case the gap is expected and there is nothing to correct, so '
              + 'this check carries no rating.' });
       }else{
-        /* §3. The Watch branch names the modelling assumption first, because
-           the assumption is the most likely cause of the gap it is reporting.
-           The derivation counts every project manager as a full-time equivalent
-           of change work. Where project managers also carry run work, derived
-           change comes out too high and derived run too low, which is exactly
-           the direction that lands here. Saying so turns a probable false
-           positive into a prompt the reader can act on.
+        /* §3. The Watch branch names the answer most likely to have produced
+           the gap, because the gap is more often an input than a finding.
 
-           Guarded on the PM count. With no project managers the assumption
-           cannot bite, and the only answer left to revisit is the BAU one. */
+           PR13 changed what that answer is. This check used to count every
+           project manager as a full-time equivalent of change work, and that
+           assumption was the first thing this branch named — where managers
+           also carried run work, derived change came out too high and derived
+           run too low, which is the direction that lands here. The share is
+           now asked rather than assumed, so the assumption is gone and what
+           remains are the two time bands the derivation reads. A band set at
+           the generous end of either pushes derived change up.
+
+           Guarded on the PM count, as before: with no project managers there
+           is only one band left to revisit. */
         var pmFirst = v.pms > 0
-          ? 'The most likely reason is that your project ' + plural(v.pms,'manager','managers')
-            + ' also ' + (v.pms === 1 ? 'carries' : 'carry') + ' run work. This check counts every project '
-            + 'manager as a full-time equivalent of change work. Where they spend part of the week on run '
-            + 'work instead, we derive too much change effort and too little run. If that is not what is '
-            + 'happening here, the other answer worth revisiting is your BAU headcount and time band. '
+          ? 'The two answers worth revisiting are the time bands. We derive change effort from the share of '
+            + 'your project ' + plural(v.pms,'manager’s','managers’') + ' time on project management and the '
+            + 'share of your BAU staff’s, and a band picked at the generous end of either puts derived change '
+            + 'above what you reported. '
           : 'You reported no project managers, so the whole of the derived change effort is your BAU staff '
             + 'on project work. The answer worth revisiting is your BAU headcount and time band. ';
         out.push({ key:'corroboration', rag:'atrisk',
@@ -4037,6 +4211,12 @@ window.submitToSender = function(payload){
     $('costCurrencyNote').innerHTML = cn;
     $('costCurrencyNote').hidden = !cn;
 
+    /* And the same for a reopened link that predates the project-manager
+       question. §1.1: a figure that is not computed says why, where it would
+       have been. */
+    $('pmShareNote').innerHTML = c.noPmShare ? PM_SHARE_MISSING_NOTE : '';
+    $('pmShareNote').hidden = !c.noPmShare;
+
     /* Label and description, joined by a full stop rather than an em-dash.
        Each description is a complete sentence that does not lean on the figure
        column beside it (§1.2), so the row survives a screen reader and the
@@ -4204,6 +4384,13 @@ window.submitToSender = function(payload){
     var currencyReason = costCurrencyCopy(v, c);
     var noBau = 'No BAU staff were reported against project work, so there is no blended time band to cost and '
               + 'no internal project effort to put a figure on.';
+    /* The reopened link that predates the project-manager question. Third
+       reason, and it has to be its own: the other two describe an answer we
+       have, and this one describes an answer we never asked for. */
+    var noPmShare = 'This report was reopened from a link saved before we asked what share of a project '
+                  + 'manager’s time goes to project management. We no longer assume all of it, so there is no '
+                  + 'internal project effort to put a figure on until that question is answered.';
+    var costReason = c.noBauCapacity ? noBau : (c.noPmShare ? noPmShare : currencyReason);
 
     /* 1. The full portfolio cost.
 
@@ -4221,7 +4408,7 @@ window.submitToSender = function(payload){
                  + '</strong>. ' + fc.shareLine };
     }else{
       one = { head:'What your portfolio costs in total', figure:'Not computed',
-              note: c.noBauCapacity ? noBau : (!c.priceCosts ? currencyReason : fc.why) };
+              note: (c.noBauCapacity || c.noPmShare || !c.priceCosts) ? costReason : fc.why };
     }
 
     /* 2. The gap to the sustainable pace. */
@@ -4234,8 +4421,7 @@ window.submitToSender = function(payload){
       three = { head:COST_EYEBROW_PART, figure:fc.effort,
                 note:fc.fteLine + ' ' + fc.ledger + fc.excludes };
     }else{
-      three = { head:COST_EYEBROW_PART, figure:'Not computed',
-                note: c.noBauCapacity ? noBau : currencyReason };
+      three = { head:COST_EYEBROW_PART, figure:'Not computed', note:costReason };
     }
 
     return [one, two, three];
@@ -4418,6 +4604,14 @@ window.submitToSender = function(payload){
       ['Total company headcount', n0(v.companyHeadcount)],
       ['Estimated total IT staff', n0(v.staff)],
       ['IT project managers at any one time', n0(v.pms)],
+      /* Asked only where there are project managers, so the echo says which of
+         the three it was: answered, not asked, or a link from before we asked.
+         "Not given" beside a required question would read as an omission the
+         respondent made. */
+      ['Blended average share of their time on project management',
+        v.pms === 0 ? 'Not asked, because you reported no project managers'
+      : v.pmBandLo === null ? 'Not in this link, which was saved before we asked'
+      : selText('pmPercent2')],
       ['Live projects right now', n0(v.live)],
       ['IT projects in a typical year', n0(v.annual)],
       ['Annual spend on IT projects, excluding internal staff time',
@@ -4455,6 +4649,17 @@ window.submitToSender = function(payload){
     var fx = [];
     var band = bandLabel(v);
 
+    /* The two capacity derivations, in the order the internal FTE row adds
+       them. The project-manager row appears only where the question was asked:
+       with no project managers there is no share to have shown, and a row
+       reading "0 × nothing" is a row about an absence. */
+    if(v.pms > 0){
+      fx.push(c.noPmShare
+        ? ['Effective project manager capacity on projects', PM_SHARE_MISSING_HOW, 'Not computed']
+        : ['Effective project manager capacity on projects',
+           n0(v.pms) + ' × ' + pmBandLabel(v),
+           spanText(pick(c, 'pmProjectFte'), fteFmt) + ' FTE']);
+    }
     fx.push(c.noBauCapacity
       ? ['Effective BAU capacity on projects', 'no BAU staff were reported against project work', 'Not computed']
       : ['Effective BAU capacity on projects',
@@ -4577,9 +4782,18 @@ window.submitToSender = function(payload){
       /* §3. The assumption, beside the arithmetic that rests on it rather than
          only in the branch that flags. A reader whose check came back Healthy
          should be able to see what was assumed to get there. */
+      /* §3. What the derivation rests on, beside the arithmetic rather than
+         only in the branch that flags. Until PR13 that was an assumption — every
+         project manager counted whole — and it is now the two answers the
+         respondent gave, or the one answer where there are no project
+         managers. */
       fx.push(['Change effort implied by the staff you named',
-        '(' + n0(v.pms) + ' + ' + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ') ÷ ' + n0(v.staff)
-          + ', counting each project manager as a full-time equivalent of change work',
+        (v.pms > 0
+          ? '(' + spanText(pick(c, 'pmProjectFte'), fteFmt) + ' + '
+            + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ') ÷ ' + n0(v.staff)
+            + ', on the two time bands you gave us'
+          : spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' ÷ ' + n0(v.staff)
+            + ', on the time band you gave us'),
         spanText(c.derivedChangeShare, pctFmt) + '']);
       fx.push(['Run effort implied by the same figures',
         '100% − ' + spanText(c.derivedChangeShare, pctFmt), spanText(c.derivedRunShare, pctFmt)]);
@@ -4590,6 +4804,7 @@ window.submitToSender = function(payload){
     }else if(v.bauSplitEstimate !== null){
       fx.push(['Run and change corroboration',
         c.noBauCapacity ? 'needs BAU staff on project work to derive a change share from, and you reported none'
+      : c.noPmShare     ? PM_SHARE_MISSING_HOW
                         : 'needs your IT staff count',
         'Not computed']);
     }
@@ -4601,14 +4816,17 @@ window.submitToSender = function(payload){
     if(c.noBauCapacity){
       fx.push(['Cost of the internal time on your projects',
         'needs BAU staff on project work and a time band to cost, and you reported no BAU staff', 'Not computed']);
+    }else if(c.noPmShare){
+      /* The project-manager capacity row is not repeated here: it is pushed
+         once at the top of the workings, with the same reason, beside the BAU
+         capacity row it belongs next to. */
+      fx.push(['Internal project FTE, permanent staff only', PM_SHARE_MISSING_HOW, 'Not computed']);
+      fx.push(['Cost of the internal time on your projects', PM_SHARE_MISSING_HOW, 'Not computed']);
     }else if(!c.priceCosts){
       /* The FTE row still publishes. It is the quantity the suppressed cost was
          built from, it is arithmetic on the respondent's own numbers, and the
          reason line above points the reader at it. */
-      fx.push(['Internal project FTE, permanent staff only',
-        qty(v.pms, 'project manager', 'project managers') + ' + '
-          + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' effective BAU FTE',
-        spanText(pick(c, 'internalProjectFte'), fteFmt) + ' FTE']);
+      fx.push(internalFteRow(v, c));
       fx.push(['Cost of the internal time on your projects',
         'our loaded cost per head is built on a UK salary survey, and you reported in '
           + (CURRENCY_NAME[v.currency] || v.currency), 'Not computed']);
@@ -4624,10 +4842,7 @@ window.submitToSender = function(payload){
         '25% × ' + n0(L.salary) + ', for workspace, equipment, licences, training and management', gbp(L.overhead)]);
       fx.push(['Loaded cost per head',
         n0(L.salary) + ' + ' + n0(Math.round(L.ni)) + ' + ' + n0(L.overhead), gbp(L.total)]);
-      fx.push(['Internal project FTE, permanent staff only',
-        qty(v.pms, 'project manager', 'project managers') + ' + '
-          + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' effective BAU FTE',
-        spanText(pick(c, 'internalProjectFte'), fteFmt) + ' FTE']);
+      fx.push(internalFteRow(v, c));
       fx.push(['Cost of the internal time on your projects',
         spanText(pick(c, 'internalProjectFte'), fteFmt) + ' × ' + gbp(L.total),
         moneySpan(pick(c, 'internalEffortCost'))]);
@@ -4793,9 +5008,16 @@ window.submitToSender = function(payload){
      organisation — the four tool-and-process codes are needed because the
      report cannot be rebuilt without them, which is what a permalink is for. */
   var PARAMS = { companyHeadcount:'ch', staff:'st', pms:'m', live:'l', annual:'a', spend:'sp', currency:'cu',
-                 bauStaff:'bs', bauPercent2:'bp', contractors:'ct', ticketsPerMonth:'tk', bauSplitEstimate:'sx',
-                 loadedSalary:'lc',
+                 bauStaff:'bs', bauPercent2:'bp', pmPercent2:'pp', contractors:'ct', ticketsPerMonth:'tk',
+                 bauSplitEstimate:'sx', loadedSalary:'lc',
                  toolset:'tl', resourceVisibility:'rv', budgetTracking:'bt', assignmentKnowledge:'ak' };
+
+  /* The ten band values the two band selects accept. prefill() matches against
+     this rather than mapping a stray number onto the nearest band: `bp` has a
+     legacy free-text form and `pp` has none, so a `pp` that is not one of these
+     was never written by this tool, and inventing an answer for it would put a
+     number in the cost figure that nobody gave us. Unrecognised is unanswered. */
+  var BAND_VALUES = ['1','11','21','31','41','51','61','71','81','91'];
 
   function permalink(v){
     var q = [];
@@ -4822,8 +5044,18 @@ window.submitToSender = function(payload){
         if(b === null) return;
         val = String(b);
       }
+      /* Links saved before PR13 carry no project-manager share at all, and
+         `permalink()` never writes an empty one, so absent and empty are the
+         same link: one made before we asked. Both leave the select on "Select a
+         band", which is what readAndValidate reads as unanswered. A value that
+         is not a band is treated the same way rather than mapped, because
+         nothing legitimate produces one. */
+      if(k === 'pmPercent2' && BAND_VALUES.indexOf(val) < 0) return;
       $(k).value = val; any = true;
     });
+    /* After the fields are filled, so the field's visibility reads the count
+       the link carried rather than the empty form behind it. */
+    syncPmShareField();
     return any;
   }
 
@@ -4873,6 +5105,13 @@ window.submitToSender = function(payload){
   $('currency').addEventListener('change', function(){
     $('curPrefix').textContent = CURRENCY[$('currency').value];
   });
+
+  /* The project-manager share appears with the first project manager and goes
+     again at zero. `input` rather than `change` so it tracks the count as it is
+     typed, and run once at load so the field starts in the right state on an
+     empty form. */
+  $('pms').addEventListener('input', syncPmShareField);
+  syncPmShareField();
 
   /* The sourced default has one home, in ASHE_MEDIAN, and the control is filled
      from it here. prefill() runs after this, so a shared link carrying an edited
@@ -5110,7 +5349,7 @@ window.submitToSender = function(payload){
   }
 
   if(prefill()){
-    var pre = readAndValidate();
+    var pre = readAndValidate({ reopened:true });
     if(pre.ok){
       lastV = pre.values; lastC = compute(lastV);
       render(lastV, lastC);
