@@ -4497,6 +4497,15 @@ section('PR12 §5 — the retired offer does not come back, on any page');
     /\btwo active projects\b/i, /\bmore than two\b/i, /\bneed a third\b/i,
     /\bnobody is counted\b/i, /\bno card until\b/i, /\bfree to start\b/i,
     /unlimited 14-day trial/i, /\b14-day trial\b/i, /\bfree for two\b/i,
+    /* Feature gating, added once the free-tier position was settled: at MVP the
+       free tier is the full product and the only limit is five managed
+       resources. The paid plan differs by headcount, not by capability. These
+       phrases are how the old model comes back, and it came back once already
+       under a different axis — "unlimited projects" survived as a paid
+       differentiator through the first pass of this PR because nobody was
+       looking for a feature claim, only for the retired offer wording. */
+    /part of the paid plan/i, /only (?:on|in) the paid/i, /paid plan only/i,
+    /upgrade to (?:get|unlock)/i, /\bpaid[- ]only\b/i,
   ];
 
   /* Comments are IN scope. PR7 item 5 moved the stale-name assertion to the
