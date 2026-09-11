@@ -48,7 +48,7 @@ raw gap is 9.065 which would round to 9.1, and the page must print 9.0.
 | File | What it does |
 |---|---|
 | `harness.mjs` | Loads the HTML, extracts the tool's IIFE, runs it in a `vm` against a DOM stub. Parses the real `<select>` options so `selText()` returns what a respondent read, and freezes `Date` so the baseline does not change at midnight. `loadTool(path, { search })` seeds `location.search`, which is the only way to reach the reopened-link path; the stub records `focus()`, `scrollIntoView()` and `setAttribute()` rather than swallowing them. |
-| `shapes.mjs` | The 603-shape corpus, the seven §4 fixtures, and the assertion shapes (boundaries, band straddles, toolset, contractor and project-manager-share invariance, suppression rows, singulars, notation thresholds, corroboration states, currency options, budget branches, loaded-cost edits, legacy band decoding). |
+| `shapes.mjs` | The 603-shape corpus, the seven §4 fixtures, and the assertion shapes (boundaries, band straddles, toolset, contractor and project-manager-share invariance, suppression rows, singulars, notation thresholds, corroboration states, currency options, budget branches, loaded-cost edits, legacy band decoding, the two epsilon cases, and `reproducibilityShapes()` — the operands no fixture makes fractional). |
 | `oracle.mjs` | The formulas, written from the spec. Never imports from the page. |
 | `capture.mjs` | Drives one shape through the page's own submit handler, then reads back every node it wrote — screen, printed report and Sender payload — plus the static printed-report copy the page does not write. |
 | `baseline.mjs` | Writes the digest baseline. |
@@ -77,6 +77,15 @@ section without failing anything: every generated shape that does not answer the
 new question is skipped. PR13 did exactly that — adding the project-manager
 share took the rendered count from 400 to 97 and not one assertion failed. The
 drop showed up only in the suite's own total, which nobody reads as coverage.
+
+That is master §0.18 now, and it applies to every corpus whose size is produced
+by code rather than written out shape by shape. PR14 audited the suite for the
+rest and floored two more: the §3.8 process cross product, whose 252
+combinations were counted into a log and never asserted, and the §0.17
+population, which asserted how many shapes it CONSTRUCTED and not how many
+rendered — two different numbers, and only the second is coverage. Four smaller
+loops over enumerated sets were skipping silently too; those take the stronger
+form instead and fail on the skip rather than count it.
 
 Every corpus shape reports in sterling. That is deliberate — the corpus exists to
 hold one thing still while another moves — but it is also how the currency bug
@@ -145,6 +154,55 @@ On the **form** the answer is required where it is asked, because a blank there
 is an omission rather than a link from before the question. `readAndValidate`
 takes a `reopened` flag and that is the only thing it changes.
 
+## Every printed calculation comes out
+
+The workings exist so a sceptical reader can redo our arithmetic, which makes a
+row whose printed operands do not produce its printed result worse than a wrong
+figure in the body: it is the section written to be checked, failing the check.
+
+PR13 §4 asserted the three **sums**. PR14 §2 asserts every calculation of any
+shape — 15,883 of them across 689 shapes — by mapping each row label to a regex
+capturing that row's own printed operands and to the arithmetic the cell states,
+written from the cell and never from the tool, on the same rule `oracle.mjs`
+follows. Rows that state rather than compute are named with the reason they
+carry no arithmetic; **a label in neither list fails**, so a row added later
+cannot arrive unchecked, and a row whose wording changes fails at its own regex
+rather than passing over an empty match (§0.17). Comparison is at the precision
+the row published, read off the printed figure itself: three decimals where it
+printed three, millions where it printed an `m`. The claim is not that our float
+matches theirs. It is that a reader doing the sum on the page arrives at the
+figure on the page.
+
+The one row the brief named revealed four more, none of which had been read:
+
+| row | what it printed | what it does now |
+|---|---|---|
+| the BAU tile's ratio | `45 ÷ 5.0` beside 9.1 | `45 ÷ 4.96`, the divisor at the precision the division used |
+| the contractor companion | the same divisor, one row down | the same fix, through the same helper |
+| the internal effort cost | `10.8–13.0 × £69,251` against a product built on £69,251.40 | the loaded cost carries its pence **here and nowhere else**, because this is the one row that multiplies by it |
+| employer NI below the threshold | `15% × (4,000 − 5,000)` beside £0 | the floor is the rule, so the branch states the rule |
+| the full portfolio cost | `£519,386 + £367,000` beside £886,385 | one rounding, the display's: `Math.round` and `roundN` disagree at 519,385.49999999994 |
+
+The loaded cost is `1.4 × salary − 750`, so it lands on a whole pound only for a
+salary that is a multiple of five: four ordinary answers in five carry pence, and
+the third and fifth rows above are reachable at £50,001. Because the printed
+operand has to be bounded for a reader to multiply it, the loaded cost is held
+to the penny at source — money is denominated in pence, and thousandths of one
+are a float artefact. No fixture figure moves: `salaryForLoadedCost(65000)`
+still gives exactly £65,000, and nothing on the 603-shape corpus changes value.
+
+`reproducibilityShapes()` reaches each of these, because no fixture does. Every
+fixture happens to produce a whole tenth of effective BAU FTE and a whole pound
+of loaded cost, so every calculation reproduces on them by luck of the values.
+That is the third time this release has found the same shape of blindness, after
+the contractor routing and the currency gate.
+
+**What did not change is the rated figure.** `projects_per_fte` still divides by
+the unrounded effective FTE, which master §2.6 ties the growth ceiling's divisor
+to and PR13 §5 forbids moving, and that is asserted on the shapes where the
+rounded and unrounded divisors are different numbers — the only place the claim
+has content.
+
 ## Why the internal FTE is rounded before anything is built on it
 
 The workings publish three sums: `<pm FTE> + <BAU FTE>` with their total, that
@@ -165,11 +223,13 @@ is that displayed total times the loaded cost, and the run share is
 corpus and every branch set, at both endpoints.
 
 `bau_effective_fte` stays **raw**. It is the divisor the BAU tile and the growth
-ceiling publish, and rounding it would move a rating, which PR13 §5 forbids. The
-consequence is that the BAU tile's own published division — "45 ÷ 4.9" printing
-9.1 where the displayed division gives 9.2 — is the same class of fault, is
-reachable today on the straddle shapes, and is recorded in the master's §11
-rather than fixed here.
+ceiling publish, and rounding it would move a rating, which PR13 §5 forbids.
+
+The consequence was that the BAU tile's own published division — "45 ÷ 4.9"
+printing 9.1 where the displayed division gives 9.2 — was the same class of
+fault. PR14 §2 closed it from the other side: the quantity is still raw, and the
+workings print it at the precision the division used, so the row now reads
+"45 ÷ 4.96". The rated figure did not move and is asserted not to have.
 
 ## Why there are seven fixtures
 
@@ -207,6 +267,16 @@ arithmetically false, which is where the error came from.
 The consequence was not cosmetic. The tool printed a stated change share of 47%
 beside a derived 24.9%–28.9% and headed the block "we derive more change effort
 than you reported", and it rated the one case the asymmetry was built to excuse.
+
+**The two labels in the workings row went on reading the wrong way round until
+PR14.** The check, its branches and the card copy were all corrected at PR7; the
+row that prints the window and the respondent's own figure, three characters
+apart, kept calling a figure above the window "Below the window". Nothing in a
+46,085-assertion suite read the label against the comparison beside it, because
+every assertion over that row was a string. The PR14 §1 section derives the
+expected direction from the two figures the cell itself prints, on both
+branches, and asserts the card agrees with the row on each — so the two surfaces
+cannot disagree again without failing.
 
 Above the window stays a Watch. A department whose project managers also carry
 run work has its change share overstated and lands there, which is an expected
@@ -246,6 +316,26 @@ meant finding out what it actually tested. `epsilonShape()` pins £1,005,000,
 where `1.005 × 100` is 100.49999999999999 and the two round differently, and the
 mutation — removing `+ 1e-9` from the tool — fails on it. That mutation left the
 whole suite green before.
+
+**One pinned case is one value, not the epsilon.** PR14 §3 swept the tool with
+and without `+ 1e-9` across 1,874 shapes and found the epsilon load-bearing at
+`round1()` as well, where it moves a **rated tile figure** on whole-number
+answers rather than a money notation on a contrived salary: seven BAU staff at
+the top of the 71–80% band is 5.6 effective FTE, which is 5.6000000000000005 in
+IEEE 754, so 77 ÷ 5.60 comes out 13.749999999999998 and the tile publishes 13.7
+where a reader dividing 77 by the 5.60 printed beside it gets 13.8.
+`epsilonRatioShape()` pins it. The mutation now fails at two call sites, on two
+kinds of figure, on inputs one of which nobody would type and one of which
+anybody might.
+
+**Two tolerances in `compute()` are exercised by nothing**, and PR14 listed them
+rather than changing them: `ifloor`'s `+ 1e-9` and `redThreshold`'s `− 1e-9`.
+Both can be removed with the suite still green. `redThreshold`'s own comment
+already says it is defensive and that nothing has been observed to need it;
+`ifloor`'s cites a specific product that no shape reaches. A third is only half
+exercised: `CORROBORATION_TOLERANCE` survives a change from 3 to 4 and fails at
+0 and at 12, so a one-point drift in the window is invisible. All three are in
+the master's §11.
 
 ## Why the fixtures carry an odd-looking salary
 

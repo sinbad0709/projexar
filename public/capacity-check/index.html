@@ -2086,11 +2086,24 @@ window.submitToSender = function(payload){
      One helper at every precision, so a figure rounded for display and the same
      figure rounded for arithmetic cannot drift apart (§2.3).
 
-     The epsilon earns its keep here. The hero figure £1,095,000 rendered in
-     millions is 1.095, which in IEEE 754 is 1.09499999999999997… and rounds to
-     £1.09m without it. The fixture asserts £1.10m, which is what a reader
-     dividing 1,095,000 by a million and rounding to two places gets. Do not
-     remove it. */
+     The epsilon earns its keep here, and the reason given for it until PR14 was
+     not one. It said that £1,095,000 in millions is 1.095, which in IEEE 754 is
+     1.09499999999999997 and rounds to £1.09m without it. That is true of the
+     LITERAL 1.095 and not of 1095000/1e6, which multiplies to exactly 109.5 and
+     rendered £1.10m either way: the assertion that cited it passed for a reason
+     unrelated to its own label, and removing the epsilon left the whole suite
+     green. Two real cases are pinned now, at two call sites and on two kinds of
+     figure:
+
+       roundN(x, 2), money      £1,005,000 renders £1.01m, because 1.005 × 100
+                                is 100.49999999999999. `epsilonShape()`.
+       round1(), a ratio        seven BAU staff at 80% is 5.6000000000000005,
+                                so 77 ÷ 5.60 is 13.749999999999998 and the
+                                rated tile publishes 13.7 without the epsilon
+                                where the reader's own division gives 13.8.
+                                `epsilonRatioShape()`.
+
+     Do not remove it, and if you are about to, run the mutation: both fail. */
   function roundN(x, n){ var p = Math.pow(10, n); return Math.round(x * p + 1e-9) / p; }
   function round1(x){ return roundN(x, 1); }
 
@@ -2317,7 +2330,15 @@ window.submitToSender = function(payload){
   function loadedCostOf(salary){
     var ni = NI_RATE * Math.max(0, salary - NI_THRESHOLD);
     var oh = OVERHEAD_RATE * salary;
-    return { salary:salary, ni:ni, overhead:oh, total:salary + ni + oh };
+    /* The total is money and is held to the penny (PR14 §2). The workings
+       multiply the displayed internal FTE by this figure and print it, so its
+       precision has to be bounded or the row cannot print an operand a reader
+       can multiply: a salary entered with pence carries three decimal places
+       into 1.4 × salary − 750, and one entered with more carries more. Whole
+       salaries, which is every production answer the form's step suggests and
+       every fixture, reach at most one decimal place and are untouched by
+       this; £65,000 stays exactly £65,000. */
+    return { salary:salary, ni:ni, overhead:oh, total:roundN(salary + ni + oh, 2) };
   }
 
   /* ---- Contractors (§3.2) ----
@@ -2403,8 +2424,16 @@ window.submitToSender = function(payload){
       if(shared.sums){
         /* §2.2. The sum uses the rounded, displayed internal figure, so a
            reader adding the two numbers the page prints gets the total the
-           page prints. */
-        a.fullPortfolioCost = Math.round(a.internalEffortCost) + v.spend;
+           page prints.
+
+           roundN, not Math.round, and PR14 §2 is why. The display rounds
+           through roundN and this rounded through Math.round, and the two
+           disagree wherever the cost lands a float hair below a half: at a
+           salary of £50,001 the internal effort cost comes out
+           519,385.49999999994, the workings print "£519,386 + £367,000" and
+           the total beside it read £886,385. Two roundings of one quantity is
+           the whole of the fault; there is one now. */
+        a.fullPortfolioCost = roundN(a.internalEffortCost, 0) + v.spend;
         a.reportedShare     = v.spend / a.fullPortfolioCost * 100;
       }else{
         a.fullPortfolioCost = null; a.reportedShare = null;
@@ -2812,6 +2841,52 @@ window.submitToSender = function(payload){
   var pctFmt  = function(x){ return d1(x) + '%'; };
   var fteFmt  = function(x){ return d1(x); };
   var pct0Fmt = function(x){ return n0(x) + '%'; };
+
+  /* ---- Operands printed in the workings (PR14 §2) ----
+     The workings exist so a sceptical reader can redo our arithmetic, so every
+     calculation they print has to come out from the figures printed beside it.
+     Where a quantity is rounded for display and the calculation used the
+     unrounded one, printing the display rounding publishes a sum that does not
+     reproduce: "45 ÷ 4.9" against 9.1 where the division a reader performs
+     gives 9.2. That is §9.1's fault, a figure the tool publishes contradicted
+     by another figure the tool publishes, in the one section written for
+     someone checking us.
+
+     Both helpers print the extra place only where the quantity carries one, so
+     a figure that is already a whole tenth or a whole pound renders exactly as
+     it does everywhere else and no figure in the fixture set moves.
+
+     bau_effective_fte is a headcount times a whole-percent band endpoint, so it
+     is exact to two places and never needs a third. It stays RAW on the compute
+     object: it is the divisor the BAU tile and the growth ceiling publish, and
+     rounding it there would move a rating, which PR13 §5 forbids. What changes
+     is what the workings print it as. */
+  var d2 = function(v){
+    var r = roundN(v, 2), i = Math.floor(Math.abs(r)), f = Math.round((Math.abs(r) - i) * 100);
+    return (r < 0 ? '-' : '') + i.toLocaleString('en-GB') + '.' + (f < 10 ? '0' : '') + f;
+  };
+
+  /* Both endpoints take the same precision. Two figures side by side in one
+     expression carrying different numbers of decimals read as two different
+     kinds of number, which is the argument d1's own comment makes for a column
+     and it holds at least as strongly inside a range: "4.96–6.4" invites the
+     reader to wonder what the second one is. */
+  function fteSpanExact(r){
+    var s = span(r, 2);
+    var whole = s[0] === roundN(s[0], 1) && s[1] === roundN(s[1], 1);
+    return spanText(r, whole ? fteFmt : d2, 2);
+  }
+
+  /* The loaded cost per head as an operand. The cost row multiplies the
+     displayed internal FTE by it, and for any whole-pound salary the loaded
+     cost is 1.4 × salary − 750, which carries pence four times in five. The row
+     above publishes the same quantity in whole pounds, which is the figure
+     that goes in a business case; the pence appear once, here, because the
+     multiplication beside them used them. */
+  function loadedOperand(total){
+    var p = roundN(total, 2);
+    return p === Math.round(p) ? gbp(p) : '£' + d2(p);
+  }
 
   /* A rating pair. Where both endpoints land in the same band there is one
      word; where they straddle a boundary both are named, adverse end first. */
@@ -3722,10 +3797,14 @@ window.submitToSender = function(payload){
     var out = [];
 
     /* Corroboration (§2.9), moved here from the findings list where PR1 parked
-       it. Asymmetric: above the window is a note carrying no rating, because
+       it. Asymmetric: BELOW the window is a note carrying no rating, because
        the derivation counts only project managers and BAU staff on projects and
-       is blind to anyone delivering projects without a BAU role. Reading that
-       as a fault would publish a confident wrong finding. */
+       is blind to anyone delivering projects without a BAU role, so its change
+       share comes out understated and, through 100 − x, its run share
+       overstated: the window sits above the truth and the stated figure below
+       it. Reading that as a fault would publish a confident wrong finding.
+       This comment said "above" until PR14 and was wrong in the same way the
+       workings labels were; the branches below have always been right. */
     if(c.corroboration !== null){
       var derived = spanText(c.derivedRunShare, pctFmt);
       if(c.corroboration === 'healthy'){
@@ -4669,12 +4748,18 @@ window.submitToSender = function(payload){
       fx.push([METRIC_PM, n0(v.live) + ' ÷ ' + n0(v.pms), d1(c.pmLoad)]);
     }
     if(!c.noBauCapacity){
+      /* §2. Both of these divide by the RAW effective FTE, so both print it at
+         the precision the division used. Nowhere else does: the internal FTE
+         row and the corroboration derivation are built on the DISPLAYED figure
+         per §2.3, and printing anything else beside them would break the sum
+         they already reproduce. */
       fx.push([METRIC_FTE,
-        n0(v.live) + ' ÷ ' + spanText(pick(c, 'bauEffectiveFte'), fteFmt),
+        n0(v.live) + ' ÷ ' + fteSpanExact(pick(c, 'bauEffectiveFte')),
         spanText(pick(c, 'projectsPerFTE'), fteFmt)]);
       if(c.at[E_LO].deliveryPerFTE !== null){
         fx.push(['Live projects per delivery FTE, including contractors (unrated)',
-          n0(v.live) + ' ÷ (' + spanText(pick(c, 'bauEffectiveFte'), fteFmt) + ' + ' + n0(v.contractors) + ')',
+          n0(v.live) + ' ÷ (' + fteSpanExact(pick(c, 'bauEffectiveFte'))
+            + ' + ' + n0(v.contractors) + ')',
           spanText(pick(c, 'deliveryPerFTE'), fteFmt)]);
       }
     }
@@ -4799,8 +4884,18 @@ window.submitToSender = function(payload){
         '100% − ' + spanText(c.derivedChangeShare, pctFmt), spanText(c.derivedRunShare, pctFmt)]);
       fx.push(['Corroboration window, ±3 points on the derived range',
         d1(c.corroborationLo) + '% to ' + d1(c.corroborationHi) + '%, against your ' + v.bauSplitEstimate + '%',
+        /* §2.9's two outcomes, stated the way round the check assigns them.
+           `note` is the branch the STATED figure falls BELOW the window on and
+           `watch` the one it falls above, and these two labels read the other
+           way round from PR1 until PR14: a reader who accepted the card and
+           turned here to see how we got there found the row contradicting a
+           figure printed three characters to its left. The check, its branches
+           and the card copy were right throughout, which is what made it
+           invisible. Derived from the comparison in the assertion rather than
+           pinned as a string, because a pinned string passes against an
+           inverted label for as long as the label stays inverted. */
         c.corroboration === 'healthy' ? 'Inside the window'
-          : (c.corroboration === 'note' ? 'Above the window, stated not rated' : 'Below the window')]);
+          : (c.corroboration === 'note' ? 'Below the window, stated not rated' : 'Above the window')]);
     }else if(v.bauSplitEstimate !== null){
       fx.push(['Run and change corroboration',
         c.noBauCapacity ? 'needs BAU staff on project work to derive a change share from, and you reported none'
@@ -4836,15 +4931,22 @@ window.submitToSender = function(payload){
           ? 'ONS ASHE ' + ASHE_YEAR + ', ' + ASHE_GROUPING + ', UK full-time median gross annual pay'
           : 'your figure, replacing the ONS ASHE ' + ASHE_YEAR + ' default of ' + gbp(ASHE_MEDIAN),
         gbp(L.salary)]);
+      /* §2. Below the secondary threshold nothing is due, and the subtraction
+         that produced that is negative: a cell reading "15% × (4,000 − 5,000)"
+         beside £0 asks the reader to redo a calculation whose answer is
+         −£150. The floor is the rule, so the branch states the rule. */
       fx.push(['Employer National Insurance',
-        '15% × (' + n0(L.salary) + ' − 5,000), the 2026/27 secondary rate and threshold, gov.uk', gbp(L.ni)]);
+        L.salary > NI_THRESHOLD
+          ? '15% × (' + n0(L.salary) + ' − 5,000), the 2026/27 secondary rate and threshold, gov.uk'
+          : 'nothing is due: your figure does not reach the 2026/27 secondary threshold of £5,000, gov.uk',
+        gbp(L.ni)]);
       fx.push(['Overhead, ProjexaR’s judgement rather than a sourced figure',
         '25% × ' + n0(L.salary) + ', for workspace, equipment, licences, training and management', gbp(L.overhead)]);
       fx.push(['Loaded cost per head',
         n0(L.salary) + ' + ' + n0(Math.round(L.ni)) + ' + ' + n0(L.overhead), gbp(L.total)]);
       fx.push(internalFteRow(v, c));
       fx.push(['Cost of the internal time on your projects',
-        spanText(pick(c, 'internalProjectFte'), fteFmt) + ' × ' + gbp(L.total),
+        spanText(pick(c, 'internalProjectFte'), fteFmt) + ' × ' + loadedOperand(L.total),
         moneySpan(pick(c, 'internalEffortCost'))]);
 
       if(c.sums){
