@@ -51,7 +51,7 @@
     fullBilling: "Start with 14 days of unlimited access, in your own tenant with your own data. "
         + "After that, ProjexaR stays free for up to five managed resources, "
         + "with no time limit.",
-    short: "Free for five. 14 days unlimited to start.",
+    short: "Free for up to five people. 14 days unlimited to start.",
     /* The boundary. Not a half of the offer and never shown as one: it is the
        rule the offer is silent about, and the rule a prospect at six people
        discovers at the point of purchase if it is not written down. The five

@@ -30,16 +30,19 @@ Any commit that verifies, disproves or changes the status of an item in the mast
 | `capacity-check-pr7-brief-sep-2026.md` | PR7 revision 2. The response to the independent audit of 9 September |
 | `capacity-check-pr7-addendum-sep-2026.md` | Rules on PR7's two stop conditions. Read with the PR7 brief |
 | `capacity-check-og-image-brief-sep-2026.md` | Open Graph image |
-| `claude_capacity-check-pr8-brief-sep-2026.md` | PR8. The printed report rebuilt as a forwardable document |
-| `claude_capacity-check-pr9-brief-sep-2026.md` | PR9. The Worker gate, Turnstile, and the covering note |
-| `claude_capacity-check-pr10-brief-sep-2026.md` | PR10. One reading measure, one notation per figure |
+| `capacity-check-pr8-brief-sep-2026.md` | PR8. The printed report rebuilt as a forwardable document |
+| `capacity-check-pr9-brief-sep-2026.md` | PR9. The Worker gate, Turnstile, and the covering note |
+| `capacity-check-pr10-brief-sep-2026.md` | PR10. One reading measure, one notation per figure |
 | `capacity-check-pr11-brief-sep-2026.md` | PR11. The Sender audit's launch blockers |
 | `capacity-check-pr12-brief-sep-2026.md` | PR12. One offer, stated once, everywhere |
+| `capacity-check-pr13-brief-sep-2026.md` | PR13 revision 2. The project manager time-share |
 | `capacity-check-pr14-brief-sep-2026.md` | PR14. Arithmetic a reader can check. Carries a provenance marker: committed from the as-issued copy, because it had no file |
+| `capacity-check-pr15-brief-sep-2026.md` | PR15. The review pass. Carries a provenance marker: committed from the as-issued copy |
+| `capacity-check-pr15-addendum-sep-2026.md` | The Panko correction and six decisions. Read with the PR15 brief |
 | `capacity-check-sender-audit-sep-2026.md` | The Sender audit of 10 September. Its §5 carries the launch blockers PR11 and PR12 answer |
 | `free-tier-analysis-sep-2026.md` | The offer decision of 1 September, and the definition of a managed resource |
 
-**The PR13 brief is not here.** It was never committed, and no copy of it survives outside the session it was issued in, so it cannot be indexed. PR13's substance is recorded in the master's §2 and §11 and in the render suite's README; the brief itself is missing and should be placed here if a copy exists. PR14's was in the same state and is committed, marked with where the copy came from.
+**The PR13 brief is here now.** It was missing when PR14 wrote the paragraph this replaces: never committed, with no copy outside the session it was issued in. A copy of revision 2 has since been recovered and placed in this directory, so the set is complete from PR1 to PR15. **The three `claude_`-prefixed rows are gone too**, renamed to the directory's one convention rather than indexed under two. What the index assertion still cannot catch is a document that was never placed here at all, which is what the missing PR13 brief was: it leaves no trace in either the directory or the index, so a passing run must not be read as "the specification set is complete".
 
 **Two naming conventions are in use, and PR8 to PR10 are the ones out of step.** `f8437b9` renamed the PR11 and PR12 briefs to drop the `claude_` prefix and called that the convention; the three older files still carry it. They are indexed under the names they actually have. Renaming them is a separate change and is not made here.
 
