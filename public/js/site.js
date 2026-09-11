@@ -23,6 +23,49 @@
     AUD: { sym: "A$", m: 20, y: 200 }
   };
 
+  /* --- The offer, stated once. PR12.
+
+         The decision of 1 September is one sequence, not two offers: 14 days
+         of unlimited access in the customer's own tenant, contracting on day
+         14 to the free tier of five managed resources. Neither half is ever
+         shown alone. The sandbox half by itself reads as access that expires;
+         the free half by itself understates day one. Presenting one half is
+         what made the old copy contradict itself from page to page, and the
+         PR12 §5 guard bans the retired wording outright, comments included,
+         which is why this one describes it rather than quoting it.
+
+         Two registers of one statement, per PR7 §6.2: the billing unit stays
+         on the pricing page and in the licence line, and prose elsewhere talks
+         about people. `full` and `fullBilling` are the same sentence in the
+         two registers; `short` is register-neutral and used verbatim in both.
+
+         The site has no build step, so this constant is not a partial that
+         pages are compiled from. Every [data-offer] element carries the same
+         text inline as its no-JS and crawler fallback, and check.mjs asserts
+         the inline text matches this object byte for byte. That assertion, not
+         this object, is what stops the two drifting apart. ------------------ */
+  var OFFER = {
+    full: "Start with 14 days of unlimited access, in your own tenant with your own data. "
+        + "After that, ProjexaR stays free for up to five people with capacity recorded, "
+        + "with no time limit.",
+    fullBilling: "Start with 14 days of unlimited access, in your own tenant with your own data. "
+        + "After that, ProjexaR stays free for up to five managed resources, "
+        + "with no time limit.",
+    short: "Free for five. 14 days unlimited to start.",
+    /* The boundary. Not a half of the offer and never shown as one: it is the
+       rule the offer is silent about, and the rule a prospect at six people
+       discovers at the point of purchase if it is not written down. The five
+       are a cap that ends, not an allowance that persists, because
+       licenceCount is the whole count with nothing netted off it.
+
+       Computed from nothing and carrying no price, so it states the rule
+       rather than any one organisation's position under it. It publishes no
+       number, which is why the printed report's accounted-numbers table is
+       unaffected by it. */
+    boundary: "Above five managed resources the free plan ends, "
+        + "and every managed resource is licensed."
+  };
+
   var STORE_CURRENCY = "projexar-currency";
   var STORE_ANNUAL = "projexar-annual";
 
@@ -100,6 +143,17 @@
     if (document.querySelector("[data-price]")) renderPrices();
   }
 
+  /* Stamp the offer over every [data-offer] element. The inline text is already
+     correct, so this changes nothing on a healthy page; it exists so that a
+     page edited by hand is corrected at runtime rather than left to contradict
+     the others until someone notices. */
+  function initOffer() {
+    all("[data-offer]").forEach(function (el) {
+      var key = el.getAttribute("data-offer");
+      if (OFFER[key] !== undefined) el.textContent = OFFER[key];
+    });
+  }
+
   /* ===========================================================================
      Tabs — the four pillars on Home and Product
      =========================================================================== */
@@ -140,21 +194,26 @@
      /start — the three-step workspace wizard
      =========================================================================== */
 
+  /* PR12. Step 1's sub is the /start offer line, and /start is the page a
+     prospect reads straight after a promise made somewhere else, so it carries
+     the full statement rather than the short form. Steps 2 and 3 no longer
+     count projects: projects are unlimited, and the five that are counted are
+     people with capacity recorded. */
   var STEP_COPY = {
     1: {
       label: "Step 1 of 2",
       title: "Create your workspace",
-      sub: "Two projects, free forever. No card, no time limit."
+      sub: OFFER.full
     },
     2: {
       label: "Step 2 of 2",
-      title: "Set up your first two projects",
-      sub: "Bring in as many people as you like — nobody is counted on the free plan."
+      title: "Set up your first project",
+      sub: "Run as many projects as you like. It is the people with capacity recorded that are counted, and viewers and approvers are never counted at all."
     },
     3: {
       label: "Done",
       title: "You're all set",
-      sub: "Two active projects, and no card until you need a third."
+      sub: OFFER.short
     }
   };
 
@@ -218,6 +277,7 @@
 
   function init() {
     initCommercials();
+    initOffer();
     initTabs();
     initStart();
     initNav();

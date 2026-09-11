@@ -47,6 +47,19 @@ Every open item from the brief has been settled — see §10. **Do not reopen a 
 
     The test is one line and it is mechanical: **break the behaviour on purpose and watch the assertion fail.** An assertion that passes against a mutation is not an assertion. This is the cheapest check in the release and all three of the above would have been caught by it on the day they were written.
 
+17. **An assertion whose operands come from extraction must fail when the extraction fails.** *(PR12 §4, added 11 September 2026.)* §0.16 is about a stubbed API that records nothing. This is its text twin: a selector, regex or slice that stops matching returns `undefined` or an empty string, and the assertion built on it then passes for a reason that has nothing to do with the claim.
+
+    Two shapes, and the second is the one the suite is full of:
+
+    - **A comparison of two extracted values.** If both extractions fail together — and they usually do, because they are usually adjacent markup edited in the same change — the comparison becomes `eq(undefined, undefined)` and passes. The two things it compared could by then say anything at all.
+    - **A negative test over an extracted value.** `!has(x, …)`, `!/…/.test(x)` and `ok(!…)` all pass when `x` is empty. An absence asserted over nothing is not an absence, and a guard built from negative claims is built entirely from this shape.
+
+    This is the fourth instance of the family §0.16 names, and the first where a comparison silently compared nothing to nothing: PR7 §7.5 asserted that the Capacity Check's two CTA subs carry the same offer wording, and both its patterns were anchored to a bare `class` attribute. PR12 added a `data-offer` attribute to both elements, so both patterns stopped matching in the same commit and the comparison passed on a page where the two subs were free to disagree.
+
+    **The rule.** Every operand is asserted to have been found *before* the comparison or the negative test runs. Not as a courtesy check afterwards, and not folded into the same assertion, because a combined assertion cannot distinguish "found and correct" from "not found".
+
+    **The test, and it differs from §0.16's.** Break the *extraction*, not the content: rename the class, move the attribute, change the id. A mutation of the content proves the assertion reads the right thing; only a mutation of the selector proves it notices when it reads nothing.
+
 ---
 
 ## 1. Named quantities — single source of truth

@@ -43,6 +43,72 @@ function eq(actual, expected, label) {
 }
 function section(name) { console.log(`\n── ${name}`); }
 
+/* =============== §0.17 — extraction fails loudly, or not at all ==============
+
+   A selector, regex or slice that stops matching returns undefined or an empty
+   string, and every assertion built on it then passes for a reason that has
+   nothing to do with the claim. Two shapes, and PR12 hit the first:
+
+   - A comparison of two extracted values. Both extractions usually fail
+     together, because they are usually adjacent markup edited in one change,
+     and eq(undefined, undefined) passes. PR7 §7.5 compared the Capacity
+     Check's two CTA subs by patterns anchored to a bare class attribute; PR12
+     added data-offer to both elements and the comparison went on passing on a
+     page where the two subs were free to disagree.
+   - A negative test over an extracted value. !has(x, …) and !/…/.test(x) are
+     true of the empty string, so an absence asserted over nothing is not an
+     absence. PR12's own §5 guard is built almost entirely from negative
+     claims, which is why it is audited with the rest.
+
+   These four helpers are the mechanism rather than a convention. Each asserts
+   the extraction succeeded BEFORE the caller sees the value, so a selector
+   that stops matching produces a named failure at the extraction site instead
+   of a silent pass at every assertion downstream. They are deliberately not
+   folded into the assertions they feed: a combined check cannot tell "found
+   and correct" apart from "not found", which is the whole defect.
+
+   The test for these differs from §0.16's. Break the EXTRACTION, not the
+   content: rename the class, move the attribute, change the id. Mutating
+   content proves an assertion reads the right thing; only mutating the
+   selector proves it notices when it reads nothing. */
+
+/* One capture group out of a regex. Returns undefined on failure, having
+   already failed the run, so callers may still compare it. */
+function grab(text, re, label, group = 1) {
+  const m = String(text).match(re);
+  ok(m !== null, `${label} — extraction found`, String(re));
+  return m === null ? undefined : m[group];
+}
+
+/* The slice between two markers. Asserts both were found, because slice() with
+   a -1 start silently returns the wrong thing rather than nothing, and an
+   assertion over the wrong slice is the defect PR8 §5 already caught once. */
+function between(text, from, to, label) {
+  const t = String(text);
+  const i = t.indexOf(from);
+  const j = to === undefined ? t.length : t.indexOf(to, i < 0 ? 0 : i);
+  const okFrom = ok(i >= 0, `${label} — slice start found`, from);
+  const okTo = ok(j >= 0, `${label} — slice end found`, String(to));
+  if (!okFrom || !okTo) return '';
+  const out = t.slice(i, j);
+  ok(out.length > 0, `${label} — slice is not empty`);
+  return out;
+}
+
+/* The capture-node population is NOT handled here. `cap.print['id']` is a
+   plain property read at 88 sites, and converting each one buys less than the
+   two structural assertions in the §0.17 section below, which read this file's
+   own source and cover every site at once: that each id named is a node the
+   harness captures, and that each captured node is written by the tool on at
+   least one shape. A helper here would also have collided with the harness's
+   own tool.node().
+
+   There is deliberately no helper for /g extractions either. Every such site in
+   this suite either gates on the result before comparing it, or feeds a length
+   or join that fails loudly on its own; a null there is the semantics ("no
+   violations found"), not a failure. Adding a helper nothing needs would look
+   like coverage. */
+
 /* Rendered text contains a phrase, with the en dash the tool uses.
 
    ---------------------------------------------------------------------------
@@ -143,7 +209,18 @@ function zoneOf(x, t1, t2) { return x > t2 ? 'over' : (x > t1 ? 'atrisk' : 'heal
 
 /* Split the rendered tile grid into tiles, and pull each one's band track
    apart. Reads the markup rather than the tool's own objects, so a bar that is
-   computed correctly and rendered wrongly still fails. */
+   computed correctly and rendered wrongly still fails.
+
+   §0.17, audited and deliberately left raw. `bar` has to stay nullable: an
+   unrated tile genuinely carries no band track, and "the unrated tile carries
+   no band track" is asserted as eq(tile.bar, null). The '' and 0 defaults on
+   label, value, markRag, aria and hidden are safe for a different reason —
+   every consumer of them is a positive check (an eq against a wanted string,
+   or a condition that pushes a failure when the string does not start with the
+   tile's own value), so an extraction that stops matching produces '' and
+   fails loudly rather than passing. There is no negative assertion anywhere
+   over a tile field, which is what makes that true; if one is added, these
+   defaults have to go through grab() first. */
 function tilesOf(html) {
   return String(html).split('<div class="tile ').slice(1).map((chunk) => {
     const bar = (chunk.match(/<div class="band-bar"[\s\S]*?<\/div><\/div>/) || [])[0] || null;
@@ -1415,10 +1492,15 @@ section('Static printed copy — the eighteen numbers are inside the suite');
     '7.0': 'ProjexaR control: the PM red threshold, named in the bands statement',
     '170': 'ProjexaR control: ticket window, lower', '320': 'ProjexaR control: ticket window, upper',
     '25': 'ProjexaR control: overhead uplift, per cent',
+    /* PR12 §4. The nineteenth, and the first that is neither a citation figure
+       nor a control: the offer's own duration, in the ProjexaR section's offer
+       statement. It is accounted for here rather than exempted, because the
+       point of this table is that nothing reaches the printed page unnamed. */
+    '14': 'The offer: days of unlimited access before the free tier begins',
   };
-  eq(staticNums.length, 18, 'the static printed copy publishes eighteen numbers');
+  eq(staticNums.length, 19, 'the static printed copy publishes nineteen numbers');
   eq([...new Set(staticNums)].sort().join(','), Object.keys(WANT).sort().join(','),
-     'and they are exactly the eighteen accounted for in the provenance table');
+     'and they are exactly the nineteen accounted for in the provenance table');
   /* The capture genuinely carries them: a number only in the static layer must
      reach allText(), or none of the above is worth anything. */
   const captured = new Set(numbersIn(allText(capture({ id: 'static', ...FIXTURE_A }))));
@@ -2216,7 +2298,7 @@ section('PR6 — every count stated in prose matches what the report renders');
      what "Four external figures" was, and the way it goes wrong is somebody
      adding a step and not reading the prose around it. */
   const html = readFileSync(TOOL_PATH, 'utf8');
-  const steps = html.slice(html.indexOf('<ol class="p-steps">'), html.indexOf('</ol>', html.indexOf('<ol class="p-steps">')));
+  const steps = between(html, '<ol class="p-steps">', '</ol>', '§2.5 printed steps list');
   const n = (steps.match(/<li>/g) || []).length;
   eq(n, 4, 'the printed report lists four steps');
   ok(/<h2[^>]*>Four steps, no software required<\/h2>/.test(html), 'and the heading says four');
@@ -2224,7 +2306,7 @@ section('PR6 — every count stated in prose matches what the report renders');
   ok(/four things you can do about it that involve buying nothing/.test(html),
      'and the gate blurb promising four is describing those four');
   /* Nothing in the script reaches them, which is what makes the count safe. */
-  const script = html.slice(html.indexOf('<script>', html.indexOf('</main>')));
+  const script = between(html, '<script>', undefined, '§2.5 tool script');
   ok(!/p-steps/.test(script), 'no script writes to the steps list');
 
   /* The count PR6 deleted stays deleted, and the unconditional sentence stays. */
@@ -2288,22 +2370,27 @@ section('PR7 §7.5 — one more route to the trial, additive and unpriced');
      one offer is the contradiction already open on /start, reproduced inside a
      single page. */
   const html = readFileSync(TOOL_PATH, 'utf8');
-  const report = html.slice(html.indexOf('<section id="report"'), html.indexOf('<div id="printReport">'));
+  const report = between(html, '<section id="report"', '<div id="printReport">', 'web report slice');
 
   ok(/<p class="checks-cta"><a href="\/start\/" class="cta-inline">Start free<\/a>/.test(report),
      '§7.5 — the second route exists and points at /start/');
-  /* Same offer wording as the panel, exactly. */
-  const panelSub = (report.match(/<p class="midcta-sub">([^<]+)<\/p>/) || [])[1];
-  const ctaSub = (report.match(/<span class="checks-cta-sub">([^<]+)<\/span>/) || [])[1];
+  /* Same offer wording as the panel, exactly.
+
+     PR12 put a data-offer attribute on both elements, and these two patterns
+     were anchored to a bare class attribute, so both stopped matching at once
+     and the comparison below became eq(undefined, undefined): a pass, on a page
+     where the two subs could by then have said anything. Master §0.16 in its
+     text form. Both are now asserted to have matched before they are compared. */
+  const panelSub = grab(report, /<p class="midcta-sub"[^>]*>([^<]+)<\/p>/, '§7.5 panel sub');
+  const ctaSub = grab(report, /<span class="checks-cta-sub"[^>]*>([^<]+)<\/span>/, '§7.5 second-route sub');
   eq(ctaSub, panelSub, '§7.5 — the offer is described in the panel\'s own words, exactly');
-  const panelBtn = (report.match(/id="trialCta">([^<]+)<\/a>/) || [])[1];
-  const ctaBtn = (report.match(/class="cta-inline">([^<]+)<\/a>/) || [])[1];
+  const panelBtn = grab(report, /id="trialCta">([^<]+)<\/a>/, '§7.5 panel button');
+  const ctaBtn = grab(report, /class="cta-inline">([^<]+)<\/a>/, '§7.5 second-route button');
   eq(ctaBtn, panelBtn, '§7.5 — and so is the action');
 
   /* Not a second panel, and no price beside it. */
   eq((report.match(/class="midcta"/g) || []).length, 1, '§7.5 — still exactly one conversion panel');
-  const ctaBlock = report.slice(report.indexOf('<p class="checks-cta">'),
-                                report.indexOf('<p class="checks-cta">') + 400);
+  const ctaBlock = between(report, '<p class="checks-cta">', undefined, '§7.5 second-route block').slice(0, 400);
   ok(!/£|priceLine|a month|a year/.test(ctaBlock),
      '§7.5 — no price beside the second route; the price is stated once, in the panel');
 
@@ -2328,8 +2415,7 @@ section('PR7 item 4 — headings that name figures, counted');
      Three headings survive. The two tables take captions. This counts them, so
      a fourth cannot be added without the count failing. */
   const html = readFileSync(TOOL_PATH, 'utf8');
-  const printStart = html.indexOf('<div id="printReport">');
-  const printBlock = html.slice(printStart, html.indexOf('</main>', printStart));
+  const printBlock = between(html, '<div id="printReport">', '</main>', 'print report slice');
 
   const FIGURE_WORDS = /\b(figures?|numbers?|workings?)\b/i;
   const headings = [...printBlock.matchAll(/<h2[^>]*>([^<]+)<\/h2>/g)].map((m) => m[1].trim());
@@ -2852,9 +2938,10 @@ section('§4.4 — the link preview tags, and the one asset they point at');
   ok(/^https:\/\//.test(og('og:image') || ''), 'og:image is an absolute URL', og('og:image'));
   ok((og('og:image:alt') || '').trim().length > 0, 'og:image:alt is non-empty');
 
-  const canonical = (html.match(/<link rel="canonical" href="([^"]*)"/) || [])[1];
+  const canonical = grab(html, /<link rel="canonical" href="([^"]*)"/, '§4.4 canonical');
   eq(og('og:url'), canonical, 'og:url is the canonical page, not a per-result URL');
-  eq(og('og:title'), (html.match(/<title>([^<]*)<\/title>/) || [])[1], 'og:title matches the page title');
+  eq(og('og:title'), grab(html, /<title>([^<]*)<\/title>/, '§4.4 page title'),
+     'og:title matches the page title');
   /* Generic by construction: the same string the page already publishes as its
      description. These tags are identical on every shared URL, permalinks
      carrying a respondent's own answers included, so a description written
@@ -2961,7 +3048,7 @@ section('§5 — the band track, on every branch the corpus holds still');
 section('§2 — the promoted block sits after the growth ceiling, and is renamed');
 {
   const html = readFileSync(TOOL_PATH, 'utf8');
-  const report = html.slice(html.indexOf('<section id="report"'), html.indexOf('<div id="printReport">'));
+  const report = between(html, '<section id="report"', '<div id="printReport">', 'web report slice');
 
   /* Document order, read off the markup. The screen capture cannot see this:
      SCREEN_NODES is a fixed list and allText() joins it in its own order, so a
@@ -2996,7 +3083,8 @@ section('§2 — the promoted block sits after the growth ceiling, and is rename
 
   /* §3. Three copy strings, and all three live in static markup outside every
      captured node — so without these the text diff cannot see them at all. */
-  ok(has(report, '<p class="midcta-sub">Unlimited 14-day trial</p>'), '§3.2 — the trial line');
+  ok(has(report, '<p class="midcta-sub" data-offer="short">Free for five. 14 days unlimited to start.</p>'),
+     '§3.2 — the offer line, in the short form PR12 §2 settled');
   ok(!has(html, 'Two projects free, forever'), '§3.2 — the old trial line is gone');
   /* §5.3 of PR6 settled the three routes to the report on one verb. The old
      label is asserted absent so the vocabulary cannot drift back apart. */
@@ -3005,15 +3093,14 @@ section('§2 — the promoted block sits after the growth ceiling, and is rename
   ok(!has(html, 'Or take the full report first'), 'PR6 §5.3 — and so is the third label');
 
   /* §6. The anchor resolves to an element that exists, on this page. */
-  const href = (report.match(/<p class="tile-cta"><a [^>]*href="#([^"]+)"/) || [])[1];
+  const href = grab(report, /<p class="tile-cta"><a [^>]*href="#([^"]+)"/, '§6 tile-cta anchor');
   eq(href, 'getReport', '§6 — the download button anchors to the report section');
 
   /* The print report's own markup, bounded at </main>. Slicing to end of file
      sweeps in the tool's script, whose comments name these sections — which
      made the orphan check below pass on a file where the rename had been
      reverted. A guard that cannot fail is not a guard. */
-  const printStart = html.indexOf('<div id="printReport">');
-  const printBlock = html.slice(printStart, html.indexOf('</main>', printStart));
+  const printBlock = between(html, '<div id="printReport">', '</main>', 'print report slice');
 
   /* PR8 §0.14. The offer is a web-page element and the printed report is
      ask-agnostic, so this is one of the few claims that is genuinely about one
@@ -3073,7 +3160,7 @@ section('§2 — the promoted block sits after the growth ceiling, and is rename
      orphans.join(' | '));
   ok(has(html, `id="${href}"`), '§6 — the anchor target exists in the markup');
   /* And it is where the spec puts it: in the first block of output tiles. */
-  const firstBlock = report.slice(0, report.indexOf('<div class="hero-area"'));
+  const firstBlock = between(report, '<section id="report"', '<div class="hero-area"', '§2 first report block');
   ok(has(firstBlock, 'class="tile-cta"'), '§6 — it sits in the first block of output tiles');
 }
 
@@ -3143,8 +3230,7 @@ section('§6 Sender — no new fields, and the RAG values read the adverse endpo
 section('PR8 §2 — the printed report, in the order a forwarded document is read');
 {
   const html = readFileSync(TOOL_PATH, 'utf8');
-  const printStart = html.indexOf('<div id="printReport">');
-  const printBlock = html.slice(printStart, html.indexOf('</main>', printStart));
+  const printBlock = between(html, '<div id="printReport">', '</main>', 'print report slice');
   const sections = printBlock.split('<section class="page').slice(1);
 
   /* §2 — seven sections, asserted BY POSITION rather than by presence. A
@@ -3185,14 +3271,14 @@ section('PR8 §2 — the printed report, in the order a forwarded document is re
      defect §5 exists for — so both sides are asserted, and the old name is
      asserted gone from the whole file rather than from either half. */
   ok(/<h2>Where you stand<\/h2>/.test(printBlock), '§6 — the printed report carries the new name');
-  ok(/<h2>Where you stand<\/h2>/.test(html.slice(0, printStart)), '§6 — and so does the web report');
+  ok(/<h2>Where you stand<\/h2>/.test(between(html, '<section id="report"', '<div id="printReport">', '§6 web report slice')),
+     '§6 — and so does the web report');
   eq((html.replace(/<!--[\s\S]*?-->/g, ' ').match(/Where you stand/g) || []).length, 2,
      '§6 — twice in the file, which is once on each side');
   ok(!has(html, 'What you told us<'), '§6 — and the old name is gone from the WHOLE file');
 
   /* §2.5 — the four steps are unchanged, down to the wording. */
-  const stepsBlock = printBlock.slice(printBlock.indexOf('<ol class="p-steps">'),
-                                      printBlock.indexOf('</ol>', printBlock.indexOf('<ol class="p-steps">')));
+  const stepsBlock = between(printBlock, '<ol class="p-steps">', '</ol>', '§2.5 printed steps block');
   eq((stepsBlock.match(/<li>/g) || []).length, 4, '§2.5 — still four steps');
 
   /* §2.7 — the product page is last and it is the only place in the report that
@@ -4252,6 +4338,348 @@ section('PR10 §5 — a reopened link lands on the results, with the form collap
      '§5 — the control says the answers are still editable');
   ok(/\.tool-shell > summary\{ display:none; \}/.test(html),
      '§5 — and is not rendered until there is a report to collapse');
+}
+
+
+/* ============ §0.17 — the suite's own extractions are not silent ===========
+
+   Two structural claims covering the whole capture-node population at once,
+   rather than 88 converted call sites.
+
+   `cap.print['pr-price']` is a plain property read. A node id that is not in
+   PRINT_NODES yields undefined, and !has(undefined, x) is true, so a single
+   mistyped id turns every claim about that node into a pass. A node that IS in
+   the list but that render() never writes yields '', with the same effect —
+   that exact case was caught once already, in the full-cost claim assertion
+   PR8 §5 found passing vacuously.
+
+   Both are asserted here by reading the suite's own source, which is the only
+   place the set of ids actually used is written down. */
+section('§0.17 — every node this suite reads exists, and is written by the tool');
+{
+  /* Comments are stripped before the scan. This section's own prose names
+     cap.print['id'] to explain the hazard, and the first run of this check
+     duly reported "id" as an unknown node. Comments discuss ids; they do not
+     read them. (§0.14's ask-scan strips for the same reason; PR7 item 5 keeps
+     comments IN scope, because a stale NAME in a comment is the copy someone
+     reinstates. The two rules differ because the thing being looked for
+     differs.) */
+  const self = readFileSync(fileURLToPath(import.meta.url), 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/^\s*\/\/.*$/gm, ' ');
+  const known = new Set([...PRINT_NODES, ...SCREEN_NODES]);
+
+  /* 1. Every id the suite names is a node the harness captures. Catches the
+        typo, which is otherwise indistinguishable from an empty node. */
+  const used = new Set();
+  for (const m of self.matchAll(/\.(?:print|screen)\['([^']+)'\]/g)) used.add(m[1]);
+  for (const m of self.matchAll(/\bcap\.screen\.([A-Za-z_$][\w$]*)/g)) used.add(m[1]);
+  ok(used.size > 20, '§0.17 — the source scan found the node reads', `found ${used.size}`);
+  for (const id of [...used].sort()) {
+    ok(known.has(id), `§0.17 — "${id}" is a node the harness captures`);
+  }
+
+  /* 2. Every captured node is written by the tool on at least one shape. A node
+        that is empty everywhere cannot fail a negative assertion, so a guard
+        pointed at it is not a guard. Empty-on-purpose nodes are named, with the
+        reason, rather than left to look like coverage. */
+  const EMPTY_BY_DESIGN = {
+    /* capture.mjs says so at the declaration: the stated reason where a
+       suppressed cost block would have been, empty on every sterling shape.
+       The currency shapes below are the ones that fill it. */
+    costCurrencyNote: 'filled only on non-sterling shapes, which the corpus covers separately',
+  };
+  /* The corpus is sterling-only, and several nodes exist precisely for the
+     cases it does not carry: pr-fxnote is written only where the cost block is
+     suppressed for currency. Scoping this to corpus() alone reported it as
+     never written, which was the check being wrong rather than the node being
+     dead. The special sets are small and each one unlocks a different branch. */
+  const everWritten = new Set();
+  const population = [...corpus(), ...currencyShapes(), ...contractorShapes(),
+                      ...suppressionShapes(), ...loadedCostShapes(), ...budgetShapes(),
+                      ...notationShapes(), ...singularShapes()];
+  ok(population.length > 600, '§0.17 — the population is the corpus plus the special sets',
+     `${population.length} shapes`);
+  for (const shape of population) {
+    const cap = capture({ id: `n017-${shape.id}`, ...shape });
+    if (!cap.ok) continue;
+    for (const id of PRINT_NODES) if (String(cap.print[id] || '').trim() !== '') everWritten.add(id);
+    for (const id of SCREEN_NODES) if (String(cap.screen[id] || '').trim() !== '') everWritten.add(id);
+  }
+  for (const id of [...known].sort()) {
+    if (EMPTY_BY_DESIGN[id]) {
+      ok(true, `§0.17 — "${id}" is empty by design: ${EMPTY_BY_DESIGN[id]}`);
+      continue;
+    }
+    ok(everWritten.has(id), `§0.17 — the tool writes "${id}" on at least one shape`);
+  }
+}
+
+/* ================== PR12 §5 — one offer, stated once, everywhere ============
+
+   The site has no build step and no partial. Every page carries its own copy,
+   so nothing structural stops the next person editing one page and leaving the
+   other eight contradicting it. That is what happened to the offer this PR
+   replaces: the same sentence in nine places, corrected in none of them when
+   the decision of 1 September changed it, and the Capacity Check ended up
+   saying "Unlimited 14-day trial" beside a "Start free" link to a page
+   promising two projects free forever.
+
+   This section is the only thing that survives that next edit. It reads the
+   shipped files off disk, not a captured render, because the failure it exists
+   to catch is a hand edit to markup.
+
+   Three claims, and the second and third are the ones the old suite could not
+   have made:
+
+   1. The retired offer does not come back, in any construction. The string
+      list is built from the PR12 §1.1 sweep over every tracked file under
+      public/, src/ and tools/, not from the seven surfaces the audit named:
+      that sweep found nine, including a verbatim copy of the /product paid
+      trigger on the home page and two "nobody is counted on the free plan"
+      claims that the five-resource cap makes flatly false.
+
+   2. Neither half is ever presented alone. This is the defect, not the old
+      wording: "Unlimited 14-day trial" by itself reads as a trial that expires
+      and "free forever" by itself understates day one, and a page carrying one
+      half contradicts every page carrying the other. Asserted as: every
+      mention of the fourteen days anywhere in output sits inside one of the
+      canonical strings.
+
+   3. The canonical statement is byte-identical to site.js's OFFER constant
+      wherever it appears. site.js is as close to a shared source as a site
+      with no build step has: it stamps [data-offer] elements at runtime. But
+      the inline text is what a crawler and a reader with JavaScript off get,
+      and on the Capacity Check, which does not load site.js, it is what
+      everyone gets. So the inline text is the copy, and this is what stops it
+      drifting from the constant that claims to govern it. */
+section('PR12 §5 — the retired offer does not come back, on any page');
+{
+  const PUB = fileURLToPath(new URL('../../public/', import.meta.url));
+  const PAGES = ['index.html', '404.html', 'start/index.html', 'pricing/index.html',
+                 'product/index.html', 'contact/index.html', 'privacy/index.html',
+                 'trust/index.html', 'solutions/index.html',
+                 'solutions/project-online-migration/index.html',
+                 'capacity-check/index.html', 'js/site.js'];
+
+  /* The OFFER constant, read out of site.js rather than restated here. A copy
+     of the wording in the suite is a second source for the thing this section
+     exists to keep to one. */
+  const siteJs = readFileSync(join(PUB, 'js', 'site.js'), 'utf8');
+  const offerBlock = between(siteJs, 'var OFFER = {', 'var STORE_CURRENCY', '§5 OFFER constant');
+  ok(offerBlock.length > 0, '§5 — the OFFER constant is found in site.js');
+  const OFFER = {};
+  for (const key of ['full', 'fullBilling', 'short', 'boundary']) {
+    const m = offerBlock.match(new RegExp(key + ':((?:\\s*"(?:[^"\\\\]|\\\\.)*"\\s*\\+?)+)'));
+    ok(m !== null, `§5 — OFFER.${key} is declared`);
+    if (m) OFFER[key] = m[1].split('+').map(s => s.trim().replace(/^"|"$/g, '')).join('');
+  }
+  eq(OFFER.short, 'Free for five. 14 days unlimited to start.',
+     '§5 — the short form is the wording PR12 §2 settled');
+  ok(/five people with capacity recorded/.test(OFFER.full || ''),
+     '§5 — the full statement uses people outside billing contexts, per PR7 §6.2');
+  ok(/five managed resources/.test(OFFER.fullBilling || ''),
+     '§5 — and the billing unit in them');
+  /* Both halves, in both registers. A statement that lost one half would
+     otherwise satisfy every assertion below. */
+  for (const key of ['full', 'fullBilling']) {
+    ok(/14 days of unlimited access/.test(OFFER[key] || ''), `§5 — OFFER.${key} carries the sandbox half`);
+    ok(/stays free for up to five/.test(OFFER[key] || ''), `§5 — OFFER.${key} carries the free-tier half`);
+  }
+  const CANON = Object.values(OFFER);
+
+  /* 1. The retired offer, in every construction the §1.1 sweep found, plus the
+        constructions it would have found had they existed. "free forever" is
+        banned outright: the canonical statement says "with no time limit", and
+        an exception for one phrasing is how a second wording gets in. */
+  const BANNED = [
+    /\btwo projects\b/i, /\b2 projects\b/i, /\bfree forever\b/i, /\bforever free\b/i,
+    /\btwo active projects\b/i, /\bmore than two\b/i, /\bneed a third\b/i,
+    /\bnobody is counted\b/i, /\bno card until\b/i, /\bfree to start\b/i,
+    /unlimited 14-day trial/i, /\b14-day trial\b/i, /\bfree for two\b/i,
+    /* Feature gating, added once the free-tier position was settled: at MVP the
+       free tier is the full product and the only limit is five managed
+       resources. The paid plan differs by headcount, not by capability. These
+       phrases are how the old model comes back, and it came back once already
+       under a different axis — "unlimited projects" survived as a paid
+       differentiator through the first pass of this PR because nobody was
+       looking for a feature claim, only for the retired offer wording. */
+    /part of the paid plan/i, /only (?:on|in) the paid/i, /paid plan only/i,
+    /upgrade to (?:get|unlock)/i, /\bpaid[- ]only\b/i,
+  ];
+
+  /* Comments are IN scope. PR7 item 5 moved the stale-name assertion to the
+     whole file for exactly this reason: a retired wording sitting in a comment
+     is the copy the next person reinstates. The cost is that a comment cannot
+     quote what it retired, and site.js's OFFER block describes the old offer
+     rather than quoting it for that reason.
+
+     Two exemptions, both named, both narrow, and neither about the offer. A
+     new occurrence of either string still fails, because the allowlist matches
+     the whole surrounding sentence, not the banned string. */
+  const ALLOWED = [
+    /* A tools-and-process card about one register read consistently. Nothing to
+       do with the offer, and it predates it. */
+    'so two projects can be read against each other.',
+    /* Colicev's population, quoted as the paper publishes it. Caught only
+       because "42 projects" ends in "2 projects"; the word boundary above
+       handles it, and this stays as the record of why it was ever a hit. */
+    'observations across 42 projects and 580 employees',
+  ];
+  for (const page of PAGES) {
+    let text = readFileSync(join(PUB, page), 'utf8');
+    for (const allowed of ALLOWED) text = text.split(allowed).join(' ');
+    for (const banned of BANNED) {
+      const hit = banned.exec(text);
+      ok(hit === null, `§5 — ${page}: ${banned}`,
+         hit === null ? '' : JSON.stringify(text.slice(Math.max(0, hit.index - 60), hit.index + 80)));
+    }
+  }
+
+  /* 2. Neither half alone. Every mention of the fourteen days, on every page,
+        sits inside a canonical string. Comments are stripped first: the
+        rationale for the wording is allowed to discuss it. */
+  const SANDBOX_HALF = /14 days of unlimited access|14 days unlimited to start/i;
+  const FREE_HALF = /stays free for up to five|free for five|free, with no time limit/i;
+  for (const page of PAGES) {
+    let text = readFileSync(join(PUB, page), 'utf8')
+      .replace(/<!--[\s\S]*?-->/g, ' ')
+      .replace(/\/\*[\s\S]*?\*\//g, ' ');
+
+    /* site.js declares the canonical strings as a concatenation across three
+       lines, so they do not appear contiguously in it. The block that defines
+       them is not a surface that states the offer, and it is asserted above. */
+    if (page === 'js/site.js') {
+      const from = text.indexOf('var OFFER = {');
+      const to = from < 0 ? -1 : text.indexOf('};', from);
+      ok(from >= 0 && to > from, '§5 — the OFFER block is found before it is excised');
+      if (from >= 0 && to > from) text = text.slice(0, from) + text.slice(to + 2);
+    }
+
+    /* A block marked data-offer-pair states the offer across several elements,
+       so the guard reads it whole. It has to carry both halves to be removed;
+       a block that carries one and claims the marker fails here. */
+    const pair = /<(\w+)[^>]*\bdata-offer-pair\b[^>]*>([\s\S]*?)<\/\1>/g;
+    let pm, pairs = 0;
+    while ((pm = pair.exec(text)) !== null) {
+      pairs++;
+      ok(SANDBOX_HALF.test(pm[2]) && FREE_HALF.test(pm[2]),
+         `§5 — ${page}: a data-offer-pair block carries both halves`,
+         JSON.stringify(pm[2].replace(/\s+/g, ' ').trim().slice(0, 160)));
+    }
+    /* §0.17 again: a while loop over a regex that stops matching runs zero
+       times and asserts nothing. The home page's stat tile is the only paired
+       block on the site, so its count is stated rather than left implicit. */
+    eq(pairs, page === 'index.html' ? 1 : 0, `§5 — ${page}: paired offer blocks`);
+    text = text.replace(pair, ' ');
+
+    /* The free half, page by page. Stated the other way round from the
+       sandbox half above, because "free" on its own is an ordinary English
+       word on these pages and cannot be scanned for: the free half is
+       recognised by its offer phrasings, and a page carrying one of those has
+       to carry the sandbox half somewhere too. The retired free-half
+       constructions are handled by the banned list rather than here. */
+    const whole = readFileSync(join(PUB, page), 'utf8').replace(/<!--[\s\S]*?-->/g, ' ');
+    if (FREE_HALF.test(whole)) {
+      ok(SANDBOX_HALF.test(whole), `§5 — ${page}: the free half is never stated alone either`);
+    }
+
+    for (const canon of CANON) text = text.split(canon).join(' ');
+    const orphan = text.match(/\b14[ -]days?\b|\bfourteen days?\b/i);
+    ok(orphan === null, `§5 — ${page}: the sandbox half is never stated alone`,
+       orphan ? JSON.stringify(text.slice(Math.max(0, orphan.index - 70), orphan.index + 70)) : '');
+  }
+
+  /* 3. Every [data-offer] element's inline text is the constant it names. */
+  let stamped = 0;
+  for (const page of PAGES) {
+    const text = readFileSync(join(PUB, page), 'utf8');
+    const re = /<(\w+)[^>]*\bdata-offer="(\w+)"[^>]*>([\s\S]*?)<\/\1>/g;
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      stamped++;
+      const [, , key, inline] = m;
+      ok(OFFER[key] !== undefined, `§5 — ${page}: data-offer="${key}" names a real constant`);
+      eq(inline.replace(/\s+/g, ' ').trim(), OFFER[key], `§5 — ${page}: data-offer="${key}" is verbatim`);
+    }
+  }
+  /* An exact count, not a floor. §0.17: a floor tolerates a surface losing its
+     marker, which is the extraction failing, which is the thing being guarded
+     against. Seven: one each on the home page, /start and /pricing, and four in
+     the Capacity Check (two CTA subs, the printed statement, the boundary).
+     Adding a surface means changing this number on purpose. */
+  eq(stamped, 7, '§5 — the offer is stamped on exactly the surfaces that carry it');
+
+  /* The two paid cards describe one plan, so they say one thing.
+
+     This is PR12's own thesis one level up. The offer was corrected on nine
+     surfaces and guarded, while the plan those surfaces sell was described two
+     different ways on two pages: the home card listed three capabilities and
+     the /pricing card listed five lines, and when the capabilities came off as
+     feature gating the home card was left with two bullets under a "Most
+     popular" badge. Nothing would have caught that, because every assertion in
+     this suite reads one page at a time.
+
+     The lists are compared, not the notes. The home note carries the offer and
+     the /pricing note does not, which is a page difference rather than a plan
+     difference: /pricing states the offer on the free card beside it. */
+  {
+    const cards = ['index.html', 'pricing/index.html'].map((page) => {
+      const card = between(readFileSync(join(PUB, page), 'utf8'),
+                           'pricing-card--featured', '</ul>', `§5 ${page} paid card`);
+      return {
+        page,
+        desc: grab(card, /pricing-card__description"[^>]*>([\s\S]*?)<\/p>/, `§5 ${page} paid description`),
+        items: [...card.matchAll(/<li>([\s\S]*?)<\/li>/g)].map((m) => m[1].replace(/\s+/g, ' ').trim()),
+      };
+    });
+    ok(cards[0].items.length >= 4, '§5 — the home paid card has its feature list',
+       `${cards[0].items.length} items`);
+    eq(cards[0].items.join(' | '), cards[1].items.join(' | '),
+       '§5 — both paid cards list the same plan, in the same order');
+    eq(cards[0].desc, cards[1].desc, '§5 — and describe it in the same words');
+  }
+
+  /* The Capacity Check does not load site.js, so its copy is inline only. It is
+     in PAGES above and therefore covered by all three claims; this names the
+     reason, because a later reader may otherwise "tidy" it out of the list. */
+  ok(!/src="\/js\/site\.js"/.test(readFileSync(join(PUB, 'capacity-check', 'index.html'), 'utf8')),
+     '§5 — the Capacity Check still carries its offer copy inline, with no site.js to stamp it');
+
+  /* PR12's numeric invariant, asserted rather than asserted-about.
+
+     The offer statement is the first copy to put a number on the printed page
+     that is not a citation figure or a control, and the printed report is a
+     document a reader takes figures out of. Measured across the 603-shape
+     corpus, this PR adds exactly one number to what the tool publishes, the
+     offer's own 14, and removes none: the licence basis, the quote and the
+     share-of-spend figures are untouched.
+
+     Stated here as a property of the wording rather than as a baseline diff, so
+     it holds on a fresh checkout with no before-capture to compare against. A
+     second number in the offer copy, a resource count or a price, fails. */
+  const PUBLISHES = { full: '14', fullBilling: '14', short: '14', boundary: '' };
+  for (const [key, text] of Object.entries(OFFER)) {
+    ok(PUBLISHES[key] !== undefined, `§5 — OFFER.${key} is accounted for in the numbers table`);
+    eq(numbersIn(text).join(','), PUBLISHES[key],
+       `§5 — OFFER.${key} publishes exactly the numbers accounted for`);
+  }
+
+  /* And the quote itself is untouched: the licence basis is still the whole
+     count, which is what makes the boundary on the pricing page necessary. A
+     free-tier subtraction spliced in here would be the one change PR12 forbids,
+     and it would be invisible in copy review. */
+  const tool = readFileSync(join(PUB, 'capacity-check', 'index.html'), 'utf8');
+  ok(/c\.licenceCount = v\.bauStaff \+ v\.pms \+ v\.contractors;/.test(tool),
+     '§5 — the licence basis is still the whole count, with no free five subtracted');
+  ok(!/licenceCount\s*-\s*5|Math\.max\(0,\s*c\.licenceCount/.test(tool),
+     '§5 — and nothing anywhere nets the free five off it');
+
+  /* The offer never renders inside the price line. §4: the quoted organisation
+     pays the quoted figure, and an offer sentence sharing that element is how a
+     reader concludes otherwise. */
+  ok(!/id="pr-price"[^>]*data-offer/.test(tool) && !/id="priceLine"[^>]*data-offer/.test(tool),
+     '§5 — the offer is never stated inside the licence quote');
 }
 
 /* ------------------------------------------------------------------- result */

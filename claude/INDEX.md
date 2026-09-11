@@ -30,6 +30,12 @@ Any commit that verifies, disproves or changes the status of an item in the mast
 | `capacity-check-pr7-brief-sep-2026.md` | PR7 revision 2. The response to the independent audit of 9 September |
 | `capacity-check-pr7-addendum-sep-2026.md` | Rules on PR7's two stop conditions. Read with the PR7 brief |
 | `capacity-check-og-image-brief-sep-2026.md` | Open Graph image |
+| `claude_capacity-check-pr8-brief-sep-2026.md` | PR8. The printed report rebuilt as a forwardable document |
+| `claude_capacity-check-pr9-brief-sep-2026.md` | PR9. The Worker gate, Turnstile, and the covering note |
+| `claude_capacity-check-pr10-brief-sep-2026.md` | PR10. One reading measure, one notation per figure |
+| `claude_capacity-check-pr11-brief-sep-2026.md` | PR11. The Sender audit's launch blockers |
+| `claude_capacity-check-pr12-brief-sep-2026.md` | PR12. One offer, stated once, everywhere |
+| `capacity-check-sender-audit-sep-2026.md` | The Sender audit of 10 September. Its §5 carries the launch blockers PR11 and PR12 answer |
 | `free-tier-analysis-sep-2026.md` | The offer decision of 1 September, and the definition of a managed resource |
 
 Not held here, and available on request: the July 2026 competitive analysis, the competitor profiles, and the Capacity Ledger design of record.

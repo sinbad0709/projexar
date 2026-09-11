@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>ProjexaR — capacity planning for IT teams</title>
-<meta name="description" content="ProjexaR plans projects and business-as-usual activities against one pool of resources, so you can see what is genuinely left and what is about to give. Two projects free forever.">
+<meta name="description" content="ProjexaR plans projects and business-as-usual activities against one pool of resources, so you can see what is genuinely left and what is about to give. Free for five. 14 days unlimited to start.">
 <link rel="canonical" href="https://projexar.com/">
 <link rel="icon" href="/assets/logo-mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/styles/tokens.css">
@@ -51,7 +51,7 @@
         <p class="hero__notes">
           <span>Free. Your results in a few minutes.</span>
           <span class="sep">·</span>
-          <span>Two projects, free forever. No credit card to start.</span>
+          <span data-offer="short">Free for five. 14 days unlimited to start.</span>
         </p>
       </div>
 
@@ -206,7 +206,7 @@
           <p class="pillar-body__text" data-panel="plan" data-panel-group="home-pillars">Projects, workstreams, tasks and sub-tasks with roll-up. Fast task entry — type a name, fill the rest in later. An interactive Gantt with drag-to-reschedule and resize. Predecessor and successor links that cascade when something moves. RAID log, RACI, task notes and RAG status against schedule, budget, scope, resourcing and risk — all in the project, not in five other files.</p>
           <p class="pillar-body__text" data-panel="declare" data-panel-group="home-pillars" hidden>Line managers set how much BAU each resource carries in each period — as a percentage, days per week or hours per week, whichever way they think. Presets for the common cases, bulk apply across a team, and every new period inherits the last. What's left is project capacity, and ProjexaR works it out the moment the number changes.</p>
           <p class="pillar-body__text" data-panel="replan" data-panel-group="home-pillars" hidden>Drag a task and ProjexaR checks every assigned resource across the affected range. Where there's a conflict it offers four routes: reassign to someone available, delay until the resource is free, split the work across two people or two windows, or override and flag it. Every decision is the project manager's — the system models options, it doesn't apply them.</p>
-          <p class="pillar-body__text" data-panel="forecast" data-panel-group="home-pillars" hidden>Keep a live pipeline of proposed work with a forecast window, a likelihood and a resource model by role type. ProjexaR weighs the demand by how likely each item is, sets it against the capacity you actually have, and shows surplus or shortfall by role type by quarter on a capacity outlook heatmap. Save a dated baseline at a planning cycle and see how the picture has drifted since. Forecasting is part of the paid plan — it's the view that only makes sense once you're running more than two projects at once.</p>
+          <p class="pillar-body__text" data-panel="forecast" data-panel-group="home-pillars" hidden>Keep a live pipeline of proposed work with a forecast window, a likelihood and a resource model by role type. ProjexaR weighs the demand by how likely each item is, sets it against the capacity you actually have, and shows surplus or shortfall by role type by quarter on a capacity outlook heatmap. Save a dated baseline at a planning cycle and see how the picture has drifted since.</p>
         </div>
         <div class="pillar-body__action">
           <a class="btn btn--secondary" href="/product/">See the whole product<svg class="icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a>
@@ -228,10 +228,14 @@
         </div>
       </div>
       <div class="stat-grid">
-        <div class="stat">
-          <span class="stat__value">2 projects</span>
-          <span class="stat__label">free forever</span>
-          <span class="stat__caption">Unlimited people, no card</span>
+        <!-- data-offer-pair: the tile splits the offer across three spans, so
+             the PR12 §5 guard reads it as one block and asserts both halves are
+             in it. Without the marker the caption reads to the guard as the
+             sandbox half stated alone, which is the defect it exists to catch. -->
+        <div class="stat" data-offer-pair>
+          <span class="stat__value">5 people</span>
+          <span class="stat__label">free, with no time limit</span>
+          <span class="stat__caption">14 days unlimited to start</span>
         </div>
         <div class="stat">
           <span class="stat__value" data-price="monthly">£10</span>
@@ -258,8 +262,8 @@
       <div class="stack" style="gap:22px">
         <div class="section-heading section-heading--sm">
           <span class="eyebrow">Pricing</span>
-          <h2 class="section-heading__title">Free for two projects. Then one price.</h2>
-          <p class="section-heading__description">Run two projects for as long as you like, with as many people as you need, at no cost. When you're running more than two at once, it's charged per managed resource, per month — and everyone who only views or approves still logs in free.</p>
+          <h2 class="section-heading__title">Free for five people. Then one price.</h2>
+          <p class="section-heading__description">Run as many projects as you like, for as long as you like, with five people's capacity recorded at no cost. After that you licence your team, at a published price per managed resource, per month, and everyone who only views or approves still logs in free.</p>
         </div>
         <div class="row row--controls">
           <div class="tabs tabs--pill" role="tablist" aria-label="Currency" data-currency-tabs>
@@ -289,16 +293,16 @@
           <span class="pricing-card__price" data-price="current">£10</span>
           <span class="pricing-card__period" data-price="period">per managed resource, per month</span>
         </div>
-        <p class="pricing-card__description">Unlimited projects. Everything else is the same as the free plan.</p>
+        <p class="pricing-card__description">As many managed resources as you licence. Everything else is the same as the free plan.</p>
         <a class="btn btn--primary btn--full" href="/start/">Upgrade when you're ready</a>
         <ul class="pricing-card__features">
-          <li>Unlimited active projects</li>
-          <li>Capacity forecasting across the pipeline</li>
-          <li>Capacity outlook heatmap by role type</li>
-          <li>Forecast baselines</li>
+          <li>Everything in the free plan, plus:</li>
+          <li>As many managed resources as you licence</li>
+          <li>One-line invoice: licence count × price. The same figure every cycle.</li>
+          <li>Annual plans: a 10% buffer, and 90 days to right-size</li>
           <li>Email support</li>
         </ul>
-        <p class="pricing-card__note">Free forever for two active projects. 90-day money-back guarantee when you upgrade.</p>
+        <p class="pricing-card__note">Free for five. 14 days unlimited to start. 90-day money-back guarantee when you upgrade.</p>
       </div>
     </div>
   </section>
@@ -310,7 +314,7 @@
         <div class="migration-teaser">
           <div class="stack stack--12">
             <h3 class="h2">Leaving Project Online? Everyone else wants a scoping call.</h3>
-            <p class="migration-teaser__body">Project Online closes on 30 September 2026 and Microsoft offers no first-party migration path. Most of the answers you'll find are consulting engagements with a discovery phase attached. ProjexaR is free to start, with no card and no time limit, at a price that's published on this site when you outgrow it.</p>
+            <p class="migration-teaser__body">Project Online closes on 30 September 2026 and Microsoft offers no first-party migration path. Most of the answers you'll find are consulting engagements with a discovery phase attached. Free for five. 14 days unlimited to start. The price when you outgrow it is published on this site.</p>
           </div>
           <a class="btn btn--lg btn--secondary" href="/solutions/project-online-migration/">See the migration route<svg class="icon" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a>
         </div>
