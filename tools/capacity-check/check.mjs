@@ -6069,6 +6069,135 @@ section('PR15 addendum §2.1 / §2.2 / §2.3 / §3 — the approved decisions');
   }
 }
 
+section('PR15 addendum §1.3.3 — every published source is in the master §11 register');
+{
+  /* The Panko defect had two halves and the suite could see neither. One was a
+     claim its own source contradicts, which no assertion can catch: only
+     reading the paper does that. The other was structural and is catchable —
+     a work cited in the printed report with NOTHING in the verification
+     register, so nobody was ever asked whether it had been read.
+
+     §11's own preamble says every factual claim sits in one of two columns and
+     that marking something settled without checking is what stops anyone
+     catching it. This asserts that the report cannot publish a source the
+     register has never heard of, in either direction:
+
+       - every pr-sources row is accounted for here, by name, so a row added
+         later fails rather than arriving unchecked (§0.17);
+       - every row that cites a published work has an entry in §11 naming that
+         same work, matched on tokens distinctive enough that a register row
+         about a DIFFERENT paper by the same author does not satisfy it. That
+         last part is the Panko failure exactly: "Panko" alone would have
+         satisfied a register while the two documents named two different
+         papers.
+
+     An entry in EITHER column counts. The register's job is to say whether a
+     claim has been checked, and a row in the second column saying "published
+     and not verified" is the register working, not failing. Requiring the
+     first column would create the incentive to move a row rather than check
+     it, which is the behaviour §11's preamble was written against.
+
+     Rows that cite no published work are exempt BY NAME with the reason,
+     never by pattern. Both are ProjexaR's own judgement and say so in their
+     own text; a new row cannot join them by looking similar. */
+  const SPEC = join(fileURLToPath(new URL('.', import.meta.url)), '..', '..', 'claude',
+                    'capacity-check-change-spec-sep-2026.md');
+  let spec = null;
+  try { spec = readFileSync(SPEC, 'utf8'); } catch { /* not checked out */ }
+  if (!spec) {
+    ok(true, '§1.3.3 — specification not present in this checkout, comparison skipped');
+  } else {
+    /* §11, extracted, and asserted found before anything is read out of it.
+       A heading rename would otherwise leave every claim below tested against
+       an empty string, which is §0.17's negative-test shape. */
+    const from = spec.indexOf('## 11. Verification register');
+    ok(from > 0, '§1.3.3 — master §11 is found before it is searched');
+    const s11 = spec.slice(from);
+    ok(s11.length > 2000, '§1.3.3 — and it is the register, not an empty heading', String(s11.length));
+
+    /* One entry is one table row. Searching the whole section would let a work
+       named in §11's prose, or in a row about something else entirely, satisfy
+       a claim about a row. */
+    const rows11 = s11.split('\n').filter((l) => l.trim().startsWith('|') && l.includes('|', 1));
+    ok(rows11.length > 20, '§1.3.3 — the register rows parse', String(rows11.length));
+
+    /* Every pr-sources row, and the tokens that identify the work it names.
+       All tokens must appear in ONE register row. Written from the two
+       documents by hand, never derived from either, so a change to either side
+       fails here rather than being absorbed. */
+    const REGISTER = {
+      'Concurrent projects and project performance': ['Colicev', '10.1002/smj.3443'],
+      'Project overload in multi-project settings': ['Zika-Viktorsson', '385–394'],
+      'Lower anchor, published per month': ['HDI/MetricNet', '87'],
+      'Upper anchor, published per day': ['Jitbit', '21'],
+      'Run against growth spend': ['Flexera', '2023 Tech Spend Pulse'],
+      'Median IT salary': ['ASHE', 'SOC 213'],
+      'Employer National Insurance': ['Employer NI', '£5,000'],
+      'Spreadsheet error rates': ['Panko', 'Spreadsheet Errors: What We Know', 'EuSpRIG'],
+      'Microsoft Project capabilities': ['Microsoft Learn', 'enterprise-tier'],
+      'Project Online retirement': ['Project Online', '30 September 2026'],
+      'Microsoft Planner': ['Microsoft Support', 'Planner'],
+      /* Exempt, by name and with the reason. Neither cites a published work:
+         both are ProjexaR's own control and both say so in their own text, so
+         there is nothing for the register to have verified. */
+      'The divisor we apply, in both units': null,
+      'What the two anchors do not tell you': null,
+    };
+
+    /* Collect every row the tool can publish, across the branches that gate
+       them. A title the table does not know fails; a table entry no branch
+       produces fails too, because a stale expectation is how this check
+       quietly stops covering something. */
+    const probes = [
+      { id: 'reg-a', ...FIXTURE_A }, { id: 'reg-excel', ...FIXTURE_A, toolset: 'excel' },
+      { id: 'reg-msp', ...FIXTURE_A, toolset: 'msproject' },
+      { id: 'reg-plan', ...FIXTURE_A, toolset: 'planner' },
+      { id: 'reg-noticket', ...FIXTURE_A, ticketsPerMonth: null },
+      { id: 'reg-nosplit', ...FIXTURE_A, bauSplitEstimate: null },
+      { id: 'reg-nopm', ...FIXTURE_A, pms: 0 },
+      { id: 'reg-usd', ...FIXTURE_A, currency: 'USD' },
+    ];
+    const found = new Map();
+    for (const shape of probes) {
+      const cap = capture(shape);
+      if (!ok(cap.ok, `${shape.id}: renders`, cap.error)) continue;
+      const table = cap.print['pr-sources'] || '';
+      for (const m of table.matchAll(/<th[^>]*>([\s\S]*?)<\/th>\s*<td[^>]*>([\s\S]*?)<\/td>/g)) {
+        const title = m[1].replace(/<[^>]*>/g, '').trim();
+        if (!found.has(title)) found.set(title, m[2].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim());
+      }
+    }
+    ok(found.size > 0, '§1.3.3 — the probes rendered at least one sources row');
+
+    for (const [title, body] of found) {
+      const tokens = REGISTER[title];
+      if (!ok(tokens !== undefined,
+              `§1.3.3 — the sources row "${title}" is accounted for in this table`,
+              tokens === undefined ? 'add it here with its register tokens, or exempt it with a reason' : '')) {
+        continue;
+      }
+      if (tokens === null) {
+        /* An exemption has to keep earning itself: the row must still say it
+           is ours rather than someone else's. */
+        ok(/ProjexaR|The anchors measure/.test(body),
+           `§1.3.3 — the exempt row "${title}" still cites no published work`, body.slice(0, 120));
+        continue;
+      }
+      const hit = rows11.find((r) => tokens.every((t) => r.includes(t)));
+      ok(hit !== undefined,
+         `§1.3.3 — "${title}" has a §11 entry naming the same work`,
+         hit === undefined ? `no register row carries all of: ${tokens.join(' + ')}` : '');
+    }
+
+    /* Both ways, like the INDEX.md check. A table entry for a row that no
+       branch produces is an expectation nobody is meeting, and it would let a
+       deleted source look covered. */
+    for (const title of Object.keys(REGISTER)) {
+      ok(found.has(title), `§1.3.3 — the table entry "${title}" corresponds to a row the tool renders`);
+    }
+  }
+}
+
 /* ------------------------------------------------------------------- result */
 console.log(`\n${'='.repeat(60)}`);
 console.log(`${pass} passed, ${fail} failed`);
