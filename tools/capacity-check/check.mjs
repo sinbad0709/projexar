@@ -4610,6 +4610,36 @@ section('PR12 §5 — the retired offer does not come back, on any page');
      Adding a surface means changing this number on purpose. */
   eq(stamped, 7, '§5 — the offer is stamped on exactly the surfaces that carry it');
 
+  /* The two paid cards describe one plan, so they say one thing.
+
+     This is PR12's own thesis one level up. The offer was corrected on nine
+     surfaces and guarded, while the plan those surfaces sell was described two
+     different ways on two pages: the home card listed three capabilities and
+     the /pricing card listed five lines, and when the capabilities came off as
+     feature gating the home card was left with two bullets under a "Most
+     popular" badge. Nothing would have caught that, because every assertion in
+     this suite reads one page at a time.
+
+     The lists are compared, not the notes. The home note carries the offer and
+     the /pricing note does not, which is a page difference rather than a plan
+     difference: /pricing states the offer on the free card beside it. */
+  {
+    const cards = ['index.html', 'pricing/index.html'].map((page) => {
+      const card = between(readFileSync(join(PUB, page), 'utf8'),
+                           'pricing-card--featured', '</ul>', `§5 ${page} paid card`);
+      return {
+        page,
+        desc: grab(card, /pricing-card__description"[^>]*>([\s\S]*?)<\/p>/, `§5 ${page} paid description`),
+        items: [...card.matchAll(/<li>([\s\S]*?)<\/li>/g)].map((m) => m[1].replace(/\s+/g, ' ').trim()),
+      };
+    });
+    ok(cards[0].items.length >= 4, '§5 — the home paid card has its feature list',
+       `${cards[0].items.length} items`);
+    eq(cards[0].items.join(' | '), cards[1].items.join(' | '),
+       '§5 — both paid cards list the same plan, in the same order');
+    eq(cards[0].desc, cards[1].desc, '§5 — and describe it in the same words');
+  }
+
   /* The Capacity Check does not load site.js, so its copy is inline only. It is
      in PAGES above and therefore covered by all three claims; this names the
      reason, because a later reader may otherwise "tidy" it out of the list. */
