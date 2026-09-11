@@ -637,8 +637,17 @@ if (capB.ok) {
   ok(findings.every((f) => f === 'Healthy'), '8.B: all four findings Healthy', findings.join(' | '));
   const t = allText(capB);
   ok(!/At risk/.test(t), '8.B: no At risk anywhere in the report', (t.match(/.{60}At risk.{60}/) || [''])[0]);
-  ok(/Room to grow/.test(capB.screen.ceilingFigure), '8.B: ceiling renders as positive headroom',
+  /* PR15 §4.2. "Room to grow: 18 more projects a year at today's pace" offered
+     headroom in bold where the reader's question is how close they are to
+     trouble, so the card states a distance to the boundary instead. What this
+     assertion is for is unchanged and is the reason it is not pinned by
+     string: the positive branch must render as a distance BELOW the red point
+     and never as a negative quantity, which is the next assertion down. */
+  ok(/sits 18 below the point at which/.test(capB.screen.ceilingFigure),
+     '8.B: ceiling renders the positive branch as a distance below the boundary',
      capB.screen.ceilingFigure);
+  ok(!/Room to grow|room to raise/i.test(allText(capB)),
+     '8.B: and the headroom framing it replaced is gone from every surface');
   ok(!/-18|−18/.test(t), '8.B: no negative rendering');
   /* The hero swap: growth ceiling leads on the non-summing path. */
   eq(capB.hero.ceilingOrder, '0', '8.B: growth ceiling leads');
@@ -2647,8 +2656,21 @@ section('PR7 §7.5 — one more route to the trial, additive and unpriced');
   const html = readFileSync(TOOL_PATH, 'utf8');
   const report = between(html, '<section id="report"', '<div id="printReport">', 'web report slice');
 
-  ok(/<p class="checks-cta"><a href="\/start\/" class="cta-inline">Start free<\/a>/.test(report),
+  /* PR15 §7.1. PR7 §7.5 barred a second conversion PANEL, not a second
+     button, and the class list now carries the primary CTA's own style. The
+     pattern names both classes rather than loosening to `class="[^"]*"`: a
+     loose pattern here would go on passing if the button style were dropped
+     again, which is the change this asserts against. */
+  ok(/<p class="checks-cta"><a href="\/start\/" class="btn btn-primary cta-inline">Start free<\/a>/.test(report),
      '§7.5 — the second route exists and points at /start/');
+  ok(/class="btn btn-primary cta-inline"/.test(report),
+     '§7.1 — and it carries the primary CTA\'s style, not a text link\'s');
+  /* Still not a panel: no ground, no border and no box of its own. The block
+     keeps only the rule above it that separates it from the checks. */
+  const ctaRule = (readFileSync(TOOL_PATH, 'utf8').match(/\n\.checks-cta\{[^}]*\}/) || [''])[0];
+  ok(ctaRule.length > 0, '§7.1 — the .checks-cta rule is found before it is read');
+  ok(!/background|box-shadow|border-radius/.test(ctaRule),
+     '§7.1 — and the block is still not a second panel');
   /* Same offer wording as the panel, exactly.
 
      PR12 put a data-offer attribute on both elements, and these two patterns
@@ -2660,7 +2682,7 @@ section('PR7 §7.5 — one more route to the trial, additive and unpriced');
   const ctaSub = grab(report, /<span class="checks-cta-sub"[^>]*>([^<]+)<\/span>/, '§7.5 second-route sub');
   eq(ctaSub, panelSub, '§7.5 — the offer is described in the panel\'s own words, exactly');
   const panelBtn = grab(report, /id="trialCta">([^<]+)<\/a>/, '§7.5 panel button');
-  const ctaBtn = grab(report, /class="cta-inline">([^<]+)<\/a>/, '§7.5 second-route button');
+  const ctaBtn = grab(report, /class="btn btn-primary cta-inline">([^<]+)<\/a>/, '§7.5 second-route button');
   eq(ctaBtn, panelBtn, '§7.5 — and so is the action');
 
   /* Not a second panel, and no price beside it. */
@@ -3027,13 +3049,59 @@ section('PR7 §3.1 — the bands statement reaches the reader on screen, from on
 
   const text = (h) => h.replace(/<[^>]+>/g, ' ').replace(/&ndash;/g, '–').replace(/&amp;/g, '&')
     .replace(/\s+/g, ' ').trim();
-  /* The screen copy carries an h3 the printed page gets from its own markup, so
-     compare the statement itself: the printed text must be a suffix of what the
-     screen renders, with nothing added, dropped or reworded between them. */
-  ok(text(web).endsWith(text(print)),
+  /* PR15 §2.3 puts everything after the opening claim behind a <details> on
+     screen, so the summary label now sits between the first paragraph and the
+     rest and the printed statement is no longer a contiguous suffix of the
+     screen's. The summary is removed by value before the comparison — by
+     value, so a reworded label fails here rather than being absorbed by a
+     pattern — and both original claims then hold unchanged. */
+  const BANDS_SUMMARY = 'The research behind them, and what it does not cover';
+  const summaryTag = '<summary class="bands-more-sum">' + BANDS_SUMMARY + '</summary>';
+  ok(web.includes(summaryTag), '§2.3 — the screen carries the disclosure, with the label it was given');
+  const webNoSummary = web.replace(summaryTag, ' ');
+  ok(text(webNoSummary).endsWith(text(print)),
      '§3.1 — the two reports carry the same statement, word for word');
-  ok(text(web).replace(text(print), '').trim() === 'How the bands were set',
+  ok(text(webNoSummary).replace(text(print), '').trim() === 'How the bands were set',
      '§3.1 — and the only thing the screen adds is its own heading');
+
+  /* And the byte-level claim PR15 §2.3 required, made against the shared
+     function rather than against a rendered node: the screen block is the
+     printed string with a wrapper inserted at the end of its first paragraph,
+     and not one character of the statement moved. Written out here from the
+     specification, never read off the page, so a change to either side fails.
+
+     This is the assertion the text comparison above cannot make. Two strings
+     that flatten to the same words can still differ in the markup that decides
+     what a reader sees, and "no word moved" was the whole permission PR6 §6
+     gave this change. */
+  {
+    const api = loadTool().api;
+    const whole = api.bandsStatement('');
+    const cut = whole.indexOf('</p>');
+    ok(cut > 0, '§2.3 — the statement has a first paragraph to cut at');
+    eq(api.bandsDisclosure(),
+       whole.slice(0, cut + 4)
+       + '<details class="bands-more">' + summaryTag
+       + '<div class="bands-more-body">' + whole.slice(cut + 4) + '</div></details>',
+       '§2.3 — the screen block is the statement with a wrapper inserted, byte for byte');
+    /* The opening claim stays out in the open. It is the claim; the rest is
+       the evidence, which is what a disclosure is for. */
+    ok(/^These bands are ProjexaR’s management controls\./
+         .test(text(api.bandsDisclosure().slice(0, whole.indexOf('</p>')))),
+       '§2.3 — and the claim itself is not what went behind the disclosure');
+  }
+
+  /* PR15 §2.3, the other half. A collapsed <details> prints collapsed in some
+     browsers, which would put the sourcing back behind a gate in the artefact
+     that gets forwarded — the opposite of what PR7 §3.1 did. The printed
+     report carries no disclosure at all, which is a stronger guarantee than a
+     print rule: there is no collapsed element on that surface to fail to open.
+     Asserted on the rendered node, not on the function, because it is the node
+     that goes into the PDF. */
+  ok(!/<details/.test(print), '§2.3 — the printed report carries no disclosure to render collapsed');
+  ok(!/<summary/.test(print), '§2.3 — and no summary either');
+  ok(text(print).includes('confidence interval of 3.57'),
+     '§2.3 — the printed statement still carries the evidence, expanded');
 
   /* It is on screen, which means outside the gated block. */
   const html = readFileSync(TOOL_PATH, 'utf8');
@@ -3358,8 +3426,13 @@ section('§2 — the promoted block sits after the growth ceiling, and is rename
 
   /* §3. Three copy strings, and all three live in static markup outside every
      captured node — so without these the text diff cannot see them at all. */
-  ok(has(report, '<p class="midcta-sub" data-offer="short">Free for five. 14 days unlimited to start.</p>'),
-     '§3.2 — the offer line, in the short form PR12 §2 settled');
+  /* PR15 §5.2 supersedes the wording PR12 §2 settled. "Free for five" beside
+     "14 days" reads as five days, which is why the longer form was confirmed;
+     it had never reached the constant. */
+  ok(has(report, '<p class="midcta-sub" data-offer="short">Free for up to five people. 14 days unlimited to start.</p>'),
+     '§3.2 — the offer line, in the short form PR15 §5.2 confirmed');
+  ok(!has(html, 'Free for five. 14 days'),
+     '§3.2 — and the short form it replaced is gone from the whole file');
   ok(!has(html, 'Two projects free, forever'), '§3.2 — the old trial line is gone');
   /* §5.3 of PR6 settled the three routes to the report on one verb. The old
      label is asserted absent so the vocabulary cannot drift back apart. */
@@ -3595,12 +3668,22 @@ section('PR8 §2 — the printed report, in the order a forwarded document is re
   for (const gone of ['ProjexaR works from the actual commitments',
                       'ProjexaR works from the plans themselves',
                       'Nothing needs to be built and nothing needs to be migrated',
+                      /* PR15 §5.3. PR11 made this future tense to get out of a
+                         present-tense claim about a product that has not
+                         shipped, and the future tense turned it into a flat
+                         promise instead — one the §5 feature-gating guard's
+                         phrase list could not see, because it looks for
+                         phrases and not for tense. The subject moves to the
+                         design, which is the register the two sentences after
+                         it already use, so it is neither a promise nor a claim
+                         about a shipped product. */
+                      'Nothing will need to be built and nothing will need to be migrated',
                       'every project plan obeys it']) {
     ok(!has(html, gone), `§2 — the present-tense CTA claim is gone: "${gone}"`);
   }
   for (const kept of ['ProjexaR is being designed to work from the actual commitments',
                       'ProjexaR is being designed to work from the plans themselves',
-                      'Nothing will need to be built and nothing will need to be migrated',
+                      'The design needs nothing built and nothing migrated',
                       'project plan reading from that record']) {
     ok(has(html, kept), `§2 — and the design-intent form stands: "${kept}"`);
   }
@@ -5472,8 +5555,15 @@ section('PR12 §5 — the retired offer does not come back, on any page');
     ok(m !== null, `§5 — OFFER.${key} is declared`);
     if (m) OFFER[key] = m[1].split('+').map(s => s.trim().replace(/^"|"$/g, '')).join('');
   }
-  eq(OFFER.short, 'Free for five. 14 days unlimited to start.',
-     '§5 — the short form is the wording PR12 §2 settled');
+  /* PR15 §5.2 supersedes PR12 §2 on this one string, and on nothing else.
+     "Free for five" beside "14 days" reads as five days, which is why the
+     longer form was confirmed; the confirmed wording had never reached this
+     constant, so every surface taking OFFER.short was stating the short form
+     that was replaced. The number this publishes is unchanged: "five" is a
+     word, and 14 is still the only numeral. */
+  eq(OFFER.short, 'Free for up to five people. 14 days unlimited to start.',
+     '§5 — the short form is the wording PR15 §5.2 confirmed');
+  ok(!/Free for five\. 14 days/.test(siteJs), '§5 — and the form it replaced is gone from the constant');
   ok(/five people with capacity recorded/.test(OFFER.full || ''),
      '§5 — the full statement uses people outside billing contexts, per PR7 §6.2');
   ok(/five managed resources/.test(OFFER.fullBilling || ''),
@@ -5538,7 +5628,11 @@ section('PR12 §5 — the retired offer does not come back, on any page');
         sits inside a canonical string. Comments are stripped first: the
         rationale for the wording is allowed to discuss it. */
   const SANDBOX_HALF = /14 days of unlimited access|14 days unlimited to start/i;
-  const FREE_HALF = /stays free for up to five|free for five|free, with no time limit/i;
+  /* "free for up to five" covers both the confirmed short form (PR15 §5.2) and
+     the full statement's "stays free for up to five"; "free for five" stays so
+     the retired short form is still recognised as a free half wherever it
+     survives, rather than letting its "14 days" read as an orphan. */
+  const FREE_HALF = /free for up to five|free for five|free, with no time limit/i;
   for (const page of PAGES) {
     let text = readFileSync(join(PUB, page), 'utf8')
       .replace(/<!--[\s\S]*?-->/g, ' ')
@@ -5678,6 +5772,168 @@ section('PR12 §5 — the retired offer does not come back, on any page');
      reader concludes otherwise. */
   ok(!/id="pr-price"[^>]*data-offer/.test(tool) && !/id="priceLine"[^>]*data-offer/.test(tool),
      '§5 — the offer is never stated inside the licence quote');
+}
+
+/* ============================================ PR15 — the review pass ========= */
+section('PR15 §2.2 / §4.1 — no average is a fact about an individual, and one name per ratio');
+{
+  /* Both are sweeps over RENDERED output rather than over the file, for the
+     reason PR6 gave the dash rules: a phrase on a branch no fixture reaches is
+     exactly what a file-level grep misses, and a phrase in a comment is not
+     copy. The probes below reach every branch that can print either
+     construction — one and several project managers, each rating of the BAU
+     tile, and the suppressions.
+
+     §0.17: the probe set asserts that it rendered, so a shape the form starts
+     rejecting cannot quietly empty this section. */
+  const probes = [
+    { id: 'pr15-a', ...FIXTURE_A }, { id: 'pr15-b', ...FIXTURE_B },
+    { id: 'pr15-c', ...FIXTURE_C }, { id: 'pr15-e', ...FIXTURE_E },
+    { id: 'pr15-f', ...FIXTURE_F }, { id: 'pr15-h', ...FIXTURE_H },
+    { id: 'pr15-one-pm', ...FIXTURE_A, pms: 1 },
+    { id: 'pr15-one-live', ...FIXTURE_A, live: 1 },
+    { id: 'pr15-no-live', ...FIXTURE_A, live: 0 },
+    /* The annual figure cannot sit below the live count, so a heavy portfolio moves both. */
+    { id: 'pr15-heavy', ...FIXTURE_A, live: 300, annual: 400 },
+    { id: 'pr15-no-bau', ...FIXTURE_A, bauStaff: 0 },
+    { id: 'pr15-no-pm', ...FIXTURE_A, pms: 0 },
+  ];
+
+  /* §2.2. Each of these states a per-head or per-project average as a fact
+     about one of them. The list is the constructions that were live plus the
+     ones the same sentence would take if it came back reworded. */
+  const AS_INDIVIDUAL = [
+    /Each of your \d[\d.,]* project managers is carrying/i,
+    /Each of your project managers is carrying/i,
+    /Each project is getting/i,
+    /Each unit of (that|your) capacity/i,
+    /for each project manager\b/i,
+    /\bEach \w+ is carrying \d/i,
+  ];
+  /* §4.1. Two names for one quantity within a screen. The tile's name is the
+     one that stays, and it is asserted present so this cannot pass by the
+     ratio disappearing altogether. */
+  const RENAMED = [/unit of capacity/i, /unit of BAU capacity/i, /units of capacity/i];
+
+  let rendered = 0, sawRatio = 0, sawCaseload = 0;
+  for (const shape of probes) {
+    const cap = capture(shape);
+    if (!ok(cap.ok, `${shape.id}: renders`, cap.error)) continue;
+    rendered++;
+    const out = allText(cap);
+    for (const re of AS_INDIVIDUAL) {
+      const hit = re.exec(out);
+      ok(hit === null, `§2.2 — ${shape.id}: no average stated as a fact about an individual: ${re}`,
+         hit === null ? '' : JSON.stringify(out.slice(Math.max(0, hit.index - 70), hit.index + 90)));
+    }
+    for (const re of RENAMED) {
+      const hit = re.exec(out);
+      ok(hit === null, `§4.1 — ${shape.id}: "unit of capacity" appears nowhere: ${re}`,
+         hit === null ? '' : JSON.stringify(out.slice(Math.max(0, hit.index - 70), hit.index + 90)));
+    }
+    /* The positive half. An absence sweep alone would pass on a report that
+       stopped publishing either quantity, which is §0.17's negative-test
+       shape: the ratio still has to be named, in the tile's words, and the
+       caseload still has to be stated as an average where there is one. */
+    if (cap.computed.at[0].projectsPerFTE !== null && cap.values.live > 0) {
+      sawRatio++;
+      ok(/live projects for every effective BAU FTE/.test(out),
+         `§4.1 — ${shape.id}: the ratio is still published, under the tile's own name`);
+    }
+    if (cap.computed.pmLoad !== null && cap.values.live > 0 && cap.values.pms > 1) {
+      sawCaseload++;
+      ok(/between them, an average of/.test(out),
+         `§2.2 — ${shape.id}: the caseload is still published, as an average`);
+    }
+  }
+  eq(rendered, probes.length, '§2.2/§4.1 — every probe rendered');
+  ok(sawRatio >= 6, '§4.1 — the ratio branch was reached', String(sawRatio));
+  ok(sawCaseload >= 5, '§2.2 — the several-managers branch was reached', String(sawCaseload));
+
+  /* The singular keeps its own sentence, because "an average of 9 each" of one
+     manager is not a sentence anyone writes. PR3 §3.5's rule, applied to the
+     wording PR15 introduced. */
+  const one = capture({ id: 'pr15-one-pm-text', ...FIXTURE_A, pms: 1 });
+  if (ok(one.ok, 'pr15-one-pm-text: renders', one.error)) {
+    const t = allText(one);
+    ok(/Your project manager is carrying/.test(t),
+       '§2.2 — at one manager the singular takes its own opening');
+    /* Scoped to the caseload sentence rather than to the whole report: "the
+       gap between them" and "the 170-320 window between them" are unrelated
+       and predate this. The pattern names the construction, not the words. */
+    ok(!/managers are carrying|between them, an average of/.test(t),
+       '§2.2 — and there is nothing for them to be carried between');
+  }
+}
+
+section('PR15 §3.1 — the measure is centred inside every navy card, and the cap has not moved');
+{
+  const css = readFileSync(TOOL_PATH, 'utf8');
+
+  /* The cap itself. PR10's root cause was five nominal measures across four
+     type sizes producing eight columns, so a per-block exception here is that
+     fault starting again — which is why this is pinned by value and the
+     centring is asserted separately from it. */
+  ok(/--measure:660px;/.test(css), '§3.1 — the cap is unchanged at 660px');
+
+  /* The three navy grounds, and every prose block on them. Each rule is
+     extracted first and asserted found (§0.17): a renamed selector would
+     otherwise make all three of these pass over an empty string. */
+  const NAVY = [
+    ['.ceiling .h-note', 'the growth-ceiling and full-cost cards'],
+    ['.assumption', 'the loaded-cost block inside the full-cost card'],
+    ['.assumption .a-parts', 'the salary parts on it'],
+    ['.closing .verdict', 'the closing verdict'],
+  ];
+  for (const [sel, what] of NAVY) {
+    const rule = (css.match(new RegExp('\\n' + sel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\{[^}]*\\}')) || [''])[0];
+    ok(rule.length > 0, `§3.1 — the ${sel} rule is found before it is read`);
+    ok(/max-width:var\(--measure\)/.test(rule), `§3.1 — ${what} takes the one measure`);
+    ok(/margin-inline:auto/.test(rule), `§3.1 — and centres it, so the slack falls equally either side`);
+  }
+
+  /* §3.1's second half. The rule and the salary input spanned the card while
+     the text beside them spanned the measure, which is what made the
+     asymmetry visible rather than merely present. They agree now because the
+     measure sits on the block that carries all three. */
+  const assumption = (css.match(/\n\.assumption\{[^}]*\}/) || [''])[0];
+  ok(/border-top/.test(assumption) && /max-width:var\(--measure\)/.test(assumption),
+     '§3.1 — the rule and the text it sits above share one width');
+
+  /* And the printed report does not inherit any of it, which is asserted
+     rather than assumed. #report is display:none in @media print, the print
+     surface sets its columns as distances in mm and pt (PR10 §1.1), and the
+     one mention of --measure past the @media print boundary is the comment
+     saying the cover line is deliberately not on it. */
+  const printAt = css.indexOf('@media print{');
+  ok(printAt > 0, '§3.1 — the print block is found');
+  const printCss = css.slice(printAt, css.indexOf('\n</style>', printAt));
+  ok(!/max-width:var\(--measure\)/.test(printCss),
+     '§3.1 — no printed rule takes the screen measure');
+  ok(/#report\{ display:none !important;|\.hero,#tool,#report\{ display:none !important; \}/.test(printCss),
+     '§3.1 — and the screen report, navy cards included, does not print at all');
+}
+
+section('PR15 §1.4 — the question count is computed, not written');
+{
+  const html = readFileSync(TOOL_PATH, 'utf8');
+  /* The template and the fallback are both asserted: the fallback is what a
+     reader with no script sees, so it has to be a true sentence today rather
+     than a template with a placeholder in it. */
+  ok(/data-count-template="[^"]*All \{n\} shape your report/.test(html),
+     '§1.4 — the sentence is a template with the count substituted');
+  ok(/id="toolsLegendNote"[^>]*>How that dependency is planned, seen and costed\. All four shape your report/.test(html),
+     '§1.4 — and the no-script fallback states the count that is true today');
+  /* Counted from the fields actually present, so a fifth question moves it. */
+  const fieldset = between(html, '<fieldset class="fieldset" id="toolsFieldset">', '</fieldset>',
+                           '§1.4 tools fieldset');
+  ok(fieldset.length > 0, '§1.4 — the fieldset is found before its fields are counted');
+  const fields = (fieldset.match(/class="field[ "]/g) || []).length;
+  eq(fields, 4, '§1.4 — four questions today, which is what the fallback says');
+  ok(/set\.querySelectorAll\('\.field'\)\.length/.test(html),
+     '§1.4 — and the rendered count comes from the fields, not from a constant');
+  ok(/if\(!tpl \|\| n < 1/.test(html),
+     '§1.4 — with a count of nothing left alone rather than published (§0.17)');
 }
 
 /* ------------------------------------------------------------------- result */

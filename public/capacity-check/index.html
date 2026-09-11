@@ -431,6 +431,21 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 .bands-note em{ font-style:italic; }
 .bands-head{ font-size:var(--text-body-size); font-weight:var(--weight-bold);
   color:var(--text-strong); margin-bottom:var(--space-3); }
+/* PR15 §2.3. The claim stays visible; the evidence behind it is disclosed.
+   Native <details>, so the control is keyboard-operable and announced by the
+   browser with no script deciding - and so the printed report, which renders
+   #pr-bands and not this, cannot inherit a collapsed element.
+
+   The marker is the browser's own. Restyling a disclosure triangle is how one
+   ends up invisible in a browser nobody tested, and the word beside it is
+   already doing the work. */
+.bands-more{ margin-top:var(--space-4); }
+.bands-more-sum{ cursor:pointer; font-size:var(--text-body-sm-size);
+  line-height:var(--text-body-sm-line); font-weight:var(--weight-semibold);
+  color:var(--text-brand); max-width:var(--measure); }
+.bands-more-sum:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:3px;
+  border-radius:var(--radius-sm); }
+.bands-more[open] .bands-more-sum{ margin-bottom:var(--space-3); }
 
 /* Category one — RAG tiles. Rated against a threshold, so they carry both a
    coloured top bar and a solid-fill pill; the pill is what a print-out or a
@@ -527,8 +542,14 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
    than a count — running above the sustainable pace, sitting exactly on it, or
    no ceiling to compute. The accent is reserved for headroom there is some of. */
 .ceiling.is-constrained .h-figure{ color:var(--text-inverse); }
+/* PR15 §3.1. The measure capped the text at 660px while the card ran wider,
+   so the whole of the slack fell on the right and read as a margin fault
+   rather than as a reading column. Centred, so it falls equally either side.
+   The cap itself does not move: PR10's root cause was five nominal measures
+   across four type sizes producing eight columns, and a per-block exception
+   here is that fault starting again. */
 .ceiling .h-note{ font-size:var(--text-body-sm-size); line-height:var(--text-body-sm-line);
-  color:var(--text-inverse-muted); max-width:var(--measure); }
+  color:var(--text-inverse-muted); max-width:var(--measure); margin-inline:auto; }
 .ceiling .h-note strong{ color:var(--text-inverse); font-weight:var(--weight-semibold); }
 
 /* Two callouts of the same category — the full cost of the portfolio and the
@@ -555,7 +576,15 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 /* The loaded-cost control sits inside the cost callout, on the figure it
    drives. Input furniture on a dark ground, so it borrows the callout's
    inverse text colours rather than the form's. */
+/* PR15 §3.1. The rule and the salary input spanned the card while the text
+   beside them spanned the measure, which is what made the asymmetry visible
+   here rather than merely present. They agree now: the measure goes on the
+   block, so the border, the input row and the parts all sit in one centred
+   column. .a-parts keeps its own cap for the case where this rule is edited -
+   a cap that is inherited and a cap that is declared are different failure
+   modes, and the declared one is the guard. */
 .assumption{ margin-top:var(--space-5); padding-top:var(--space-5);
+  max-width:var(--measure); margin-inline:auto;
   border-top:1px solid var(--border-inverse-subtle, rgba(255,255,255,.18)); }
 .assumption .a-row{ display:flex; flex-wrap:wrap; align-items:center; gap:var(--space-3);
   font-size:var(--text-body-sm-size); color:var(--text-inverse-muted); }
@@ -566,7 +595,8 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   font-family:var(--font-mono, monospace); font-size:var(--text-body-sm-size); }
 .assumption input:focus-visible{ outline:2px solid var(--text-accent-figure); outline-offset:2px; }
 .assumption .a-parts{ margin-top:var(--space-3); font-size:var(--text-body-sm-size);
-  line-height:var(--text-body-sm-line); color:var(--text-inverse-muted); max-width:var(--measure); }
+  line-height:var(--text-body-sm-line); color:var(--text-inverse-muted);
+  max-width:var(--measure); margin-inline:auto; }
 .assumption .a-parts strong{ color:var(--text-inverse); font-weight:var(--weight-semibold); }
 
 /* Checks on the respondent's own answers. Not findings, and styled apart from
@@ -696,13 +726,16 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
 .midcta .btn{ margin-top:var(--space-6); }
 .midcta .midcta-sub{ margin-top:var(--space-3); font-size:var(--text-caption-size); color:var(--text-subtle); }
 /* PR7 §7.5 — the second route to the trial. A link on the page's own ground,
-   deliberately not a panel: it offers a door without building a second room. */
+   deliberately not a panel: it offers a door without building a second room.
+   PR15 §7.1 — what PR7 §7.5 barred was a second PANEL, and the button is not
+   one. It takes the primary CTA's style, with no box and no ground of its own,
+   so the reader gets the same affordance in both places and still meets one
+   conversion box on the page. The row wraps, so the offer line drops under the
+   button rather than squeezing it at narrow widths. */
 .checks-cta{ margin-top:var(--space-6); padding-top:var(--space-5);
-  border-top:var(--border-width) solid var(--border-subtle); }
-.checks-cta .cta-inline{ font-weight:var(--weight-bold); color:var(--text-brand); text-decoration:none; }
-.checks-cta .cta-inline:hover{ text-decoration:underline; }
-.checks-cta .checks-cta-sub{ margin-left:var(--space-3);
-  font-size:var(--text-caption-size); color:var(--text-subtle); }
+  border-top:var(--border-width) solid var(--border-subtle);
+  display:flex; flex-wrap:wrap; align-items:center; gap:var(--space-3); }
+.checks-cta .checks-cta-sub{ font-size:var(--text-caption-size); color:var(--text-subtle); }
 .midcta .midcta-alt{ margin-top:var(--space-5); font-size:var(--text-body-sm-size); }
 .midcta .midcta-alt a{ font-weight:var(--weight-bold); color:var(--text-brand); text-decoration:none; }
 .midcta .midcta-alt a:hover{ text-decoration:underline; }
@@ -711,8 +744,9 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
   padding:var(--space-10) var(--space-8); max-width:var(--container-narrow); margin:var(--space-10) auto 0; }
 .closing h2{ font-size:var(--text-h2-size); line-height:var(--text-h2-line);
   letter-spacing:var(--text-h2-track); color:var(--text-inverse); margin-bottom:var(--space-5); }
+/* PR15 §3.1 - the third navy card, same fault, same fix. */
 .closing .verdict{ font-size:var(--text-body-lg-size); line-height:var(--text-body-lg-line); color:var(--text-inverse-muted);
-  max-width:var(--measure); }
+  max-width:var(--measure); margin-inline:auto; }
 .closing .verdict strong{ color:var(--text-inverse); font-weight:var(--weight-bold); }
 
 .gate{ background:var(--surface-card); border-radius:var(--radius-card); padding:var(--space-8);
@@ -1137,9 +1171,16 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
         </div>
       </fieldset>
 
-      <fieldset class="fieldset">
+      <fieldset class="fieldset" id="toolsFieldset">
         <legend class="legend">Tools and processes</legend>
-        <p class="legend-note">How that dependency is planned, seen and costed. All four shape your report, so we ask you to answer each one.</p>
+        <!-- PR15 §1.4. "All four" was a constant beside four questions, which
+             is the fault the bands statement's "Three things follow" already
+             demonstrated: a fifth question added here makes the sentence
+             quietly wrong, and nothing fails. The count is written at load
+             from the fields actually present in this fieldset. The fallback in
+             the markup is the truth today, so the sentence is right for a
+             reader with no script as well. -->
+        <p class="legend-note" id="toolsLegendNote" data-count-template="How that dependency is planned, seen and costed. All {n} shape your report, so we ask you to answer each one.">How that dependency is planned, seen and costed. All four shape your report, so we ask you to answer each one.</p>
         <div class="grid">
           <div class="field full" id="f-toolset">
             <label for="toolset">What do you plan projects in today?</label>
@@ -1297,7 +1338,13 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <div class="compare">
         <div class="compare-head">
           <div class="c-now">From what you told us</div>
-          <div class="c-next">From your project plans</div>
+          <!-- PR15 §4.3. "From your project plans" claims the reader's plans
+               already contain this; they do not, which is the argument. The
+               conditional the section heading carries is restored here.
+               ProjexaR is deliberately not named in this column: PR8 §2.7 and
+               §7.2 keep the product to one page, last, and this section sits
+               immediately above the four steps that need no software. -->
+          <div class="c-next">What Your Plans Should Show</div>
         </div>
         <div id="compareRows"></div>
       </div>
@@ -1308,7 +1355,7 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
       <p id="ctaBody"></p>
       <p class="price-note" id="priceLine"></p>
       <a class="btn btn-primary" href="/start/" id="trialCta">Start free</a>
-      <p class="midcta-sub" data-offer="short">Free for five. 14 days unlimited to start.</p>
+      <p class="midcta-sub" data-offer="short">Free for up to five people. 14 days unlimited to start.</p>
       <p class="midcta-alt"><a href="#getReport">Or get the full report first &darr;</a></p>
     </div>
 
@@ -1338,8 +1385,14 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
            for character, because two descriptions of one offer is the
            contradiction already open on /start reproduced inside a single page.
            No price beside it; the price is stated once, in the panel. -->
-      <p class="checks-cta"><a href="/start/" class="cta-inline">Start free</a>
-        <span class="checks-cta-sub" data-offer="short">Free for five. 14 days unlimited to start.</span></p>
+      <!-- PR15 §7.1. PR7 §7.5 barred a second conversion PANEL, not a second
+           button: the concern was two boxes reading as pressure, and a bare
+           text link where the reader has just been shown the one thing on this
+           page a spreadsheet could not do for them is not the fix for that.
+           The primary CTA's own style, on the page's own ground, with no box
+           around it - so it is still not a second panel. -->
+      <p class="checks-cta"><a href="/start/" class="btn btn-primary cta-inline">Start free</a>
+        <span class="checks-cta-sub" data-offer="short">Free for up to five people. 14 days unlimited to start.</span></p>
     </div>
 
     <div class="section">
@@ -1595,7 +1648,8 @@ input:focus,select:focus{ outline:none; border-color:var(--border-brand); box-sh
         useless for acting on one: an average tells you the portfolio is stretched but never which person is carrying
         it. The same questions asked of your actual project plans return a different class of answer.</p>
       <table class="p-table">
-        <thead><tr><th style="width:50%">From what you told us</th><th>From your project plans</th></tr></thead>
+        <!-- PR15 §4.3 - the printed report's copy of the same heading. -->
+        <thead><tr><th style="width:50%">From what you told us</th><th>What Your Plans Should Show</th></tr></thead>
         <tbody id="pr-compare"></tbody>
       </table>
       <!-- PR8 §4, epigram 1 of 2. This closed on "It requires the plans you
@@ -2920,11 +2974,15 @@ window.submitToSender = function(payload){
            + ' at ' + bandPhrase(v) + ' come to <strong>' + fteRange
            + ' effective FTE</strong> of project capacity, none of it currently committed.';
     }
-    /* Its own sentence, so the caseload clause and the no-PM clause can each be
-       a complete one in front of it. The apposition was two em-dashes. */
-    var fte = 'Your <strong>' + fteRange + ' effective BAU FTE</strong>, ' + n0(v.bauStaff) + ' '
-            + plural(v.bauStaff,'person','people') + ' at ' + bandPhrase(v) + ', is '
-            + 'spread across all ' + n0(v.live) + ' of them.';
+    /* PR15 §2.1. Two sentences, because one could not carry it: the apposition
+       put "is spread" next to "people" and the pronoun in "all 23 of them"
+       pointed at the projects named a clause and a half earlier, so the
+       sentence parsed as the staff being spread across the staff. The band,
+       the headcount and the FTE are stated in the order they derive in, and
+       the projects are named rather than referred back to. */
+    var fte = 'Your ' + n0(v.bauStaff) + ' BAU staff give <strong>' + bandLabel(v) + '</strong> of their time '
+            + 'to project work, which comes to <strong>' + fteRange + ' effective full-time equivalents</strong>. '
+            + 'That capacity is spread across all ' + qty(v.live, 'live project', 'live projects') + '.';
     if(v.pms === 0){
       return 'Nobody is formally running projects. ' + fte;
     }
@@ -2933,12 +2991,19 @@ window.submitToSender = function(payload){
        concurrent projects"; qty1() agrees the noun with the figure as displayed.
        And "Each of your 1 project manager" is not a sentence anyone writes: at
        one manager there is no "each", so the singular takes its own opening. */
+    /* PR15 §2.2. "Each of your 4 project managers is carrying 5.8 concurrent
+       projects" is false of every one of them, and a manager who knows their
+       team rejects it before reading anything else. The portfolio is stated as
+       the total it is, and the average is named as an average. At one manager
+       there is no average and no "between them", so the singular keeps its own
+       sentence. */
     if(v.pms === 1){
       return 'Your project manager is carrying <strong>'
            + qty1(c.pmLoad, 'concurrent project', 'concurrent projects') + '</strong>. ' + fte;
     }
-    return 'Each of your ' + qty(v.pms, 'project manager', 'project managers') + ' is carrying <strong>'
-         + qty1(c.pmLoad, 'concurrent project', 'concurrent projects') + '</strong>. ' + fte;
+    return 'Your ' + qty(v.pms, 'project manager', 'project managers') + ' are carrying '
+         + qty(v.live, 'live project', 'live projects') + ' between them, an average of <strong>'
+         + n1(c.pmLoad) + '</strong> each. ' + fte;
   }
 
   /* ---- RAG tiles ---- */
@@ -3045,6 +3110,10 @@ window.submitToSender = function(payload){
          order — the same two numbers the tile prints. */
       var ratioSpan = span(pick(c, 'projectsPerFTE'), 1);
 
+      /* One source for the per-project share, read by all four note branches
+         below (PR15 §2.2). */
+      var perProject = 'an average of ' + ftePhrase(c) + ' of one person’s time per project';
+
       out.push({
         key:'fte', rag:c.ragFTE, status:fteStatus, label:METRIC_FTE, value:ratioRange,
         bar:bandBar(ratioSpan[0], ratioSpan[1], BAND_FTE,
@@ -3054,19 +3123,21 @@ window.submitToSender = function(payload){
           + '. That is ' + ratioRange + ' projects for each of those full-time-equivalents, depending on where '
           + 'in the band you picked the real average falls.',
         tipShort:'What this ratio means in plain language.',
+        /* PR15 §2.2. "Each project is getting 49%-56% of one person's time" is
+           a statement about every project, and it is true of none of them: an
+           uneven roster is the normal case and the tip beside this tile says
+           so. Written once, as the average it is, so the four branches cannot
+           drift into saying it four ways. */
         note: v.live === 0
           ? 'Nothing is live, so none of your BAU capacity is committed to project work right now.'
           : straddles
-            ? 'The band you picked straddles a threshold, so we rate it on the less favourable end. Each project '
-              + 'is getting ' + ftePhrase(c) + ' of one person’s time across the band'
+            ? 'The band you picked straddles a threshold, so we rate it on the less favourable end. Across the '
+              + 'band that is ' + perProject
             : c.ragFTE === 'healthy'
-              ? 'Inside sustainable BAU coverage. Each project is getting ' + ftePhrase(c)
-                + ' of one person’s time'
+              ? 'Inside sustainable BAU coverage. That is ' + perProject
               : c.ragFTE === 'atrisk'
-                ? 'Above the coverage we treat as comfortable, and inside the band we watch. Each project is '
-                  + 'getting ' + ftePhrase(c) + ' of one person’s time'
-                : 'Past sustainable BAU coverage. Each project is getting ' + ftePhrase(c)
-                  + ' of one person’s time'
+                ? 'Above the coverage we treat as comfortable, and inside the band we watch. That is ' + perProject
+                : 'Past sustainable BAU coverage. That is ' + perProject
       });
 
       /* Contractors, displayed and unrated (§3.2). It sits beside the rated
@@ -3202,10 +3273,19 @@ window.submitToSender = function(payload){
     var room = h.value === hh.value
       ? qty(h.value, 'more project', 'more projects')
       : n0(h.value) + ' to ' + qty(hh.value, 'more project', 'more projects');
+    /* PR15 §4.2. The same arithmetic as `room`, without the invitation. "Room
+       to grow: 11 more projects a year" offered headroom, in bold, where the
+       reader's question is how close they are to trouble - red is where things
+       go wrong, not a target to aim at. Stated as a distance to a boundary
+       instead, and the binding measure named, which is the actionable part. */
+    var below = h.value === hh.value
+      ? n0(h.value)
+      : n0(h.value) + ' to ' + n0(hh.value);
     return { state:'room', eyebrow:CEILING_EYEBROW, gap:room,
-      figure:'Room to grow: ' + room + ' a year at today’s pace.',
-      note:'Your typical annual throughput (' + qty(v.annual, 'project', 'projects') + ' a year) has room to grow '
-         + 'to ' + pace + ' before a capacity metric turns red, and ' + bindingPhrase(c) + '. This is a pace '
+      figure:'Your pace of ' + qty(v.annual, 'project', 'projects') + ' a year sits ' + below + ' below the point '
+           + 'at which a capacity metric turns red.',
+      note:'Your current pace of ' + qty(v.annual, 'project', 'projects') + ' a year sits ' + below + ' below '
+         + pace + ', the point at which a capacity metric turns red, and ' + bindingPhrase(c) + '. This is a pace '
          + 'ceiling, not a countdown of the year: it says how much your typical annual volume could rise while '
          + 'projects keep taking as long as they do today, not how many project starts are left before December.'
          + tail };
@@ -3453,18 +3533,29 @@ window.submitToSender = function(payload){
          sentence only if you read the figure column first, which is a fragment
          to a screen reader and to the PDF alike. It is a noun phrase now, like
          the other four, and the proportion moved into the note. */
+      /* PR15 §8.1. Two faults, one of them structural. The heading carried the
+         finding and a second statistic on one line, so the proportion competed
+         with the figure the row is named for; it moves into the note, where
+         every other derived quantity in this list already sits.
+
+         And "That window is one ProjexaR sets between two published figures"
+         stated the conclusion of an argument the reader was never given: the
+         two figures were never named here, only on the sources page of a
+         printed report this reader may not have. Naming what each one measures
+         is what makes the closing sentence land, and it is the difference
+         between a disclosure and an assertion. */
       out.push({ figure:spanText(c.ticketFTE, fteFmt) + ' FTE',
-        label: c.ticketFtePercent === null
-          ? 'Ongoing capacity absorbed by ticket volume, before any project work'
-          : 'Ongoing capacity absorbed by ticket volume before any project work, which is '
-            + spanText(c.ticketFtePercent, pctFmt) + ' of your ' + n0(c.nonPmStaff) + ' non-PM IT staff',
-        note:'Your monthly ticket volume against a mixed internal queue of ' + TICKETS_PER_AGENT_LO + ' to '
-           + TICKETS_PER_AGENT_HI + ' tickets per technician per month, which is ' + d1(TICKETS_PER_AGENT_LO / WORKING_DAYS)
+        label:'Ongoing capacity absorbed by ticket volume before any project work',
+        note:(c.ticketFtePercent === null
+                ? 'From your monthly ticket volume against '
+                : 'That is ' + spanText(c.ticketFtePercent, pctFmt) + ' of your ' + n0(c.nonPmStaff)
+                  + ' non-PM IT staff, from your monthly ticket volume against ')
+           + TICKETS_PER_AGENT_LO + ' to '
+           + TICKETS_PER_AGENT_HI + ' tickets per technician per month, or ' + d1(TICKETS_PER_AGENT_LO / WORKING_DAYS)
            + ' to ' + d1(TICKETS_PER_AGENT_HI / WORKING_DAYS) + ' a day across the ' + WORKING_DAYS
-           + '-working-day month we assume. That window is one ProjexaR sets between two published figures, not a '
-           + 'published figure itself. The two published figures measure different functions from each other, '
-           + 'and neither one measures an internal IT service desk, so they bracket our window rather than '
-           + 'confirm it.' });
+           + '-working-day month we assume. We set that window ourselves, between two published figures: one '
+           + 'measuring desktop support, one measuring a mixed internal and customer queue. Neither measures an '
+           + 'internal IT service desk, so they bracket our window rather than confirm it.' });
     }
 
     if(v.bauSplitEstimate !== null){
@@ -3480,9 +3571,12 @@ window.submitToSender = function(payload){
            + n0(change) + '% on transformation. The Flexera 2023 Tech Spend Pulse reports a '
            + BENCH_BAU + '%/' + BENCH_CHANGE
            + '% run-versus-grow split across ' + BENCH_N + ' organisations, all above '
+           /* PR15 §8.3. The size clause asserted our own ICP as a
+              qualification of someone else's data, and raised a question this
+              block does not answer. The unit difference is the qualification
+              that does work, and it stands on its own. */
            + n0(BENCH_MIN_EMPLOYEES) + ' employees, but that is a split of IT budget rather than of '
-           + 'people’s time, and of organisations larger than most of the departments this check is built '
-           + 'for.' });
+           + 'people’s time.' });
     }
 
     return out;
@@ -3527,11 +3621,30 @@ window.submitToSender = function(payload){
      ones the Project Tools and Answer Option Mapping tabs carry, and the
      sources that were attached to them are attached to this finding now. */
   var TOOL_DETAIL = {
-    excel:'Your plans live in spreadsheets, so each one sits in a file rather than a shared system of record. '
-        + 'Nothing connects those files to resource data, so consistency depends on manual re-entry and nothing '
-        + 'flags it when figures drift apart. Spreadsheets also carry a materially higher error rate than '
-        + 'purpose-built systems, and those errors feed decisions unnoticed (Panko, University of Hawaii). '
-        + 'Overwrites are silent and there is no audit trail.',
+    /* PR15 §6.2. This carried five asserted inferences where master §0.11
+       allows one: plans in spreadsheets, nothing connecting those files to
+       resource data, consistency depending on manual re-entry, silent
+       overwrites, no audit trail. The respondent answered "Excel or Google
+       Sheets"; the middle three were assertions about a department nobody here
+       has seen, which is the overreach §0.11 exists to stop.
+
+       One assertion is kept - that a spreadsheet holds no connection to
+       resource data - because it is the mechanism this condition is in the
+       finding for, and it follows from the answer rather than from a guess
+       about how the department works. Everything downstream of it is the
+       condition it always was.
+
+       PR15 §6.3. The error-rate claim stays, and its inferential tail - "and
+       those errors feed decisions unnoticed" - goes with the rest: the rate is
+       a cited fact about spreadsheets, where the tail was a claim about this
+       reader's decisions. Keeping the fact keeps the Panko source attached to
+       a claim that renders, which is what stops it becoming an orphan on the
+       sources page. The citation's own form is unchanged and is reported. */
+    excel:'Your plans live in spreadsheets, so each plan sits in a file with no connection to resource data. '
+        + 'Where consistency between the two depends on manual re-entry, that is where figures drift apart with '
+        + 'nothing to flag it, where an overwrite leaves no trace, and where there is no audit trail to '
+        + 'reconstruct what changed. Spreadsheets carry a materially higher error rate than purpose-built '
+        + 'systems (Panko, University of Hawaii).',
     msproject:'Microsoft Project is built around one file and one owner. It forecasts resource demand inside a '
         + 'single project, but not across several concurrent ones without the enterprise-tier service (Microsoft '
         + 'Learn). Unless a shared resource pool is deliberately configured, each file holds its own resource data '
@@ -3609,8 +3722,14 @@ window.submitToSender = function(payload){
            third statement of the same quantity is the restatement the audit
            counted five times. It refers back instead and gets on with the
            ratio, which is the one thing here the reader has not been told. */
-        bauBody  = 'Each unit of that capacity is carrying ' + ratioRange + ' projects, inside the '
-                 + 'coverage we treat as sustainable across the whole of the ' + bandLabel(v) + ' band you picked. '
+        /* PR15 §4.1 — "unit of capacity" is undefined here and the tile above
+           calls the same ratio "Live projects per effective BAU FTE", which is
+           two names for one quantity inside a screen. PR15 §6.1 — and the band
+           is named by its numbers alone this far down the report, where the
+           reader no longer remembers what it measured. */
+        bauBody  = ratioRange + ' live projects for every effective BAU FTE, across the band. That is inside the '
+                 + 'coverage we treat as sustainable, across the whole of the ' + bandLabel(v) + ' band you '
+                 + 'picked for the average share of your BAU staff\u2019s time on project work. '
                  + 'What is worth confirming is the spread behind it, which a comfortable average cannot show you '
                  + 'and an uneven roster does not disturb.';
       }else{
@@ -3619,7 +3738,8 @@ window.submitToSender = function(payload){
         /* §6.3. Same restatement, same fix. The title says how many projects
            are sharing how much capacity; the lead said who that capacity is
            and at what share of their time. This says what that works out to. */
-        bauBody  = 'Each unit of that capacity is carrying ' + ratioRange + ' live projects. '
+        /* PR15 §4.1, same rename on the rated branch. */
+        bauBody  = ratioRange + ' live projects for every effective BAU FTE, across the band. '
                  + (straddles
                      ? 'The band you picked straddles a threshold, so we rate this on the less favourable end. '
                      : '')
@@ -3676,10 +3796,16 @@ window.submitToSender = function(payload){
          and reads as a plural on the one-manager department, where there is no
          "each" to distribute over. Same fault as positionLead's opening, in a
          second place, which is the pattern §3 predicted. */
+      /* PR15 §2.2. Same fault as positionLead's opening, in a third place: an
+         average asserted of every manager. The portfolio is the total, and the
+         average is named as one. */
       var caseload = c.pmLoad !== null && v.live > 0
-        ? (v.pms === 1 ? ' Your project manager is carrying ' : ' Each of your project managers is carrying ')
-          + qty1(c.pmLoad, 'concurrent project', 'concurrent projects')
-          + '. Where two of those need the same person in the same week, reconciling by hand is what has to catch it.'
+        ? (v.pms === 1
+            ? ' Your project manager is carrying ' + qty1(c.pmLoad, 'concurrent project', 'concurrent projects') + '.'
+            : ' Your ' + qty(v.pms, 'project manager', 'project managers') + ' are carrying '
+              + qty(v.live, 'live project', 'live projects') + ' between them, an average of '
+              + n1(c.pmLoad) + ' each.')
+          + ' Where two of those need the same person in the same week, reconciling by hand is what has to catch it.'
         : '';
       /* PR8 §3.1. This ran to five sequential claims in one paragraph: the
          count, the three conditions, the caseload inference and a closing
@@ -3692,8 +3818,12 @@ window.submitToSender = function(payload){
          caseload stay: one is arithmetic and the other is the finding's single
          asserted inference under §0.11, already made conditional in PR7. */
       out.push({ key:'visibility', rag:hits.length === 3 ? 'over' : 'atrisk',
+        /* PR15 §6.4. "No single current view" invites the reading that there
+           are several; the finding is that there is none. The two-or-fewer
+           branch keeps "single" because there it is the accurate word: the
+           reader has some of the pieces and they are not one view. */
         title:hits.length === 3
-          ? 'There is no single current view of demand and availability'
+          ? 'There is no current view of demand and availability'
           : 'Your view of demand and availability is not single and current',
         body:lead + hits.join(' ') + caseload });
     }
@@ -3912,7 +4042,11 @@ window.submitToSender = function(payload){
         body:'Your ' + v.bauSplitEstimate + '% run share across ' + qty(v.staff, 'person', 'people')
            + ' in IT comes to ' + d1(c.runWorkFte) + ' FTE, and your ticket volume accounts for ' + ticket
            + ' of it. The remaining ' + gap + ' FTE is composition, not a deficiency: either ticket logging is '
-           + 'incomplete, or run work in your organisation genuinely is not ticket-shaped, which is '
+           /* PR15 §7.3. "which is infrastructure, incident response, vendor
+              management and compliance" attached to "your organisation", the
+              nearest noun, rather than to the run work it lists. A colon
+              introduces the list and nothing has to attach. */
+           + 'incomplete, or your run work is genuinely not ticket-shaped: '
            + 'infrastructure, incident response, vendor management and compliance. ' + qualifiers
            + ' What does not change is that this is the same population your projects draw from.' });
     }
@@ -3947,7 +4081,8 @@ window.submitToSender = function(payload){
     rows.push({
       now: c.noBauCapacity ? 'No capacity to average those projects against.'
          : v.live === 0    ? 'No projects currently drawing on that capacity.'
-         : spanText(pick(c, 'projectsPerFTE'), fteFmt) + ' projects for every unit of capacity, across the band.',
+         /* PR15 §4.1 — the tile's own name for the ratio, here too. */
+         : spanText(pick(c, 'projectsPerFTE'), fteFmt) + ' live projects for every effective BAU FTE, across the band.',
       next:'The actual spread. An average hides the person on six projects and the person on one.' });
 
     var h = c.ceiling, hh = c.ceilingHi;
@@ -3963,10 +4098,10 @@ window.submitToSender = function(payload){
                          + 'capacity sustains and ' + qty(hh.value,'project','projects') + ' a year of room.'
          : (h.value === 0 && hh.value === 0)
              ? 'Exactly at the pace your capacity sustains, with no room to raise it.'
-         : 'Room to raise your annual pace by ' + (h.value === hh.value
-             ? qty(h.value,'more project','more projects')
-             : n0(h.value) + ' to ' + qty(hh.value,'more project','more projects'))
-           + ' a year before a capacity metric turns red.',
+         /* PR15 §4.2 - the same reframing, in the comparison table. */
+         : 'Your current pace of ' + qty(v.annual,'project','projects') + ' a year sits '
+           + (h.value === hh.value ? n0(h.value) : n0(h.value) + ' to ' + n0(hh.value))
+           + ' below the point at which a capacity metric turns red.',
       next:'Which specific projects you could take on, and when the people they need are free.' });
 
     if(c.at[E_LO].internalEffortCost !== null){
@@ -4023,12 +4158,18 @@ window.submitToSender = function(payload){
         + ' effective full-time equivalents</strong> of project capacity, from people whose first responsibility is '
         + 'keeping something running.';
 
+    /* PR15 §4.1 — "unit of BAU capacity" is the third name for the ratio the
+       tile publishes as "Live projects per effective BAU FTE"; the tile's name
+       is the one that stays. PR15 §2.2 — and the caseload was stated as a fact
+       about every manager, which is the fault positionLead opened with. */
     if(!c.noBauCapacity && v.live > 0){
       s += ' That is <strong>' + spanText(pick(c, 'projectsPerFTE'), fteFmt)
-         + ' live projects for every unit of BAU capacity</strong>'
+         + ' live projects for every effective BAU FTE</strong>'
          + (c.pmLoad !== null
-              ? ', and ' + qty1(c.pmLoad, 'concurrent project', 'concurrent projects')
-                + ' for each project manager'
+              ? (v.pms === 1
+                  ? ', and ' + qty1(c.pmLoad, 'concurrent project', 'concurrent projects')
+                    + ' for your project manager'
+                  : ', and an average of ' + n1(c.pmLoad) + ' live projects for each of your project managers')
               : '') + '.';
     }
 
@@ -4199,11 +4340,16 @@ window.submitToSender = function(payload){
      the better place, and what stays here is the explanation.
      §1.4 took the line about not publishing the middle: the reader is looking
      at ranges and did not ask how we produce them. */
+  /* PR15 §2.4. "A single number would be more precise than the answer it came
+     from" told the reader that a single figure would beat the band we required
+     of them, which reads as criticism of an answer we insisted on. It goes.
+     The threshold rule is the sentence that earns its place here: it is why a
+     badge says what it says. */
   function rangeNote(v, c){
     if(c.noBauCapacity) return '';
     return 'Your BAU staff give <strong>' + bandLabel(v) + '</strong> of their time to project work, so every '
-         + 'figure drawn from that answer is a range. A single number would be more precise than the answer it '
-         + 'came from. Where a range crosses a threshold we rate it on the less favourable end.';
+         + 'figure drawn from that answer is shown as a range. Where a range crosses a threshold, we rate it on '
+         + 'the less favourable end.';
   }
 
   /* The band track's markup (§5). Percentages are data rather than design
@@ -4236,8 +4382,11 @@ window.submitToSender = function(payload){
   function render(v, c){
     $('positionLead').innerHTML = positionLead(v, c);
     $('rangeNote').innerHTML = rangeNote(v, c);
-    /* §3.1. Same string as the printed report, no note class on screen. */
-    $('bandsStatement').innerHTML = '<h3 class="bands-head">How the bands were set</h3>' + bandsStatement('');
+    /* §3.1. Same string as the printed report, no note class on screen.
+       PR15 §2.3 puts everything after the opening claim behind a disclosure;
+       bandsDisclosure() slices the same string rather than rebuilding it, so
+       the text cannot drift from the printed report's. */
+    $('bandsStatement').innerHTML = '<h3 class="bands-head">How the bands were set</h3>' + bandsDisclosure();
 
     $('tileGrid').innerHTML = tiles(v, c).map(function(t){
       /* Same tooltip markup the input labels use, so there is one pattern on
@@ -4355,7 +4504,13 @@ window.submitToSender = function(payload){
     $('ctaHead').textContent = c.noBauCapacity || v.live === 0
       ? 'Every figure above came from an estimate. ProjexaR is being designed to work from the plans themselves.'
       : 'The blended average above is an estimate. ProjexaR is being designed to work from the actual commitments.';
-    $('ctaBody').textContent = 'Nothing will need to be built and nothing will need to be migrated. The design has '
+    /* PR15 §5.3. The two sentences after this one are properly conditional -
+       "the design has", "the intent is that". This one was a flat promise
+       about a product that has not shipped, and because it was future rather
+       than present tense the §5 feature-gating guard's phrase list could not
+       see it. A statement about the design, in the tense the rest of the
+       paragraph already uses. */
+    $('ctaBody').textContent = 'The design needs nothing built and nothing migrated. The design has '
       + 'each line manager keeping the operational commitment of each person in their team up to date, and every '
       + 'project plan reading from that record. The intent is that you can see who is genuinely available, catch '
       + 'the clashes while they are still fixable, and answer "can we take this on?" with something better than '
@@ -4441,6 +4596,41 @@ window.submitToSender = function(payload){
          + '<p style="margin-top:6pt">The study informs the bands on concurrent projects per project manager. The '
          + 'bands on live projects per effective BAU FTE are ProjexaR\u2019s controls. No published study sits behind '
          + 'them.</p>';
+  }
+
+  /* ---- The bands statement, on screen, with the evidence disclosed (PR15 §2.3)
+     The block ran to most of a screen and most readers skipped it, so the claim
+     stays visible and the evidence behind it goes into a native <details>.
+     That is what a disclosure is for: the first paragraph is what we are
+     asserting, and everything after it is why anyone should believe it.
+
+     Two things this must not do, and the construction is chosen for both.
+
+     It must not reword the statement. PR6 §6 puts it out of bounds, and master
+     §2.11 is asserted against it word for word. So nothing here writes any of
+     it: the string comes from bandsStatement('') and is cut at the end of its
+     first paragraph, which is a slice and cannot change a byte.
+
+     And it must not reach the printed report. A collapsed <details> prints
+     collapsed in some browsers, which would put the sourcing back behind a
+     gate in the artefact that gets forwarded - the opposite of what PR7 §3.1
+     did. #pr-bands goes on calling bandsStatement() and carries no <details>
+     at all, which is a stronger guarantee than a print rule: there is no
+     collapsed element on that surface to fail to open. #report is
+     display:none in @media print, so the disclosure below never prints.
+
+     <details> rather than a button and a class: it is keyboard-operable and
+     screen-reader-announced by the browser, with no script deciding. */
+  function bandsDisclosure(){
+    var whole = bandsStatement('');
+    var cut = whole.indexOf('</p>');
+    if(cut < 0) return whole;          /* §0.17: never silently return nothing */
+    cut += '</p>'.length;
+    return whole.slice(0, cut)
+         + '<details class="bands-more">'
+         + '<summary class="bands-more-sum">The research behind them, and what it does not cover</summary>'
+         + '<div class="bands-more-body">' + whole.slice(cut) + '</div>'
+         + '</details>';
   }
 
   /* ---- The printed executive summary (PR8 §2.3) ----
@@ -5215,6 +5405,30 @@ window.submitToSender = function(payload){
   $('pms').addEventListener('input', syncPmShareField);
   syncPmShareField();
 
+  /* PR15 §1.4. "All four shape your report" was a constant sitting beside four
+     questions. It is true today and it is true for exactly as long as nobody
+     adds a fifth, at which point it is quietly wrong and nothing fails - which
+     is the fault the bands statement's "Three things follow" already showed.
+
+     Counted from the fields actually in the fieldset. The number is spelled
+     rather than printed as a numeral, because this is prose. The markup
+     carries today's sentence verbatim as the fallback, so a reader with no
+     script gets a true sentence rather than a template, and the fieldset is
+     left alone if the count cannot be read - a count of nothing is the §0.17
+     failure mode, and publishing "All 0" would be worse than publishing a
+     constant. */
+  var COUNT_WORD = ['', 'one', 'two', 'three', 'four', 'five',
+                    'six', 'seven', 'eight', 'nine', 'ten'];
+  (function(){
+    var note = $('toolsLegendNote'), set = $('toolsFieldset');
+    if(!note || !set || typeof set.querySelectorAll !== 'function') return;
+    if(typeof note.getAttribute !== 'function') return;
+    var tpl = note.getAttribute('data-count-template');
+    var n = set.querySelectorAll('.field').length;
+    if(!tpl || n < 1 || n >= COUNT_WORD.length) return;
+    note.textContent = tpl.replace('{n}', COUNT_WORD[n]);
+  })();
+
   /* The sourced default has one home, in ASHE_MEDIAN, and the control is filled
      from it here. prefill() runs after this, so a shared link carrying an edited
      figure still wins. Editing it recomputes the whole report, which is what
@@ -5484,7 +5698,7 @@ window.submitToSender = function(payload){
                         verdict:verdict, priceCopy:priceCopy, sources:sources, positionLead:positionLead,
                         compare:compare, loadedCostOf:loadedCostOf, bandContaining:bandContaining,
                         selText:selText, readAndValidate:readAndValidate, permalink:permalink, rerender:rerender,
-                        bandsStatement:bandsStatement,
+                        bandsStatement:bandsStatement, bandsDisclosure:bandsDisclosure,
                         STATUS_WORD:STATUS_WORD,
                         TICKETS_PER_AGENT_LO:TICKETS_PER_AGENT_LO, TICKETS_PER_AGENT_HI:TICKETS_PER_AGENT_HI,
                         ASHE_MEDIAN:ASHE_MEDIAN, ASHE_YEAR:ASHE_YEAR,
