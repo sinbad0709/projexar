@@ -466,6 +466,44 @@ export function reproducibilityShapes() {
   ];
 }
 
+/* PR14 §1 — the width of the corroboration window, pinned from both sides.
+
+   CORROBORATION_TOLERANCE survived being changed from 3 to 4 with the whole
+   suite green. It is not the same kind of thing as the two defensive epsilons
+   listed beside it in §11: it sets the width of a window the report publishes,
+   and widening it makes the check MORE permissive. The one check whose job is
+   to catch us being wrong could have been quietly weakened by one character.
+
+   Nothing caught it because every shape that reaches the check sits well away
+   from either edge. 8.A's derived run share is 71.1% to 76.0%, so at a
+   tolerance of 3 the window is 68.1 to 79.0, and the existing corroboration
+   shapes state 50, 72, 90 and 95: each of them lands the same way at any
+   tolerance from 0 to 12.
+
+   These four sit one point outside and one point inside each end, which is the
+   only place a one-point drift is visible:
+
+     68   below 68.1, so the note. At a tolerance of 4 the floor drops to 67.1
+          and this becomes Healthy, so raising it fails here.
+     69   inside, so Healthy. At 2 the floor rises to 69.1 and this becomes the
+          note, so lowering it fails here.
+     79   inside, so Healthy. At 2 the ceiling falls to 78.0 and this becomes
+          the Watch.
+     80   above 79.0, so the Watch. At 4 the ceiling rises to 80.0 and this
+          becomes Healthy.
+
+   The expected outcomes are typed in from that arithmetic rather than read off
+   either constant, so a change made in the tool and the oracle together still
+   fails. */
+export function corroborationToleranceShapes() {
+  return [
+    { id: 'tol-below-outside', stated: 68, expect: 'note',    edge: 'one point below the floor of 68.1' },
+    { id: 'tol-below-inside',  stated: 69, expect: 'healthy', edge: 'one point above the floor of 68.1' },
+    { id: 'tol-above-inside',  stated: 79, expect: 'healthy', edge: 'one point below the ceiling of 79.0' },
+    { id: 'tol-above-outside', stated: 80, expect: 'watch',   edge: 'one point above the ceiling of 79.0' },
+  ].map((x) => ({ ...x, ...BASE, bauSplitEstimate: x.stated }));
+}
+
 /* One shape per currency option. The cost block runs on GBP and is suppressed
    on the other five, with the reason stated and no cross-currency ratio left
    anywhere in the report. */

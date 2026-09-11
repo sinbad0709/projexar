@@ -19,6 +19,7 @@ import { corpus, FIXTURE_A, FIXTURE_B, FIXTURE_C, FIXTURE_D, FIXTURE_E, FIXTURE_
          boundaryShapes, straddleShapes, toolsetInvarianceShapes, contractorShapes,
          suppressionShapes, singularShapes, corroborationShapes, budgetShapes,
          loadedCostShapes, currencyShapes, notationShapes, reproducibilityShapes,
+         corroborationToleranceShapes,
          LEGACY_BAND_CASES, CURRENCIES,
          TOOLSETS, VISIBILITY, BUDGETS, ASSIGNMENT, BANDS } from './shapes.mjs';
 import { capture, allText, renderedText, numbersIn, staticReportText, staticWebText,
@@ -27,7 +28,8 @@ import { TOOL_PATH, loadTool } from './harness.mjs';
 import { evaluate, roundN, round1, redThreshold, loadedCost, bandContaining,
          typicalDurationMonths, itShare, pricesCosts, COST_CURRENCY,
          finding2State, finding3State, finding4State,
-         TICKETS_LO, TICKETS_HI, WORKING_DAYS, JITBIT_PER_DAY, HDI_LO, HDI_HI } from './oracle.mjs';
+         TICKETS_LO, TICKETS_HI, WORKING_DAYS, JITBIT_PER_DAY, HDI_LO, HDI_HI,
+         CORROBORATION_TOLERANCE } from './oracle.mjs';
 
 let pass = 0, fail = 0;
 const failures = [];
@@ -4670,6 +4672,46 @@ section('PR14 §1 — the corroboration workings row agrees with the comparison 
      'PR14 §1: and the window is still the derived range widened outward from each endpoint');
   ok(/c\.corroborationHi\s*= round1\(c\.derivedRunShare\[1\] \+ CORROBORATION_TOLERANCE\);/.test(src),
      'PR14 §1: at both ends');
+
+  /* §1. The WIDTH of the window, which is a different claim from which side of
+     it a figure falls on, and which nothing asserted.
+
+     CORROBORATION_TOLERANCE survived being changed from 3 to 4 with the whole
+     suite green. It is not the same kind of thing as the two defensive epsilons
+     §11 lists beside it: it sets the width of a window the report publishes,
+     and widening it makes the check MORE permissive. The one check whose job is
+     to catch us being wrong could have been quietly weakened by one character,
+     and the tool and the oracle each carry their own copy of the number, so
+     changing both together would have passed as well.
+
+     8.A's derived run share is 71.1% to 76.0%, so at a tolerance of 3 the
+     window is 68.1 to 79.0. The four shapes sit one point outside and one point
+     inside each end, which is the only place a one-point drift is visible: the
+     existing corroboration shapes state 50, 72, 90 and 95 and land the same way
+     at any tolerance from 0 to 12.
+
+     The expected outcomes are typed in from that arithmetic, not read off
+     either constant. */
+  {
+    let edges = 0;
+    for (const shape of corroborationToleranceShapes()) {
+      const cap = capture(shape);
+      if (!ok(cap.ok, `${shape.id}: renders`, cap.error)) continue;
+      edges++;
+      eq(cap.computed.derivedRunShare.join('–'), '71.1–76',
+         `${shape.id}: the derived run share is the one this window is measured from`);
+      eq(cap.computed.corroborationLo, 68.1, `${shape.id}: the window floor is three points below it`);
+      eq(cap.computed.corroborationHi, 79, `${shape.id}: and the ceiling three points above`);
+      eq(cap.computed.corroboration, shape.expect,
+         `${shape.id}: stated ${shape.stated}% is ${shape.edge}, so ${shape.expect}`);
+    }
+    eq(edges, 4, 'PR14 §1: all four window edges were rendered');
+    /* And the constant itself, so a change has to be made deliberately in both
+       places and then still face the four shapes above. */
+    ok(/var CORROBORATION_TOLERANCE = 3;/.test(readFileSync(TOOL_PATH, 'utf8')),
+       'PR14 §1: the window is three points wide, stated in the tool');
+    eq(CORROBORATION_TOLERANCE, 3, 'PR14 §1: and in the oracle, independently');
+  }
 }
 
 
@@ -5323,6 +5365,52 @@ section('§0.17 — every node this suite reads exists, and is written by the to
     }
     ok(everWritten.has(id), `§0.17 — the tool writes "${id}" on at least one shape`);
   }
+}
+
+
+/* ================= The specification index resolves, both ways ==============
+
+   `claude/INDEX.md` is the map of the specification set, and its own first rule
+   is that the copy in that directory is the only authoritative one. It has now
+   fallen behind twice. `f8437b9` renamed the PR11 and PR12 briefs and did not
+   touch the index, so two of its rows cited files that no longer existed; and
+   two briefs were written without ever being placed in the directory at all.
+
+   Nothing asserted it, because nothing in this suite had any reason to read a
+   document. It is three lines and a readdir, so it is asserted now.
+
+   WHAT THIS CATCHES: a file renamed or deleted without the index following, and
+   a file added without an entry. Both directions, because a one-way check
+   would have passed on the state PR14 found — every file existed, and two rows
+   pointed at names that did not.
+
+   WHAT IT CANNOT CATCH, and the PR13 brief is the standing example: a document
+   that was never placed in the directory. An index can only be complete about
+   the directory it describes, and a missing document leaves no trace in either.
+   That is stated in INDEX.md itself and recorded in the master's §11, because a
+   passing assertion here must not be read as "the set is complete". */
+section('The specification index resolves, both ways');
+{
+  const DOCS = fileURLToPath(new URL('../../claude/', import.meta.url));
+  const index = readFileSync(join(DOCS, 'INDEX.md'), 'utf8');
+
+  /* §0.17. Both operands are extractions, and a table that stops matching would
+     otherwise make every claim below true of two empty sets. */
+  const onDisk = readdirSync(DOCS)
+    .filter((f) => f.endsWith('.md') && f !== 'INDEX.md').sort();
+  const listed = [...index.matchAll(/^\| `([^`]+\.md)` \|/gm)].map((m) => m[1]).sort();
+  ok(onDisk.length > 15, 'the index directory holds the specification set', `${onDisk.length} documents`);
+  ok(listed.length > 15, 'and INDEX.md lists a table of them', `${listed.length} rows`);
+
+  for (const f of listed) {
+    ok(onDisk.includes(f), `INDEX.md — the entry "${f}" resolves to a file that exists`);
+  }
+  for (const f of onDisk) {
+    ok(listed.includes(f), `INDEX.md — the document "${f}" has an entry`);
+  }
+  /* No row twice. A rename half-applied leaves the old name beside the new one,
+     and both would resolve for as long as the old file lingered. */
+  eq(new Set(listed).size, listed.length, 'INDEX.md — no document is listed twice');
 }
 
 /* ================== PR12 §5 — one offer, stated once, everywhere ============

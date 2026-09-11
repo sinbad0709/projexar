@@ -48,7 +48,7 @@ raw gap is 9.065 which would round to 9.1, and the page must print 9.0.
 | File | What it does |
 |---|---|
 | `harness.mjs` | Loads the HTML, extracts the tool's IIFE, runs it in a `vm` against a DOM stub. Parses the real `<select>` options so `selText()` returns what a respondent read, and freezes `Date` so the baseline does not change at midnight. `loadTool(path, { search })` seeds `location.search`, which is the only way to reach the reopened-link path; the stub records `focus()`, `scrollIntoView()` and `setAttribute()` rather than swallowing them. |
-| `shapes.mjs` | The 603-shape corpus, the seven §4 fixtures, and the assertion shapes (boundaries, band straddles, toolset, contractor and project-manager-share invariance, suppression rows, singulars, notation thresholds, corroboration states, currency options, budget branches, loaded-cost edits, legacy band decoding, the two epsilon cases, and `reproducibilityShapes()` — the operands no fixture makes fractional). |
+| `shapes.mjs` | The 603-shape corpus, the seven §4 fixtures, and the assertion shapes (boundaries, band straddles, toolset, contractor and project-manager-share invariance, suppression rows, singulars, notation thresholds, corroboration states and window edges, currency options, budget branches, loaded-cost edits, legacy band decoding, the two epsilon cases, and `reproducibilityShapes()` — the operands no fixture makes fractional). |
 | `oracle.mjs` | The formulas, written from the spec. Never imports from the page. |
 | `capture.mjs` | Drives one shape through the page's own submit handler, then reads back every node it wrote — screen, printed report and Sender payload — plus the static printed-report copy the page does not write. |
 | `baseline.mjs` | Writes the digest baseline. |
@@ -332,10 +332,23 @@ anybody might.
 rather than changing them: `ifloor`'s `+ 1e-9` and `redThreshold`'s `− 1e-9`.
 Both can be removed with the suite still green. `redThreshold`'s own comment
 already says it is defensive and that nothing has been observed to need it;
-`ifloor`'s cites a specific product that no shape reaches. A third is only half
-exercised: `CORROBORATION_TOLERANCE` survives a change from 3 to 4 and fails at
-0 and at 12, so a one-point drift in the window is invisible. All three are in
-the master's §11.
+`ifloor`'s cites a specific product that no shape reaches. Both are in the
+master's §11.
+
+**`CORROBORATION_TOLERANCE` was on that list and does not belong on it.** The
+two above are defensive and their absence changes nothing a reader sees. This
+one sets the width of a window the report publishes, so raising it from 3 to 4
+makes the corroboration check more permissive — the one check whose job is to
+catch us being wrong, weakened by one character, with the suite green. Nothing
+caught it because every shape that reaches the check sits well away from either
+edge: 8.A's derived run share is 71.1% to 76.0%, the window is 68.1 to 79.0, and
+the existing shapes state 50, 72, 90 and 95, each landing the same way at any
+tolerance from 0 to 12. `corroborationToleranceShapes()` states 68, 69, 79 and
+80 — one point outside and one point inside each end, the only place a one-point
+drift is visible. The expected outcomes are typed in from that arithmetic rather
+than read off either constant, so a change made in the tool and the oracle
+together still fails, and a drift of one point in either direction fails 12
+assertions.
 
 ## Why the fixtures carry an odd-looking salary
 
@@ -694,6 +707,25 @@ typed and is owed back as they entered it.
 **Nothing moved a figure.** Across all 661 shapes the suite renders, zero values
 changed. On 21 of them the ordered numeric list is shorter, and every deleted
 item is the numeral `1` in a sentence §3 required to be rewritten.
+
+## The specification index
+
+`claude/INDEX.md` is the map of the specification set, and its own first rule is
+that the copy in that directory is the only authoritative one. It had fallen
+behind twice — a rename the index did not follow, leaving two rows pointing at
+files that did not exist, and two briefs never placed in the directory at all —
+so the suite asserts it now, both ways: every `.md` file in `claude/` has an
+entry, every entry resolves to a file, and no document is listed twice. Three
+lines and a readdir.
+
+**One way would not have been enough.** On the state PR14 found, every file
+existed; what was wrong was two rows naming files that did not. A check that only
+walked the directory would have passed.
+
+What it cannot catch is a document that was never placed in the directory,
+because that leaves no trace in either the directory or the index. The PR13
+brief is the standing example, and it is recorded in INDEX.md and in the
+master's §11 so that a passing run is not read as "the set is complete".
 
 ## The link preview
 

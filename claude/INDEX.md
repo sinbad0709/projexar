@@ -33,9 +33,16 @@ Any commit that verifies, disproves or changes the status of an item in the mast
 | `claude_capacity-check-pr8-brief-sep-2026.md` | PR8. The printed report rebuilt as a forwardable document |
 | `claude_capacity-check-pr9-brief-sep-2026.md` | PR9. The Worker gate, Turnstile, and the covering note |
 | `claude_capacity-check-pr10-brief-sep-2026.md` | PR10. One reading measure, one notation per figure |
-| `claude_capacity-check-pr11-brief-sep-2026.md` | PR11. The Sender audit's launch blockers |
-| `claude_capacity-check-pr12-brief-sep-2026.md` | PR12. One offer, stated once, everywhere |
+| `capacity-check-pr11-brief-sep-2026.md` | PR11. The Sender audit's launch blockers |
+| `capacity-check-pr12-brief-sep-2026.md` | PR12. One offer, stated once, everywhere |
+| `capacity-check-pr14-brief-sep-2026.md` | PR14. Arithmetic a reader can check. Carries a provenance marker: committed from the as-issued copy, because it had no file |
 | `capacity-check-sender-audit-sep-2026.md` | The Sender audit of 10 September. Its §5 carries the launch blockers PR11 and PR12 answer |
 | `free-tier-analysis-sep-2026.md` | The offer decision of 1 September, and the definition of a managed resource |
+
+**The PR13 brief is not here.** It was never committed, and no copy of it survives outside the session it was issued in, so it cannot be indexed. PR13's substance is recorded in the master's §2 and §11 and in the render suite's README; the brief itself is missing and should be placed here if a copy exists. PR14's was in the same state and is committed, marked with where the copy came from.
+
+**Two naming conventions are in use, and PR8 to PR10 are the ones out of step.** `f8437b9` renamed the PR11 and PR12 briefs to drop the `claude_` prefix and called that the convention; the three older files still carry it. They are indexed under the names they actually have. Renaming them is a separate change and is not made here.
+
+**This index is asserted, both ways.** Every `.md` file in this directory appears in the table above, and every filename in the table resolves to a file that exists, checked by the render suite (`node tools/capacity-check/check.mjs`). That catches a rename that does not reach the index and a document added without one, which are the two ways this file has gone wrong. **It does not catch a document that was never placed here at all**, which is what happened to the PR13 brief: an index can only be complete about the directory it describes.
 
 Not held here, and available on request: the July 2026 competitive analysis, the competitor profiles, and the Capacity Ledger design of record.
