@@ -41,6 +41,8 @@ Any commit that verifies, disproves or changes the status of an item in the mast
 | `capacity-check-pr15-addendum-sep-2026.md` | The Panko correction and six decisions. Read with the PR15 brief |
 | `capacity-check-sender-audit-sep-2026.md` | The Sender audit of 10 September. Its §5 carries the launch blockers PR11 and PR12 answer |
 | `free-tier-analysis-sep-2026.md` | The offer decision of 1 September, and the definition of a managed resource |
+| `claude_capacity-check-pr16-brief-sep-2026.md` | PR16. The two published claims about Microsoft's products that the PR15 source guard found unverified |
+| `claude_capacity-check-pr17-brief-sep-2026.md` | PR17. The one-time token on the emailed link, and capturing every submission |
 
 **The PR13 brief is here now.** It was missing when PR14 wrote the paragraph this replaces: never committed, with no copy outside the session it was issued in. A copy of revision 2 has since been recovered and placed in this directory, so the set is complete from PR1 to PR15. **The three `claude_`-prefixed rows are gone too**, renamed to the directory's one convention rather than indexed under two. What the index assertion still cannot catch is a document that was never placed here at all, which is what the missing PR13 brief was: it leaves no trace in either the directory or the index, so a passing run must not be read as "the specification set is complete".
 
