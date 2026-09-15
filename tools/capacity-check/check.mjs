@@ -6134,7 +6134,7 @@ section('PR15 addendum §1.3.3 — every published source is in the master §11 
       'Median IT salary': ['ASHE', 'SOC 213'],
       'Employer National Insurance': ['Employer NI', '£5,000'],
       'Spreadsheet error rates': ['Panko', 'Spreadsheet Errors: What We Know', 'EuSpRIG'],
-      'Microsoft Project capabilities': ['Microsoft Learn', 'enterprise-tier'],
+      'Microsoft Project capabilities': ['Microsoft Learn', 'Project Plan 3'],
       'Project Online retirement': ['Project Online', '30 September 2026'],
       'Microsoft Planner': ['Microsoft Support', 'Planner'],
       /* Exempt, by name and with the reason. Neither cites a published work:
