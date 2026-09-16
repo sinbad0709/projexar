@@ -753,6 +753,7 @@ If this fixture cannot return an all-Healthy result, the structural third state 
 | Full cost to Sender | Not this release. Separate fourth change once the release has settled |
 | Second citation | Zika-Viktorsson retained as mechanism support only; no figures published from it |
 | Release shape | Three sequenced PRs |
+| Returning-respondent gate-skip token (PR17 §6) | Self-contained HMAC over the permalink plus an embedded expiry, keyed by `REPORT_LINK_SECRET`, minted server-side only into `{{report_permalink}}` — the on-page share control and every link saved before this shipped are structurally unable to carry one. Verified by **POST**, not GET, so the permalink's inputs never reach Cloudflare's request logs. **90-day** lifetime, raised from a 30-day starting proposal on review: a capacity report is a document people return to, and 30 days re-gates a respondent in month two. Verified **once on load and held in page memory for the life of the page**, never re-derived on an edit — the returning reader lands on PR10's collapsed-but-editable form, and re-checking the token against an edited permalink was the one flaw in the original proposal |
 
 ---
 

@@ -92,6 +92,21 @@ const REPORT_LIMITS = {
 const PERMALINK_MAX = 2048;
 
 /**
+ * PR17 §6. A signed permalink is what lets the link in a Capacity Check
+ * email skip the gate on return, while the on-page "copy link" control never
+ * can — the browser that renders that control never holds REPORT_LINK_SECRET.
+ *
+ * Ninety days, not thirty: raised on review. A capacity report is a document
+ * people sit on and return to, and a respondent coming back in month two on
+ * the shorter window is re-gated and creates the duplicate subscriber this
+ * work exists to stop.
+ */
+const REPORT_LINK_TTL_SECONDS = 90 * 24 * 60 * 60;
+
+/** Mirrors PERMALINK_MAX for the permalink half; the token itself never runs this long. */
+const VERIFY_LIMITS = { permalink: PERMALINK_MAX, t: 512 };
+
+/**
  * Every capped field, measured as the string it will be sent as.
  *
  * Returns the name of the first field that fails, or null. An object or array
@@ -146,6 +161,16 @@ export default {
         });
       }
       return handleCapacityReport(request, env);
+    }
+
+    if (url.pathname === "/api/verify-report-link") {
+      if (request.method !== "POST") {
+        return new Response("Method not allowed", {
+          status: 405,
+          headers: { Allow: "POST" },
+        });
+      }
+      return handleVerifyReportLink(request, env);
     }
 
     return env.ASSETS.fetch(request);
@@ -288,6 +313,17 @@ async function handleCapacityReport(request, env) {
     body.permalink = "";
   }
 
+  // PR17 §6. Only the copy going into the email is signed. The on-page share
+  // control reads permalink() straight off the browser, which never holds
+  // REPORT_LINK_SECRET and so can never produce a token — that asymmetry is
+  // the whole mechanism, not an extra check layered on top of it. A missing
+  // secret fails open on convenience, not on security: the link still works,
+  // it simply re-gates like every link did before this existed.
+  let emailPermalink = body.permalink;
+  if (emailPermalink && env.REPORT_LINK_SECRET) {
+    emailPermalink += `&t=${await signPermalink(emailPermalink, env.REPORT_LINK_SECRET)}`;
+  }
+
   // Sender's template placeholders, filled from the figures the tool computed.
   //
   // These track the Capacity Check's v5 BAU capacity model. The v4 set
@@ -367,7 +403,7 @@ async function handleCapacityReport(request, env) {
     "{{headroom}}": body.headroom,
     "{{toolset}}": body.toolset,
     "{{budget_tracking}}": body.budget_tracking,
-    "{{report_permalink}}": body.permalink,
+    "{{report_permalink}}": emailPermalink,
     // Records consent; it does not gate it. The gate is the `body.ack !== true`
     // rejection above, so this can only read "yes" today. The ternary stays as
     // the second line of defence if that check is ever moved or loosened, not
@@ -436,6 +472,113 @@ async function handleCapacityReport(request, env) {
     console.error("capacity report subscribe rejected:", res.status);
   }
   return json({ ok: res.ok }, res.ok ? 200 : 502);
+}
+
+/**
+ * PR17 §6. Verifies the signature handleCapacityReport adds to an emailed
+ * report link, so the page can tell a genuine returning respondent from an
+ * edited or copied one without a store — this half does not depend on the
+ * Supabase table §2-§5 need, and does not exist yet.
+ *
+ * POST, not GET: raised on review. A GET would put every input value the
+ * permalink carries into Cloudflare's own request logs for no reason — the
+ * permalink already carries them by design, so this is not a new exposure,
+ * but there is nothing to gain from adding it to access logs when a body
+ * does the job.
+ *
+ * No Turnstile and no rate limit here, unlike the write endpoint above: this
+ * call writes nothing and calls no paid API, and the one thing it can answer
+ * is yes or no to a signature nobody can produce without REPORT_LINK_SECRET —
+ * holding that to the same gate as an endpoint that creates a subscriber
+ * would buy nothing. It fails closed regardless: no secret, no match, no.
+ */
+async function handleVerifyReportLink(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body || typeof body.permalink !== "string" || typeof body.t !== "string") {
+    return json({ ok: false }, 400);
+  }
+  if (
+    body.permalink.length > VERIFY_LIMITS.permalink ||
+    body.t.length > VERIFY_LIMITS.t ||
+    !body.permalink.startsWith(`${ORIGIN}/`)
+  ) {
+    return json({ ok: false }, 400);
+  }
+  if (!env.REPORT_LINK_SECRET) return json({ ok: false }, 500);
+
+  const valid = await verifyPermalinkToken(body.permalink, body.t, env.REPORT_LINK_SECRET);
+  return json({ ok: valid }, 200);
+}
+
+/**
+ * Signs `${permalink}.${exp}` and returns `${exp}.${signature}` — the expiry
+ * travels inside the token, so verification needs no store and no clock but
+ * its own. Editing the permalink after the link is issued (PR10's returning
+ * reader lands on a collapsed but editable form) produces a different string
+ * and therefore a token that no longer matches, which is deliberate: a
+ * materially different set of answers must not inherit a gate-skip signed for
+ * another report. §6's "survive an edit" requirement is met on the page, not
+ * here — see public/capacity-check/index.html's reportLinkVerified — by
+ * verifying once against the link the reader arrived on and holding that
+ * result rather than re-deriving it on every render.
+ */
+async function signPermalink(permalink, secret) {
+  const exp = Math.floor(Date.now() / 1000) + REPORT_LINK_TTL_SECONDS;
+  const signature = await hmacSign(`${permalink}.${exp}`, secret);
+  return `${exp}.${signature}`;
+}
+
+/** The other half of signPermalink. Constant-time by construction: crypto.subtle.verify does the comparison, never a `===` on decoded bytes. */
+async function verifyPermalinkToken(permalink, token, secret) {
+  const dot = token.indexOf(".");
+  if (dot < 0) return false;
+  const exp = Number(token.slice(0, dot));
+  if (!Number.isInteger(exp) || exp < Math.floor(Date.now() / 1000)) return false;
+
+  let signatureBytes;
+  try {
+    signatureBytes = base64urlDecode(token.slice(dot + 1));
+  } catch {
+    return false;
+  }
+  const key = await hmacKey(secret);
+  return crypto.subtle.verify(
+    "HMAC",
+    key,
+    signatureBytes,
+    new TextEncoder().encode(`${permalink}.${exp}`),
+  );
+}
+
+async function hmacSign(data, secret) {
+  const key = await hmacKey(secret);
+  const signature = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(data));
+  return base64url(new Uint8Array(signature));
+}
+
+function hmacKey(secret) {
+  return crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign", "verify"],
+  );
+}
+
+function base64url(bytes) {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function base64urlDecode(str) {
+  let padded = str.replace(/-/g, "+").replace(/_/g, "/");
+  while (padded.length % 4) padded += "=";
+  const binary = atob(padded);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
 }
 
 async function verifyTurnstile(token, secret, ip) {

@@ -4266,6 +4266,7 @@ section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comme
     TURNSTILE_SECRET: 'test-secret',
     SENDER_API_TOKEN: 'test-token',
     SENDER_GROUP_ID: 'test-group',
+    REPORT_LINK_SECRET: 'test-link-secret',
     ASSETS: { fetch: async () => new Response('assets') },
   };
 
@@ -4330,7 +4331,12 @@ section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comme
       '{{report_consent}}', '{{report_requested_at}}'];
     eq(Object.keys(body.fields).sort().join(','), FIELDS.slice().sort().join(','),
        '§6 — the custom-field set gains nothing and loses nothing');
-    eq(body.fields['{{report_permalink}}'], base.permalink, 'and the permalink survives the origin check');
+    /* PR17 §6. The emailed field now carries the base permalink plus the signed
+       token — the on-page share control still reads the bare permalink()
+       output, which is asserted against this same base further down. */
+    ok(body.fields['{{report_permalink}}'].startsWith(`${base.permalink}&t=`),
+       'and the permalink survives the origin check, signed for the return trip',
+       body.fields['{{report_permalink}}']);
     ok(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(body.fields['{{report_requested_at}}']),
        'the timestamp is in the format Sender documents, not ISO 8601');
   }
@@ -4439,6 +4445,106 @@ section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comme
     eq(longLink.res.status, 200, 'an oversize permalink does not reject it either');
     eq(JSON.parse(longLink.sender[0].init.body).fields['{{report_permalink}}'], '',
        'and takes the same remedy as a foreign one');
+  }
+
+  section('PR17 §6 — /api/verify-report-link: the signed return-trip token');
+  {
+    /* The signed link, minted the same way handleCapacityReport mints one for
+       the email: post a real report request and read the token back off the
+       field Sender receives, rather than reimplementing the signature here.
+       Reimplementing it would let this section and the Worker drift apart and
+       still agree with each other. */
+    const signed = await post(good);
+    const emailed = JSON.parse(signed.sender[0].init.body).fields['{{report_permalink}}'];
+    const [permalink, qs] = emailed.split('&t=');
+    eq(permalink, base.permalink, 'the signed link is the base permalink plus the token, nothing else moved');
+
+    const verify = async (payload) => {
+      calls = [];
+      const res = await worker.fetch(new Request('https://projexar.com/api/verify-report-link', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+      }), env);
+      return { res, body: await res.clone().json() };
+    };
+
+    const good1 = await verify({ permalink, t: qs });
+    eq(good1.res.status, 200, 'a genuine, unedited link verifies');
+    eq(good1.body.ok, true, 'and says so');
+    eq(calls.filter((c) => c.url.includes('challenges.cloudflare.com')).length, 0,
+       'spending no Turnstile token to do it — this endpoint writes nothing');
+
+    /* PR10's returning reader lands on a collapsed but EDITABLE form. Changing
+       one figure changes the permalink, which must invalidate the signature —
+       this is what makes holding the verified state in page memory, rather
+       than re-deriving it after every edit, the right fix instead of a bug the
+       server needs to route around. */
+    const editedPermalink = permalink.replace(/&st=45/, '&st=46');
+    ok(editedPermalink !== permalink, 'the edit actually changed the signed string (fixture assumption)');
+    const edited = await verify({ permalink: editedPermalink, t: qs });
+    eq(edited.body.ok, false, 'a permalink edited after signing no longer verifies');
+
+    const tampered = await verify({ permalink, t: qs.slice(0, -4) + 'xxxx' });
+    eq(tampered.body.ok, false, 'a token with a flipped signature does not verify');
+
+    const foreignSecret = await (async () => {
+      const otherEnv = { ...env, REPORT_LINK_SECRET: 'a-different-secret' };
+      const res = await worker.fetch(new Request('https://projexar.com/api/verify-report-link', {
+        method: 'POST', headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ permalink, t: qs }),
+      }), otherEnv);
+      return res.clone().json();
+    })();
+    eq(foreignSecret.ok, false, 'a token signed under a different secret does not verify');
+
+    /* Ninety days, raised from a thirty-day starting point on review: a
+       capacity report is a document people return to, and thirty would
+       re-gate a respondent coming back in month two — exactly the duplicate
+       subscriber this work exists to stop. Monkey-patching Date.now is the
+       only way to exercise the far side of a self-contained expiry without
+       exporting it, and it is restored immediately after. */
+    const realNow = Date.now;
+    Date.now = () => realNow() + 91 * 24 * 60 * 60 * 1000; // REPORT_LINK_TTL_SECONDS is 90 days
+    const expired = await verify({ permalink, t: qs });
+    Date.now = realNow;
+    eq(expired.body.ok, false, 'a token past its ninety-day expiry does not verify');
+
+    const stillGood = await verify({ permalink, t: qs });
+    eq(stillGood.body.ok, true, 'and the same token verifies again once the clock is restored — nothing was consumed');
+
+    /* Malformed and oversize input, same discipline as /api/capacity-report:
+       rejected, never allowed to reach the signature check as a false "no". */
+    eq((await verify({ permalink, t: 123 })).res.status, 400, 'a non-string token is rejected, not coerced');
+    eq((await verify({ permalink: 'https://evil.example/' + 'x'.repeat(2100), t: qs })).res.status, 400,
+       'an oversize permalink is rejected');
+    eq((await verify({ permalink: 'https://not-projexar.example/x', t: qs })).res.status, 400,
+       'a permalink for a foreign origin is rejected before the secret is spent');
+    eq((await verify({ permalink, t: 'x'.repeat(600) })).res.status, 400, 'an oversize token is rejected');
+
+    const missingSecretEnv = { ...env };
+    delete missingSecretEnv.REPORT_LINK_SECRET;
+    const res = await worker.fetch(new Request('https://projexar.com/api/verify-report-link', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ permalink, t: qs }),
+    }), missingSecretEnv);
+    eq(res.status, 500, 'with no secret configured, this fails closed rather than treating every link as valid');
+
+    eq((await worker.fetch(new Request('https://projexar.com/api/verify-report-link', { method: 'GET' }), env))
+      .status, 405, 'GET is not allowed — the reviewer\'s point: a query string would land every answer in Cloudflare\'s logs');
+
+    /* And unsigned, the emailed field falls back to exactly what shipped
+       before this PR — an unsigned but working link — rather than failing
+       the send outright. */
+    const noSecretEnv = { ...env };
+    delete noSecretEnv.REPORT_LINK_SECRET;
+    calls = [];
+    const unsigned = await worker.fetch(new Request('https://projexar.com/api/capacity-report', {
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(good),
+    }), noSecretEnv);
+    eq(unsigned.status, 200, 'a report request still succeeds with no REPORT_LINK_SECRET configured');
+    eq(JSON.parse(calls.find((c) => c.url.includes('api.sender.net')).init.body).fields['{{report_permalink}}'],
+       base.permalink, 'and the emailed link is unsigned, not broken — today\'s behaviour, unchanged');
   }
 
   globalThis.fetch = realFetch;
@@ -5395,6 +5501,106 @@ section('PR10 §5 — a reopened link lands on the results, with the form collap
      '§5 — the control says the answers are still editable');
   ok(/\.tool-shell > summary\{ display:none; \}/.test(html),
      '§5 — and is not rendered until there is a report to collapse');
+}
+
+section('PR17 §6 — a signed link verifies once and skips the gate; an unsigned one still re-gates');
+{
+  const issued = capture({ id: 'link-issued', ...FIXTURE_A });
+  const query = issued.permalink.split('?')[1];
+  const signedSearch = `?${query}&t=stub-token`;
+
+  /* A pure unit test of the reconstruction the review's third point turns on:
+     the server always appends `&t=...` as a literal last component, never
+     through PARAMS, so stripping it back off must be exact — no re-encoding,
+     no reordering — or a genuine link would fail to verify. No fetch needed
+     to exercise this; it reads location straight off the sandbox. */
+  const stripped = loadTool(TOOL_PATH, { search: signedSearch });
+  eq(stripped.api.strippedLinkBase(), `https://projexar.com/capacity-check/${signedSearch}`.replace(/&t=stub-token$/, ''),
+     '§6 — the token is stripped byte for byte, leaving exactly the string the Worker signed');
+
+  /* showVerifiedGate() itself, called directly: the DOM swap it performs, with
+     no fetch and no verification in the loop. This is what §1's write-up
+     called the returning reader's "welcome back" state. */
+  const direct = loadTool(TOOL_PATH);
+  ok(!direct.api.isReportLinkVerified(), '§6 — unverified by default');
+  direct.api.showVerifiedGate();
+  ok(direct.api.isReportLinkVerified(), '§6 — showVerifiedGate() flips the flag');
+  ok(/Welcome back/.test(direct.node('gate').innerHTML), '§6 — and replaces #gate with the returning-reader state');
+  eq(direct.node('noteBlock').hidden, false, '§6 — revealing the covering note and saved link alongside it');
+  eq(direct.sender.length, 0, '§6 — without ever calling submitToSender — no write, no duplicate subscriber');
+
+  /* The full wire-up: a stub fetch, driven through the real boot path exactly
+     as PR10 §5's section above drives prefill(). The chain is
+     fetch().then().then(), which resolves as microtasks — nothing here pumps
+     a clock or waits on real time, only on the promise queue draining, which
+     setImmediate is after. */
+  const calls = [];
+  let respondOk = true;
+  const stubFetch = async (url, init) => {
+    calls.push({ url, init });
+    return { json: async () => ({ ok: respondOk }) };
+  };
+
+  const verified = loadTool(TOOL_PATH, { search: signedSearch, fetch: stubFetch });
+  await new Promise((resolve) => setImmediate(resolve));
+
+  eq(calls.length, 1, '§6 — a link carrying `t` calls the verify endpoint exactly once');
+  eq(calls[0].url, '/api/verify-report-link', '§6 — the endpoint the Worker exposes');
+  eq(calls[0].init.method, 'POST',
+     "§6 — by POST, per review: a GET would put every answer the permalink carries into Cloudflare's request logs");
+  const sentBody = JSON.parse(calls[0].init.body);
+  eq(sentBody.t, 'stub-token', '§6 — carrying the token the link arrived with');
+  eq(sentBody.permalink, verified.api.strippedLinkBase(),
+     '§6 — and the exact string strippedLinkBase() reconstructs, not a re-derived one');
+  ok(verified.api.isReportLinkVerified(), '§6 — a passing verification flips the flag on this path too');
+  ok(/Welcome back/.test(verified.node('gate').innerHTML), '§6 — and the gate shows the returning-reader state');
+  eq(verified.sender.length, 0, '§6 — still no Sender write on a verified return');
+
+  /* §6's one real fix, exercised on the boot path rather than asserted as an
+     intention: editing a figure in the collapsed form and pressing "Show my
+     capacity" again must not re-check the token against the now-different
+     permalink, or the reader is re-gated in the middle of the edit the
+     collapsed form exists to invite. Nothing here re-verifies on submit, so
+     the flag holds and the endpoint is not called again. */
+  verified.node('live').value = String(FIXTURE_A.live + 1);
+  verified.fire('calcForm', 'submit');
+  await new Promise((resolve) => setImmediate(resolve));
+  eq(calls.length, 1, '§6 — editing a figure and resubmitting calls the verify endpoint no further times');
+  ok(verified.api.isReportLinkVerified(), '§6 — and the verified state survives the edit');
+  ok(/Welcome back/.test(verified.node('gate').innerHTML), '§6 — the gate is not reset by the edit');
+
+  /* A failing verification — expired, tampered, or edited before the reader
+     ever arrives — leaves the ordinary gate exactly as every link produced
+     it before this PR. */
+  respondOk = false;
+  const rejectedLink = loadTool(TOOL_PATH, { search: signedSearch, fetch: stubFetch });
+  await new Promise((resolve) => setImmediate(resolve));
+  ok(!rejectedLink.api.isReportLinkVerified(), '§6 — a failing verification never flips the flag');
+  eq(rejectedLink.node('noteBlock').hidden, true, '§6 — and the covering note stays hidden, as it does today');
+
+  /* Every link saved before this PR, and the on-page "copy link" control,
+     carry no `t` at all — permalink() never writes one. Those must never call
+     the endpoint, which is what makes not asking for a share-control fix
+     unnecessary: there is nothing on that control for a token to be stripped
+     from. */
+  const plainSearch = `?${query}`;
+  const plainCalls = [];
+  const plain = loadTool(TOOL_PATH, {
+    search: plainSearch,
+    fetch: async (url, init) => { plainCalls.push({ url, init }); return { json: async () => ({ ok: true }) }; },
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  eq(plainCalls.length, 0, '§6 — a link with no `t` never calls the verify endpoint');
+  ok(!plain.api.isReportLinkVerified(), '§6 — and is left to re-gate exactly as it does today');
+
+  /* And where `fetch` does not exist at all — the render harness's own
+     default, and a real browser with it blocked — verifyReportLink() must not
+     throw and must leave the reader on the ordinary gate. */
+  let threw = false, noFetch;
+  try { noFetch = loadTool(TOOL_PATH, { search: signedSearch }); } catch { threw = true; }
+  ok(!threw, '§6 — with no fetch in the environment, load does not throw');
+  ok(noFetch && !noFetch.api.isReportLinkVerified(),
+     '§6 — and the reader is left on the ordinary gate rather than a broken one');
 }
 
 
