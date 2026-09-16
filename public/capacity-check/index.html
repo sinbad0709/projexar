@@ -1899,10 +1899,36 @@ window.submitToSender = function(payload){
 </script>
 
 <script>
+/* PR17 §2-§5 capture hook, on the same fire-and-forget footing as
+   submitToSender above and for the same reason — a capture failure must never
+   touch a report the visitor already has.
+
+   Kept on its own window hook rather than sharing bare `fetch` with
+   verifyReportLink's boot-time check (PR17 §6): that check reads its
+   response synchronously on load, this one never does, and the two must not
+   be able to land in the same call count when a test stubs `fetch` for one
+   of them. */
+window.submitCapture = function(payload){
+  fetch('/api/capacity-capture', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(function(){});
+};
+</script>
+
+<script>
 (function(){
   "use strict";
 
   /* ================= Constants ================= */
+
+  /* PR17 §2. Captured on every row so a row taken under one set of bands can
+     be recomputed correctly later even after compute() or a band changes —
+     without it, a row captured today and one captured after the next
+     threshold change are not comparable and nothing records why. Bump this
+     whenever compute() or a band changes; nothing else reads it. */
+  var TOOL_VERSION = 1;
 
   var PRICE_MONTH = 10, PRICE_YEAR = 100;
   var CURRENCY = { GBP:'£', USD:'$', EUR:'€', AUD:'A$', NZD:'NZ$', CAD:'C$' };
@@ -5501,6 +5527,72 @@ window.submitToSender = function(payload){
   var lastV = null, lastC = null;
   $('year').textContent = new Date().getFullYear();
 
+  /* PR17 §3. A pseudonymous identifier so repeated submissions in one sitting
+     read as one visitor adjusting figures, not several. Held in page memory
+     ONLY — never sessionStorage, localStorage or a cookie. Storing an
+     analytics identifier on the visitor's device engages PECR and would need
+     a consent banner; a value that lives only in this closure for the life of
+     the page stores nothing on the device, so the tool stays cookie-free. The
+     cost is a reload starts a new session, which is acceptable: the case this
+     exists for is a number changed and the button pressed again, which
+     happens without a reload. Generated with crypto.randomUUID() and never
+     derived from anything about the visitor — no IP, no user agent, no
+     fingerprint, which would be worse than a stored identifier, legally and
+     ethically alike. */
+  var sessionId = null;
+  function getSessionId(){
+    if(!sessionId) sessionId = crypto.randomUUID();
+    return sessionId;
+  }
+
+  /* PR17 §2, §5. Inputs only, never a computed value: everything compute()
+     derives is re-derivable from these given TOOL_VERSION, so a schema change
+     is never needed just because a band or a formula moves. Optional inputs
+     left blank are already null on `v` (OPTIONAL_NUMERIC in readAndValidate)
+     and that distinction is carried straight through rather than collapsed to
+     0. Values are the raw form codes read off `v`, never selText() — see
+     TOOL_VERSION's comment and the PR17 §10 decision record for why this
+     store departs from the "anything leaving this page uses selText()" rule
+     that governs the printed report and the Sender payload.
+
+     A gate_passed row carries none of this (§5): "the session identifier and
+     the event are the whole of it", so `v` is not read at all when event is
+     not 'submit'. */
+  function captureRow(v, event){
+    var row = { session_id: getSessionId(), event: event, tool_version: TOOL_VERSION };
+    if(event === 'submit'){
+      row.company_headcount = v.companyHeadcount;
+      row.it_staff = v.staff;
+      row.pm_count = v.pms;
+      row.pm_share_band = v.pms > 0 ? Number(v.pmPercent2) : null;
+      row.live_projects = v.live;
+      row.annual_projects = v.annual;
+      row.currency = v.currency;
+      row.project_spend = v.spend;
+      row.bau_staff = v.bauStaff;
+      row.bau_share_band = Number(v.bauPercent2);
+      row.contractors = v.contractors;
+      row.tickets_per_month = v.ticketsPerMonth;
+      row.run_share = v.bauSplitEstimate;
+      row.toolset = v.toolset;
+      row.single_view = v.resourceVisibility;
+      row.budget_tracking = v.budgetTracking;
+      row.who_on_what = v.assignmentKnowledge;
+      /* The eighteenth input, added after gate 1.2: without it a stored row
+         cannot reproduce its own cost figures, which is the whole reason this
+         store holds inputs rather than computed values. loadedSalary is not
+         in OPTIONAL_NUMERIC — the field is never blank in the DOM, since boot
+         pre-fills it with ASHE_MEDIAN (line ~5703) — so blank-vs-answered is
+         not the distinction available here. `edited` (§3.7's own check, a few
+         hundred lines below) already draws the one that is: equal to
+         ASHE_MEDIAN means untouched from the sourced default, not a value the
+         respondent chose. Same null-not-zero spirit as the other optional
+         numerics, on the test this field actually admits. */
+      row.median_salary = v.loadedSalary === ASHE_MEDIAN ? null : v.loadedSalary;
+    }
+    return row;
+  }
+
   /* PR17 §6. A respondent who follows the link in their own report email lands
      here with a `t` param the Worker signed when it built {{report_permalink}}
      (src/worker.js). The on-page "Your link, saved" control and permalink()
@@ -5657,6 +5749,13 @@ window.submitToSender = function(payload){
       split_given: lastV.bauSplitEstimate === null ? 0 : 1,
       spend_given: lastV.spend === null ? 0 : 1
     }));
+
+    /* PR17 §1.2, §4. Last, and fire-and-forget: the report has already
+       rendered and is already on screen by this line, and nothing above this
+       call may wait on it or be affected by its failure. */
+    if(typeof window.submitCapture === 'function'){
+      try{ window.submitCapture(captureRow(lastV, 'submit')); }catch(e){}
+    }
   });
 
   $('trialCta').addEventListener('click', function(){
@@ -5795,6 +5894,15 @@ window.submitToSender = function(payload){
        success state above. */
     if(typeof window.submitToSender === 'function'){ try{ window.submitToSender(payload); }catch(e){} }
     else console.info('[ProjexaR] Sender endpoint not wired. Payload:', payload);
+
+    /* PR17 §5. The respondent has passed the gate at this point regardless of
+       whether the Sender call above succeeds — Sender's own submission is
+       fire-and-forget and can fail for any reason without this being taken
+       back. Fired on the same footing as the call above: last, and never
+       able to affect anything on screen. */
+    if(typeof window.submitCapture === 'function'){
+      try{ window.submitCapture(captureRow(null, 'gate_passed')); }catch(e){}
+    }
   });
 
   /* ---- The copy control (PR9 §4.1) ----

@@ -27,5 +27,28 @@
       "name": "SEND_EMAIL",
       "destination_address": "mark@douc.tech"
     }
+  ],
+  // Workers Logs. Without this a console.warn/console.error is only visible
+  // to whoever happens to be running `wrangler tail` at the moment it fires —
+  // PR17 §2-§5's rate-limit rejections need to be queryable after the fact,
+  // not only live.
+  "observability": { "enabled": true },
+  // PR17 §2-§5 (capturing every submission). No Turnstile on this endpoint —
+  // decided on review, since #gate's widget cannot be reused without
+  // relocating it, which was ruled out. This binding is the only defence
+  // against a flood, so handleCapacityCapture treats a limit() error as
+  // over-limit rather than waving the request through. Needs Wrangler
+  // 4.36.0+; confirmed 4.120.0 in the session that added this.
+  //
+  // namespace_id only has to be unique across every `ratelimits` binding in
+  // the account, not within this file — two bindings sharing one id share
+  // counters. 1001 is free within this repo's own config; checked against
+  // the rest of the account before merge.
+  "ratelimits": [
+    {
+      "name": "CAPTURE_LIMITER",
+      "namespace_id": "1001",
+      "simple": { "limit": 20, "period": 60 }
+    }
   ]
 }

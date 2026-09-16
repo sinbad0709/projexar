@@ -46,3 +46,5 @@ group by 1
 order by 1;
 
 One caveat on all three. The session identifier lives in page memory, so a reload starts a new session. These queries describe submissions grouped by sitting, not people. A row count is not a visitor count and should never be reported as one.
+
+A second caveat on the first. `toolset` and `single_view` — and every other categorical column in this table — return the tool's raw internal option codes (`msproject`, `dedicated`, `outthedoor`, …), never the display text the respondent read on the page. That is deliberate, approved on review: display text gets rewritten by copy PRs, and a relabelled option would silently split one answer into two values across a query like the one above, with nothing recording why. A code is stable across a copy rewrite in a way a label is not. If a query result reads `msproject` rather than "Microsoft Project", that is the store working as designed, not a bug to fix — see `capacity-check-change-spec-sep-2026.md` §10's capture-endpoint row for the option-value lists each column is drawn from.

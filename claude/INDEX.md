@@ -43,6 +43,7 @@ Any commit that verifies, disproves or changes the status of an item in the mast
 | `free-tier-analysis-sep-2026.md` | The offer decision of 1 September, and the definition of a managed resource |
 | `claude_capacity-check-pr16-brief-sep-2026.md` | PR16. The two published claims about Microsoft's products that the PR15 source guard found unverified |
 | `claude_capacity-check-pr17-brief-sep-2026.md` | PR17. The one-time token on the emailed link, and capturing every submission |
+| `capacity-check-capture-queries.md` | The three queries the capture store (PR17 §2-§5) exists to answer, and the one caveat that governs all three: a session is a sitting, not a visitor |
 
 **The PR13 brief is here now.** It was missing when PR14 wrote the paragraph this replaces: never committed, with no copy outside the session it was issued in. A copy of revision 2 has since been recovered and placed in this directory, so the set is complete from PR1 to PR15. **The three `claude_`-prefixed rows are gone too**, renamed to the directory's one convention rather than indexed under two. What the index assertion still cannot catch is a document that was never placed here at all, which is what the missing PR13 brief was: it leaves no trace in either the directory or the index, so a passing run must not be read as "the specification set is complete".
 

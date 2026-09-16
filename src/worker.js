@@ -1,10 +1,12 @@
 /**
  * ProjexaR site Worker.
  *
- * Three jobs:
- *   POST /api/contact         — spam-check the contact form and email it to the inbox.
- *   POST /api/capacity-report — push a Capacity Check report request into Sender.
- *   everything else           — hand the request back to the static assets in ./public.
+ * Five jobs:
+ *   POST /api/contact             — spam-check the contact form and email it to the inbox.
+ *   POST /api/capacity-report     — push a Capacity Check report request into Sender.
+ *   POST /api/verify-report-link  — verify a signed, gate-skipping permalink from an email.
+ *   POST /api/capacity-capture    — write a Capacity Check submission or gate-pass into Supabase.
+ *   everything else               — hand the request back to the static assets in ./public.
  *
  * The assets layer answers first for any path that matches a file, so in
  * practice this Worker only sees /api/* (pinned ahead of assets by
@@ -107,6 +109,152 @@ const REPORT_LINK_TTL_SECONDS = 90 * 24 * 60 * 60;
 const VERIFY_LIMITS = { permalink: PERMALINK_MAX, t: 512 };
 
 /**
+ * PR17 §2-§5. Captures every "Show my capacity" submission and every
+ * email-gate pass, so the respondents who never convert stop being invisible
+ * — see claude/capacity-check-change-spec-sep-2026.md §10 for the decisions
+ * this rests on, and claude/capacity-check-capture-queries.md for what the
+ * store is for. Nothing published changes: this endpoint has no reader on
+ * the page or in the report, only in Supabase.
+ *
+ * Split out of the PR17 brief at gate 1.1, which this now clears: the table
+ * exists with the columns below, SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY
+ * are Worker secrets, the key is a publishable, insert-only key — row level
+ * security applies — and it goes in the `apikey` header, never
+ * `Authorization: Bearer`, which is for a user JWT and this key is not one.
+ *
+ * No Turnstile here. #gate's widget cannot be reused without relocating it —
+ * its container sits inside `#report[hidden]`, so it does not render until a
+ * report already exists — and relocating, duplicating or repointing it was
+ * ruled out on review. CAPTURE_LIMITER is the only defence against a flood,
+ * so handleCapacityCapture treats a limit() error as over-limit rather than
+ * waving the request through.
+ */
+const SUPABASE_TABLE = "capacity_check_submissions";
+
+/**
+ * Mirrors the <select> option VALUES in public/capacity-check/index.html —
+ * the internal codes, never selText()'s display text. Everything else that
+ * leaves this page uses the display text a respondent actually read; this
+ * store has no respondent reader, only an analyst, and a code survives a
+ * copy rewrite that a label does not. A value outside these lists did not
+ * come from the form and is rejected rather than stored as a code nothing
+ * downstream can interpret.
+ */
+const CAPTURE_ENUMS = {
+  toolset: ["excel", "msproject", "planner", "ppm", "mixed", "none", "other"],
+  single_view: ["dedicated", "manual", "none"],
+  budget_tracking: ["tracked", "partial", "varies", "outthedoor"],
+  who_on_what: ["live", "stale", "none"],
+  currency: ["GBP", "USD", "EUR", "AUD", "NZD", "CAD"],
+};
+
+/** The ten-point band low endpoints both share questions offer. */
+const SHARE_BANDS = [1, 11, 21, 31, 41, 51, 61, 71, 81, 91];
+
+/**
+ * Every numeric input the form can send, and a generous ceiling that catches
+ * Infinity, a string coerced to a number, and a crafted magnitude — not a
+ * restatement of the form's own min/max, which stays the client's job. This
+ * is the Worker-side control PR9's REPORT_LIMITS comment describes: an
+ * attribute is advice to a browser, and this endpoint is reachable without
+ * one.
+ */
+const CAPTURE_NUMERIC_MAX = {
+  company_headcount: 1e9, it_staff: 1e9, pm_count: 1e9, live_projects: 1e9,
+  annual_projects: 1e9, project_spend: 1e9, bau_staff: 1e9, contractors: 1e9,
+  tickets_per_month: 1e9, run_share: 1e9, median_salary: 1e9,
+};
+
+const SESSION_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function validCaptureNumber(v, max) {
+  return v === null || (typeof v === "number" && Number.isFinite(v) && Math.abs(v) <= max);
+}
+
+function validEnum(v, name) {
+  return typeof v === "string" && CAPTURE_ENUMS[name].includes(v);
+}
+
+/**
+ * Builds the row to insert, or names the first field that failed — the same
+ * "name of the first failure, or nothing" shape as oversizeField, and for the
+ * same reason: reject, never truncate or coerce. Reads named properties off
+ * `body` one at a time rather than spreading it into the row, so an extra key
+ * on a crafted request can never smuggle a column onto a row §5 says carries
+ * none.
+ */
+function captureRowFromBody(body, cf) {
+  if (typeof body.session_id !== "string" || !SESSION_ID_RE.test(body.session_id)) {
+    return { error: "session_id" };
+  }
+  if (typeof body.tool_version !== "number" || !Number.isFinite(body.tool_version)) {
+    return { error: "tool_version" };
+  }
+  // No created_at here. The column defaults to now(), and two mechanisms
+  // producing one value means only one is in effect and it is not obvious
+  // which — the database owns it, and nothing this Worker sends can
+  // override it.
+  const base = {
+    session_id: body.session_id,
+    tool_version: body.tool_version,
+  };
+
+  // §5. No personal data, and no input either: the session identifier, the
+  // event and the version are the whole of it.
+  if (body.event === "gate_passed") {
+    return { row: { ...base, event: "gate_passed" } };
+  }
+  if (body.event !== "submit") return { error: "event" };
+
+  for (const [name, max] of Object.entries(CAPTURE_NUMERIC_MAX)) {
+    if (!validCaptureNumber(body[name], max)) return { error: name };
+  }
+  for (const name of Object.keys(CAPTURE_ENUMS)) {
+    if (name === "currency") continue;
+    if (!validEnum(body[name], name)) return { error: name };
+  }
+  if (!validEnum(body.currency, "currency")) return { error: "currency" };
+  if (body.pm_share_band !== null && !SHARE_BANDS.includes(body.pm_share_band)) {
+    return { error: "pm_share_band" };
+  }
+  if (!SHARE_BANDS.includes(body.bau_share_band)) return { error: "bau_share_band" };
+
+  return {
+    row: {
+      ...base,
+      event: "submit",
+      // Cloudflare request properties, never client-supplied — the browser
+      // never holds an IP address to post, per §4's "never store" list.
+      country: (cf && cf.country) || null,
+      city: (cf && cf.city) || null,
+      company_headcount: body.company_headcount,
+      it_staff: body.it_staff,
+      pm_count: body.pm_count,
+      pm_share_band: body.pm_share_band,
+      live_projects: body.live_projects,
+      annual_projects: body.annual_projects,
+      currency: body.currency,
+      project_spend: body.project_spend,
+      bau_staff: body.bau_staff,
+      bau_share_band: body.bau_share_band,
+      contractors: body.contractors,
+      tickets_per_month: body.tickets_per_month,
+      run_share: body.run_share,
+      toolset: body.toolset,
+      single_view: body.single_view,
+      budget_tracking: body.budget_tracking,
+      who_on_what: body.who_on_what,
+      // The eighteenth input, added after gate 1.2: the editable ONS salary
+      // override. Without it a stored row cannot reproduce its own cost
+      // figures. Nullable like the other optional numerics — the client
+      // sends null when the field still holds the sourced default rather
+      // than a value the respondent chose (see index.html's captureRow).
+      median_salary: body.median_salary,
+    },
+  };
+}
+
+/**
  * Every capped field, measured as the string it will be sent as.
  *
  * Returns the name of the first field that fails, or null. An object or array
@@ -171,6 +319,16 @@ export default {
         });
       }
       return handleVerifyReportLink(request, env);
+    }
+
+    if (url.pathname === "/api/capacity-capture") {
+      if (request.method !== "POST") {
+        return new Response("Method not allowed", {
+          status: 405,
+          headers: { Allow: "POST" },
+        });
+      }
+      return handleCapacityCapture(request, env);
     }
 
     return env.ASSETS.fetch(request);
@@ -508,6 +666,66 @@ async function handleVerifyReportLink(request, env) {
 
   const valid = await verifyPermalinkToken(body.permalink, body.t, env.REPORT_LINK_SECRET);
   return json({ ok: valid }, 200);
+}
+
+/**
+ * Fire-and-forget from the browser: by the time this call is made the report
+ * is already rendered and on screen (§1.2), so nothing here may affect what
+ * the visitor sees, and nothing here is awaited on the page.
+ */
+async function handleCapacityCapture(request, env) {
+  const body = await request.json().catch(() => null);
+  if (!body || typeof body !== "object") return json({ ok: false }, 400);
+
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  let allowed;
+  try {
+    ({ success: allowed } = await env.CAPTURE_LIMITER.limit({ key: ip }));
+  } catch (err) {
+    // Fail closed. A row that never gets captured costs nothing; an endpoint
+    // with no back-stop the one time the binding itself errors is the actual
+    // risk, and that is the choice being made here, not an oversight.
+    console.error("capacity capture rate limiter error:", err);
+    allowed = false;
+  }
+  if (!allowed) {
+    console.warn("capacity capture rejected: rate limit", ip);
+    return json({ ok: false }, 429);
+  }
+
+  const built = captureRowFromBody(body, request.cf);
+  if (built.error) {
+    console.warn("capacity capture field rejected:", built.error);
+    return json({ ok: false }, 400);
+  }
+
+  if (!env.SUPABASE_URL || !env.SUPABASE_PUBLISHABLE_KEY) {
+    console.error("capacity capture: Supabase not configured");
+    return json({ ok: false }, 500);
+  }
+
+  try {
+    const res = await fetch(`${env.SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`, {
+      method: "POST",
+      headers: {
+        // §1.1. Publishable, insert-only, row-level-security key — goes in
+        // apikey, never Authorization: Bearer, which is for a user JWT.
+        apikey: env.SUPABASE_PUBLISHABLE_KEY,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify(built.row),
+    });
+    if (!res.ok) {
+      console.error("capacity capture insert rejected:", res.status);
+      return json({ ok: false }, 502);
+    }
+  } catch (err) {
+    console.error("capacity capture insert failed:", err);
+    return json({ ok: false }, 502);
+  }
+
+  return json({ ok: true }, 201);
 }
 
 /**

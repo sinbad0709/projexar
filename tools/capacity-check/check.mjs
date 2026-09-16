@@ -4135,6 +4135,121 @@ section('PR9 §3.1 — a rejected gate moves focus to the first failing field');
   ok(/<p id="ackError" role="alert">/.test(html), 'which announces when it appears');
 }
 
+/* ================== PR17 §2-§5, client half — the capture calls ========== */
+section('PR17 §2-§5 — the capture calls: session identity, no device storage, no personal data');
+{
+  const t = loadTool();
+  for (const [k, v] of Object.entries(FIXTURE_A)) t.node(k).value = String(v);
+  t.fire('calcForm', 'submit');
+  t.node('email').value = 'personal.reader@example.com';
+  t.node('fname').value = 'Reader';
+  t.node('lname').value = 'Example';
+  t.node('company').value = 'Reader Industries Ltd';
+  t.node('ack').checked = true;
+  t.fire('gateBtn', 'click');
+
+  eq(t.captures.length, 2, 'one capture on submit, a second on passing the gate');
+  const [submitRow, gateRow] = t.captures;
+
+  eq(submitRow.event, 'submit', 'the first row is the submit event');
+  eq(gateRow.event, 'gate_passed', 'the second is gate_passed');
+  eq(submitRow.session_id, gateRow.session_id,
+     '§3 — the session identifier is stable across two events in one page life');
+  ok(/^[0-9a-f-]{36}$/i.test(submitRow.session_id), 'and looks like a crypto.randomUUID()');
+  eq(submitRow.tool_version, 1, '§7 — tool_version is present on the submit row');
+  eq(gateRow.tool_version, 1, '§7 — and on the gate_passed row too');
+
+  eq(Object.keys(gateRow).sort().join(','), 'event,session_id,tool_version',
+     '§5, §7 — a gate_passed row carries the session identifier, the event and the version, and nothing else');
+
+  /* §4's "never store" list, checked both ways: by field name (none of these
+     keys exist on the row at all) and by value (the respondent's own strings
+     do not appear anywhere in either row, under any key) — a name-only check
+     would miss a field renamed to something innocuous that still carried the
+     value through. */
+  for (const row of t.captures) {
+    for (const field of ['email', 'name', 'firstname', 'lastname', 'company', 'ip', 'user_agent', 'useragent']) {
+      ok(!(field in row), `§4 — no "${field}" key on a ${row.event} capture row`);
+    }
+    const serialised = JSON.stringify(row);
+    for (const leaked of ['personal.reader@example.com', 'Reader Industries Ltd', 'Reader Example']) {
+      ok(!serialised.includes(leaked), `§4 — "${leaked}" does not appear anywhere in a ${row.event} capture row`, serialised);
+    }
+  }
+
+  /* §2 — raw form codes, never selText()'s display text: this store departs
+     deliberately from the rule the report and the Sender payload follow (see
+     TOOL_VERSION's comment in index.html). Asserted by checking the value is
+     NOT the option's display text, so an accidental switch to selText() here
+     is caught rather than silently changing what years of grouped queries
+     compare against. */
+  ok(submitRow.toolset !== t.selects.toolset.find(([v]) => v === submitRow.toolset)[1],
+     '§2, §10 — toolset is the raw option code, not the display text selText() would give');
+  ok(submitRow.single_view !== t.selects.resourceVisibility.find(([v]) => v === submitRow.single_view)[1],
+     '§2, §10 — and so is single_view');
+
+  /* §3, §7 — the session id lives in a closure variable, nowhere a browser
+     persists it. Both stores are instrumented (see harness.mjs) rather than
+     merely absent, so this is read off a log of every write attempted, not
+     inferred from the sandbox not having a Storage API at all. */
+  eq(t.storageWrites.length, 0, '§3, §7 — neither localStorage nor sessionStorage is written anywhere on this path');
+
+  /* Optional inputs left blank capture as null, never 0 — §2's rule, checked
+     on the actual submit row rather than re-reading the FIXTURE_A shape. */
+  const blankT = loadTool();
+  for (const [k, v] of Object.entries(FIXTURE_A)) blankT.node(k).value = String(v);
+  blankT.node('spend').value = '';
+  blankT.node('ticketsPerMonth').value = '';
+  blankT.node('bauSplitEstimate').value = '';
+  blankT.fire('calcForm', 'submit');
+  const blankRow = blankT.captures[0];
+  eq(blankRow.project_spend, null, '§2 — a blank spend captures as null, never 0');
+  eq(blankRow.tickets_per_month, null, '§2 — same for a blank ticket volume');
+  eq(blankRow.run_share, null, '§2 — and for a blank run/grow split');
+
+  /* §2's eighteenth input. Never blank in the DOM — boot pre-fills it with
+     ASHE_MEDIAN — so its null test is equality to that constant, not an
+     empty string; §3.7's own `edited` check draws the same line already.
+     FIXTURE_A itself sets loadedSalary away from ASHE_MEDIAN (FIXTURE_SALARY),
+     so `submitRow` above is the edited case; the default case needs its own
+     shape that leaves the field exactly where boot puts it. */
+  ok(FIXTURE_A.loadedSalary !== 56348, 'fixture assumption — FIXTURE_SALARY differs from ASHE_MEDIAN');
+  eq(submitRow.median_salary, FIXTURE_A.loadedSalary,
+     "median_salary captures the respondent's own figure — FIXTURE_A already edits it away from the default");
+
+  const defaultSalaryT = loadTool();
+  for (const [k, v] of Object.entries(FIXTURE_A)) {
+    if (k === 'loadedSalary') continue; // leave this one exactly as boot set it
+    defaultSalaryT.node(k).value = String(v);
+  }
+  eq(defaultSalaryT.node('loadedSalary').value, '56348', 'fixture assumption — boot pre-filled the field with ASHE_MEDIAN, untouched');
+  defaultSalaryT.fire('calcForm', 'submit');
+  eq(defaultSalaryT.captures[0].median_salary, null,
+     'and captures as null while the field still holds the sourced default, unedited');
+
+  /* §4, §1.2 — a capture failure must never touch the report. Proved by
+     actually making window.submitCapture throw, not by reading the try/catch
+     around its call site — the §0.16 discipline: break the behaviour on
+     purpose and watch the assertion still pass for the right reason. */
+  const broken = loadTool(TOOL_PATH, { submitCapture: () => { throw new Error('network is down'); } });
+  for (const [k, v] of Object.entries(FIXTURE_A)) broken.node(k).value = String(v);
+  let threwOnSubmit = false;
+  try {
+    broken.fire('calcForm', 'submit');
+  } catch { threwOnSubmit = true; }
+  ok(!threwOnSubmit, '§1.2 — the submit path does not throw even when window.submitCapture itself does');
+  eq(broken.node('report').hidden, false, '§1.2 — and the report still renders and un-hides regardless');
+
+  broken.node('email').value = 'reader2@example.com';
+  broken.node('ack').checked = true;
+  let threwOnGate = false;
+  try {
+    broken.fire('gateBtn', 'click');
+  } catch { threwOnGate = true; }
+  ok(!threwOnGate, '§1.2 — the gate path does not throw either');
+  eq(broken.sender.length, 1, 'and the Sender submission still goes ahead');
+}
+
 /* ============================== PR9 §2, §3.2, §3.3 — the Worker ============ */
 section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comment');
 {
@@ -4262,11 +4377,24 @@ section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comme
     .replace('import { EmailMessage } from "cloudflare:email";', stub));
   const worker = (await import(pathToFileURL(path).href)).default;
 
+  /* PR17 §2-§5. CAPTURE_LIMITER stands in for the real Workers `ratelimits`
+     binding — `limiterAllows` and `limiterThrows` drive its three observable
+     outcomes (allow, reject, error) the same way `verifies` drives the
+     Turnstile stub below. `supabaseStatus` drives the REST insert's outcome. */
+  let limiterAllows = true, limiterThrows = false, supabaseStatus = 201;
   const env = {
     TURNSTILE_SECRET: 'test-secret',
     SENDER_API_TOKEN: 'test-token',
     SENDER_GROUP_ID: 'test-group',
     REPORT_LINK_SECRET: 'test-link-secret',
+    SUPABASE_URL: 'https://xyzcompany.supabase.co',
+    SUPABASE_PUBLISHABLE_KEY: 'test-publishable-key',
+    CAPTURE_LIMITER: {
+      limit: async () => {
+        if (limiterThrows) throw new Error('limiter boom');
+        return { success: limiterAllows };
+      },
+    },
     ASSETS: { fetch: async () => new Response('assets') },
   };
 
@@ -4278,6 +4406,9 @@ section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comme
     calls.push({ url: href, init });
     if (href.includes('challenges.cloudflare.com')) {
       return new Response(JSON.stringify({ success: verifies }), { status: 200 });
+    }
+    if (href.includes('supabase.co')) {
+      return new Response(null, { status: supabaseStatus });
     }
     return new Response(JSON.stringify({ id: 'sub_1' }), { status: 200 });
   };
@@ -4553,6 +4684,187 @@ section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comme
     eq(unsigned.status, 200, 'a report request still succeeds with no REPORT_LINK_SECRET configured');
     eq(JSON.parse(calls.find((c) => c.url.includes('api.sender.net')).init.body).fields['{{report_permalink}}'],
        base.permalink, 'and the emailed link is unsigned, not broken — today\'s behaviour, unchanged');
+  }
+
+  section('PR17 §2-§5 — /api/capacity-capture: the rate limiter, validation, and the Supabase insert');
+  {
+    const GOOD_CAPTURE = {
+      session_id: '12345678-1234-4123-8123-123456789abc',
+      event: 'submit',
+      tool_version: 1,
+      company_headcount: 500, it_staff: 40, pm_count: 4, pm_share_band: 21,
+      live_projects: 20, annual_projects: 60, currency: 'GBP', project_spend: 500000,
+      bau_staff: 20, bau_share_band: 31, contractors: 2, tickets_per_month: 400,
+      run_share: 60, toolset: 'msproject', single_view: 'manual',
+      budget_tracking: 'partial', who_on_what: 'stale', median_salary: 60000,
+    };
+    const postCapture = async (payload, headers) => {
+      calls = [];
+      const res = await worker.fetch(new Request('https://projexar.com/api/capacity-capture', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', ...headers },
+        body: JSON.stringify(payload),
+      }), env);
+      const supabase = calls.filter((c) => c.url.includes('supabase.co'));
+      return { res, supabase, body: await res.clone().json() };
+    };
+
+    limiterAllows = true; limiterThrows = false; supabaseStatus = 201;
+
+    /* The happy path first, so every later assertion in this section can
+       compare against a known-good insert rather than re-deriving one. */
+    const first = await postCapture(GOOD_CAPTURE);
+    eq(first.res.status, 201, 'a valid submit row is accepted');
+    eq(first.body.ok, true, 'and the body says so');
+    eq(first.supabase.length, 1, 'exactly one Supabase call is made');
+    const firstReq = first.supabase[0];
+    eq(firstReq.url, 'https://xyzcompany.supabase.co/rest/v1/capacity_check_submissions',
+       'posted to the table §2 names, under SUPABASE_URL');
+    eq(firstReq.init.headers.apikey, 'test-publishable-key',
+       '§1.1 — the publishable key travels in the apikey header');
+    ok(!('Authorization' in firstReq.init.headers) && !('authorization' in firstReq.init.headers),
+       '§1.1 — never as Authorization: Bearer — that header is for a user JWT, and this key is not one');
+    const firstRow = JSON.parse(firstReq.init.body);
+    eq(Object.keys(firstRow).sort().join(','),
+       'annual_projects,bau_share_band,bau_staff,budget_tracking,city,company_headcount,contractors,country,currency,event,it_staff,live_projects,median_salary,pm_count,pm_share_band,project_spend,run_share,session_id,single_view,tickets_per_month,tool_version,toolset,who_on_what',
+       'the exact column set §2 asks be reported, so the table and the payload can be checked against each other');
+    eq(firstRow.tool_version, 1, 'tool_version is present on the row');
+    eq(firstRow.median_salary, 60000, 'the eighteenth input, median_salary, is on the row');
+
+    section('created_at is never sent — the column\'s own now() default owns it');
+    {
+      ok(!('created_at' in firstRow), 'the row the Worker posts carries no created_at at all');
+      const withClientTime = await postCapture({ ...GOOD_CAPTURE, created_at: '1999-01-01T00:00:00.000Z' });
+      const row = JSON.parse(withClientTime.supabase[0].init.body);
+      ok(!('created_at' in row),
+         'a client-supplied created_at is dropped, not forwarded — two mechanisms producing one value would leave it unclear which was in effect');
+    }
+
+    section('§2 — country and city come from the request, never the body');
+    {
+      const spoofed = await postCapture({ ...GOOD_CAPTURE, country: 'ZZ', city: 'Nowhere' });
+      const row = JSON.parse(spoofed.supabase[0].init.body);
+      ok(row.country !== 'ZZ' && row.city !== 'Nowhere',
+         'body.country and body.city are never read — captureRowFromBody takes cf, not body, for these');
+      eq(row.country, null, 'with no request.cf in this harness, country is null rather than throwing');
+    }
+
+    section('§5 — a gate_passed row carries only the session identifier, the event and the version');
+    {
+      const gp = await postCapture({ session_id: GOOD_CAPTURE.session_id, event: 'gate_passed', tool_version: 1 });
+      eq(gp.res.status, 201, 'a minimal gate_passed row is accepted');
+      const row = JSON.parse(gp.supabase[0].init.body);
+      eq(Object.keys(row).sort().join(','), 'event,session_id,tool_version',
+         '§5 — "the session identifier and the event are the whole of it", plus tool_version, which §7 requires on every row; created_at is left to the column default');
+      eq(row.session_id, GOOD_CAPTURE.session_id, 'carrying the same session identifier the submit row used');
+      eq(row.event, 'gate_passed', 'and the gate_passed event');
+
+      /* §5, §7: input fields on a gate_passed body must not leak onto the row
+         even if a caller sends them — the Worker builds the row from named
+         properties for exactly this reason. */
+      const withExtras = await postCapture({
+        session_id: GOOD_CAPTURE.session_id, event: 'gate_passed', tool_version: 1,
+        toolset: 'excel', company_headcount: 999,
+      });
+      const extraRow = JSON.parse(withExtras.supabase[0].init.body);
+      eq(Object.keys(extraRow).sort().join(','), 'event,session_id,tool_version',
+         'extra fields on a gate_passed request are dropped, not stored');
+    }
+
+    section('§4 — no Turnstile on this endpoint, decided on review');
+    {
+      eq(first.supabase.length, 1, '(sanity — the happy-path call above)');
+      eq(calls.filter((c) => c.url.includes('challenges.cloudflare.com')).length, 0,
+         'no Turnstile token is ever spent on this path — this endpoint is rate-limited, not Turnstile-verified');
+    }
+
+    section('The rate limiter — fails closed on rejection and on its own error');
+    {
+      limiterAllows = false;
+      const rejected = await postCapture(GOOD_CAPTURE);
+      eq(rejected.res.status, 429, 'a rejected key answers 429');
+      eq(rejected.supabase.length, 0, 'and nothing is inserted');
+
+      limiterAllows = true; limiterThrows = true;
+      const errored = await postCapture(GOOD_CAPTURE);
+      eq(errored.res.status, 429, 'a limiter error is treated as over-limit, not waved through — the reviewed decision');
+      eq(errored.supabase.length, 0, 'and nothing is inserted');
+      limiterThrows = false;
+
+      const allowed = await postCapture(GOOD_CAPTURE);
+      eq(allowed.res.status, 201, 'and a passing key is accepted again once the limiter recovers');
+    }
+
+    section('§4 — length caps and type checks, rejected rather than truncated or coerced');
+    {
+      const bad = async (patch, why) => {
+        const r = await postCapture({ ...GOOD_CAPTURE, ...patch });
+        eq(r.res.status, 400, why);
+        eq(r.supabase.length, 0, `${why} — and nothing is inserted`);
+      };
+      await bad({ session_id: 'not-a-uuid' }, 'a malformed session_id is rejected');
+      await bad({ session_id: 'x'.repeat(5000) }, 'an oversize session_id is rejected, not truncated');
+      await bad({ tool_version: '1' }, 'a string tool_version is rejected, not coerced');
+      await bad({ event: 'bogus' }, 'an event outside submit/gate_passed is rejected');
+      await bad({ toolset: 'not-a-real-code' }, 'a toolset outside the mirrored option list is rejected');
+      await bad({ toolset: { evil: true } }, 'a nested object is rejected rather than stringified into the record — PR9\'s reasoning, reused');
+      await bad({ currency: 'XXX' }, 'a currency outside the six the form offers is rejected');
+      await bad({ bau_share_band: 5 }, 'a band value that is not one of the ten-point low endpoints is rejected');
+      await bad({ pm_share_band: 5 }, 'the same rule applies to pm_share_band when it is not null');
+      await bad({ company_headcount: 'a lot' }, 'a numeric field sent as a string is rejected, not parsed');
+      await bad({ median_salary: 'a lot' }, 'median_salary gets the same type check as the other numerics');
+
+      /* JSON has no Infinity literal — JSON.stringify({x:Infinity}) silently
+         writes null, which is a legitimate value here (a blank optional
+         input) and would prove nothing. The real vector is a numeral outside
+         float64's finite range: JSON.parse('1e400') returns Infinity, so a
+         perfectly valid JSON document can still hand the Worker a
+         non-finite number. The body is hand-built for that reason. */
+      calls = [];
+      const infinityBody = JSON.stringify(GOOD_CAPTURE).replace('"company_headcount":500', '"company_headcount":1e400');
+      const infRes = await worker.fetch(new Request('https://projexar.com/api/capacity-capture', {
+        method: 'POST', headers: { 'content-type': 'application/json' }, body: infinityBody,
+      }), env);
+      eq(infRes.status, 400, 'Infinity, arriving via a valid JSON numeral outside float64 range, is rejected — Number.isFinite, not a bare typeof check');
+      eq(calls.filter((c) => c.url.includes('supabase.co')).length, 0, 'and nothing is inserted');
+
+      await bad({ company_headcount: 'x'.repeat(20) + '9'.repeat(1e6) }, 'a wildly oversize numeric payload is rejected');
+
+      /* pm_share_band is nullable — that is the one field allowed to fail the
+         enum check by being exactly null, never by being absent or a string. */
+      const nullBand = await postCapture({ ...GOOD_CAPTURE, pm_count: 0, pm_share_band: null });
+      eq(nullBand.res.status, 201, 'pm_share_band: null is accepted — not asked, per §1.1\'s suppression rule');
+    }
+
+    section('Malformed request bodies');
+    {
+      calls = [];
+      const notJson = await worker.fetch(new Request('https://projexar.com/api/capacity-capture', {
+        method: 'POST', headers: { 'content-type': 'application/json' }, body: '{not json',
+      }), env);
+      eq(notJson.status, 400, 'unparseable JSON is rejected');
+
+      eq((await worker.fetch(new Request('https://projexar.com/api/capacity-capture', { method: 'GET' }), env))
+        .status, 405, 'GET is not allowed');
+    }
+
+    section('Supabase failure is observable but never thrown back at the caller');
+    {
+      supabaseStatus = 500;
+      const failed = await postCapture(GOOD_CAPTURE);
+      eq(failed.res.status, 502, 'an insert the table rejects answers 502');
+      supabaseStatus = 201;
+
+      const noSupabaseEnv = { ...env };
+      delete noSupabaseEnv.SUPABASE_URL;
+      calls = [];
+      const res = await worker.fetch(new Request('https://projexar.com/api/capacity-capture', {
+        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(GOOD_CAPTURE),
+      }), noSupabaseEnv);
+      eq(res.status, 500, 'with no SUPABASE_URL configured, this fails rather than silently dropping the row');
+      eq(calls.filter((c) => c.url.includes('supabase.co')).length, 0,
+         'and never attempts the insert with a blank base URL');
+    }
   }
 
   globalThis.fetch = realFetch;

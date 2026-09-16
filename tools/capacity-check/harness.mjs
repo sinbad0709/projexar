@@ -124,8 +124,13 @@ function makeNode(id, selectOptions, focused, scrolled) {
    oversight — the sandbox has no network, and the tool's own
    `typeof fetch !== 'function'` guard is what a browser without one (or a
    render harness with no stub supplied) is meant to hit safely. A caller
-   wanting to exercise verifyReportLink() end to end supplies one. */
-export function loadTool(path = TOOL_PATH, { search = '', fetch } = {}) {
+   wanting to exercise verifyReportLink() end to end supplies one.
+
+   `submitCapture`, PR17 §2-§5: overrides the default recording stub below.
+   The one caller that needs this proves the submit and gate handlers survive
+   window.submitCapture itself throwing — every other caller gets the plain
+   recording stub, on the same footing as submitToSender. */
+export function loadTool(path = TOOL_PATH, { search = '', fetch, submitCapture } = {}) {
   const html = readFileSync(path, 'utf8');
   const source = extractScript(html);
   const selects = extractSelects(html);
@@ -146,6 +151,23 @@ export function loadTool(path = TOOL_PATH, { search = '', fetch } = {}) {
 
   const sender = [];
   const events = [];
+  const captures = [];
+  /* PR17 §3, §7. The tool must never write to either store — a page-memory
+     session identifier is the whole point (see index.html's `sessionId`
+     comment) — so both are instrumented rather than merely absent. Left
+     undefined, as on the sandbox before this, an accidental reference would
+     already throw during vm.runInContext; a recording stub is what lets a
+     test assert the negative directly instead of inferring it from every
+     other test in the suite not having crashed. */
+  const storageWrites = [];
+  function storageStub() {
+    return {
+      getItem() { return null; },
+      setItem(k, v) { storageWrites.push(['setItem', k, v]); },
+      removeItem(k) { storageWrites.push(['removeItem', k]); },
+      clear() { storageWrites.push(['clear']); },
+    };
+  }
   const sandbox = {
     console,
     Date: FrozenDate,
@@ -158,11 +180,15 @@ export function loadTool(path = TOOL_PATH, { search = '', fetch } = {}) {
       querySelectorAll: () => [],
     },
     location: { origin: 'https://projexar.com', pathname: '/capacity-check/', search },
+    localStorage: storageStub(),
+    sessionStorage: storageStub(),
+    crypto,
   };
   sandbox.window = sandbox;
   sandbox.globalThis = sandbox;
   sandbox.window.print = () => {};
   sandbox.window.submitToSender = (payload) => { sender.push(payload); };
+  sandbox.window.submitCapture = submitCapture || ((payload) => { captures.push(payload); });
   sandbox.window.plausible = (name, o) => { events.push([name, o && o.props]); };
   if (fetch) sandbox.fetch = fetch;
 
@@ -175,6 +201,8 @@ export function loadTool(path = TOOL_PATH, { search = '', fetch } = {}) {
     nodes,
     selects,
     sender,
+    captures,
+    storageWrites,
     events,
     focused,
     scrolled,
