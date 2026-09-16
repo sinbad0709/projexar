@@ -118,8 +118,14 @@ function makeNode(id, selectOptions, focused, scrolled) {
 /* `search` seeds location.search before the IIFE runs, which is the only way to
    reach prefill() — the reopened-link path — at all. Everything the tool does on
    that path (render, unhide, collapse, scroll, the reopened analytics event)
-   happens during load, so it cannot be driven after the fact. */
-export function loadTool(path = TOOL_PATH, { search = '' } = {}) {
+   happens during load, so it cannot be driven after the fact.
+
+   `fetch`, PR17 §6: omitted by default, which is deliberate rather than an
+   oversight — the sandbox has no network, and the tool's own
+   `typeof fetch !== 'function'` guard is what a browser without one (or a
+   render harness with no stub supplied) is meant to hit safely. A caller
+   wanting to exercise verifyReportLink() end to end supplies one. */
+export function loadTool(path = TOOL_PATH, { search = '', fetch } = {}) {
   const html = readFileSync(path, 'utf8');
   const source = extractScript(html);
   const selects = extractSelects(html);
@@ -158,6 +164,7 @@ export function loadTool(path = TOOL_PATH, { search = '' } = {}) {
   sandbox.window.print = () => {};
   sandbox.window.submitToSender = (payload) => { sender.push(payload); };
   sandbox.window.plausible = (name, o) => { events.push([name, o && o.props]); };
+  if (fetch) sandbox.fetch = fetch;
 
   vm.createContext(sandbox);
   vm.runInContext(source, sandbox, { filename: 'capacity-check.js' });

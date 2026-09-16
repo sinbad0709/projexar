@@ -5501,6 +5501,72 @@ window.submitToSender = function(payload){
   var lastV = null, lastC = null;
   $('year').textContent = new Date().getFullYear();
 
+  /* PR17 §6. A respondent who follows the link in their own report email lands
+     here with a `t` param the Worker signed when it built {{report_permalink}}
+     (src/worker.js). The on-page "Your link, saved" control and permalink()
+     never carry one — the browser has no access to the signing secret — so
+     only the emailed copy can ever verify, which is what makes copying the
+     link from the page re-gate the way §6 requires.
+
+     Held in one flag for the life of the page, set at most once. render()
+     never touches #gate (only the gateBtn handler and this do), so editing a
+     figure in the collapsed form and pressing "Show my capacity" again — the
+     scenario PR10's collapse invites — recomputes the report but leaves this
+     state exactly where it was. That is what "survives an edit" means here:
+     nothing re-checks the token against the edited figures, because nothing
+     re-checks it at all once this is true. Re-deriving the signed string on
+     every render and re-verifying it would fail the moment a figure changed,
+     which is the one flaw the review flagged. */
+  var reportLinkVerified = false;
+
+  /* The exact string the Worker signed: `permalink + '&t=' + token`, built by
+     literal concatenation in handleCapacityReport, never through PARAMS. That
+     is what makes this reconstructable byte for byte — rebuilding the query
+     through URLSearchParams risks a different parameter order or a different
+     percent-encoding from what permalink() produced when the link was signed,
+     either of which would fail a genuine, unedited link. Stripping the fixed
+     `&t=...` suffix instead needs no encoding decisions at all. */
+  function strippedLinkBase(){
+    return (location.origin + location.pathname + location.search).replace(/&t=[^&]*$/, '');
+  }
+
+  /* POST, not GET, on the reviewer's instruction: a GET would put every answer
+     the permalink carries into Cloudflare's request logs for no reason: the
+     permalink already carries them by design, so this is not a new exposure,
+     but a body does the job without adding one. Fire-and-forget like every
+     other capture path here — a network failure or a stale token just leaves
+     the ordinary gate in place, which is today's behaviour for everyone. */
+  function verifyReportLink(token){
+    if(typeof fetch !== 'function') return;
+    fetch('/api/verify-report-link', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ permalink: strippedLinkBase(), t: token })
+    }).then(function(r){ return r.json(); })
+      .then(function(res){ if(res && res.ok) showVerifiedGate(); })
+      .catch(function(){ /* falls back to the ordinary gate; nothing to undo */ });
+  }
+
+  /* Replaces #gate exactly as a first-time gate success does, without ever
+     asking for an email: this reader already gave one, and re-asking is the
+     duplicate-subscriber bug §6 exists to close. No Sender call — this store
+     holds who they are already — and no PDF auto-opened on arrival, since a
+     bookmarked link may be revisited more than once and an unannounced print
+     dialog every time would be worse than the gate it replaces. */
+  function showVerifiedGate(){
+    if(reportLinkVerified) return;
+    reportLinkVerified = true;
+    $('gate').innerHTML =
+      '<div class="gate-success"><div class="tick" aria-hidden="true">✓</div>'
+      + '<h3>Welcome back</h3>'
+      + '<p class="gate-sub">This is the report from the link you were sent. It opens in your browser’s '
+      + 'print view. Choose <strong>Save as PDF</strong> as the destination.</p>'
+      + '<button type="button" class="btn btn-primary" id="openReport">Open the report</button></div>';
+    $('openReport').addEventListener('click', openReport);
+    $('noteBlock').hidden = false;
+    track('capacity_check_link_verified', lastC ? ragProps(lastC) : {});
+  }
+
   /* Recompute and redraw from the current form state, without scrolling or
      firing an analytics event. The loaded-cost control calls this: an edited
      salary has to flow through the whole report, the printed PDF and the shared
@@ -5807,6 +5873,11 @@ window.submitToSender = function(payload){
          than behind it. */
       $('report').scrollIntoView({behavior:'auto',block:'start'});
       track('capacity_check_reopened', ragProps(lastC));
+      /* PR17 §6. Only a link the Worker signed carries `t`; the on-page share
+         control and every link saved before this shipped never will, and
+         both keep re-gating exactly as before. */
+      var linkToken = new URLSearchParams(location.search).get('t');
+      if(linkToken) verifyReportLink(linkToken);
     }
   }
 
@@ -5818,6 +5889,8 @@ window.submitToSender = function(payload){
                         compare:compare, loadedCostOf:loadedCostOf, bandContaining:bandContaining,
                         selText:selText, readAndValidate:readAndValidate, permalink:permalink, rerender:rerender,
                         bandsStatement:bandsStatement, bandsDisclosure:bandsDisclosure,
+                        strippedLinkBase:strippedLinkBase, showVerifiedGate:showVerifiedGate,
+                        isReportLinkVerified:function(){ return reportLinkVerified; },
                         STATUS_WORD:STATUS_WORD,
                         TICKETS_PER_AGENT_LO:TICKETS_PER_AGENT_LO, TICKETS_PER_AGENT_HI:TICKETS_PER_AGENT_HI,
                         ASHE_MEDIAN:ASHE_MEDIAN, ASHE_YEAR:ASHE_YEAR,
