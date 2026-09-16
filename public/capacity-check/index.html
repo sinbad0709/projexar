@@ -5580,15 +5580,14 @@ window.submitCapture = function(payload){
       row.who_on_what = v.assignmentKnowledge;
       /* The eighteenth input, added after gate 1.2: without it a stored row
          cannot reproduce its own cost figures, which is the whole reason this
-         store holds inputs rather than computed values. loadedSalary is not
-         in OPTIONAL_NUMERIC — the field is never blank in the DOM, since boot
-         pre-fills it with ASHE_MEDIAN (line ~5703) — so blank-vs-answered is
-         not the distinction available here. `edited` (§3.7's own check, a few
-         hundred lines below) already draws the one that is: equal to
-         ASHE_MEDIAN means untouched from the sourced default, not a value the
-         respondent chose. Same null-not-zero spirit as the other optional
-         numerics, on the test this field actually admits. */
-      row.median_salary = v.loadedSalary === ASHE_MEDIAN ? null : v.loadedSalary;
+         store holds inputs rather than computed values. Always the effective
+         figure the report actually used, never null — nulling it when
+         untouched would make null mean "whatever ASHE_MEDIAN was at the
+         time", which nothing maps tool_version back to, and this field is
+         never genuinely unanswered the way the OPTIONAL_NUMERIC fields are:
+         boot pre-fills it with ASHE_MEDIAN (line ~5703), so there is no
+         blank state to preserve here, only a value. */
+      row.median_salary = v.loadedSalary;
     }
     return row;
   }
