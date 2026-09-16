@@ -4529,6 +4529,14 @@ section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comme
       body: JSON.stringify({ permalink, t: qs }),
     }), missingSecretEnv);
     eq(res.status, 500, 'with no secret configured, this fails closed rather than treating every link as valid');
+    /* The status code alone is not the guarantee — the client reads the JSON
+       body's own `ok` field, not the HTTP status, because a 500 with a body
+       is still valid JSON to fetch(). A missing secret returning {ok:true}
+       here would skip the gate for every link regardless of what status code
+       carried it, which is the asymmetric-failure bug this checks directly
+       rather than inferring from §2's send-side fail-open behaviour. */
+    eq((await res.clone().json()).ok, false,
+       'and the body says ok:false — a missing secret must never verify a link, only fail to sign one');
 
     eq((await worker.fetch(new Request('https://projexar.com/api/verify-report-link', { method: 'GET' }), env))
       .status, 405, 'GET is not allowed — the reviewer\'s point: a query string would land every answer in Cloudflare\'s logs');
