@@ -4207,15 +4207,18 @@ section('PR17 §2-§5 — the capture calls: session identity, no device storage
   eq(blankRow.tickets_per_month, null, '§2 — same for a blank ticket volume');
   eq(blankRow.run_share, null, '§2 — and for a blank run/grow split');
 
-  /* §2's eighteenth input. Never blank in the DOM — boot pre-fills it with
-     ASHE_MEDIAN — so its null test is equality to that constant, not an
-     empty string; §3.7's own `edited` check draws the same line already.
-     FIXTURE_A itself sets loadedSalary away from ASHE_MEDIAN (FIXTURE_SALARY),
-     so `submitRow` above is the edited case; the default case needs its own
+  /* §2's eighteenth input, corrected 16 September: never null on a submit
+     row, whether the figure came from the respondent or from the sourced
+     default — nulling the default case would mean "whatever ASHE_MEDIAN was
+     at the time", which nothing maps tool_version back to, and would make
+     the row unrecomputable, the one reason the column exists. FIXTURE_A
+     itself edits loadedSalary away from ASHE_MEDIAN (FIXTURE_SALARY), so
+     `submitRow` above is the override case; the default case needs its own
      shape that leaves the field exactly where boot puts it. */
   ok(FIXTURE_A.loadedSalary !== 56348, 'fixture assumption — FIXTURE_SALARY differs from ASHE_MEDIAN');
   eq(submitRow.median_salary, FIXTURE_A.loadedSalary,
-     "median_salary captures the respondent's own figure — FIXTURE_A already edits it away from the default");
+     "median_salary carries the respondent's own figure when the field is edited");
+  ok(typeof submitRow.median_salary === 'number', 'and it is a number, never null, on the override shape');
 
   const defaultSalaryT = loadTool();
   for (const [k, v] of Object.entries(FIXTURE_A)) {
@@ -4224,8 +4227,9 @@ section('PR17 §2-§5 — the capture calls: session identity, no device storage
   }
   eq(defaultSalaryT.node('loadedSalary').value, '56348', 'fixture assumption — boot pre-filled the field with ASHE_MEDIAN, untouched');
   defaultSalaryT.fire('calcForm', 'submit');
-  eq(defaultSalaryT.captures[0].median_salary, null,
-     'and captures as null while the field still holds the sourced default, unedited');
+  eq(defaultSalaryT.captures[0].median_salary, 56348,
+     'and carries the effective ASHE_MEDIAN figure on the default shape too — never null just because it was unedited');
+  ok(typeof defaultSalaryT.captures[0].median_salary === 'number', 'a number here as well, not null');
 
   /* §4, §1.2 — a capture failure must never touch the report. Proved by
      actually making window.submitCapture throw, not by reading the try/catch
@@ -4730,6 +4734,7 @@ section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comme
        'the exact column set §2 asks be reported, so the table and the payload can be checked against each other');
     eq(firstRow.tool_version, 1, 'tool_version is present on the row');
     eq(firstRow.median_salary, 60000, 'the eighteenth input, median_salary, is on the row');
+    ok(firstRow.median_salary !== null, 'and no submit row carries a null there — it is never genuinely unanswered');
 
     section('created_at is never sent — the column\'s own now() default owns it');
     {
@@ -4813,6 +4818,7 @@ section('PR9 — /api/capacity-report: Turnstile, the length caps, and the comme
       await bad({ pm_share_band: 5 }, 'the same rule applies to pm_share_band when it is not null');
       await bad({ company_headcount: 'a lot' }, 'a numeric field sent as a string is rejected, not parsed');
       await bad({ median_salary: 'a lot' }, 'median_salary gets the same type check as the other numerics');
+      await bad({ median_salary: null }, 'median_salary is rejected when null — unlike project_spend, tickets_per_month and run_share, it is never genuinely unanswered');
 
       /* JSON has no Infinity literal — JSON.stringify({x:Infinity}) silently
          writes null, which is a legitimate value here (a blank optional

@@ -42,12 +42,15 @@
   //
   // namespace_id only has to be unique across every `ratelimits` binding in
   // the account, not within this file — two bindings sharing one id share
-  // counters. 1001 is free within this repo's own config; checked against
-  // the rest of the account before merge.
+  // counters. Deliberately not 1001: a filesystem search found no other
+  // ratelimits binding in this account, but 1001 is Cloudflare's own
+  // documentation example, which makes it the id anything deployed later is
+  // most likely to pick unexamined. 74318 is chosen to avoid exactly that
+  // collision rather than because it is otherwise significant.
   "ratelimits": [
     {
       "name": "CAPTURE_LIMITER",
-      "namespace_id": "1001",
+      "namespace_id": "74318",
       "simple": { "limit": 20, "period": 60 }
     }
   ]

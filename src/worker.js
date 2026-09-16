@@ -159,16 +159,26 @@ const SHARE_BANDS = [1, 11, 21, 31, 41, 51, 61, 71, 81, 91];
  * attribute is advice to a browser, and this endpoint is reachable without
  * one.
  */
+/**
+ * The nullable numerics — genuinely optional inputs where a blank answer is a
+ * real, distinct state from any number (§2's "a blank is not a zero").
+ * median_salary is deliberately not here: the field is never unanswered
+ * (index.html pre-fills it with ASHE_MEDIAN at boot), so null there would
+ * mean something else entirely — "whatever the default was at the time" —
+ * and would make the row unrecomputable, which is the one thing this column
+ * exists to prevent. It gets its own non-nullable check below.
+ */
 const CAPTURE_NUMERIC_MAX = {
   company_headcount: 1e9, it_staff: 1e9, pm_count: 1e9, live_projects: 1e9,
   annual_projects: 1e9, project_spend: 1e9, bau_staff: 1e9, contractors: 1e9,
-  tickets_per_month: 1e9, run_share: 1e9, median_salary: 1e9,
+  tickets_per_month: 1e9, run_share: 1e9,
 };
 
 const SESSION_ID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function validCaptureNumber(v, max) {
-  return v === null || (typeof v === "number" && Number.isFinite(v) && Math.abs(v) <= max);
+function validCaptureNumber(v, max, { nullable = true } = {}) {
+  if (v === null) return nullable;
+  return typeof v === "number" && Number.isFinite(v) && Math.abs(v) <= max;
 }
 
 function validEnum(v, name) {
@@ -209,6 +219,13 @@ function captureRowFromBody(body, cf) {
   for (const [name, max] of Object.entries(CAPTURE_NUMERIC_MAX)) {
     if (!validCaptureNumber(body[name], max)) return { error: name };
   }
+  // Never null: this is the effective salary the report's cost figures used,
+  // whether that came from the respondent or from the sourced default, and
+  // it is answered on every submission by construction — see the comment on
+  // CAPTURE_NUMERIC_MAX above.
+  if (!validCaptureNumber(body.median_salary, 1e9, { nullable: false })) {
+    return { error: "median_salary" };
+  }
   for (const name of Object.keys(CAPTURE_ENUMS)) {
     if (name === "currency") continue;
     if (!validEnum(body[name], name)) return { error: name };
@@ -246,9 +263,11 @@ function captureRowFromBody(body, cf) {
       who_on_what: body.who_on_what,
       // The eighteenth input, added after gate 1.2: the editable ONS salary
       // override. Without it a stored row cannot reproduce its own cost
-      // figures. Nullable like the other optional numerics — the client
-      // sends null when the field still holds the sourced default rather
-      // than a value the respondent chose (see index.html's captureRow).
+      // figures. Always the effective figure the report actually used —
+      // never null, whether it came from the respondent or from the
+      // sourced default, so tool_version alone is enough to recompute a row
+      // rather than needing a second table of "what ASHE_MEDIAN was on this
+      // date" to interpret a blank.
       median_salary: body.median_salary,
     },
   };
