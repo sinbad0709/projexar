@@ -97,7 +97,7 @@
         <div class="pillar-panel__copy">
           <span class="pillar-panel__icon"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg></span>
           <h2 class="pillar-panel__title">BAU is set by the person who owns the team.</h2>
-          <p class="pillar-panel__body">Line managers set how much BAU — business as usual — each resource carries in each period, as a percentage, days per week or hours per week, whichever way they think. Presets for the common cases, bulk apply across a team, and every new period inherits the last. What's left is project capacity, and ProjexaR works it out the moment the number changes.</p>
+          <p class="pillar-panel__body">Line managers set how much BAU — business as usual — each resource carries in each period, as a percentage, days per week or hours per week, whichever way they think. Presets for the common cases, bulk apply across a team, and every new period inherits the last. What's left is project capacity, and ProjexaR works it out the moment the number changes. Every person must be set at least three months ahead, and an entry can be corrected but never deleted.</p>
         </div>
         <div class="card card--elev-lg card--p24">
           <div class="mock__head">
@@ -137,7 +137,7 @@
       <div class="pillar-panel" data-panel="replan" data-panel-group="product-pillars" hidden>
         <div class="pillar-panel__copy">
           <span class="pillar-panel__icon"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="m18 14 4 4-4 4"></path><path d="m18 2 4 4-4 4"></path><path d="M2 18h1.973a4 4 0 0 0 3.3-1.7l5.454-8.6a4 4 0 0 1 3.3-1.7H22"></path><path d="M2 6h1.972a4 4 0 0 1 3.6 2.2"></path><path d="M22 18h-6.041a4 4 0 0 1-3.3-1.8l-.359-.45"></path></svg></span>
-          <h2 class="pillar-panel__title">Move something and see what it costs before you commit.</h2>
+          <h2 class="pillar-panel__title">Move something and see the consequences before you commit.</h2>
           <p class="pillar-panel__body">Drag a task and ProjexaR checks every assigned resource across the affected range. Where there's a conflict it offers four routes: reassign to someone available, delay until the resource is free, split the work across two people or two windows, or override and flag it. Every decision is the project manager's — the system models options, it doesn't apply them.</p>
         </div>
         <div class="card card--elev-lg card--p24">
@@ -184,11 +184,11 @@
         <div class="pillar-panel__copy">
           <span class="pillar-panel__icon"><svg class="icon" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg></span>
           <h2 class="pillar-panel__title">Answer "can we take this on?" before it's a project.</h2>
-          <p class="pillar-panel__body">Keep a live pipeline of proposed work with a forecast window, a likelihood and a resource model by role type. ProjexaR weighs the demand by how likely each item is, sets it against the capacity you actually have, and shows surplus or shortfall by role type by quarter on a capacity outlook heatmap. Save a dated baseline at a planning cycle and see how the picture has drifted since.</p>
+          <p class="pillar-panel__body">Model proposed work by start quarter, duration, likelihood, priority and the roles it will need. ProjexaR weights each item by how likely it is, sets it against the capacity you actually have, and shows the potential FTE gap by role type by quarter on a capacity outlook heatmap. Every item carries a resource-risk rating, so work that will need people you do not have is visible before it becomes a project. Save a dated forecast run at a planning cycle and compare it with the current pipeline to see what was added, converted or withdrawn.</p>
         </div>
         <div class="card card--elev-lg card--p24">
           <div class="mock__head mock__head--tight">
-            <span class="mock__title">Capacity outlook · surplus and shortfall in days</span>
+            <span class="mock__title">Capacity outlook · surplus and shortfall in FTE</span>
             <span class="badge badge--brand">Weighted by likelihood</span>
           </div>
           <div class="heatmap">
@@ -199,30 +199,30 @@
             <div class="heatmap__head">Q3 27</div>
 
             <div class="heatmap__role">Infrastructure</div>
-            <div class="heatmap__cell heatmap__cell--t">+12</div>
-            <div class="heatmap__cell heatmap__cell--a">−4</div>
-            <div class="heatmap__cell heatmap__cell--r">−18</div>
-            <div class="heatmap__cell heatmap__cell--a">−6</div>
+            <div class="heatmap__cell heatmap__cell--t">+1.0</div>
+            <div class="heatmap__cell heatmap__cell--a">−0.5</div>
+            <div class="heatmap__cell heatmap__cell--r">−3.0</div>
+            <div class="heatmap__cell heatmap__cell--a">−1.0</div>
 
             <div class="heatmap__role">Applications</div>
-            <div class="heatmap__cell heatmap__cell--a">−8</div>
-            <div class="heatmap__cell heatmap__cell--r">−22</div>
-            <div class="heatmap__cell heatmap__cell--r">−15</div>
-            <div class="heatmap__cell heatmap__cell--t">+4</div>
+            <div class="heatmap__cell heatmap__cell--a">−1.0</div>
+            <div class="heatmap__cell heatmap__cell--r">−3.5</div>
+            <div class="heatmap__cell heatmap__cell--r">−2.5</div>
+            <div class="heatmap__cell heatmap__cell--t">+0.5</div>
 
             <div class="heatmap__role">Service desk</div>
-            <div class="heatmap__cell heatmap__cell--t">+6</div>
-            <div class="heatmap__cell heatmap__cell--t">+2</div>
-            <div class="heatmap__cell heatmap__cell--a">−3</div>
-            <div class="heatmap__cell heatmap__cell--t">+9</div>
+            <div class="heatmap__cell heatmap__cell--t">+1.0</div>
+            <div class="heatmap__cell heatmap__cell--t">+0.5</div>
+            <div class="heatmap__cell heatmap__cell--a">−0.5</div>
+            <div class="heatmap__cell heatmap__cell--t">+1.5</div>
 
             <div class="heatmap__role">Security</div>
-            <div class="heatmap__cell heatmap__cell--a">−2</div>
-            <div class="heatmap__cell heatmap__cell--t">+8</div>
-            <div class="heatmap__cell heatmap__cell--t">+11</div>
-            <div class="heatmap__cell heatmap__cell--t">+14</div>
+            <div class="heatmap__cell heatmap__cell--a">−0.5</div>
+            <div class="heatmap__cell heatmap__cell--t">+1.5</div>
+            <div class="heatmap__cell heatmap__cell--t">+2.0</div>
+            <div class="heatmap__cell heatmap__cell--t">+2.5</div>
           </div>
-          <p class="mock__foot">Baselined 4 August 2026. Deltas are measured against that baseline.</p>
+          <p class="mock__foot">Forecast run of 4 August 2026. Deltas are measured against that run.</p>
         </div>
       </div>
     </div>
@@ -268,7 +268,12 @@
         <div class="card card--p26 card--interactive feature-card" style="--accent:var(--viz-3)">
           <span class="feature-card__icon"><svg class="icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></span>
           <h3 class="feature-card__title">Resource request and approval</h3>
-          <p class="feature-card__body">Project managers request people; line managers approve or offer an alternative.</p>
+          <p class="feature-card__body">Search the pool by role and availability, then request the person from their line manager.</p>
+        </div>
+        <div class="card card--p26 card--interactive feature-card" style="--accent:var(--viz-5)">
+          <span class="feature-card__icon"><svg class="icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="22" x2="16" y1="11" y2="11"></line></svg></span>
+          <h3 class="feature-card__title">Resource gaps</h3>
+          <p class="feature-card__body">Where no suitable person exists, raise a tracked gap that stays visible until it closes.</p>
         </div>
         <div class="card card--p26 card--interactive feature-card" style="--accent:var(--viz-4)">
           <span class="feature-card__icon"><svg class="icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 14 4-4"></path><path d="M3.34 19a10 10 0 1 1 17.32 0"></path></svg></span>
@@ -280,10 +285,15 @@
           <h3 class="feature-card__title">Conflict detection</h3>
           <p class="feature-card__body">Every assignment checked across the affected range as soon as a date changes.</p>
         </div>
+        <div class="card card--p26 card--interactive feature-card" style="--accent:var(--viz-3)">
+          <span class="feature-card__icon"><svg class="icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg></span>
+          <h3 class="feature-card__title">Impact alerts</h3>
+          <p class="feature-card__body">A change to availability, BAU or a plan flags the affected tasks before it is confirmed, and tells the managers involved.</p>
+        </div>
         <div class="card card--p26 card--interactive feature-card" style="--accent:var(--viz-1)">
           <span class="feature-card__icon"><svg class="icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path></svg></span>
           <h3 class="feature-card__title">AI-assisted replanning</h3>
-          <p class="feature-card__body">Four routes out of a conflict, modelled and costed before you choose one.</p>
+          <p class="feature-card__body">Four routes out of a conflict, each with its consequences, before you choose one.</p>
         </div>
         <div class="card card--p26 card--interactive feature-card" style="--accent:var(--viz-3)">
           <span class="feature-card__icon"><svg class="icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18"></path><path d="M3 12h18"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg></span>
@@ -292,8 +302,8 @@
         </div>
         <div class="card card--p26 card--interactive feature-card" style="--accent:var(--viz-5)">
           <span class="feature-card__icon"><svg class="icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg></span>
-          <h3 class="feature-card__title">Forecast baselines</h3>
-          <p class="feature-card__body">Save a dated baseline at a planning cycle and see what has drifted.</p>
+          <h3 class="feature-card__title">Forecast pipeline runs</h3>
+          <p class="feature-card__body">Save a dated, read-only forecast run and compare it with the current pipeline.</p>
         </div>
         <div class="card card--p26 card--interactive feature-card" style="--accent:var(--viz-4)">
           <span class="feature-card__icon"><svg class="icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 17 2 2 4-4"></path><path d="m3 7 2 2 4-4"></path><path d="M13 6h8"></path><path d="M13 12h8"></path><path d="M13 18h8"></path></svg></span>
@@ -301,9 +311,14 @@
           <p class="feature-card__body">Risks, assumptions, issues, dependencies and status inside the project.</p>
         </div>
         <div class="card card--p26 card--interactive feature-card" style="--accent:var(--viz-1)">
+          <span class="feature-card__icon"><svg class="icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" x2="4" y1="22" y2="15"></line></svg></span>
+          <h3 class="feature-card__title">Lifecycle phases</h3>
+          <p class="feature-card__body">Configurable phases each project moves through, with every phase change kept in the project record.</p>
+        </div>
+        <div class="card card--p26 card--interactive feature-card" style="--accent:var(--viz-1)">
           <span class="feature-card__icon"><svg class="icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg></span>
           <h3 class="feature-card__title">Ask ProjexaR</h3>
-          <p class="feature-card__body">Ask a question in plain language — ProjexaR answers with the figure behind it.</p>
+          <p class="feature-card__body">Role- and context-aware help from ProjexaR's knowledge base, with a link to the source of every answer.</p>
         </div>
         <div class="card card--p26 card--interactive feature-card" style="--accent:var(--viz-5)">
           <span class="feature-card__icon"><svg class="icon" width="19" height="19" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></span>
@@ -359,9 +374,15 @@
           <div class="role-card">
             <span class="role-card__title">Head of PMO</span>
             <span class="role-card__key">Owns</span>
-            <span class="role-card__owns">The portfolio, the forecast pipeline and the planning baselines.</span>
+            <span class="role-card__owns">The portfolio, the forecast pipeline and the dated forecast runs.</span>
             <span class="role-card__key role-card__key--sees">Sees</span>
-            <span class="role-card__sees">Surplus and shortfall by role type by quarter, and the drift since the last baseline.</span>
+            <span class="role-card__sees">Surplus and shortfall by role type by quarter, and the change since the last forecast run.</span>
+          </div>
+        </div>
+        <div class="card card--p24">
+          <div class="role-card">
+            <span class="role-card__title">Additional roles</span>
+            <span class="role-card__owns">Programme Managers see their programme portfolio. Project Resources update progress on the tasks they are permitted to. System Administrators manage users, roles and workflow configuration.</span>
           </div>
         </div>
       </div>
@@ -379,7 +400,7 @@
         <div class="steps__item">
           <span class="steps__n">01</span>
           <span class="steps__title">Point ProjexaR at your files</span>
-          <span class="steps__body">MS Project, Excel or exported Planner plans — or use the import template if your data is scattered.</span>
+          <span class="steps__body">MS Project, Excel, or Planner plans exported to Excel. If your data is scattered, start from the guided import template instead.</span>
         </div>
         <div class="steps__item">
           <span class="steps__n">02</span>
@@ -392,6 +413,7 @@
           <span class="steps__body">Your line managers set how much of each person's week is already spoken for. Then you're live.</span>
         </div>
       </div>
+      <p class="steps__body">A project missed at go-live can be imported on its own at any time.</p>
     </div>
   </section>
 
