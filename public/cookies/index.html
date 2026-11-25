@@ -93,7 +93,8 @@
         <h2><span class="policy__number">2</span>Summary</h2>
         <ul class="policy__list">
           <li>We do not use advertising cookies or cookies that track you across other websites.</li>
-          <li>[CONFIRM: whether any analytics run on projexar.com or learning.projexar.com, for example Cloudflare Web Analytics. If none, state “We do not use analytics cookies or analytics storage.” If some, describe them in Section 3 or 4.]</li>
+          <li>We do not use analytics cookies or analytics storage.</li>
+          <li>Cloudflare, which hosts both sites, sets security cookies that help it tell people from automated traffic (Section 5).</li>
           <li>projexar.com uses session storage to remember your currency and billing choice on the pricing pages, and Cloudflare Turnstile to protect its forms.</li>
           <li>ProjexaR Learning stores your progress in your browser only if you switch that option on.</li>
         </ul>
@@ -125,7 +126,7 @@
             </tbody>
           </table>
         </div>
-        <p>The Capacity Check stores nothing on your device. While the page is open it holds a random identifier in memory so that repeat submissions in one sitting can be recognised as one visit; the identifier disappears when you close or reload the page.</p>
+        <p>The Capacity Check itself stores nothing on your device, apart from the Cloudflare security cookies in Section 5. While the page is open it holds a random identifier in memory so that repeat submissions in one sitting can be recognised as one visit; the identifier disappears when you close or reload the page.</p>
       </section>
 
       <section class="policy__section" id="learning">
@@ -150,13 +151,38 @@
             </tbody>
           </table>
         </div>
-        <p>ProjexaR Learning sets no cookies and uses no other browser storage. This is local storage, not a cookie: your browser does not send it to our servers. Because it lives in one browser, it does not carry across to another browser or device, and clearing your browser data removes it permanently. We cannot restore it for you.</p>
+        <p>Apart from this record, ProjexaR Learning sets no cookies and uses no other browser storage; the Cloudflare security cookies in Section 5 apply to it as to projexar.com. The progress record is local storage, not a cookie: your browser does not send it to our servers. Because it lives in one browser, it does not carry across to another browser or device, and clearing your browser data removes it permanently. We cannot restore it for you.</p>
       </section>
 
       <section class="policy__section" id="cloudflare">
         <h2><span class="policy__number">5</span>Cloudflare security</h2>
         <p>Both sites are hosted and delivered by Cloudflare. Cloudflare receives each request your browser makes so that it can deliver and protect the sites; the <a href="/privacy/#hosting">Privacy Policy</a> explains what this involves.</p>
-        <p>[CONFIRM: whether Cloudflare sets security cookies on either site, such as <code>__cf_bm</code> (bot management) or <code>cf_clearance</code> (set after a challenge). This depends on the zone’s Bot Fight Mode, WAF and challenge settings. If any are set, add a row for each to the relevant table above with its purpose and duration from Cloudflare’s cookie documentation. If none are set, delete this paragraph.]</p>
+        <p>We use Cloudflare’s Bot Fight Mode on both sites. It checks traffic against known patterns of automated activity and challenges requests that look automated. To do this, Cloudflare runs a small, invisible script in your browser and may set the cookies below. They are set by Cloudflare, not by us; they are not used for advertising and do not track you across other websites.</p>
+        <div class="policy-table-wrap">
+          <table class="policy-table">
+            <caption>Cloudflare security cookies used on projexar.com and learning.projexar.com.</caption>
+            <thead>
+              <tr>
+                <th scope="col">Name and type</th>
+                <th scope="col">Purpose</th>
+                <th scope="col">How long it lasts</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row"><code>__cf_bm</code><br>Cookie, set by Cloudflare</th>
+                <td>Helps Cloudflare judge whether a visit is from a person or automated software, and reduces the chance of a real visitor being challenged by mistake. Its contents are encrypted and readable only by Cloudflare.</td>
+                <td>Expires after 30 minutes without activity</td>
+              </tr>
+              <tr>
+                <th scope="row"><code>cf_clearance</code><br>Cookie, set by Cloudflare</th>
+                <td>Records the result of Cloudflare’s browser check or of a challenge you have passed, so that you are not checked again on every page.</td>
+                <td>Set by Cloudflare; see <a href="https://developers.cloudflare.com/fundamentals/reference/policies-compliances/cloudflare-cookies/" rel="noopener">Cloudflare’s cookie documentation</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Cloudflare describes these cookies as strictly necessary for its security service. If you block them, Cloudflare may show you a challenge more often, or may not let the request through.</p>
       </section>
 
       <section class="policy__section" id="control">
