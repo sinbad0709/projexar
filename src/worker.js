@@ -449,7 +449,7 @@ async function handleCapacityReport(request, env) {
   // This is the gate. The `report_consent` field below RECORDS the value and
   // has never gated anything: it wrote "no" and subscribed regardless.
   if (body.ack !== true) {
-    console.warn("capacity report rejected without consent:", body.email);
+    console.warn("capacity report rejected without consent");
     return json({ ok: false }, 400);
   }
 
@@ -468,7 +468,7 @@ async function handleCapacityReport(request, env) {
     request.headers.get("CF-Connecting-IP"),
   );
   if (!verified) {
-    console.warn("capacity report turnstile failed for:", body.email);
+    console.warn("capacity report turnstile failed");
     return json({ ok: false }, 403);
   }
 
